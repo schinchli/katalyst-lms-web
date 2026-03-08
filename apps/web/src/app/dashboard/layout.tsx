@@ -14,10 +14,10 @@ const NAV = [
   { href: '/dashboard/progress',     label: 'Progress',    icon: TrendIcon },
   { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
   { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
-  { href: '/dashboard/settings',     label: 'Settings',    icon: SettingsIcon },
 ];
 
-const ADMIN_NAV = { href: '/dashboard/admin', label: 'Admin', icon: AdminIcon };
+const ADMIN_NAV  = { href: '/dashboard/admin',    label: 'Admin',    icon: AdminIcon };
+const SETTINGS_NAV = { href: '/dashboard/settings', label: 'Settings', icon: SettingsIcon };
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -307,12 +307,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             );
           })}
           {isAdmin && (() => {
-            const active = pathname === ADMIN_NAV.href;
+            const activeAdmin    = pathname === ADMIN_NAV.href;
+            const activeSettings = pathname === SETTINGS_NAV.href;
             return (
-              <Link href={ADMIN_NAV.href} className={`nav-item${active ? ' active' : ''}`}>
-                <AdminIcon active={active} />
-                {ADMIN_NAV.label}
-              </Link>
+              <>
+                <Link href={ADMIN_NAV.href} className={`nav-item${activeAdmin ? ' active' : ''}`}>
+                  <AdminIcon active={activeAdmin} />
+                  {ADMIN_NAV.label}
+                </Link>
+                <Link href={SETTINGS_NAV.href} className={`nav-item${activeSettings ? ' active' : ''}`}>
+                  <SettingsIcon active={activeSettings} />
+                  {SETTINGS_NAV.label}
+                </Link>
+              </>
             );
           })()}
         </nav>
