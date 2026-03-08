@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { getLeaderboard } from '@/data/leaderboard';
 import { supabase } from '@/lib/supabase';
