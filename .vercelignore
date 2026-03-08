@@ -1,36 +1,62 @@
-# Build outputs & caches (excluded from Vercel upload)
-node_modules
-**/node_modules
-apps/web/.next/dev
-apps/web/.next/cache
-.next/dev
-.next/cache
+# ─── NOT needed for Vercel web build ──────────────────────────────────────────
 
-# Mobile (not deployed to Vercel)
-mobile
+# Backend (AWS Lambda — deployed separately)
+backend/
 
-# Backend (Lambda functions — not part of web build)
-backend
+# Mobile (Expo/React Native — not a web deployment)
+mobile/
 
-# Test artifacts
-coverage
-**/__tests__
+# Infrastructure (AWS CDK — deployed via cdk deploy)
+infrastructure/
+
+# iOS native code
+ios/
+
+# Supabase migrations (run independently via Supabase CLI)
+supabase/
+
+# Unknown legacy frontend folder
+frontend/
+
+# Documentation & planning files
+docs/
+*.md
+!apps/web/**/*.md
+
+# Root-level config not used during Vercel build
+turbo.json
+app.json
+CLAUDE.md
+CLAUDE_COMMANDMENTS.md
+
+# ─── Test & QA files ──────────────────────────────────────────────────────────
+apps/web/e2e/
+apps/web/playwright.config.ts
+apps/web/jest.config.ts
+apps/web/scripts/
+**/__tests__/
 **/*.test.ts
 **/*.test.tsx
 **/*.spec.ts
 **/*.spec.tsx
+coverage/
 
-# Local env files
+# ─── Build artifacts (rebuilt on Vercel) ──────────────────────────────────────
+**/node_modules/
+apps/web/.next/
+**/*.tsbuildinfo
+
+# ─── Large data backups ────────────────────────────────────────────────────────
+apps/web/src/data/*_backup_*
+
+# ─── Local environment & secrets (never upload) ───────────────────────────────
 .env
 .env.*
 !.env.example
 
-# IDE / OS
+# ─── IDE / OS noise ───────────────────────────────────────────────────────────
 .DS_Store
-.kiro
-.cursor
-.vscode
-*.tsbuildinfo
-
-# Large data backups
-apps/web/src/data/*_backup_*
+.kiro/
+.cursor/
+.vscode/
+.github/
