@@ -1,0 +1,362 @@
+'use client';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { quizzes } from '@/data/quizzes';
+import { useSubscription } from '@/hooks/useSubscription';
+import { supabase } from '@/lib/supabase';
+import { migrateFromLocalStorage } from '@/lib/db';
+
+const NAV = [
+  { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
+  { href: '/dashboard/quizzes',      label: 'Quizzes',     icon: BookIcon },
+  { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
+  { href: '/dashboard/progress',     label: 'Progress',    icon: TrendIcon },
+  { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
+  { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
+  { href: '/dashboard/settings',     label: 'Settings',    icon: SettingsIcon },
+];
+
+const ADMIN_NAV = { href: '/dashboard/admin', label: 'Admin', icon: AdminIcon };
+
+function HomeIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+}
+function BookIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  );
+}
+function TrendIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+function UserIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+function MoonIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+function SunIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
+function PlayNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" fill={active ? 'currentColor' : 'none'} />
+    </svg>
+  );
+}
+function SearchIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+function LogoutIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+function TrophyIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+      <path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+      <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+    </svg>
+  );
+}
+function AdminIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+    </svg>
+  );
+}
+function SettingsIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
+
+const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
+const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0' };
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router   = useRouter();
+  const [dark,        setDark]        = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const [isAdmin,     setIsAdmin]     = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const { isPro } = useSubscription();
+
+  // Auth guard + admin check — runs on every session
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session?.user) {
+        // No valid session — redirect to login (OWASP A01 fix)
+        router.replace('/login');
+        return;
+      }
+      const u = session.user;
+
+      // Server-side admin check — never trust localStorage (OWASP A01 fix)
+      fetch('/api/admin/check', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+        .then((r) => r.json())
+        .then((d: { isAdmin?: boolean }) => { if (d.isAdmin) setIsAdmin(true); })
+        .catch(() => { /* non-blocking */ });
+
+      // One-time migration: localStorage → Supabase (no-op if already migrated)
+      migrateFromLocalStorage(u.id).catch(() => { /* best-effort */ });
+
+      const quizResults = (() => {
+        try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
+      })();
+      fetch('/api/sync-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supabaseId:  u.id,
+          email:       u.email ?? '',
+          name:        (u.user_metadata?.name as string | undefined) ?? u.email?.split('@')[0] ?? '',
+          accessToken: session.access_token,
+          createdAt:   u.created_at,
+          quizResults,
+        }),
+      }).catch(() => { /* non-blocking */ });
+    });
+  }, []);
+
+  // Dark mode
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
+
+    // Apply user appearance preferences (color theme + font + size)
+    try {
+      const raw = localStorage.getItem('katalyst-theme');
+      if (raw) {
+        const t = JSON.parse(raw) as { primaryColor?: string; primaryLight?: string; fontFamily?: string; fontSize?: string };
+        const root = document.documentElement;
+        if (t.primaryColor) {
+          root.style.setProperty('--primary', t.primaryColor);
+          root.style.setProperty('--primary-text', t.primaryColor);
+        }
+        if (t.primaryLight) root.style.setProperty('--primary-light', t.primaryLight);
+        if (t.fontSize) root.style.fontSize = `${t.fontSize}px`;
+        if (t.fontFamily && t.fontFamily !== 'Public Sans') {
+          const id = `gf-${t.fontFamily.replace(/\s/g, '-')}`;
+          if (!document.getElementById(id)) {
+            const link = document.createElement('link');
+            link.id = id; link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${t.fontFamily.replace(/\s/g, '+')}:wght@300;400;500;600;700&display=swap`;
+            document.head.appendChild(link);
+          }
+          document.body.style.fontFamily = `'${t.fontFamily}', sans-serif`;
+        }
+      }
+    } catch { /* best-effort */ }
+  }, []);
+
+  const toggleDark = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
+
+  // Search
+  const searchResults = searchQuery.length >= 2
+    ? quizzes.filter((q) =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (q.examCode ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 8)
+    : [];
+
+  // Close search on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const goToQuiz = (id: string) => {
+    setSearchQuery(''); setShowResults(false);
+    router.push(`/dashboard/quiz/${id}`);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  return (
+    <div className="page-wrapper">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <div className="sidebar-logo-icon">K</div>
+            <div>
+              <div className="sidebar-brand-name">Katalyst</div>
+              <div className="sidebar-brand-sub">Quiz Platform</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div ref={searchRef} style={{ padding: '0 16px 16px', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
+            <SearchIcon />
+            <input
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
+              onFocus={() => setShowResults(true)}
+              placeholder="Search courses…"
+              style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--text)', width: '100%', fontFamily: 'inherit' }}
+            />
+          </div>
+
+          {/* Search results dropdown */}
+          {showResults && searchResults.length > 0 && (
+            <div style={{ position: 'absolute', top: '100%', left: 16, right: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: 'var(--shadow)', zIndex: 100, overflow: 'hidden' }}>
+              {searchResults.map((q) => {
+                const accent = q.certLevel ? CERT_COLOR[q.certLevel] : (DIFF_COLOR[q.difficulty] ?? '#7367F0');
+                const label  = q.examCode ?? (q.category.charAt(0).toUpperCase() + q.category.slice(1).replace('-', ' '));
+                return (
+                  <button
+                    key={q.id}
+                    onClick={() => goToQuiz(q.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: 'inherit' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: accent + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>📖</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.title}</div>
+                      <div style={{ fontSize: 11, color: accent, fontWeight: 600, marginTop: 1 }}>{label}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {showResults && searchQuery.length >= 2 && searchResults.length === 0 && (
+            <div style={{ position: 'absolute', top: '100%', left: 16, right: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: 'var(--shadow)', zIndex: 100, padding: '16px', textAlign: 'center', fontSize: 13, color: 'var(--text-secondary)' }}>
+              No courses found for "{searchQuery}"
+            </div>
+          )}
+        </div>
+
+        {/* Nav */}
+        <nav className="sidebar-nav">
+          {NAV.map((item) => {
+            const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+            const Icon   = item.icon;
+            return (
+              <Link key={item.href} href={item.href} className={`nav-item${active ? ' active' : ''}`}>
+                <Icon active={active} />
+                {item.label}
+              </Link>
+            );
+          })}
+          {isAdmin && (() => {
+            const active = pathname === ADMIN_NAV.href;
+            return (
+              <Link href={ADMIN_NAV.href} className={`nav-item${active ? ' active' : ''}`}>
+                <AdminIcon active={active} />
+                {ADMIN_NAV.label}
+              </Link>
+            );
+          })()}
+        </nav>
+
+        {/* Footer: tier badge + dark mode + logout */}
+        <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Link
+              href="/dashboard/profile"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                background: isPro ? '#FF9F4318' : 'var(--bg)',
+                color:      isPro ? '#FF9F43'  : 'var(--text-secondary)',
+                border:     isPro ? '1px solid #FF9F4340' : '1px solid var(--border)',
+              }}
+            >
+              {isPro ? '⭐ Pro' : 'Free Plan'}
+            </Link>
+            <button
+              onClick={toggleDark}
+              title={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            >
+              {dark ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <div style={{ position: 'relative', display: 'inline-flex' }} className="logout-wrap">
+              <button
+                onClick={handleLogout}
+                style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.15s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = '#FF4C51'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+              >
+                <LogoutIcon />
+              </button>
+              <span style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2F2B3D', color: '#fff', fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 5, whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s' }} className="logout-tip">
+                Logout
+              </span>
+            </div>
+          </div>
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Katalyst v1.0</span>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="main-content">{children}</main>
+    </div>
+  );
+}

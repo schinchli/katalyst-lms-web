@@ -1,0 +1,37 @@
+{
+  "name": "@lms/admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AWS GenAI Prep — Admin Panel (Vuexy Next.js child theme)",
+  "scripts": {
+    "dev":        "next dev",
+    "build":      "next build",
+    "start":      "next start",
+    "lint":       "next lint",
+    "type-check": "tsc --noEmit",
+    "setup-vuexy": "bash scripts/setup-vuexy.sh",
+    "sync-vuexy":  "bash scripts/sync-vuexy.sh"
+  },
+  "dependencies": {
+    "@lms/shared-types": "*",
+    "@lms/theme": "*",
+    "next": "^16.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@mui/material": "^7.3.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "~5.9.2"
+  },
+  "notes": [
+    "Run 'npm run setup-vuexy' first to initialize the Vuexy starter-kit base.",
+    "NEVER edit files in src/@core/ or src/@layouts/ — those are managed by Vuexy.",
+    "All customizations go in src/@custom/ only.",
+    "To update Vuexy: update the source, then run 'npm run sync-vuexy'."
+  ]
+}

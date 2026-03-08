@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {}
+  },
+  "globalEnv": [
+    "APP_ENV",
+    "EXPO_PUBLIC_API_URL",
+    "EXPO_PUBLIC_COGNITO_USER_POOL_ID",
+    "EXPO_PUBLIC_COGNITO_CLIENT_ID",
+    "EXPO_PUBLIC_CLOUDFRONT_URL"
+  ]
+}

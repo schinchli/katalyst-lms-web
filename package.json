@@ -1,0 +1,36 @@
+{
+  "name": "lms",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AWS GenAI Prep — Monorepo (mobile, web, admin, shared packages)",
+  "workspaces": [
+    "mobile",
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "type-check": "turbo run type-check",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^12.9.0",
+    "react-test-renderer": "^19.2.4",
+    "turbo": "^2.5.4",
+    "typescript": "~5.9.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.0.0",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.63",
+    "expo": "~54.0.33",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
+  }
+}

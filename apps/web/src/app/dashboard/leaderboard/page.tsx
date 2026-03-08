@@ -1,0 +1,179 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { getLeaderboard } from '@/data/leaderboard';
+import { supabase } from '@/lib/supabase';
+import type { LeaderboardEntry } from '@/types';
+
+type Period = 'daily' | 'monthly' | 'alltime';
+
+const PERIODS: { key: Period; label: string }[] = [
+  { key: 'daily',   label: 'Today'    },
+  { key: 'monthly', label: 'Monthly'  },
+  { key: 'alltime', label: 'All Time' },
+];
+
+const MEDAL_COLOR = ['#FFD700', '#C0C0C0', '#CD7F32'];
+const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
+const PODIUM_H    = [100, 80, 66];
+
+export default function LeaderboardPage() {
+  const [period, setPeriod] = useState<Period>('alltime');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+  }, []);
+
+  const entries: LeaderboardEntry[] = getLeaderboard(period).map((e) => ({
+    ...e,
+    isCurrentUser: !!userId && e.userId === userId,
+  }));
+
+  const top3 = entries.slice(0, 3);
+  const rest  = entries.slice(3);
+
+  // Podium layout: 2nd place left, 1st centre, 3rd right
+  const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as LeaderboardEntry[];
+
+  return (
+    <div style={{ padding: '24px 28px', maxWidth: 800, fontFamily: "'Public Sans', sans-serif" }}>
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Leaderboard</h1>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          padding: '3px 9px', borderRadius: 6,
+          background: '#EA545518', color: '#EA5455', fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: 3, background: '#EA5455', display: 'inline-block' }} />
+          LIVE
+        </span>
+      </div>
+      <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--text-secondary)' }}>
+        Top performers across all AWS certification quizzes
+      </p>
+
+      {/* ── Period tabs ────────────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', borderBottom: '2px solid var(--border)', marginBottom: 32 }}>
+        {PERIODS.map((p) => (
+          <button
+            key={p.key}
+            onClick={() => setPeriod(p.key)}
+            style={{
+              padding: '10px 24px', border: 'none', background: 'transparent',
+              cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
+              color: period === p.key ? '#7367F0' : 'var(--text-secondary)',
+              borderBottom: `2px solid ${period === p.key ? '#7367F0' : 'transparent'}`,
+              marginBottom: -2, transition: 'color 0.15s',
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Podium — top 3 ─────────────────────────────────────────────────── */}
+      {top3.length > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+          gap: 12, marginBottom: 28, padding: '0 12px',
+        }}>
+          {podiumOrder.map((entry) => {
+            const medal = MEDAL_COLOR[entry.rank - 1] ?? '#7367F0';
+            const emoji = MEDAL_EMOJI[entry.rank - 1] ?? '🏅';
+            const ph    = PODIUM_H[entry.rank - 1] ?? 66;
+            const big   = entry.rank === 1;
+            return (
+              <div key={entry.userId} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                {/* Avatar */}
+                <div style={{
+                  width: big ? 64 : 52, height: big ? 64 : 52, borderRadius: '50%',
+                  border: `2px solid ${medal}`, background: medal + '22',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: big ? 22 : 18, fontWeight: 700, color: medal, marginBottom: 4,
+                }}>
+                  {entry.avatarInitial}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', textAlign: 'center', lineHeight: 1.2 }}>
+                  {entry.name}{entry.isCurrentUser ? ' (You)' : ''}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#7367F0' }}>
+                  {entry.score.toLocaleString()} pts
+                </div>
+                {/* Podium block */}
+                <div style={{
+                  width: '100%', height: ph, borderRadius: 10, marginTop: 6,
+                  background: medal + '18', border: `1px solid ${medal}40`,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 24 }}>{emoji}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: medal }}>#{entry.rank}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Rank list — 4th place onwards ──────────────────────────────────── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {rest.map((entry) => (
+          <div
+            key={entry.userId}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
+              background: entry.isCurrentUser ? '#7367F018' : 'var(--surface)',
+              border: `1px solid ${entry.isCurrentUser ? '#7367F040' : 'var(--border)'}`,
+              borderRadius: 12, transition: 'background 0.1s',
+            }}
+          >
+            {/* Rank number */}
+            <span style={{
+              width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700,
+              color: entry.isCurrentUser ? '#7367F0' : 'var(--text-secondary)', flexShrink: 0,
+            }}>
+              #{entry.rank}
+            </span>
+
+            {/* Avatar circle */}
+            <div style={{
+              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+              background: entry.isCurrentUser ? '#7367F0' : '#7367F018',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 15, fontWeight: 700,
+              color: entry.isCurrentUser ? '#fff' : '#7367F0',
+            }}>
+              {entry.avatarInitial}
+            </div>
+
+            {/* Name + sub */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
+                {entry.name}{entry.isCurrentUser ? ' (You)' : ''}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                {entry.quizzesCompleted} quizzes · {entry.streak}🔥 streak
+              </div>
+            </div>
+
+            {/* Score + coins */}
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: entry.isCurrentUser ? '#7367F0' : 'var(--text)' }}>
+                {entry.score.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                ⚡ {entry.coins.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Footer note ────────────────────────────────────────────────────── */}
+      <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)', textAlign: 'center' }}>
+        Scores based on quiz points earned. Complete more quizzes to climb the rankings.
+      </p>
+    </div>
+  );
+}

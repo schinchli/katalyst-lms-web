@@ -1,0 +1,27 @@
+{
+  "name": "lms-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LMS backend Lambda functions",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1000.0",
+    "@aws-sdk/client-dynamodb": "^3.750.0",
+    "@aws-sdk/client-eventbridge": "^3.1000.0",
+    "@aws-sdk/lib-dynamodb": "^3.750.0",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.148",
+    "@types/jest": "^30.0.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6"
+  }
+}
