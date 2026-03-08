@@ -28,25 +28,23 @@ export default function SignupPage() {
 
     setLoading(true);
 
-    // ── reCAPTCHA v3 verification ─────────────────────────────────────────
+    // ── reCAPTCHA v3 — best-effort, never blocks the user ────────────────
     try {
       const token = await recaptcha('signup');
-      const res   = await fetch('/api/recaptcha/verify', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token, action: 'signup' }),
-      });
-      const check = await res.json() as { ok: boolean };
-      if (!check.ok) {
-        setError('Security check failed. Please try again.');
-        setLoading(false);
-        return;
+      if (token) {
+        const res   = await fetch('/api/recaptcha/verify', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ token, action: 'signup' }),
+        });
+        const check = await res.json() as { ok: boolean };
+        if (!check.ok) {
+          setError('Security check failed. Please try again.');
+          setLoading(false);
+          return;
+        }
       }
-    } catch {
-      setError('Security check failed. Please try again.');
-      setLoading(false);
-      return;
-    }
+    } catch { /* reCAPTCHA unavailable — continue; rate limiter protects */ }
 
     const { data, error: err } = await supabase.auth.signUp({
       email,

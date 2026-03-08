@@ -15,11 +15,11 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // unsafe-inline + unsafe-eval required by Next.js 15 App Router
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://pagead2.googlesyndication.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://pagead2.googlesyndication.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://katalyst-supabase-proxy.schinchli5801.workers.dev wss://katalyst-supabase-proxy.schinchli5801.workers.dev https://*.supabase.co wss://*.supabase.co https://www.google.com/recaptcha/",
+      "connect-src 'self' https://katalyst-supabase-proxy.schinchli5801.workers.dev wss://katalyst-supabase-proxy.schinchli5801.workers.dev https://*.supabase.co wss://*.supabase.co https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
       "frame-src https://api.razorpay.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
       "frame-ancestors 'none'",
       "base-uri 'self'",

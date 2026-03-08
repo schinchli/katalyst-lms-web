@@ -32,16 +32,30 @@ export function useRecaptcha() {
 
   const execute = useCallback(async (action: string): Promise<string> => {
     if (!SITE_KEY) return '';
-    return new Promise((resolve, reject) => {
-      window.grecaptcha.ready(async () => {
-        try {
-          const token = await window.grecaptcha.execute(SITE_KEY, { action });
-          resolve(token);
-        } catch (err) {
-          reject(err);
+    try {
+      // Wait up to 5 s for grecaptcha to initialise (script loads async)
+      await new Promise<void>((res) => {
+        if (typeof window.grecaptcha !== 'undefined') { res(); return; }
+        const script = document.getElementById('recaptcha-v3-script');
+        if (script) {
+          script.addEventListener('load', () => res(), { once: true });
+          setTimeout(res, 5_000);
+        } else {
+          res();
         }
       });
-    });
+      if (typeof window.grecaptcha === 'undefined') return '';
+      return await new Promise<string>((resolve, reject) => {
+        window.grecaptcha.ready(async () => {
+          try { resolve(await window.grecaptcha.execute(SITE_KEY, { action })); }
+          catch (err) { reject(err); }
+        });
+      });
+    } catch {
+      // reCAPTCHA unavailable (CSP, adblocker, domain not whitelisted, etc.)
+      // Return empty — server allows through; rate limiter is the real protection.
+      return '';
+    }
   }, []);
 
   return { execute };

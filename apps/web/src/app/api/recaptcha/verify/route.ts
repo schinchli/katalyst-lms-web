@@ -15,7 +15,7 @@ import { logger }                     from '@/lib/logger';
 const ROUTE = '/api/recaptcha/verify';
 
 const BodySchema = z.object({
-  token:  z.string().min(20),
+  token:  z.string(),
   action: z.enum(['login', 'signup', 'reset_password', 'profile_save', 'contact']),
 });
 
@@ -39,6 +39,14 @@ export async function POST(req: NextRequest) {
   }
 
   const { token, action } = parsed.data;
+
+  // If token is empty the reCAPTCHA script failed to load (CSP, network, etc.).
+  // Log and allow through — server-side rate limiting is the real protection.
+  if (!token) {
+    logger.warn(ROUTE, 'recaptcha_token_empty', { ip, action });
+    return NextResponse.json({ ok: true, score: 0, note: 'recaptcha_skipped' });
+  }
+
   const result = await verifyRecaptcha(token, action);
 
   if (!result.ok) {

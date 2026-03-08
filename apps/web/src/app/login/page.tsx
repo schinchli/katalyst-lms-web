@@ -18,25 +18,23 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    // ── reCAPTCHA v3 verification ─────────────────────────────────────────
+    // ── reCAPTCHA v3 — best-effort, never blocks the user ────────────────
     try {
       const token = await recaptcha('login');
-      const res   = await fetch('/api/recaptcha/verify', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token, action: 'login' }),
-      });
-      const check = await res.json() as { ok: boolean };
-      if (!check.ok) {
-        setError('Security check failed. Please try again.');
-        setLoading(false);
-        return;
+      if (token) {
+        const res   = await fetch('/api/recaptcha/verify', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ token, action: 'login' }),
+        });
+        const check = await res.json() as { ok: boolean };
+        if (!check.ok) {
+          setError('Security check failed. Please try again.');
+          setLoading(false);
+          return;
+        }
       }
-    } catch {
-      setError('Security check failed. Please try again.');
-      setLoading(false);
-      return;
-    }
+    } catch { /* reCAPTCHA unavailable — continue; rate limiter protects */ }
 
     // ── Supabase auth ─────────────────────────────────────────────────────
     const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });

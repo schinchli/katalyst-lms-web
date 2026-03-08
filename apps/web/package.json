@@ -18,7 +18,6 @@
     "@lms/shared-types": "*",
     "@lms/theme": "*",
     "@supabase/supabase-js": "^2.98.0",
-    "mysql2": "^3.18.2",
     "next": "^16.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
