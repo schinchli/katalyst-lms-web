@@ -1,6 +1,6 @@
 # Katalyst LMS — Claude Code Instructions
 
-> **Last Updated:** 2026-03-01
+> **Last Updated:** 2026-03-08
 > **Platform:** AWS Cloud & GenAI Certification Prep (Katalyst)
 > **Branch:** `feature/task-2-event-driven-leaderboard`
 
@@ -116,6 +116,55 @@ The `lms/.gitignore` excludes: `node_modules/`, `.next/`, `.kiro/`, `.expo/`, `d
 
 ---
 
+## Vercel Deployment
+
+**Repo:** `katalyst-lms-web` (standalone, at `Documents/Projects/lms/`)
+**URL:** `https://lms-amber-two.vercel.app`
+**Build:** `cd apps/web && npm run build` | Install: `cd apps/web && npm install --legacy-peer-deps`
+
+### Deploy Command
+```bash
+# From Documents/Projects/lms/
+vercel --prod --yes
+# Never use --archive=tgz — if you need it, the .vercelignore is broken
+```
+
+### CRITICAL — What Gets Uploaded (54 files only)
+Vercel receives **only** `apps/web/src/`, `apps/web/` config files, and `vercel.json`.
+Everything else is blocked by `.vercelignore`.
+
+### What `.vercelignore` Excludes (NEVER remove these)
+| Excluded | Reason |
+|---|---|
+| `apps/admin/` | Not a web deployment |
+| `packages/` | Not imported by `apps/web` |
+| `backend/` | AWS Lambda — separate deployment |
+| `mobile/` | Expo/React Native — not web |
+| `infrastructure/` | AWS CDK — separate deployment |
+| `ios/`, `supabase/`, `frontend/`, `docs/` | Not needed at build time |
+| `apps/web/e2e/`, `apps/web/scripts/` | Test/tooling only |
+| `apps/web/jest.config.ts`, `playwright.config.ts` | Test config |
+| `**/__tests__/`, `**/*.test.ts`, `**/*.spec.*` | All test files |
+| `**/node_modules/`, `apps/web/.next/` | Rebuilt on Vercel |
+| `apps/web/src/data/*_backup_*` | Data backups |
+| `*.md`, `turbo.json`, `app.json` | Docs/Expo/monorepo config |
+| `.github/`, `.vscode/`, `.kiro/`, `.DS_Store` | IDE/CI/OS noise |
+
+### If Upload Exceeds ~100 Files — Red Flag
+The `.vercelignore` is misconfigured or a new folder was added without excluding it.
+**Do not use `--archive=tgz` as a workaround** — fix `.vercelignore` first.
+
+### Deploying New Folders
+When adding a new top-level folder to the repo, **immediately decide**:
+- Is it needed by `apps/web` at build time? If NO → add it to `.vercelignore` before committing.
+
+### Admin Access (Settings page)
+- Settings nav item is only shown when `isAdmin === true` (set by `/api/admin/check`)
+- `ADMIN_EMAILS` env var in Vercel controls who is admin (currently `schinchli@gmail.com`)
+- Settings page has its own server-side guard — non-admins are redirected to `/dashboard`
+
+---
+
 ## CI/CD
 
 GitHub Actions: `.github/workflows/ci.yml`
@@ -152,3 +201,6 @@ GitHub Actions: `.github/workflows/ci.yml`
 - Do NOT inline large question arrays directly in `quizzes.ts` — use separate import files
 - Do NOT commit `.next/` build cache or `node_modules/`
 - Do NOT `git add .` from `~` root — always add specific `Documents/Projects/lms/` paths
+- **Do NOT deploy to Vercel with `--archive=tgz`** — that flag masks a broken `.vercelignore`; fix the ignore rules instead
+- **Do NOT push test files, data backups, docs, backend, mobile, or infra to Vercel** — only `apps/web/` source belongs there
+- **Do NOT add a new folder without updating `.vercelignore`** — decide at creation time whether Vercel needs it
