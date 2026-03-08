@@ -1,0 +1,36 @@
+# Build outputs & caches (excluded from Vercel upload)
+node_modules
+**/node_modules
+apps/web/.next/dev
+apps/web/.next/cache
+.next/dev
+.next/cache
+
+# Mobile (not deployed to Vercel)
+mobile
+
+# Backend (Lambda functions — not part of web build)
+backend
+
+# Test artifacts
+coverage
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.DS_Store
+.kiro
+.cursor
+.vscode
+*.tsbuildinfo
+
+# Large data backups
+apps/web/src/data/*_backup_*
