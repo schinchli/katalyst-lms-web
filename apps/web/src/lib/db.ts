@@ -22,9 +22,10 @@ export interface PurchaseRecord {
 export async function getQuizResults(userId: string): Promise<QuizResult[]> {
   const { data, error } = await supabase
     .from('quiz_results')
-    .select('*')
+    .select('quiz_id, score, total_questions, time_taken, answers, completed_at')
     .eq('user_id', userId)
-    .order('completed_at', { ascending: false });
+    .order('completed_at', { ascending: false })
+    .limit(200);
 
   if (error || !data) return [];
   return data.map((row) => ({
@@ -126,9 +127,10 @@ export async function unlockCourse(userId: string, courseId: string): Promise<vo
 export async function getPurchases(userId: string): Promise<PurchaseRecord[]> {
   const { data, error } = await supabase
     .from('purchases')
-    .select('*')
+    .select('id, purchase_type, course_id, course_name, plan, amount, purchased_at')
     .eq('user_id', userId)
-    .order('purchased_at', { ascending: false });
+    .order('purchased_at', { ascending: false })
+    .limit(100);
 
   if (error || !data) return [];
   return data.map((row) => ({

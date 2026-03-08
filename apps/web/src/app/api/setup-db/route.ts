@@ -13,6 +13,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit }             from '@/lib/rateLimiter';
+import { logger }                     from '@/lib/logger';
 
 // Token MUST be set in .env.local as SETUP_TOKEN — never hardcode here.
 // Generate a strong random value: openssl rand -hex 32
@@ -166,7 +168,17 @@ create trigger on_auth_user_created
 `;
 
 export async function POST(req: NextRequest) {
+  const ROUTE = '/api/setup-db';
+  const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+
+  // ── Rate limiting: 3 req / 60 s per IP (migration endpoint — very strict) ──
+  if (!checkRateLimit(`setup-db:${ip}`, 3, 60_000)) {
+    logger.rateLimited(ROUTE, ip);
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': '60' } } as never);
+  }
+
   if (!SETUP_TOKEN || req.headers.get('x-setup-token') !== SETUP_TOKEN) {
+    logger.authFail(ROUTE, 'invalid_setup_token', { ip });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -197,9 +209,11 @@ export async function POST(req: NextRequest) {
 
   if (!res.ok) {
     const body = await res.text();
+    logger.error(ROUTE, 'migration_failed', { ip, reason: body.slice(0, 300) });
     return NextResponse.json({ error: `Supabase API error: ${body}` }, { status: 500 });
   }
 
+  logger.info(ROUTE, 'migration_success', { ip });
   return NextResponse.json({
     success: true,
     message: 'Schema created.',

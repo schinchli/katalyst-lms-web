@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient }               from '@supabase/supabase-js';
 import { checkRateLimit }             from '@/lib/rateLimiter';
+import { logger }                     from '@/lib/logger';
 
 function getAdminEmails(): Set<string> {
   const raw = process.env.ADMIN_EMAILS ?? '';
@@ -32,10 +33,12 @@ async function verifyToken(accessToken: string) {
 }
 
 export async function GET(req: NextRequest) {
+  const ROUTE = '/api/admin/check';
+  const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+
   // ── Rate limiting ──────────────────────────────────────────────────────────
-  const ip  = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  const key = `admin-check:${ip}`;
-  if (!checkRateLimit(key, 30, 60_000)) {
+  if (!checkRateLimit(`admin-check:${ip}`, 30, 60_000)) {
+    logger.rateLimited(ROUTE, ip);
     return NextResponse.json(
       { isAdmin: false, error: 'Too many requests' },
       { status: 429, headers: { 'Retry-After': '60' } },
@@ -43,29 +46,32 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Parse token ────────────────────────────────────────────────────────────
-  const auth = req.headers.get('authorization') ?? '';
+  const auth  = req.headers.get('authorization') ?? '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
 
   if (!token) {
+    logger.authFail(ROUTE, 'missing_token', { ip });
     return NextResponse.json({ isAdmin: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   // ── Verify JWT server-side ─────────────────────────────────────────────────
   const user = await verifyToken(token);
   if (!user) {
+    logger.authFail(ROUTE, 'invalid_token', { ip });
     return NextResponse.json({ isAdmin: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   // ── Check admin status ─────────────────────────────────────────────────────
-  // 1. Email allowlist (env var ADMIN_EMAILS=a@b.com,c@d.com)
   const adminEmails = getAdminEmails();
   const emailMatch  = user.email ? adminEmails.has(user.email.toLowerCase()) : false;
+  const metaRole    = (user.user_metadata as Record<string, unknown>)?.role;
+  const isAdmin     = emailMatch || metaRole === 'admin';
 
-  // 2. Supabase user_metadata.role = 'admin' (set via Supabase Dashboard)
-  const metaRole = (user.user_metadata as Record<string, unknown>)?.role;
-  const metaMatch = metaRole === 'admin';
-
-  const isAdmin = emailMatch || metaMatch;
+  if (!isAdmin) {
+    logger.authFail(ROUTE, 'not_admin', { ip, userId: user.id });
+  } else {
+    logger.info(ROUTE, 'admin_verified', { ip, userId: user.id });
+  }
 
   return NextResponse.json({ isAdmin, userId: user.id }, { status: 200 });
 }

@@ -26,6 +26,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient }               from '@supabase/supabase-js';
 import mysql                          from 'mysql2/promise';
 import { checkRateLimit }             from '@/lib/rateLimiter';
+import { logger }                     from '@/lib/logger';
+import { SyncUserSchema }             from '@/lib/schemas';
 
 function getDb() {
   return mysql.createConnection({
@@ -57,9 +59,12 @@ async function verifyToken(accessToken: string) {
 }
 
 export async function POST(req: NextRequest) {
-  // ── Rate limiting (20 req / 60 s per IP) — MITRE T1499 DoS mitigation ───
-  const ip  = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const ROUTE = '/api/sync-user';
+  const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+
+  // ── Rate limiting ──────────────────────────────────────────────────────────
   if (!checkRateLimit(`sync-user:${ip}`, 20, 60_000)) {
+    logger.rateLimited(ROUTE, ip);
     return NextResponse.json(
       { ok: false, error: 'Too many requests' },
       { status: 429, headers: { 'Retry-After': '60' } },
@@ -68,46 +73,36 @@ export async function POST(req: NextRequest) {
 
   let db;
   try {
-    // ── 1. Parse body ──────────────────────────────────────────────────────
-    let body: {
-      supabaseId:   unknown;
-      email:        unknown;
-      name:         unknown;
-      accessToken:  unknown;
-      createdAt:    unknown;
-      quizResults?: unknown;
-    };
-    try {
-      body = await req.json();
-    } catch {
+    // ── 1. Parse + Zod validate body ──────────────────────────────────────
+    let raw: unknown;
+    try { raw = await req.json(); }
+    catch {
       return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
     }
 
-    const { supabaseId, email, name, accessToken, createdAt, quizResults } = body;
-
-    // ── 2. Input validation ────────────────────────────────────────────────
-    if (
-      typeof supabaseId !== 'string' || !supabaseId ||
-      typeof email      !== 'string' || !email.includes('@') ||
-      typeof accessToken !== 'string' || !accessToken
-    ) {
-      return NextResponse.json({ ok: false, error: 'Missing or invalid required fields' }, { status: 400 });
+    const parsed = SyncUserSchema.safeParse(raw);
+    if (!parsed.success) {
+      logger.warn(ROUTE, 'validation_failed', { ip, reason: JSON.stringify(parsed.error.flatten()) });
+      return NextResponse.json({ ok: false, error: parsed.error.flatten() }, { status: 400 });
     }
 
-    // ── 3. Authenticate — verify JWT and confirm identity ──────────────────
+    const { supabaseId, email, name, accessToken, createdAt, quizResults } = parsed.data;
+
+    // ── 2. Authenticate — verify JWT and confirm identity ──────────────────
     const tokenUser = await verifyToken(accessToken);
     if (!tokenUser || tokenUser.id !== supabaseId) {
+      logger.authFail(ROUTE, 'token_mismatch', { ip, userId: supabaseId });
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
-    // Cross-check email to prevent spoofing
-    if (tokenUser.email && typeof email === 'string' && tokenUser.email !== email) {
+    if (tokenUser.email && tokenUser.email !== email) {
+      logger.authFail(ROUTE, 'email_mismatch', { ip, userId: supabaseId });
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    // ── 4. Sanitise inputs ─────────────────────────────────────────────────
-    const displayName = (typeof name === 'string' && name.trim())
+    // ── 3. Sanitise inputs ─────────────────────────────────────────────────
+    const displayName = (name?.trim())
       ? name.trim().slice(0, 100)
-      : (email as string).split('@')[0].slice(0, 100);
+      : email.split('@')[0].slice(0, 100);
 
     const referCode = shortCode(supabaseId);
     const regDate   = (typeof createdAt === 'string' && createdAt)
@@ -150,12 +145,8 @@ export async function POST(req: NextRequest) {
 
     // ── 7. Sync quiz stats ─────────────────────────────────────────────────
     if (Array.isArray(quizResults) && quizResults.length > 0) {
-      const validResults = (quizResults as Array<unknown>).filter(
-        (r): r is { quizId: string; score: number; totalQuestions: number } =>
-          r !== null && typeof r === 'object' &&
-          typeof (r as Record<string, unknown>).score === 'number' &&
-          typeof (r as Record<string, unknown>).totalQuestions === 'number',
-      );
+      // Already validated by Zod — safe to use directly
+      const validResults = quizResults;
 
       const totalAnswered = validResults.reduce((s, r) => s + r.totalQuestions, 0);
       const totalCorrect  = validResults.reduce((s, r) => s + r.score, 0);
@@ -185,12 +176,12 @@ export async function POST(req: NextRequest) {
     }
 
     await db.end();
+    logger.info(ROUTE, 'sync_complete', { ip, userId: supabaseId, action });
     return NextResponse.json({ ok: true, userId, action });
 
   } catch (err: unknown) {
     if (db) await db.end().catch(() => {});
-    // Log internally; never leak stack traces to the client.
-    console.error('[sync-user] error:', err instanceof Error ? err.message : String(err));
+    logger.error(ROUTE, 'unhandled_error', { ip, reason: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
