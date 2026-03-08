@@ -1,39 +1,39 @@
-# ─── NOT needed for Vercel web build ──────────────────────────────────────────
+# ─── Vercel only needs: apps/web/src + apps/web config files + vercel.json ────
+# Everything below is excluded from upload.
 
-# Backend (AWS Lambda — deployed separately)
+# Other apps (not deployed to Vercel)
+apps/admin/
+
+# Monorepo packages (not imported by apps/web)
+packages/
+
+# Backend — AWS Lambda (deployed via CDK/SAM separately)
 backend/
 
-# Mobile (Expo/React Native — not a web deployment)
+# Mobile — Expo / React Native
 mobile/
 
-# Infrastructure (AWS CDK — deployed via cdk deploy)
+# Infrastructure — AWS CDK
 infrastructure/
 
 # iOS native code
 ios/
 
-# Supabase migrations (run independently via Supabase CLI)
+# Supabase migrations (run via Supabase CLI)
 supabase/
 
-# Unknown legacy frontend folder
+# Legacy / unused folders
 frontend/
-
-# Documentation & planning files
 docs/
-*.md
-!apps/web/**/*.md
 
-# Root-level config not used during Vercel build
-turbo.json
-app.json
-CLAUDE.md
-CLAUDE_COMMANDMENTS.md
-
-# ─── Test & QA files ──────────────────────────────────────────────────────────
+# ─── apps/web internal exclusions ─────────────────────────────────────────────
 apps/web/e2e/
-apps/web/playwright.config.ts
-apps/web/jest.config.ts
 apps/web/scripts/
+apps/web/jest.config.ts
+apps/web/playwright.config.ts
+apps/web/tsconfig.tsbuildinfo
+
+# ─── Test files (anywhere) ────────────────────────────────────────────────────
 **/__tests__/
 **/*.test.ts
 **/*.test.tsx
@@ -41,20 +41,27 @@ apps/web/scripts/
 **/*.spec.tsx
 coverage/
 
-# ─── Build artifacts (rebuilt on Vercel) ──────────────────────────────────────
+# ─── Build artifacts (Vercel rebuilds these) ──────────────────────────────────
 **/node_modules/
 apps/web/.next/
 **/*.tsbuildinfo
 
-# ─── Large data backups ────────────────────────────────────────────────────────
+# ─── Data backups ─────────────────────────────────────────────────────────────
 apps/web/src/data/*_backup_*
 
-# ─── Local environment & secrets (never upload) ───────────────────────────────
+# ─── Root-level docs & planning (not part of build) ──────────────────────────
+*.md
+app.json
+turbo.json
+CLAUDE.md
+CLAUDE_COMMANDMENTS.md
+
+# ─── Secrets & local env ──────────────────────────────────────────────────────
 .env
 .env.*
 !.env.example
 
-# ─── IDE / OS noise ───────────────────────────────────────────────────────────
+# ─── IDE / OS / CI ────────────────────────────────────────────────────────────
 .DS_Store
 .kiro/
 .cursor/
