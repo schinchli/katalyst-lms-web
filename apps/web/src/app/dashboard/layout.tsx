@@ -119,7 +119,7 @@ const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate:
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const [dark,        setDark]        = useState(false);
+  const [dark,        setDark]        = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isAdmin,     setIsAdmin]     = useState(false);
@@ -168,7 +168,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Dark mode
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
+    const isDark = saved === null ? true : saved === 'dark'; // default: dark
+    if (isDark) { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
+    else { document.documentElement.setAttribute('data-theme', ''); setDark(false); }
 
     // Apply user appearance preferences (color theme + font + size)
     try {
