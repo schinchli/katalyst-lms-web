@@ -243,7 +243,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="sidebar-logo-icon">K</div>
             <div>
               <div className="sidebar-brand-name">Katalyst</div>
-              <div className="sidebar-brand-sub">Quiz Platform</div>
+              <div className="sidebar-brand-sub">Supercharge Your Career</div>
             </div>
           </div>
         </div>

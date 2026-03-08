@@ -4,7 +4,7 @@
  */
 
 const themeConfig = {
-  templateName:  'Katalyst',
+  templateName:  'Katalyst — Supercharge Your Career',
   mode:          'system' as const,
   skin:          'default' as const,
   semiDark:      false,

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Katalyst — Quiz Platform',
-  description: 'Master AWS Cloud & Generative AI with interactive quizzes and practice exams',
+  title: 'Katalyst — Supercharge Your Career. Learn Skills Faster.',
+  description: 'Supercharge your career with Katalyst. Master AWS Cloud & Generative AI certifications with interactive practice exams.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

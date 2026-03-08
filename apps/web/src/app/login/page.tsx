@@ -57,7 +57,7 @@ export default function LoginPage() {
           }}>K</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>Katalyst</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>AWS Certification Prep</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Supercharge Your Career. Learn Skills Faster.</div>
           </div>
         </div>
 
