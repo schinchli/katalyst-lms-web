@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 
 type SignupStep = 'form' | 'confirm';
 
 export default function SignupPage() {
   const router = useRouter();
+  const { execute: recaptcha } = useRecaptcha();
   const [step,     setStep]     = useState<SignupStep>('form');
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
@@ -25,6 +27,27 @@ export default function SignupPage() {
     }
 
     setLoading(true);
+
+    // ── reCAPTCHA v3 verification ─────────────────────────────────────────
+    try {
+      const token = await recaptcha('signup');
+      const res   = await fetch('/api/recaptcha/verify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ token, action: 'signup' }),
+      });
+      const check = await res.json() as { ok: boolean };
+      if (!check.ok) {
+        setError('Security check failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError('Security check failed. Please try again.');
+      setLoading(false);
+      return;
+    }
+
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
@@ -172,6 +195,12 @@ export default function SignupPage() {
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'var(--text-secondary)' }}>
               Already have an account?{' '}
               <Link href="/login" style={{ color: '#7367F0', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+            </p>
+            <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-secondary)' }}>
+              Protected by reCAPTCHA —{' '}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Privacy</a>
+              {' & '}
+              <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Terms</a>
             </p>
           </>
         )}
