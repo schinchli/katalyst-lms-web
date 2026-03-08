@@ -1,11 +1,9 @@
 /**
- * Vuexy Web (Student Portal) — MUI Overrides (Child Theme Layer)
- * Merge these with Vuexy's base overrides in src/@core/theme/index.ts.
+ * Vuexy Web (Student Portal) — Theme Overrides placeholder.
+ * apps/web does not use MUI — styling is handled via globals.css CSS tokens.
  */
 
-import type { Components, Theme } from '@mui/material'
-
-export const customOverrides = (_theme: Theme): Components<Theme> => ({
-  // Student portal overrides go here.
-  // Parent (Vuexy) handles all base component styling.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const customOverrides = (_theme: unknown): Record<string, any> => ({
+  // Student portal overrides go here when MUI is added.
 })
