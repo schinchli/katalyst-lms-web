@@ -106,9 +106,10 @@ export default function QuizPage() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallTab,  setPaywallTab]  = useState<PaywallTab>('course');
   const [payLoading,  setPayLoading]  = useState(false);
-  const [authUserId,     setAuthUserId]     = useState<string | null>(null);
+  const [authUserId,      setAuthUserId]      = useState<string | null>(null);
   const [activeQuestions, setActiveQuestions] = useState<typeof questions>([]);
   const [upsellCfg,       setUpsellCfg]       = useState<UpsellConfig>(DEFAULT_UPSELL);
+  const [studentCount,    setStudentCount]    = useState<number | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const quizStartTs = useRef<number>(0); // unix ms when quiz started
   const { isPro, unlockedCourses, canAccess, upgradeToPremium, unlockCourse, recordPurchase } = useSubscription();
@@ -118,6 +119,17 @@ export default function QuizPage() {
 
   // Load admin-editable upsell messaging on mount
   useEffect(() => { setUpsellCfg(loadUpsellConfig()); }, []);
+
+  // Fetch real student count for this quiz
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/quizzes/stats?quiz_id=${id}`)
+      .then((r) => r.json())
+      .then((d: { ok: boolean; studentCount?: number }) => {
+        if (d.ok && typeof d.studentCount === 'number') setStudentCount(d.studentCount);
+      })
+      .catch(() => { /* best-effort */ });
+  }, [id]);
 
   // Resolve auth userId + load prior result from Supabase
   useEffect(() => {
@@ -319,7 +331,9 @@ export default function QuizPage() {
                 {[1,2,3,4,5].map((n) => <StarSvg key={n} filled={n <= 4} />)}
               </span>
               <span style={{ fontWeight: 700, color: '#FF9F43' }}>4.8</span>
-              <span style={{ color: 'var(--text-secondary)' }}>(1.2k students)</span>
+              {studentCount !== null && (
+                <span style={{ color: 'var(--text-secondary)' }}>({studentCount.toLocaleString()} students)</span>
+              )}
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
               <span style={{ color: 'var(--text-secondary)' }}>{questions.length} questions</span>
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
@@ -563,7 +577,7 @@ export default function QuizPage() {
                   { icon: <QuestionSvg />, key: 'Questions',  val: String(questions.length) },
                   { icon: <ClockSvg />,    key: 'Duration',   val: `${quiz.duration} min` },
                   { icon: <LayersSvg />,   key: 'Difficulty', val: quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1) },
-                  { icon: <UsersSvg />,    key: 'Students',   val: '1,243' },
+                  { icon: <UsersSvg />,    key: 'Students',   val: studentCount !== null ? studentCount.toLocaleString() : '–' },
                   { icon: <CheckSvg />,    key: 'Pass Score',  val: '70%' },
                 ].map((m) => (
                   <div key={m.key} className="course-meta-row">

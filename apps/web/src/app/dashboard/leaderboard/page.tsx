@@ -1,7 +1,6 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
-import { getLeaderboard } from '@/data/leaderboard';
 import { supabase } from '@/lib/supabase';
 import type { LeaderboardEntry } from '@/types';
 
@@ -18,20 +17,37 @@ const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 const PODIUM_H    = [100, 80, 66];
 
 export default function LeaderboardPage() {
-  const [period, setPeriod] = useState<Period>('alltime');
-  const [userId, setUserId] = useState<string | null>(null);
+  const [period,  setPeriod]  = useState<Period>('alltime');
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userId,  setUserId]  = useState<string | null>(null);
 
+  // Resolve current user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
   }, []);
 
-  const entries: LeaderboardEntry[] = getLeaderboard(period).map((e) => ({
+  // Fetch real leaderboard data whenever period changes
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/leaderboard?period=${period}`)
+      .then((r) => r.json())
+      .then((d: { ok: boolean; entries?: LeaderboardEntry[] }) => {
+        if (d.ok && d.entries) setEntries(d.entries);
+        else setEntries([]);
+      })
+      .catch(() => setEntries([]))
+      .finally(() => setLoading(false));
+  }, [period]);
+
+  // Mark current user's row
+  const taggedEntries = entries.map((e) => ({
     ...e,
     isCurrentUser: !!userId && e.userId === userId,
   }));
 
-  const top3 = entries.slice(0, 3);
-  const rest  = entries.slice(3);
+  const top3 = taggedEntries.slice(0, 3);
+  const rest  = taggedEntries.slice(3);
 
   // Podium layout: 2nd place left, 1st centre, 3rd right
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as LeaderboardEntry[];
@@ -74,8 +90,21 @@ export default function LeaderboardPage() {
         ))}
       </div>
 
+      {/* ── Loading / empty state ──────────────────────────────────────────── */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 14 }}>
+          Loading leaderboard…
+        </div>
+      )}
+
+      {!loading && taggedEntries.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 14 }}>
+          No quiz results yet for this period. Complete a quiz to appear here!
+        </div>
+      )}
+
       {/* ── Podium — top 3 ─────────────────────────────────────────────────── */}
-      {top3.length > 0 && (
+      {!loading && top3.length > 0 && (
         <div style={{
           display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
           gap: 12, marginBottom: 28, padding: '0 12px',
@@ -118,7 +147,7 @@ export default function LeaderboardPage() {
       )}
 
       {/* ── Rank list — 4th place onwards ──────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {!loading && rest.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rest.map((entry) => (
           <div
             key={entry.userId}
@@ -169,7 +198,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
       {/* ── Footer note ────────────────────────────────────────────────────── */}
       <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)', textAlign: 'center' }}>
