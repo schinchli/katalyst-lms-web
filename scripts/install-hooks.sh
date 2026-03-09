@@ -13,6 +13,12 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HOOKS_DIR="$REPO_ROOT/.git/hooks"
 GATE="$REPO_ROOT/scripts/security-gate.sh"
 
+# Skip gracefully in CI / Vercel build environments that have no .git directory
+if [ ! -d "$REPO_ROOT/.git" ]; then
+  echo "Skipping hook install — not a git repository (CI/Vercel environment)"
+  exit 0
+fi
+
 echo "Installing Katalyst security gate hooks..."
 
 # Make gate executable
