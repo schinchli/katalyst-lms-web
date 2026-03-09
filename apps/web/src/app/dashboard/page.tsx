@@ -106,6 +106,14 @@ const AwardSvg = ({ size = 20, color = 'currentColor' }: { size?: number; color?
     <circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
   </svg>
 );
+const CalSvg = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+const PlaySvg = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+);
 
 const TargetSvg = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -421,6 +429,45 @@ export default function DashboardPage() {
 
         {/* ── Right column ── */}
         <div className="dash-right-col">
+
+          {/* Upcoming Webinar */}
+          <div className="webinar-card">
+            <div style={{ background: 'linear-gradient(135deg, #EBE9FD 0%, #D5F0FF 100%)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 130, position: 'relative', overflow: 'hidden' }}>
+              <svg viewBox="0 0 220 120" style={{ width: '100%', maxWidth: 220, height: 120 }}>
+                <defs>
+                  <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#7367F0" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="#7367F0" stopOpacity="0.05" />
+                  </linearGradient>
+                </defs>
+                <circle cx="15" cy="15" r="4" fill="#7367F0" opacity="0.3" />
+                <circle cx="30" cy="35" r="2.5" fill="#7367F0" opacity="0.2" />
+                <circle cx="200" cy="20" r="3" fill="#7367F0" opacity="0.25" />
+                <rect x="80" y="55" width="100" height="55" rx="5" fill="white" opacity="0.9" />
+                <rect x="84" y="59" width="92" height="44" rx="3" fill="#7367F0" opacity="0.12" />
+                <rect x="87" y="62" width="32" height="4" rx="2" fill="#7367F0" opacity="0.5" />
+                <rect x="87" y="70" width="24" height="3" rx="1.5" fill="#A8AAAE" opacity="0.5" />
+                <rect x="87" y="77" width="28" height="3" rx="1.5" fill="#A8AAAE" opacity="0.4" />
+                <rect x="87" y="84" width="20" height="3" rx="1.5" fill="#A8AAAE" opacity="0.3" />
+                <rect x="70" y="110" width="120" height="4" rx="2" fill="#DBDADE" />
+                <circle cx="45" cy="55" r="18" fill="#EBE9FD" />
+                <circle cx="45" cy="48" r="9" fill="#7367F0" opacity="0.8" />
+                <path d="M28 75 Q45 63 62 75" fill="#7367F0" opacity="0.6" />
+                <text x="155" y="28" fontSize="13" fill="#FF9F43">★</text>
+                <text x="168" y="18" fontSize="9" fill="#FF9F43">★</text>
+                <text x="175" y="34" fontSize="7" fill="#FF9F43">★</text>
+              </svg>
+            </div>
+            <div className="webinar-body">
+              <div className="webinar-tag">Upcoming Webinar</div>
+              <h3 className="webinar-title">AWS GenAI Professional Certification Masterclass</h3>
+              <div className="webinar-meta">
+                <span className="webinar-meta-item"><CalSvg /> 24 Mar 2026</span>
+                <span className="webinar-meta-item"><ClockSvg size={14} /> 60 min</span>
+              </div>
+              <button className="webinar-btn"><PlaySvg /> Join the event</button>
+            </div>
+          </div>
 
           {/* Course completion — dynamic: updates as quizzes are finished */}
           <div className="completion-card">
