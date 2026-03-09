@@ -1,0 +1,35 @@
+# =============================================================================
+# CODEOWNERS — Katalyst LMS
+# =============================================================================
+# Defines required reviewers for security-sensitive files and directories.
+# Any PR that touches these paths will require approval from the listed owner
+# before it can be merged (enforced by branch protection).
+#
+# Format: <pattern> <owner>
+# =============================================================================
+
+# Default owner for everything not matched below
+*                                   @schinchli
+
+# ── Security-critical files ──────────────────────────────────────────────────
+# Changes to API routes, auth, security headers, or the gate script itself
+# require explicit review — no auto-approval
+apps/web/src/app/api/              @schinchli
+apps/web/next.config.ts            @schinchli
+scripts/security-gate.sh           @schinchli
+scripts/deploy.sh                  @schinchli
+
+# ── CI/CD pipeline ───────────────────────────────────────────────────────────
+.github/workflows/                 @schinchli
+.github/dependabot.yml             @schinchli
+
+# ── Supabase schema + migrations ─────────────────────────────────────────────
+supabase/                          @schinchli
+
+# ── Environment variable templates ───────────────────────────────────────────
+apps/web/.env.example              @schinchli
+
+# ── Security documentation ───────────────────────────────────────────────────
+SECURITY_AUDIT.md                  @schinchli
+THREAT_MODEL.md                    @schinchli
+SECURITY.md                        @schinchli
