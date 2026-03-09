@@ -81,6 +81,12 @@ lms/
 │   └── leaderboardFetch/
 ├── mobile/                            Expo app (git submodule)
 ├── supabase/migrations/               DB migration SQL
+├── scripts/
+│   ├── security-gate.sh               13-check security gate (quick / ci / full)
+│   ├── install-hooks.sh               installs pre-commit + pre-push hooks
+│   └── deploy.sh                      full gate + vercel --prod --yes
+├── .github/workflows/
+│   └── ci.yml                         CI: security-gate → typecheck + tests + build
 ├── SECURITY_AUDIT.md                  300-rule compliance audit
 ├── THREAT_MODEL.md                    STRIDE threat model
 ├── SECURITY_HEADERS.md                HTTP security headers docs
@@ -539,27 +545,108 @@ All tables have Row Level Security enabled. Policies use `auth.uid()`.
 
 ---
 
+## Security Gate
+
+Every commit and deploy is gated by `scripts/security-gate.sh` — a mandatory
+check script that blocks the workflow if any security or quality issue is found.
+
+### How it works
+
+| Trigger | Mode | Checks |
+|---------|------|--------|
+| `git commit` | `--quick` | TypeScript, secret scan, XSS patterns, API rate limits, payload limits, mock data, untracked files, password strength, security headers, RLS, `.vercelignore` |
+| `git push` | `--ci` | Everything above + npm audit + backend tests |
+| `bash scripts/deploy.sh` | `--full` | Everything above + Next.js production build |
+| GitHub Actions CI | `--ci` | Runs as Job 0; blocks all other jobs if it fails |
+
+### Gate checks (13 total)
+
+| # | Check | What it catches |
+|---|-------|----------------|
+| 1 | TypeScript | Any `tsc --noEmit` errors |
+| 2 | Secret scan | `SUPABASE_SERVICE_ROLE_KEY`, `sk_live_`, `rzp_live_`, private keys, GitHub tokens in staged files |
+| 3 | Dangerous patterns | `dangerouslySetInnerHTML`, `eval()`, `window.confirm()`, dynamic script injection |
+| 4 | API route security | Any route missing `checkRateLimit`; any POST route missing `Content-Length` check |
+| 5 | Mock data | Hardcoded fake names, scores, "10,000+ learners" claims, backup files in `src/` |
+| 6 | Untracked source | New files in `apps/web/src/` not staged — nothing silently untracked |
+| 7 | Password strength | `signup/page.tsx` must enforce min-12, upper, lower, number, special char |
+| 8 | Security headers | `next.config.ts` must have HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
+| 9 | RLS | `setup-db/route.ts` must have ≥5 `ENABLE ROW LEVEL SECURITY`; no `DISABLE` statements |
+| 10 | `.vercelignore` | `backend/`, `mobile/`, `infrastructure/`, `supabase/`, `*_backup_*`, `*.md` must be excluded |
+| 11 | npm audit | No high or critical CVEs in `apps/web/` |
+| 12 | Backend tests | All 49 Jest tests must pass |
+| 13 | Next.js build | Production build must succeed (`--full` only) |
+
+### Running the gate manually
+
+```bash
+bash scripts/security-gate.sh --quick   # fast (pre-commit checks only)
+bash scripts/security-gate.sh --ci      # CI mode (+ audit + tests)
+bash scripts/security-gate.sh --full    # pre-deploy (+ Next.js build)
+```
+
+### Installing git hooks
+
+```bash
+bash scripts/install-hooks.sh   # installs pre-commit + pre-push hooks
+# OR — hooks auto-install on `npm install` via "prepare" script
+```
+
+### Bypassing (emergency only)
+
+```bash
+git commit --no-verify -m "hotfix: <reason why gate bypassed>"
+```
+**Document the bypass reason in the commit message. All bypasses are visible in git log.**
+
+### Deploy
+
+```bash
+cd ~/Documents/Projects/lms
+bash scripts/deploy.sh         # runs --full gate, then vercel --prod --yes
+# OR skip the Next.js build step (already verified):
+bash scripts/deploy.sh --skip-build
+```
+
+### Repository structure additions
+
+```
+lms/
+├── scripts/
+│   ├── security-gate.sh     13-check security gate (quick / ci / full modes)
+│   ├── install-hooks.sh     installs pre-commit + pre-push git hooks
+│   └── deploy.sh            full gate + vercel --prod --yes
+└── .github/workflows/
+    └── ci.yml               Job 0: security-gate → Job 1: backend-tests / web-type-check / web-build → ci-passed
+```
+
+---
+
 ## Local Development
 
 ```bash
 git clone https://github.com/schinchli/katalyst-lms-web.git lms
-cd lms/apps/web
-npm install --legacy-peer-deps
+cd lms
+npm install                  # also runs "prepare" → installs git hooks automatically
+cd apps/web
 cp .env.example .env.local   # fill in Supabase + reCAPTCHA keys
 npm run dev                  # → http://localhost:3000
 ```
 
-### Pre-commit checks (required)
+### Pre-commit checks (automated via git hook)
+
+The pre-commit hook runs `security-gate.sh --quick` automatically on every commit.
+To run it manually:
+
 ```bash
-cd apps/web && npx tsc --noEmit          # zero TypeScript errors
-cd backend   && npm test                  # 49 Jest tests passing
-git diff --cached | grep -iE "(service_role|secret|password|token)"  # no secrets
+bash scripts/security-gate.sh --quick
 ```
 
 ### Deploy
+
 ```bash
 cd ~/Documents/Projects/lms
-vercel --prod --yes
+bash scripts/deploy.sh       # full security gate + vercel --prod --yes
 ```
 
 ---

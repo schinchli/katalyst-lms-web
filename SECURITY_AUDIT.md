@@ -316,8 +316,8 @@ for this application, followed by the rule-by-rule compliance status.
 
 | Rule | Status | Notes |
 |------|--------|-------|
-| 261 Run dependency vulnerability scans | ⚠️ TODO | Run `npm audit` |
-| 262 Run npm audit | ⚠️ TODO | 4 low severity vulnerabilities reported |
+| 261 Run dependency vulnerability scans | ✅ PASS | `npm audit` runs in security gate `--ci` mode (pre-push + CI) |
+| 262 Run npm audit | ✅ PASS | Automated in security-gate.sh check 11 |
 | 263 Fix high severity vulnerabilities | ✅ PASS | No high/critical CVEs |
 | 264 Lock dependency versions | ✅ PASS | `package-lock.json` committed |
 | 265 Avoid unnecessary dependencies | ✅ PASS | Minimal dependency footprint |
@@ -325,15 +325,28 @@ for this application, followed by the rule-by-rule compliance status.
 | 269 Pin Node.js versions | ✅ PASS | `"engines": { "node": ">=20" }` in package.json |
 | 274 Require pull request reviews | ⚠️ TODO | Branch protection not configured |
 | 275 Enforce branch protection | ⚠️ TODO | Direct push to main allowed |
-| 276 Scan code for vulnerabilities | ⚠️ TODO | No SAST tool configured |
-| 277 Scan code for secrets | ⚠️ TODO | Recommend `trufflehog` or GitHub secret scanning |
-| 287 Enforce automated testing | ✅ PASS | GitHub Actions CI runs `tsc --noEmit` + Jest |
+| 276 Scan code for vulnerabilities | ✅ PASS | security-gate.sh checks XSS, eval, dangerouslySetInnerHTML, secrets |
+| 277 Scan code for secrets | ✅ PASS | Secret patterns scanned on every commit (gate check 2) |
+| 287 Enforce automated testing | ✅ PASS | GitHub Actions CI + pre-push hook runs 49 Jest tests |
 | 288 Run security unit tests | ✅ PASS | 49 backend tests; API tests for admin/check |
-| 298 Maintain SECURITY.md documentation | ✅ PASS | This document + THREAT_MODEL.md |
+| 298 Maintain SECURITY.md documentation | ✅ PASS | SECURITY_AUDIT.md + THREAT_MODEL.md + SECURITY_HEADERS.md + API_SECURITY_REPORT.md |
 | 299 Generate SECURITY_AUDIT.md before deploy | ✅ PASS | This document |
-| 300 Block deployment if security checks fail | ⚠️ PARTIAL | CI must pass; no automated security gate |
+| 300 Block deployment if security checks fail | ✅ PASS | `scripts/security-gate.sh` gates all commits + pushes + deploys. CI Job 0 blocks pipeline. |
 
-**Section 10 Score: 8/16 applicable rules** — CI/CD improvements are the main gap.
+**Section 10 Score: 13/16 applicable rules** ✅ (up from 8/16 — security gate implemented)
+
+### Security Gate — Automated Enforcement
+
+`scripts/security-gate.sh` is the mandatory gate that runs on every commit, push, and deploy.
+
+| Trigger | Mode | What runs |
+|---------|------|-----------|
+| `git commit` | `--quick` | TypeScript · secret scan · XSS · API security · mock data · untracked · passwords · headers · RLS · vercelignore |
+| `git push` | `--ci` | Everything above + npm audit + 49 Jest tests |
+| `bash scripts/deploy.sh` | `--full` | Everything above + Next.js production build |
+| GitHub Actions | `--ci` | Runs as Job 0 — blocks all other CI jobs if it fails |
+
+To bypass (emergency only): `git commit --no-verify` — document the reason in the commit message.
 
 ---
 
@@ -350,7 +363,7 @@ for this application, followed by the rule-by-rule compliance status.
 | File Uploads (191–210) | N/A | N/A |
 | Secret Management (211–230) | 14/20 | ⚠️ PARTIAL (rotation schedule needed) |
 | Infrastructure (231–260) | Managed | ✅ PASS |
-| CI/CD (261–300) | 8/16 | ⚠️ PARTIAL (Dependabot, branch protection needed) |
+| CI/CD (261–300) | 13/16 | ✅ PASS (security gate live; Dependabot + branch protection TODO) |
 
 **Deployment Gate:** ✅ APPROVED
 - No critical vulnerabilities
@@ -359,6 +372,7 @@ for this application, followed by the rule-by-rule compliance status.
 - CSP headers configured
 - Rate limiting on all routes
 - No authentication bypass
+- Security gate enforced on every commit, push, and deploy (`scripts/security-gate.sh`)
 
 ---
 
@@ -368,7 +382,7 @@ for this application, followed by the rule-by-rule compliance status.
 |----------|--------|------|
 | HIGH | Configure GitHub Dependabot alerts | 267 |
 | HIGH | Enable GitHub branch protection (require PR review) | 274–275 |
-| HIGH | Add `trufflehog` or GitHub secret scanning to CI | 277 |
+| DONE | Secret scanning in CI — security gate check 2 scans all staged files | 277 |
 | MEDIUM | Implement CSP violation reporting endpoint | 70, 79 |
 | MEDIUM | Document secret rotation schedule (quarterly) | 214 |
 | MEDIUM | Migrate Supabase client to `@supabase/ssr` for HttpOnly cookie sessions | 26–30 |

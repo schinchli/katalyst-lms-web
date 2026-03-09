@@ -15,7 +15,10 @@
     "lint": "turbo run lint",
     "clean": "turbo run clean",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "prepare": "bash scripts/install-hooks.sh",
+    "deploy": "bash scripts/deploy.sh",
+    "security-gate": "bash scripts/security-gate.sh"
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.9.0",
