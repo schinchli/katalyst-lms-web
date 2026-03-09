@@ -45,6 +45,12 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // Rule 157-158: Reject oversized payloads
+  const contentLength = parseInt(req.headers.get('content-length') ?? '0', 10);
+  if (contentLength > 8_192) {
+    return NextResponse.json({ ok: false, error: 'Request payload too large' }, { status: 413 });
+  }
+
   let raw: unknown;
   try { raw = await req.json(); }
   catch { return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 }); }

@@ -62,6 +62,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rule 157-158: Reject oversized payloads before parsing
+  const contentLength = parseInt(req.headers.get('content-length') ?? '0', 10);
+  if (contentLength > 32_768) {
+    return NextResponse.json({ ok: false, error: 'Request payload too large' }, { status: 413 });
+  }
+
   // Parse + validate request body
   let body: unknown;
   try { body = await req.json(); } catch {

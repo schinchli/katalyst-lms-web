@@ -28,6 +28,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
+  // Rule 157-158: Reject oversized payloads (token + action should be < 4KB)
+  const contentLength = parseInt(req.headers.get('content-length') ?? '0', 10);
+  if (contentLength > 4_096) {
+    return NextResponse.json({ error: 'Request payload too large' }, { status: 413 });
+  }
+
   let raw: unknown;
   try { raw = await req.json(); } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
