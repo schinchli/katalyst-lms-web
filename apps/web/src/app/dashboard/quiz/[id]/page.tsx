@@ -8,7 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { AdBanner } from '@/components/AdBanner';
 import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
-import { getQuizResults, saveQuizResult } from '@/lib/db';
+import { getQuizResults } from '@/lib/db';
 
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = {
@@ -163,7 +163,7 @@ export default function QuizPage() {
     if (phase !== 'quiz' || feedback) { stopTimer(); return; }
     setTimeLeft(Q_TIME);
     timerRef.current = setInterval(() => setTimeLeft((t) => {
-      if (t <= 1) { stopTimer(); handleNext(); return Q_TIME; }
+      if (t <= 1) { stopTimer(); void handleNext(); return Q_TIME; }
       return t - 1;
     }), 1000);
     return stopTimer;
@@ -178,26 +178,54 @@ export default function QuizPage() {
     setFeedback(true);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setFeedback(false);
     if (isLast) {
       const finalScore = Object.keys(answers).reduce((s, qId) => {
         const q = activeQuestions.find((q) => q.id === qId);
         return q && answers[qId] === q.correctOptionId ? s + 1 : s;
       }, 0);
-      const timeTaken = quizStartTs.current > 0
-        ? Math.round((Date.now() - quizStartTs.current) / 1000)
-        : 0;
+      const startedAt = quizStartTs.current > 0
+        ? new Date(quizStartTs.current).toISOString()
+        : new Date().toISOString();
+
+      // Submit server-side for validation + score calculation
+      let serverScore = finalScore;
+      let serverTimeTaken = quizStartTs.current > 0
+        ? Math.round((Date.now() - quizStartTs.current) / 1000) : 0;
+      let serverCompletedAt = new Date().toISOString();
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        try {
+          const res = await fetch('/api/quiz-submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ quizId: id!, answers, startedAt }),
+          });
+          if (res.ok) {
+            const d = await res.json() as { ok: boolean; score: number; totalQuestions: number; timeTaken: number; completedAt: string };
+            if (d.ok) {
+              serverScore       = d.score;
+              serverTimeTaken   = d.timeTaken;
+              serverCompletedAt = d.completedAt;
+            }
+          }
+        } catch { /* best-effort — still show results */ }
+      }
+
       const result: QuizResult = {
         quizId:         id!,
-        score:          finalScore,
+        score:          serverScore,
         totalQuestions: activeQuestions.length,
-        timeTaken,
+        timeTaken:      serverTimeTaken,
         answers,
-        completedAt:    new Date().toISOString(),
+        completedAt:    serverCompletedAt,
       };
       saveResultLocally(result);
-      if (authUserId) saveQuizResult(authUserId, result).catch(() => { /* best-effort */ });
       // Free users who only saw the limited set → upsell; everyone else → results
       const hitFreeLimit = isFreeUser && questions.length > activeQuestions.length;
       setPhase(hitFreeLimit ? 'upsell' : 'results');

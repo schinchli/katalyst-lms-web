@@ -99,13 +99,14 @@ function applyTheme(t: AppTheme) {
 }
 
 export default function ProfilePage() {
-  const [results,    setResults]    = useState<QuizResult[]>([]);
-  const [name,       setName]       = useState('');
-  const [email,      setEmail]      = useState('');
-  const [role,       setRole]       = useState('AWS Learner');
-  const [saved,      setSaved]      = useState(false);
-  const [authUserId, setAuthUserId] = useState<string | null>(null);
-  const [theme,      setTheme]      = useState<AppTheme>(DEFAULT_THEME);
+  const [results,      setResults]      = useState<QuizResult[]>([]);
+  const [name,         setName]         = useState('');
+  const [email,        setEmail]        = useState('');
+  const [role,         setRole]         = useState('AWS Learner');
+  const [saved,        setSaved]        = useState(false);
+  const [authUserId,   setAuthUserId]   = useState<string | null>(null);
+  const [theme,        setTheme]        = useState<AppTheme>(DEFAULT_THEME);
+  const [confirmReset, setConfirmReset] = useState(false);
   const { isPro, unlockedCourses } = useSubscription();
 
   useEffect(() => {
@@ -152,7 +153,8 @@ export default function ProfilePage() {
     localStorage.setItem('profile-role',  role);
     localStorage.setItem('katalyst-theme', JSON.stringify(theme));
     applyTheme(theme);
-    await supabase.auth.updateUser({ data: { name } });
+    // Sync name + email to Supabase auth so it's persisted across devices
+    await supabase.auth.updateUser({ data: { name }, email: email || undefined });
     if (authUserId) await saveUserProfile(authUserId, { name, role });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -165,7 +167,8 @@ export default function ProfilePage() {
   }
 
   const handleReset = async () => {
-    if (!confirm('Reset all quiz progress? This cannot be undone.')) return;
+    if (!confirmReset) { setConfirmReset(true); return; }
+    setConfirmReset(false);
     localStorage.removeItem('quiz-results');
     if (authUserId) await deleteAllQuizResults(authUserId).catch(() => { /* best-effort */ });
     setResults([]);
@@ -451,7 +454,15 @@ export default function ProfilePage() {
           <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
             Reset your quiz progress. All scores and completions will be permanently deleted.
           </p>
-          <button className="btn-danger" onClick={handleReset}>Reset All Progress</button>
+          {confirmReset ? (
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Are you sure? This cannot be undone.</span>
+              <button className="btn-danger" onClick={handleReset}>Yes, delete everything</button>
+              <button className="settings-btn-ghost" onClick={() => setConfirmReset(false)}>Cancel</button>
+            </div>
+          ) : (
+            <button className="btn-danger" onClick={handleReset}>Reset All Progress</button>
+          )}
         </div>
       </div>
     </div>

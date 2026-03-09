@@ -13,7 +13,6 @@ import { useState, useEffect } from 'react';
 import { useRouter }           from 'next/navigation';
 import { quizzes }             from '@/data/quizzes';
 import { supabase }            from '@/lib/supabase';
-import { getPurchases }        from '@/lib/db';
 import type { PurchaseRecord } from '@/lib/db';
 
 // ── Upsell config (mirrors quiz page) ────────────────────────────────────────
@@ -81,9 +80,14 @@ export default function AdminPage() {
 
         setStatus('authorized');
 
-        // 3. Load real purchase data from Supabase
-        const dbPurchases = await getPurchases(session.user.id);
-        setPurchases(dbPurchases);
+        // 3. Load ALL platform purchases via admin route (not just this user's)
+        const purchaseRes = await fetch('/api/admin/purchases', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (purchaseRes.ok) {
+          const { purchases: allPurchases } = await purchaseRes.json() as { purchases: PurchaseRecord[]; totalRevenue: number };
+          setPurchases(allPurchases ?? []);
+        }
       } catch {
         setStatus('error');
       }
