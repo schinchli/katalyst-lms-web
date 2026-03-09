@@ -26,7 +26,7 @@ interface UpsellConfig {
 const DEFAULT_UPSELL: UpsellConfig = {
   freeLimit:      25,
   headline:       'You\'ve completed the free preview — {n} questions',
-  subtext:        'Unlock all {remaining} remaining questions and every exam domain. Join 10,000+ learners who passed with Katalyst Pro.',
+  subtext:        'Unlock all {remaining} remaining questions and every exam domain to ace the exam. Your score so far: {score}.',
   proCtaLabel:    '⭐ Upgrade to Pro — ₹999/yr',
   courseCtaLabel: '🔓 Unlock this quiz — ₹{price}',
   skipCtaLabel:   'Continue without answers',
