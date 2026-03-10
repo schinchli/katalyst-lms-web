@@ -6,15 +6,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import type { QuizResult } from '@/types';
 import { getQuizResults, saveUserProfile, getUserProfile, deleteAllQuizResults } from '@/lib/db';
-import {
-  THEME_PACKS,
-  FONT_OPTIONS,
-  FONT_SIZES,
-  DEFAULT_THEME_PREFS,
-  normalizeThemePrefs,
-  applyThemePrefs,
-  type AppThemePrefs,
-} from '@/lib/themePacks';
+import { PLATFORM_THEME_PRESETS, normalizePlatformTheme } from '@/lib/platformTheme';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -41,6 +33,8 @@ const TIMEZONES = [
   { label: 'BRT — São Paulo (UTC-3)',       value: 'America/Sao_Paulo'        },
 ];
 
+const USER_PREFS_KEY = 'katalyst-user-prefs';
+
 export default function ProfilePage() {
   const [results,      setResults]      = useState<QuizResult[]>([]);
   const [name,         setName]         = useState('');
@@ -48,7 +42,8 @@ export default function ProfilePage() {
   const [role,         setRole]         = useState('AWS Learner');
   const [saved,        setSaved]        = useState(false);
   const [authUserId,   setAuthUserId]   = useState<string | null>(null);
-  const [theme,        setTheme]        = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
+  const [timezone,     setTimezone]     = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const [platformName, setPlatformName] = useState('Neon Aurora');
   const [confirmReset, setConfirmReset] = useState(false);
   const { isPro, unlockedCourses } = useSubscription();
 
@@ -56,12 +51,19 @@ export default function ProfilePage() {
     setResults(getLocalResults());
     setRole(localStorage.getItem('profile-role') || 'AWS Learner');
 
-    // Load and apply saved appearance theme
     try {
-      const raw = localStorage.getItem('katalyst-theme');
-      const saved = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
-      setTheme(saved);
-      applyThemePrefs(saved);
+      const raw = localStorage.getItem(USER_PREFS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { timezone?: string };
+        if (parsed.timezone) setTimezone(parsed.timezone);
+      }
+    } catch { /* ignore */ }
+
+    try {
+      const raw = localStorage.getItem('katalyst-platform-theme-cache');
+      const theme = normalizePlatformTheme(raw ? JSON.parse(raw) : null);
+      const preset = PLATFORM_THEME_PRESETS.find((p) => p.id === theme.presetId);
+      if (preset) setPlatformName(preset.label);
     } catch { /* ignore */ }
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -94,20 +96,13 @@ export default function ProfilePage() {
     localStorage.setItem('profile-name',  name);
     localStorage.setItem('profile-email', email);
     localStorage.setItem('profile-role',  role);
-    localStorage.setItem('katalyst-theme', JSON.stringify(theme));
-    applyThemePrefs(theme);
+    localStorage.setItem(USER_PREFS_KEY, JSON.stringify({ timezone }));
     // Sync name + email to Supabase auth so it's persisted across devices
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
     if (authUserId) await saveUserProfile(authUserId, { name, role });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
-
-  function updateTheme(patch: Partial<AppThemePrefs>) {
-    const next = { ...theme, ...patch };
-    setTheme(next);
-    applyThemePrefs(next); // live preview
-  }
 
   const handleReset = async () => {
     if (!confirmReset) { setConfirmReset(true); return; }
@@ -123,7 +118,6 @@ export default function ProfilePage() {
   const totalSecs  = results.reduce((s, r) => s + (r.timeTaken ?? 0), 0);
   const totalHrs   = Math.floor(totalSecs / 3600);
   const initial    = name.charAt(0).toUpperCase() || 'L';
-  const selectedPack = THEME_PACKS.find((p) => p.id === theme.themeId) ?? THEME_PACKS[0];
 
   return (
     <div className="page-content profile-page">
@@ -269,86 +263,22 @@ export default function ProfilePage() {
       <div className="info-card" style={{ marginTop: 20 }}>
         <div className="info-card-header">Appearance</div>
         <div className="info-card-body">
-
-          {/* Theme packs */}
-          <div className="form-field" style={{ marginBottom: 20 }}>
-            <label className="form-label">Theme Pack</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 10, marginTop: 6 }}>
-              {THEME_PACKS.map((pack) => (
-                <button
-                  key={pack.id}
-                  title={pack.label}
-                  onClick={() => updateTheme({ themeId: pack.id })}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '9px 10px', borderRadius: 12,
-                    border: `1.5px solid ${theme.themeId === pack.id ? pack.light.primary : 'var(--border)'}`,
-                    background: theme.themeId === pack.id ? `${pack.light.primary}18` : 'var(--bg)',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{ fontSize: 14 }}>{pack.emoji}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{pack.label}</span>
-                  <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientFrom }} />
-                    <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientTo }} />
-                  </span>
-                </button>
-              ))}
+          <div className="form-field" style={{ marginBottom: 16 }}>
+            <label className="form-label">Platform Theme</label>
+            <div style={{ padding: '11px 12px', borderRadius: 10, background: 'var(--bg)', border: '1px solid var(--border)', fontSize: 13, color: 'var(--text)' }}>
+              {platformName} (managed by admin)
             </div>
-            <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-              Selected: <strong style={{ color: selectedPack.light.primary }}>{selectedPack.emoji} {selectedPack.label}</strong>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
+              Theme, gradients, fonts, and button style are synced globally across web and mobile.
             </div>
           </div>
 
-          {/* Font family */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div className="form-field">
-              <label className="form-label">Font Family</label>
-              <select
-                className="form-input"
-                value={theme.fontFamily}
-                onChange={(e) => updateTheme({ fontFamily: e.target.value })}
-                style={{ fontFamily: `'${theme.fontFamily}', sans-serif` }}
-              >
-                {FONT_OPTIONS.map((f) => (
-                  <option key={f.value} value={f.value} style={{ fontFamily: `'${f.value}', sans-serif` }}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Font size */}
-            <div className="form-field">
-              <label className="form-label">Font Size</label>
-              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                {FONT_SIZES.map((s) => (
-                  <button
-                    key={s.value}
-                    onClick={() => updateTheme({ fontSize: s.value })}
-                    style={{
-                      flex: 1, padding: '7px 4px', borderRadius: 'var(--radius)',
-                      border: `1.5px solid ${theme.fontSize === s.value ? selectedPack.light.primary : 'var(--border)'}`,
-                      background: theme.fontSize === s.value ? `${selectedPack.light.primary}15` : 'var(--bg)',
-                      color: theme.fontSize === s.value ? selectedPack.light.primary : 'var(--text-secondary)',
-                      fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s',
-                    }}
-                  >
-                    {s.label.split(' ')[0]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Timezone */}
-          <div className="form-field" style={{ marginTop: 16 }}>
+          <div className="form-field">
             <label className="form-label">Timezone — used for daily activity tracker</label>
             <select
               className="goal-select"
-              value={theme.timezone}
-              onChange={(e) => updateTheme({ timezone: e.target.value })}
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -358,25 +288,6 @@ export default function ProfilePage() {
               Auto-detected: <strong>{Intl.DateTimeFormat().resolvedOptions().timeZone}</strong>
             </div>
           </div>
-
-          {/* Live preview */}
-          <div style={{
-            marginTop: 16,
-            padding: '14px 16px',
-            borderRadius: 12,
-            background: `linear-gradient(120deg, ${selectedPack.light.gradientFrom}22, ${selectedPack.light.gradientTo}22)`,
-            border: `1px solid ${selectedPack.light.primary}33`,
-          }}>
-            <span style={{ fontSize: parseInt(theme.fontSize, 10), fontFamily: `'${theme.fontFamily}', sans-serif`, color: selectedPack.light.primary, fontWeight: 700 }}>
-              Preview: {theme.fontFamily} · {theme.fontSize}px · </span>
-            <span style={{ fontSize: parseInt(theme.fontSize, 10), fontFamily: `'${theme.fontFamily}', sans-serif`, color: 'var(--text)' }}>
-              The quick brown fox jumps over the lazy dog.
-            </span>
-          </div>
-
-          <p style={{ margin: '12px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-            Changes apply live immediately. Click <strong>Save Changes</strong> below to persist across sessions.
-          </p>
         </div>
       </div>
 

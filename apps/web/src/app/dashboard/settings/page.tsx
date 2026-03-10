@@ -3,6 +3,13 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import {
+  PLATFORM_THEME_PRESETS,
+  DEFAULT_PLATFORM_THEME,
+  normalizePlatformTheme,
+  applyPlatformThemePreset,
+  type PlatformThemeConfig,
+} from '@/lib/platformTheme';
 
 // ── AdSense config ────────────────────────────────────────────────────────────
 const ADSENSE_KEY = 'katalyst-adsense-config';
@@ -35,17 +42,21 @@ const DEFAULT_UPSELL: UpsellConfig = {
 export default function SettingsPage() {
   const router = useRouter();
   const [authorized,    setAuthorized]    = useState(false);
+  const [accessToken,   setAccessToken]   = useState<string>('');
 
   const [adsense,       setAdsense]       = useState<AdSenseConfig>(DEFAULT_ADSENSE);
   const [adsenseSaved,  setAdsenseSaved]  = useState(false);
 
   const [upsell,        setUpsell]        = useState<UpsellConfig>(DEFAULT_UPSELL);
   const [upsellSaved,   setUpsellSaved]   = useState(false);
+  const [platformTheme, setPlatformTheme] = useState<PlatformThemeConfig>(DEFAULT_PLATFORM_THEME);
+  const [themeSaved,    setThemeSaved]    = useState(false);
 
   useEffect(() => {
     // Admin guard — redirect non-admins immediately
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session?.access_token) { router.replace('/dashboard'); return; }
+      setAccessToken(session.access_token);
       try {
         const res = await fetch('/api/admin/check', {
           headers: { Authorization: `Bearer ${session.access_token}` },
@@ -67,6 +78,15 @@ export default function SettingsPage() {
       const raw = localStorage.getItem(ADMIN_MSGS_KEY);
       if (raw) setUpsell({ ...DEFAULT_UPSELL, ...(JSON.parse(raw) as Partial<UpsellConfig>) });
     } catch { /* ignore */ }
+
+    // Load current platform theme config
+    fetch('/api/theme')
+      .then((r) => r.json())
+      .then((d: { ok?: boolean; theme?: unknown }) => {
+        if (!d?.ok) return;
+        setPlatformTheme(normalizePlatformTheme(d.theme));
+      })
+      .catch(() => { /* ignore */ });
   }, []);
 
   // ── AdSense helpers ──────────────────────────────────────────────────────────
@@ -90,6 +110,22 @@ export default function SettingsPage() {
     setTimeout(() => setUpsellSaved(false), 2000);
   };
 
+  const savePlatformTheme = async () => {
+    if (!accessToken) return;
+    const res = await fetch('/api/admin/theme', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(platformTheme),
+    });
+    if (!res.ok) return;
+    applyPlatformThemePreset(platformTheme.presetId);
+    setThemeSaved(true);
+    setTimeout(() => setThemeSaved(false), 2000);
+  };
+
   if (!authorized) return null;
 
   return (
@@ -104,6 +140,47 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-grid">
+
+        {/* ═══ PLATFORM THEME ═══════════════════════════════════════════════ */}
+        <div className="card" style={{ padding: 24, gridColumn: '1 / -1' }}>
+          <h2 className="settings-section-title">Platform Theme (Global)</h2>
+          <p className="settings-section-sub">
+            Admin-controlled theme applied across web and mobile apps for all users.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
+            {PLATFORM_THEME_PRESETS.map((preset) => {
+              const active = platformTheme.presetId === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  onClick={() => setPlatformTheme({ presetId: preset.id })}
+                  style={{
+                    textAlign: 'left',
+                    padding: 12,
+                    borderRadius: 12,
+                    border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    background: active ? 'var(--primary-light)' : 'var(--bg)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ height: 48, borderRadius: 10, background: preset.heroPreview, marginBottom: 8 }} />
+                  <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text)' }}>{preset.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.45 }}>{preset.description}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
+                    {preset.headingFont} / {preset.bodyFont} · {preset.buttonStyle}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="settings-actions">
+            <button className="btn-primary" onClick={savePlatformTheme}>
+              {themeSaved ? '✓ Saved' : 'Save Global Theme'}
+            </button>
+          </div>
+        </div>
 
         {/* ═══ GOOGLE ADSENSE ════════════════════════════════════════════════ */}
         <div className="card" style={{ padding: 24 }}>

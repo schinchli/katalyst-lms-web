@@ -145,10 +145,10 @@ export default function DashboardPage() {
     } catch { /* ignore */ }
 
     try {
-      const themeRaw = localStorage.getItem('katalyst-theme');
-      if (themeRaw) {
-        const t = JSON.parse(themeRaw) as { timezone?: string };
-        if (t.timezone) setUserTimezone(t.timezone);
+      const prefsRaw = localStorage.getItem('katalyst-user-prefs') ?? localStorage.getItem('katalyst-theme');
+      if (prefsRaw) {
+        const p = JSON.parse(prefsRaw) as { timezone?: string };
+        if (p.timezone) setUserTimezone(p.timezone);
       }
     } catch { /* ignore */ }
 

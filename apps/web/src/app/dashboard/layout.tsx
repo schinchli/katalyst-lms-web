@@ -6,7 +6,11 @@ import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import { migrateFromLocalStorage } from '@/lib/db';
-import { applyThemePrefs, normalizeThemePrefs, DEFAULT_THEME_PREFS } from '@/lib/themePacks';
+import {
+  applyPlatformThemePreset,
+  DEFAULT_PLATFORM_THEME,
+  normalizePlatformTheme,
+} from '@/lib/platformTheme';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
@@ -173,15 +177,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (isDark) { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
     else { document.documentElement.setAttribute('data-theme', ''); setDark(false); }
 
-    // Apply user appearance preferences (theme pack + font + size)
+    // Apply cached platform theme immediately (server source is fetched below)
     try {
-      const raw = localStorage.getItem('katalyst-theme');
-      if (raw) {
-        applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
-      } else {
-        applyThemePrefs(DEFAULT_THEME_PREFS);
-      }
-    } catch { /* best-effort */ }
+      const raw = localStorage.getItem('katalyst-platform-theme-cache');
+      const cached = raw ? normalizePlatformTheme(JSON.parse(raw)) : DEFAULT_PLATFORM_THEME;
+      applyPlatformThemePreset(cached.presetId);
+    } catch {
+      applyPlatformThemePreset(DEFAULT_PLATFORM_THEME.presetId);
+    }
+  }, []);
+
+  // Fetch platform theme from server so all clients stay consistent.
+  useEffect(() => {
+    let active = true;
+    fetch('/api/theme')
+      .then((r) => r.json())
+      .then((d: { ok?: boolean; theme?: unknown }) => {
+        if (!active || !d?.ok) return;
+        const theme = normalizePlatformTheme(d.theme);
+        applyPlatformThemePreset(theme.presetId);
+      })
+      .catch(() => { /* best-effort */ });
+
+    return () => { active = false; };
   }, []);
 
   const toggleDark = () => {
@@ -189,10 +207,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setDark(next);
     document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
     localStorage.setItem('theme', next ? 'dark' : 'light');
-    try {
-      const raw = localStorage.getItem('katalyst-theme');
-      if (raw) applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
-    } catch { /* best-effort */ }
   };
 
   // Search

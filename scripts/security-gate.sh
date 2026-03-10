@@ -36,9 +36,9 @@ FAIL=0
 WARNINGS=0
 FAILED_CHECKS=()
 
-pass()    { echo -e "  ${GREEN}✓${RESET} $1"; ((PASS++)); }
-fail()    { echo -e "  ${RED}✗${RESET} $1"; ((FAIL++)); FAILED_CHECKS+=("$1"); }
-warn()    { echo -e "  ${YELLOW}⚠${RESET} $1"; ((WARNINGS++)); }
+pass()    { echo -e "  ${GREEN}✓${RESET} $1"; PASS=$((PASS + 1)); }
+fail()    { echo -e "  ${RED}✗${RESET} $1"; FAIL=$((FAIL + 1)); FAILED_CHECKS+=("$1"); }
+warn()    { echo -e "  ${YELLOW}⚠${RESET} $1"; WARNINGS=$((WARNINGS + 1)); }
 section() { echo -e "\n${CYAN}${BOLD}▶ $1${RESET}"; }
 info()    { echo -e "  ${CYAN}→${RESET} $1"; }
 
