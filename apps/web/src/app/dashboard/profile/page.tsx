@@ -16,6 +16,7 @@ import {
   applyThemePrefs,
   type AppThemePrefs,
 } from '@/lib/themePacks';
+import { fetchUserTheme, saveUserTheme } from '@/lib/userTheme';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -89,6 +90,15 @@ export default function ProfilePage() {
         setRole(profile?.role || localStorage.getItem('profile-role') || 'AWS Learner');
         setEmail(localStorage.getItem('profile-email') || user.email || '');
 
+        // User theme from Supabase (sync cross-device)
+        fetchUserTheme(user.id)
+          .then((prefs) => {
+            setTheme(prefs);
+            setTimezone(prefs.timezone);
+            if (!prefs.usePlatform) applyThemePrefs(prefs);
+          })
+          .catch(() => {});
+
         // Load quiz results from Supabase
         const supabaseResults = await getQuizResults(user.id);
         if (supabaseResults.length > 0) {
@@ -110,6 +120,9 @@ export default function ProfilePage() {
     localStorage.setItem('katalyst-theme', JSON.stringify(nextTheme));
     if (!nextTheme.usePlatform) applyThemePrefs(nextTheme);
     localStorage.setItem(USER_PREFS_KEY, JSON.stringify({ timezone }));
+    if (authUserId) {
+      saveUserTheme(authUserId, nextTheme).catch(() => {});
+    }
     // Sync name + email to Supabase auth so it's persisted across devices
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
     if (authUserId) await saveUserProfile(authUserId, { name, role });

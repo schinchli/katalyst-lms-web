@@ -11,6 +11,7 @@ import {
   DEFAULT_PLATFORM_THEME,
   normalizePlatformTheme,
 } from '@/lib/platformTheme';
+import { fetchUserTheme } from '@/lib/userTheme';
 import {
   applyThemePrefs,
   normalizeThemePrefs,
@@ -156,6 +157,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       // One-time migration: localStorage → Supabase (no-op if already migrated)
       migrateFromLocalStorage(u.id).catch(() => { /* best-effort */ });
+
+      // Load user theme pref to sync web/mobile
+      fetchUserTheme(u.id)
+        .then((prefs) => {
+          try {
+            localStorage.setItem('katalyst-theme', JSON.stringify(prefs));
+            if (!prefs.usePlatform) applyThemePrefs(prefs);
+          } catch { /* ignore */ }
+        })
+        .catch(() => { /* ignore */ });
 
       const quizResults = (() => {
         try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }

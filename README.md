@@ -80,7 +80,7 @@ lms/
 │   ├── progressFetch/
 │   └── leaderboardFetch/
 ├── mobile/                            Expo app (git submodule)
-├── supabase/migrations/               DB migration SQL
+├── supabase/migrations/               DB migration SQL (includes per-user theme_pref + platform theme)
 ├── scripts/
 │   ├── security-gate.sh               13-check security gate (quick / ci / full)
 │   ├── install-hooks.sh               installs pre-commit + pre-push hooks
@@ -641,6 +641,11 @@ To run it manually:
 ```bash
 bash scripts/security-gate.sh --quick
 ```
+
+### Theme system (web + mobile)
+- Admin chooses the platform theme (`platform_theme` in Supabase app_settings); default flows to every client.
+- Each user can opt out and save a custom theme pack (colors, fonts, size, timezone) stored in `user_profiles.theme_pref` and applied across devices (web + mobile).
+- Mobile honors platform theme by default; switch to Custom in Profile → Appearance to override and sync back to Supabase.
 
 ### Deploy
 
