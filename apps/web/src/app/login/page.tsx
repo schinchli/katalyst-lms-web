@@ -62,7 +62,7 @@ export default function LoginPage() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg)', fontFamily: "'Public Sans', sans-serif",
+      background: 'var(--bg)', fontFamily: 'inherit',
     }}>
       <div style={{
         background: 'var(--surface)', borderRadius: 16, padding: '40px 36px',
@@ -70,7 +70,7 @@ export default function LoginPage() {
         border: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: 'linear-gradient(135deg, #7367F0 0%, #9e95f5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 20 }}>K</div>
+          <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: 'linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%)', boxShadow: '0 8px 20px rgba(14,165,233,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 20 }}>K</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>Katalyst</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Supercharge Your Career. Learn Skills Faster.</div>
@@ -93,7 +93,7 @@ export default function LoginPage() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Password</label>
-              <Link href="/reset-password" style={{ fontSize: 12, color: '#7367F0', textDecoration: 'none' }}>Forgot password?</Link>
+              <Link href="/reset-password" style={{ fontSize: 12, color: 'var(--primary)', textDecoration: 'none' }}>Forgot password?</Link>
             </div>
             <input
               type="password" value={password} onChange={(e) => setPassword(e.target.value)}
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
           <button
             type="submit" disabled={loading}
-            style={{ padding: '11px', borderRadius: 8, marginTop: 4, background: loading ? 'var(--primary-light)' : '#7367F0', color: loading ? 'var(--primary-text)' : '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+            style={{ padding: '11px', borderRadius: 8, marginTop: 4, background: loading ? 'var(--primary-light)' : 'var(--primary)', color: loading ? 'var(--primary-text)' : '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
           >
             {loading ? 'Verifying…' : 'Sign in'}
           </button>
@@ -118,7 +118,7 @@ export default function LoginPage() {
 
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'var(--text-secondary)' }}>
           Don&apos;t have an account?{' '}
-          <Link href="/signup" style={{ color: '#7367F0', fontWeight: 600, textDecoration: 'none' }}>Sign up</Link>
+          <Link href="/signup" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Sign up</Link>
         </p>
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-secondary)' }}>
           Protected by reCAPTCHA —{' '}

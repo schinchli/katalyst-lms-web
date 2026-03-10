@@ -98,7 +98,7 @@ export default function SignupPage() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg)', fontFamily: "'Public Sans', sans-serif",
+      background: 'var(--bg)', fontFamily: 'inherit',
     }}>
       <div style={{
         background: 'var(--surface)', borderRadius: 16, padding: '40px 36px',
@@ -109,7 +109,7 @@ export default function SignupPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, #7367F0 0%, #9e95f5 100%)',
+            background: 'linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%)', boxShadow: '0 8px 20px rgba(14,165,233,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#fff', fontWeight: 800, fontSize: 20,
           }}>K</div>
@@ -132,7 +132,7 @@ export default function SignupPage() {
               href="/login"
               style={{
                 display: 'block', padding: '11px', borderRadius: 8, textAlign: 'center',
-                background: '#7367F0', color: '#fff', fontSize: 14, fontWeight: 600,
+                background: 'var(--primary)', color: '#fff', fontSize: 14, fontWeight: 600,
                 textDecoration: 'none',
               }}
             >
@@ -143,7 +143,7 @@ export default function SignupPage() {
           /* ── Sign up form ── */
           <>
             <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Create account</h1>
-            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Start building with Vercel + Supabase today</p>
+            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Your AWS &amp; GenAI certification journey starts here</p>
 
             <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
@@ -196,7 +196,7 @@ export default function SignupPage() {
                 disabled={loading}
                 style={{
                   padding: '11px', borderRadius: 8, marginTop: 4,
-                  background: loading ? 'var(--primary-light)' : '#7367F0',
+                  background: loading ? 'var(--primary-light)' : 'var(--primary)',
                   color: loading ? 'var(--primary-text)' : '#fff',
                   fontSize: 14, fontWeight: 600, border: 'none',
                   cursor: loading ? 'not-allowed' : 'pointer',
@@ -209,7 +209,7 @@ export default function SignupPage() {
 
             <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'var(--text-secondary)' }}>
               Already have an account?{' '}
-              <Link href="/login" style={{ color: '#7367F0', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+              <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
             </p>
             <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-secondary)' }}>
               Protected by reCAPTCHA —{' '}
