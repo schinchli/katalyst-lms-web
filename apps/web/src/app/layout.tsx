@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Katalyst — Modern cloud learning built for builders',
@@ -10,8 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="dark" data-platform-theme="aurora">
       <head>
-        {/* Prevent flash of wrong theme before first paint */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&typeof o.presetId==='string'){document.documentElement.setAttribute('data-platform-theme',o.presetId);}}}catch(e){}})();` }} />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&typeof o.presetId==='string'){document.documentElement.setAttribute('data-platform-theme',o.presetId);}}}catch(e){}`}
+        </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

@@ -44,6 +44,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
+  const len = Number(req.headers.get('content-length') ?? '0');
+  const MAX_BODY = 4096;
+  if (len > MAX_BODY) {
+    return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
+  }
+
   const auth = await verifyAdminFromAuthHeader(req);
   if (!auth.ok) {
     return NextResponse.json({ ok: false, error: auth.error }, { status: auth.status });
@@ -78,6 +84,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: auth.error }, { status: auth.status });
   }
 
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!(await checkRateLimit(`admin-theme-get:${ip}`, 60, 60_000))) {
+    return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
+  }
+
   const { data, error } = await adminClient()
     .from('app_settings')
     .select('value')
@@ -87,4 +98,3 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ ok: true, theme: DEFAULT_PLATFORM_THEME });
   return NextResponse.json({ ok: true, theme: normalizePlatformTheme(data?.value) });
 }
-

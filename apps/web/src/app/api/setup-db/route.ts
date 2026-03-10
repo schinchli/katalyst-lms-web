@@ -94,6 +94,15 @@ alter table public.profiles add column if not exists updated_at  timestamptz def
 alter table public.profiles add column if not exists name        text;
 alter table public.profiles add column if not exists subscription text not null default 'free';
 alter table public.profiles add column if not exists unlocked_courses text[] not null default '{}';
+alter table public.user_profiles add column if not exists theme_pref jsonb;
+
+-- ── App settings (platform-wide config) ───────────────────────────────────
+create table if not exists public.app_settings (
+  key         text primary key,
+  value       jsonb not null default '{}'::jsonb,
+  updated_at  timestamptz not null default now(),
+  updated_by  uuid references auth.users(id) on delete set null
+);
 
 -- ── Row Level Security ────────────────────────────────────────────────────
 alter table public.user_profiles   enable row level security;
@@ -102,6 +111,7 @@ alter table public.subscriptions   enable row level security;
 alter table public.unlocked_courses enable row level security;
 alter table public.purchases       enable row level security;
 alter table public.profiles        enable row level security;
+alter table public.app_settings    enable row level security;
 
 drop policy if exists "own user_profiles"    on public.user_profiles;
 drop policy if exists "own quiz_results"     on public.quiz_results;
@@ -109,6 +119,8 @@ drop policy if exists "own subscriptions"    on public.subscriptions;
 drop policy if exists "own unlocked_courses" on public.unlocked_courses;
 drop policy if exists "own purchases"        on public.purchases;
 drop policy if exists "own profiles"         on public.profiles;
+drop policy if exists "app_settings_read"    on public.app_settings;
+drop policy if exists "app_settings_write"   on public.app_settings;
 
 create policy "own user_profiles"    on public.user_profiles    for all using (auth.uid() = id)         with check (auth.uid() = id);
 create policy "own quiz_results"     on public.quiz_results     for all using (auth.uid() = user_id)    with check (auth.uid() = user_id);
@@ -116,6 +128,8 @@ create policy "own subscriptions"    on public.subscriptions    for all using (a
 create policy "own unlocked_courses" on public.unlocked_courses for all using (auth.uid() = user_id)    with check (auth.uid() = user_id);
 create policy "own purchases"        on public.purchases        for all using (auth.uid() = user_id)    with check (auth.uid() = user_id);
 create policy "own profiles"         on public.profiles         for all using (auth.uid() = id)         with check (auth.uid() = id);
+create policy "app_settings_read"    on public.app_settings     for select using (true);
+create policy "app_settings_write"   on public.app_settings     for update using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
 
 -- ── RPC: append_unlocked_course (mobile authStore uses this) ─────────────
 create or replace function public.append_unlocked_course(user_id uuid, course_id text)
@@ -168,6 +182,12 @@ create trigger on_auth_user_created
 `;
 
 export async function POST(req: NextRequest) {
+  const len = Number(req.headers.get('content-length') ?? '0');
+  const MAX_BODY = 12_000; // SQL + token payload upper bound
+  if (len > MAX_BODY) {
+    return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
+  }
+
   const ROUTE = '/api/setup-db';
   const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
