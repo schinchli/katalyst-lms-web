@@ -6,6 +6,7 @@ import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import { migrateFromLocalStorage } from '@/lib/db';
+import { applyThemePrefs, normalizeThemePrefs, DEFAULT_THEME_PREFS } from '@/lib/themePacks';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
@@ -172,28 +173,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (isDark) { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
     else { document.documentElement.setAttribute('data-theme', ''); setDark(false); }
 
-    // Apply user appearance preferences (color theme + font + size)
+    // Apply user appearance preferences (theme pack + font + size)
     try {
       const raw = localStorage.getItem('katalyst-theme');
       if (raw) {
-        const t = JSON.parse(raw) as { primaryColor?: string; primaryLight?: string; fontFamily?: string; fontSize?: string };
-        const root = document.documentElement;
-        if (t.primaryColor) {
-          root.style.setProperty('--primary', t.primaryColor);
-          root.style.setProperty('--primary-text', t.primaryColor);
-        }
-        if (t.primaryLight) root.style.setProperty('--primary-light', t.primaryLight);
-        if (t.fontSize) root.style.fontSize = `${t.fontSize}px`;
-        if (t.fontFamily && t.fontFamily !== 'Public Sans') {
-          const id = `gf-${t.fontFamily.replace(/\s/g, '-')}`;
-          if (!document.getElementById(id)) {
-            const link = document.createElement('link');
-            link.id = id; link.rel = 'stylesheet';
-            link.href = `https://fonts.googleapis.com/css2?family=${t.fontFamily.replace(/\s/g, '+')}:wght@300;400;500;600;700&display=swap`;
-            document.head.appendChild(link);
-          }
-          document.body.style.fontFamily = `'${t.fontFamily}', sans-serif`;
-        }
+        applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
+      } else {
+        applyThemePrefs(DEFAULT_THEME_PREFS);
       }
     } catch { /* best-effort */ }
   }, []);
@@ -203,6 +189,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setDark(next);
     document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
     localStorage.setItem('theme', next ? 'dark' : 'light');
+    try {
+      const raw = localStorage.getItem('katalyst-theme');
+      if (raw) applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
+    } catch { /* best-effort */ }
   };
 
   // Search
