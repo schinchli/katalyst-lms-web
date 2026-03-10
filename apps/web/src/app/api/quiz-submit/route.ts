@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   // Rate limit: 20 submissions per minute per IP
-  if (!checkRateLimit(`quiz-submit:${ip}`, 20, 60_000)) {
+  if (!(await checkRateLimit(`quiz-submit:${ip}`, 20, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json({ ok: false, error: 'Too many requests' }, {
       status: 429, headers: { 'Retry-After': '60' },

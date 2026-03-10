@@ -36,7 +36,7 @@ function periodStart(period: string): string | null {
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
-  if (!checkRateLimit(`leaderboard:${ip}`, 60, 60_000)) {
+  if (!(await checkRateLimit(`leaderboard:${ip}`, 60, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json({ ok: false, error: 'Too many requests' }, {
       status: 429, headers: { 'Retry-After': '60' },

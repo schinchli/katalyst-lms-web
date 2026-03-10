@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
   const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   // ── Rate limiting ──────────────────────────────────────────────────────────
-  if (!checkRateLimit(`admin-check:${ip}`, 30, 60_000)) {
+  if (!(await checkRateLimit(`admin-check:${ip}`, 30, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json(
       { isAdmin: false, error: 'Too many requests' },
@@ -64,8 +64,7 @@ export async function GET(req: NextRequest) {
   // ── Check admin status ─────────────────────────────────────────────────────
   const adminEmails = getAdminEmails();
   const emailMatch  = user.email ? adminEmails.has(user.email.toLowerCase()) : false;
-  const metaRole    = (user.user_metadata as Record<string, unknown>)?.role;
-  const isAdmin     = emailMatch || metaRole === 'admin';
+  const isAdmin     = emailMatch;
 
   if (!isAdmin) {
     logger.authFail(ROUTE, 'not_admin', { ip, userId: user.id });

@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   // 10 verifications / 60 s per IP
-  if (!checkRateLimit(`recaptcha:${ip}`, 10, 60_000)) {
+  if (!(await checkRateLimit(`recaptcha:${ip}`, 10, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -46,11 +46,10 @@ export async function POST(req: NextRequest) {
 
   const { token, action } = parsed.data;
 
-  // If token is empty the reCAPTCHA script failed to load (CSP, network, etc.).
-  // Log and allow through — server-side rate limiting is the real protection.
+  // Empty token means challenge not completed.
   if (!token) {
     logger.warn(ROUTE, 'recaptcha_token_empty', { ip, action });
-    return NextResponse.json({ ok: true, score: 0, note: 'recaptcha_skipped' });
+    return NextResponse.json({ ok: false, error: 'recaptcha_token_required' }, { status: 400 });
   }
 
   const result = await verifyRecaptcha(token, action);
