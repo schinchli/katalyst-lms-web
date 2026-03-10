@@ -143,7 +143,7 @@ export default function SignupPage() {
           /* ── Sign up form ── */
           <>
             <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Create account</h1>
-            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Start your AWS prep journey today</p>
+            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Start building with Vercel + Supabase today</p>
 
             <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>

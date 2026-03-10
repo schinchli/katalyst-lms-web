@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Katalyst — Supercharge Your Career. Learn Skills Faster.',
-  description: 'Supercharge your career with Katalyst. Master AWS Cloud & Generative AI certifications with interactive practice exams.',
+  title: 'Katalyst — Modern cloud learning built for builders',
+  description: 'Advance faster with project-based cloud, database, and product engineering skills. Practice, ship, and track progress in one place.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>

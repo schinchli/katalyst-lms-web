@@ -1,45 +1,47 @@
 /* ===== Vuexy Design Tokens ===== */
 :root {
-  --primary:       #7367F0;
-  --primary-light: #EBE9FD;
-  --primary-text:  #5E53E0;
-  --success:       #28C76F;
-  --warning:       #FF9F43;
-  --error:         #FF4C51;
-  --info:          #00BAD1;
-  --aws:           #FF9900;
+  --primary:       #0EA5E9;
+  --primary-light: #E0F7FF;
+  --primary-text:  #0284C7;
+  --success:       #10B981;
+  --warning:       #F59E0B;
+  --error:         #EF4444;
+  --info:          #22D3EE;
 
-  --bg:            #F8F7FA;
+  --bg:            #F5F7FB;
   --surface:       #FFFFFF;
-  --border:        #DBDADE;
-  --text:          #4B465C;
-  --text-secondary:#A8AAAE;
+  --border:        #E5E7EB;
+  --text:          #0F172A;
+  --text-secondary:#6B7280;
 
-  --radius:        8px;
-  --radius-lg:     12px;
-  --shadow:        0 4px 18px rgba(47,43,61,0.12);
-  --shadow-sm:     0 2px 8px rgba(47,43,61,0.08);
+  --radius:        10px;
+  --radius-lg:     14px;
+  --shadow:        0 24px 60px rgba(15,23,42,0.08);
+  --shadow-sm:     0 10px 30px rgba(15,23,42,0.06);
 }
 
 [data-theme="dark"] {
-  --bg:            #25293C;
-  --surface:       #2F3349;
-  --border:        #4B4F66;
-  --text:          #E3E7FA;
-  --text-secondary:#9EA1BA;
-  --primary-light: #43406B;
-  --primary-text:  #C4BFFF;
+  --bg:            #0B1221;
+  --surface:       rgba(21,27,42,0.8);
+  --border:        #1F2937;
+  --text:          #E5E7EB;
+  --text-secondary:#9CA3AF;
+  --primary-light: rgba(14,165,233,0.14);
+  --primary-text:  #38BDF8;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; height: 100%; }
 body {
-  font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 15px;
   font-weight: 400;
-  background: var(--bg);
+  background: radial-gradient(120% 120% at 10% 20%, rgba(14,165,233,0.12), transparent),
+              radial-gradient(90% 90% at 80% 10%, rgba(16,185,129,0.10), transparent),
+              var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
@@ -64,9 +66,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .sidebar-logo { display: flex; align-items: center; gap: 10px; }
 .sidebar-logo-icon {
   width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
-  background: linear-gradient(135deg, #7367F0 0%, #9e95f5 100%);
+  background: linear-gradient(135deg, #0EA5E9 0%, #22D3EE 45%, #10B981 100%);
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-weight: 800; font-size: 17px;
+  box-shadow: 0 8px 20px rgba(14,165,233,0.35);
 }
 .sidebar-brand-name {
   font-weight: 700; font-size: 15px; color: var(--text); line-height: 1.2;
@@ -86,7 +89,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transition: background 0.15s, color 0.15s;
 }
 .nav-item:hover { background: var(--primary-light); color: var(--primary-text); }
-.nav-item.active { background: var(--primary-light); color: var(--primary-text); font-weight: 600; }
+.nav-item.active { background: var(--primary-light); color: var(--primary-text); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(14,165,233,0.35); }
 .nav-icon { font-size: 16px; }
 
 /* ===== Page Header ===== */
@@ -137,13 +140,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .quiz-card {
-  background: var(--surface); border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(14,165,233,0.12), rgba(255,255,255,0)) padding-box,
+              var(--surface);
+  border-radius: var(--radius-lg);
   overflow: hidden; box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid rgba(14,165,233,0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   cursor: pointer; display: block;
+  backdrop-filter: blur(6px);
 }
-.quiz-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.quiz-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow); border-color: rgba(14,165,233,0.35); }
 
 .card-body { padding: 14px 16px 16px; }
 .card-cat {
@@ -165,7 +171,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .card-stars-label {
   font-size: 11px; font-weight: 600; margin-left: 4px;
 }
-.card-divider { margin: 0 0 12px; border: none; border-top: 1px solid var(--border); }
+.card-divider { margin: 0 0 12px; border: none; border-top: 1px solid rgba(14,165,233,0.18); }
 .card-footer  { display: flex; justify-content: space-between; align-items: center; }
 .card-meta    { font-size: 12px; color: var(--text-secondary); }
 .score-pass   { margin-left: 8px; font-weight: 700; color: var(--success); }
@@ -184,13 +190,19 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;
 }
 .dash-stat-card {
-  background: var(--surface); border-radius: var(--radius-lg);
-  padding: 20px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  background: linear-gradient(160deg, rgba(14,165,233,0.10), rgba(16,185,129,0.08)) padding-box,
+              var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px 20px; box-shadow: var(--shadow-sm); border: 1px solid rgba(14,165,233,0.22);
   display: flex; align-items: center; gap: 16px;
+  backdrop-filter: blur(8px);
 }
 .dash-stat-icon {
   width: 50px; height: 50px; border-radius: var(--radius);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: linear-gradient(135deg, #0EA5E9, #10B981);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(14,165,233,0.35);
 }
 .dash-stat-value { font-size: 22px; font-weight: 700; line-height: 1.1; }
 .dash-stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 3px; font-weight: 500; }
