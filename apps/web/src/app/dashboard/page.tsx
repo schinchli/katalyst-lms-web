@@ -31,12 +31,12 @@ interface MilestoneStats {
 }
 
 const CERT_OPTIONS = [
-  { value: 'all',          label: 'All AWS Quizzes'            },
-  { value: 'clf-c02',      label: 'CLF-C02 Cloud Practitioner' },
-  { value: 'foundational', label: 'Foundational Tier'          },
-  { value: 'associate',    label: 'Associate Tier'             },
-  { value: 'professional', label: 'Professional Tier'          },
-  { value: 'specialty',    label: 'Specialty Tier'             },
+  { value: 'all',          label: 'All Tracks'          },
+  { value: 'cloud-core',   label: 'Cloud Foundations'   },
+  { value: 'frontend',     label: 'Frontend & UX'       },
+  { value: 'backend',      label: 'APIs & Databases'    },
+  { value: 'product',      label: 'Product Engineering' },
+  { value: 'ai',           label: 'AI & GenAI'          },
 ];
 
 const STATUS_META = {

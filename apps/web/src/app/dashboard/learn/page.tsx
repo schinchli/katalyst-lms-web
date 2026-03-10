@@ -21,7 +21,7 @@ const PLAYLIST: VideoItem[] = [
     id: 'bedrock-intro',
     youtubeId: 'BY4YlxhSKr8',
     title: "A Beginner's Guide to Amazon Bedrock",
-    author: 'AWS Official',
+    author: 'Vercel Ship',
     duration: '22:14',
     views: '84k',
     tag: 'Bedrock',
@@ -41,7 +41,7 @@ const PLAYLIST: VideoItem[] = [
     id: 'rag-bedrock',
     youtubeId: 'N0tlOXZwrSs',
     title: 'Building RAG Applications with Amazon Bedrock',
-    author: 'AWS Developers',
+    author: 'Supabase Engineering',
     duration: '18:32',
     views: '52k',
     tag: 'RAG',
@@ -60,7 +60,7 @@ const PLAYLIST: VideoItem[] = [
     id: 'bedrock-agents',
     youtubeId: 'iMxfwZWl3EY',
     title: 'Amazon Bedrock Agents — Build AI Agents',
-    author: 'AWS Official',
+    author: 'Edge Functions',
     duration: '15:48',
     views: '39k',
     tag: 'Agents',
@@ -77,8 +77,8 @@ const PLAYLIST: VideoItem[] = [
   {
     id: 'prompt-engineering',
     youtubeId: 'dOxUroR57xs',
-    title: 'Prompt Engineering for AWS GenAI',
-    author: 'AWS re:Invent',
+    title: 'Prompt Engineering for GenAI on the Edge',
+    author: 'Vercel AI',
     duration: '28:05',
     views: '121k',
     tag: 'Prompting',
@@ -97,7 +97,7 @@ const PLAYLIST: VideoItem[] = [
     id: 'guardrails-security',
     youtubeId: 'fqpSMDX2Xho',
     title: 'Guardrails & Security in Amazon Bedrock',
-    author: 'AWS Security',
+    author: 'Security by Design',
     duration: '20:17',
     views: '28k',
     tag: 'Security',
@@ -189,7 +189,7 @@ export default function LearnPage() {
       {/* Page header */}
       <div style={{ marginBottom: 24 }}>
         <h1 className="page-title">Video Library</h1>
-        <p className="page-subtitle">AWS Generative AI — Learn from official guides and tutorials</p>
+        <p className="page-subtitle">Ship faster with Vercel + Supabase — curated guides and tutorials</p>
       </div>
 
       {/* Main layout */}
@@ -361,7 +361,7 @@ export default function LearnPage() {
             {/* Footer */}
             <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                Videos sourced from official AWS channels
+                Videos sourced from Vercel, Supabase, and community builders
               </div>
             </div>
           </div>

@@ -382,7 +382,7 @@ export default function QuizPage() {
                 <p style={{ margin: '0 0 12px' }}>{quiz.description}</p>
                 <p style={{ margin: 0 }}>
                   This practice set is aligned with the <strong style={{ color: 'var(--text)' }}>{quiz.examCode ?? quiz.title}</strong> exam
-                  objectives and covers the key concepts you need to master for the {quiz.certLevel ? `AWS ${quiz.certLevel.charAt(0).toUpperCase() + quiz.certLevel.slice(1)}` : 'AWS'} certification path.
+                  objectives and covers the key concepts you need to master for your chosen track.
                   Each question includes a detailed explanation to reinforce your understanding.
                 </p>
               </div>

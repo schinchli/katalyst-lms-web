@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
   const ip    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   // ── Rate limiting: 3 req / 60 s per IP (migration endpoint — very strict) ──
-  if (!checkRateLimit(`setup-db:${ip}`, 3, 60_000)) {
+  if (!(await checkRateLimit(`setup-db:${ip}`, 3, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': '60' } } as never);
   }

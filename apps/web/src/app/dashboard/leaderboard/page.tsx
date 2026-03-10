@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
         </span>
       </div>
       <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--text-secondary)' }}>
-        Top performers across all AWS certification quizzes
+        Top performers across all tracks
       </p>
 
       {/* ── Period tabs ────────────────────────────────────────────────────── */}

@@ -6,28 +6,20 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import type { QuizResult } from '@/types';
 import { getQuizResults, saveUserProfile, getUserProfile, deleteAllQuizResults } from '@/lib/db';
+import {
+  THEME_PACKS,
+  FONT_OPTIONS,
+  FONT_SIZES,
+  DEFAULT_THEME_PREFS,
+  normalizeThemePrefs,
+  applyThemePrefs,
+  type AppThemePrefs,
+} from '@/lib/themePacks';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
   try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
 }
-
-const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
-
-// ── Appearance / Theme ────────────────────────────────────────────────────────
-interface AppTheme {
-  primaryColor: string;
-  primaryLight: string;
-  fontFamily:   string;
-  fontSize:     string;
-  timezone:     string; // IANA timezone, e.g. 'Asia/Kolkata'
-}
-
-const DEFAULT_THEME: AppTheme = {
-  primaryColor: '#7367F0', primaryLight: '#EBE9FD',
-  fontFamily: 'Public Sans', fontSize: '14',
-  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-};
 
 // Common timezones grouped for usability
 const TIMEZONES = [
@@ -49,55 +41,6 @@ const TIMEZONES = [
   { label: 'BRT — São Paulo (UTC-3)',       value: 'America/Sao_Paulo'        },
 ];
 
-const PRESET_COLORS = [
-  { label: 'Violet (Default)', value: '#7367F0', light: '#EBE9FD' },
-  { label: 'Sky Blue',         value: '#0EA5E9', light: '#E0F2FE' },
-  { label: 'Teal',             value: '#14B8A6', light: '#CCFBF1' },
-  { label: 'Emerald',          value: '#10B981', light: '#D1FAE5' },
-  { label: 'Rose',             value: '#F43F5E', light: '#FFE4E6' },
-  { label: 'Amber',            value: '#F59E0B', light: '#FEF3C7' },
-  { label: 'Orange',           value: '#F97316', light: '#FFEDD5' },
-  { label: 'Indigo',           value: '#6366F1', light: '#EEF2FF' },
-  { label: 'Slate',            value: '#64748B', light: '#F1F5F9' },
-];
-
-// All fonts below are free under SIL Open Font License — safe for web & mobile
-const FONT_OPTIONS = [
-  { label: 'Public Sans (Default)', value: 'Public Sans' }, // modern, clean, great readability
-  { label: 'Inter',                 value: 'Inter'       }, // best UI font, used by Figma/Linear
-  { label: 'DM Sans',               value: 'DM Sans'     }, // geometric, clean, highly legible
-  { label: 'Nunito',                value: 'Nunito'      }, // rounded, friendly, easy on eyes
-  { label: 'Poppins',               value: 'Poppins'     }, // geometric, bold-friendly
-];
-
-const FONT_SIZES = [
-  { label: 'Small',            value: '13' },
-  { label: 'Medium (Default)', value: '14' },
-  { label: 'Large',            value: '15' },
-  { label: 'X-Large',          value: '16' },
-];
-
-function applyTheme(t: AppTheme) {
-  if (typeof document === 'undefined') return;
-  const root = document.documentElement;
-  root.style.setProperty('--primary',       t.primaryColor);
-  root.style.setProperty('--primary-light', t.primaryLight);
-  root.style.setProperty('--primary-text',  t.primaryColor);
-  root.style.fontSize = `${t.fontSize}px`;
-  if (t.fontFamily !== 'Public Sans') {
-    const id = `gf-${t.fontFamily.replace(/\s/g, '-')}`;
-    if (!document.getElementById(id)) {
-      const link = document.createElement('link');
-      link.id = id; link.rel = 'stylesheet';
-      link.href = `https://fonts.googleapis.com/css2?family=${t.fontFamily.replace(/\s/g, '+')}:wght@300;400;500;600;700&display=swap`;
-      document.head.appendChild(link);
-    }
-    document.body.style.fontFamily = `'${t.fontFamily}', sans-serif`;
-  } else {
-    document.body.style.fontFamily = '';
-  }
-}
-
 export default function ProfilePage() {
   const [results,      setResults]      = useState<QuizResult[]>([]);
   const [name,         setName]         = useState('');
@@ -105,7 +48,7 @@ export default function ProfilePage() {
   const [role,         setRole]         = useState('AWS Learner');
   const [saved,        setSaved]        = useState(false);
   const [authUserId,   setAuthUserId]   = useState<string | null>(null);
-  const [theme,        setTheme]        = useState<AppTheme>(DEFAULT_THEME);
+  const [theme,        setTheme]        = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
   const [confirmReset, setConfirmReset] = useState(false);
   const { isPro, unlockedCourses } = useSubscription();
 
@@ -116,9 +59,9 @@ export default function ProfilePage() {
     // Load and apply saved appearance theme
     try {
       const raw = localStorage.getItem('katalyst-theme');
-      const saved = raw ? (JSON.parse(raw) as AppTheme) : DEFAULT_THEME;
+      const saved = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
       setTheme(saved);
-      applyTheme(saved);
+      applyThemePrefs(saved);
     } catch { /* ignore */ }
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -152,7 +95,7 @@ export default function ProfilePage() {
     localStorage.setItem('profile-email', email);
     localStorage.setItem('profile-role',  role);
     localStorage.setItem('katalyst-theme', JSON.stringify(theme));
-    applyTheme(theme);
+    applyThemePrefs(theme);
     // Sync name + email to Supabase auth so it's persisted across devices
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
     if (authUserId) await saveUserProfile(authUserId, { name, role });
@@ -160,10 +103,10 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  function updateTheme(patch: Partial<AppTheme>) {
+  function updateTheme(patch: Partial<AppThemePrefs>) {
     const next = { ...theme, ...patch };
     setTheme(next);
-    applyTheme(next); // live preview
+    applyThemePrefs(next); // live preview
   }
 
   const handleReset = async () => {
@@ -180,6 +123,7 @@ export default function ProfilePage() {
   const totalSecs  = results.reduce((s, r) => s + (r.timeTaken ?? 0), 0);
   const totalHrs   = Math.floor(totalSecs / 3600);
   const initial    = name.charAt(0).toUpperCase() || 'L';
+  const selectedPack = THEME_PACKS.find((p) => p.id === theme.themeId) ?? THEME_PACKS[0];
 
   return (
     <div className="page-content profile-page">
@@ -191,9 +135,9 @@ export default function ProfilePage() {
             <svg width="100%" height="220" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid slice">
               <defs>
                 <linearGradient id="bannerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#5A52D5" />
-                  <stop offset="60%" stopColor="#7367F0" />
-                  <stop offset="100%" stopColor="#9e95f5" />
+                  <stop offset="0%" stopColor="var(--gradient-from)" />
+                  <stop offset="60%" stopColor="var(--primary)" />
+                  <stop offset="100%" stopColor="var(--gradient-to)" />
                 </linearGradient>
               </defs>
               <rect width="900" height="220" fill="url(#bannerGrad)" />
@@ -309,7 +253,6 @@ export default function ProfilePage() {
                 const q    = quizzes.find((q) => q.id === r.quizId);
                 const pct  = Math.round((r.score / r.totalQuestions) * 100);
                 const pass = pct >= 70;
-                const accent = q ? (DIFF_COLOR[q.difficulty] ?? '#7367F0') : '#7367F0';
                 return (
                   <div key={i} className="info-row" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 10, marginBottom: 10 }}>
                     <span className="info-label" style={{ fontSize: 12 }}>{q?.title ?? r.quizId}</span>
@@ -327,28 +270,34 @@ export default function ProfilePage() {
         <div className="info-card-header">Appearance</div>
         <div className="info-card-body">
 
-          {/* Color theme */}
+          {/* Theme packs */}
           <div className="form-field" style={{ marginBottom: 20 }}>
-            <label className="form-label">Primary Color</label>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 6 }}>
-              {PRESET_COLORS.map((c) => (
+            <label className="form-label">Theme Pack</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 10, marginTop: 6 }}>
+              {THEME_PACKS.map((pack) => (
                 <button
-                  key={c.value}
-                  title={c.label}
-                  onClick={() => updateTheme({ primaryColor: c.value, primaryLight: c.light })}
+                  key={pack.id}
+                  title={pack.label}
+                  onClick={() => updateTheme({ themeId: pack.id })}
                   style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: c.value, border: 'none', cursor: 'pointer',
-                    outline: theme.primaryColor === c.value ? `3px solid ${c.value}` : '3px solid transparent',
-                    outlineOffset: 2,
-                    boxShadow: theme.primaryColor === c.value ? `0 0 0 5px ${c.value}22` : 'none',
-                    transition: 'box-shadow 0.15s, outline 0.15s',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '9px 10px', borderRadius: 12,
+                    border: `1.5px solid ${theme.themeId === pack.id ? pack.light.primary : 'var(--border)'}`,
+                    background: theme.themeId === pack.id ? `${pack.light.primary}18` : 'var(--bg)',
+                    cursor: 'pointer', transition: 'all 0.15s',
                   }}
-                />
+                >
+                  <span style={{ fontSize: 14 }}>{pack.emoji}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{pack.label}</span>
+                  <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientFrom }} />
+                    <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientTo }} />
+                  </span>
+                </button>
               ))}
             </div>
             <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-              Selected: <strong style={{ color: theme.primaryColor }}>{PRESET_COLORS.find((c) => c.value === theme.primaryColor)?.label ?? theme.primaryColor}</strong>
+              Selected: <strong style={{ color: selectedPack.light.primary }}>{selectedPack.emoji} {selectedPack.label}</strong>
             </div>
           </div>
 
@@ -380,9 +329,9 @@ export default function ProfilePage() {
                     onClick={() => updateTheme({ fontSize: s.value })}
                     style={{
                       flex: 1, padding: '7px 4px', borderRadius: 'var(--radius)',
-                      border: `1.5px solid ${theme.fontSize === s.value ? theme.primaryColor : 'var(--border)'}`,
-                      background: theme.fontSize === s.value ? theme.primaryColor + '15' : 'var(--bg)',
-                      color: theme.fontSize === s.value ? theme.primaryColor : 'var(--text-secondary)',
+                      border: `1.5px solid ${theme.fontSize === s.value ? selectedPack.light.primary : 'var(--border)'}`,
+                      background: theme.fontSize === s.value ? `${selectedPack.light.primary}15` : 'var(--bg)',
+                      color: theme.fontSize === s.value ? selectedPack.light.primary : 'var(--text-secondary)',
                       fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s',
                     }}
                   >
@@ -411,10 +360,16 @@ export default function ProfilePage() {
           </div>
 
           {/* Live preview */}
-          <div style={{ marginTop: 16, padding: '12px 16px', borderRadius: 'var(--radius)', background: theme.primaryLight, border: `1px solid ${theme.primaryColor}33` }}>
-            <span style={{ fontSize: parseInt(theme.fontSize), fontFamily: `'${theme.fontFamily}', sans-serif`, color: theme.primaryColor, fontWeight: 700 }}>
+          <div style={{
+            marginTop: 16,
+            padding: '14px 16px',
+            borderRadius: 12,
+            background: `linear-gradient(120deg, ${selectedPack.light.gradientFrom}22, ${selectedPack.light.gradientTo}22)`,
+            border: `1px solid ${selectedPack.light.primary}33`,
+          }}>
+            <span style={{ fontSize: parseInt(theme.fontSize, 10), fontFamily: `'${theme.fontFamily}', sans-serif`, color: selectedPack.light.primary, fontWeight: 700 }}>
               Preview: {theme.fontFamily} · {theme.fontSize}px · </span>
-            <span style={{ fontSize: parseInt(theme.fontSize), fontFamily: `'${theme.fontFamily}', sans-serif`, color: 'var(--text)' }}>
+            <span style={{ fontSize: parseInt(theme.fontSize, 10), fontFamily: `'${theme.fontFamily}', sans-serif`, color: 'var(--text)' }}>
               The quick brown fox jumps over the lazy dog.
             </span>
           </div>

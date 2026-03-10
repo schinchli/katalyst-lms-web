@@ -44,7 +44,7 @@ function makeRequest(token?: string): NextRequest {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockedCheckRateLimit.mockReturnValue(true);
+  mockedCheckRateLimit.mockResolvedValue(true);
   delete process.env.ADMIN_EMAILS;
 });
 
@@ -89,7 +89,7 @@ describe('GET /api/admin/check', () => {
     expect(body.isAdmin).toBe(true);
   });
 
-  it('returns isAdmin=true when user_metadata.role=admin', async () => {
+  it('ignores user_metadata.role for admin', async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'u2', email: 'dev@other.com', user_metadata: { role: 'admin' } } },
       error: null,
@@ -97,7 +97,7 @@ describe('GET /api/admin/check', () => {
     const res  = await GET(makeRequest('valid-token'));
     const body = await res.json() as { isAdmin: boolean };
     expect(res.status).toBe(200);
-    expect(body.isAdmin).toBe(true);
+    expect(body.isAdmin).toBe(false);
   });
 
   it('matches admin email case-insensitively', async () => {
@@ -112,7 +112,7 @@ describe('GET /api/admin/check', () => {
   });
 
   it('returns 429 when rate-limited', async () => {
-    mockedCheckRateLimit.mockReturnValue(false);
+    mockedCheckRateLimit.mockResolvedValue(false);
     const res = await GET(makeRequest('valid-token'));
     expect(res.status).toBe(429);
   });

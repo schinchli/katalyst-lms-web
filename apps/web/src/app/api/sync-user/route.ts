@@ -38,7 +38,7 @@ function adminClient() {
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
-  if (!checkRateLimit(`sync-user:${ip}`, 20, 60_000)) {
+  if (!(await checkRateLimit(`sync-user:${ip}`, 20, 60_000))) {
     logger.rateLimited(ROUTE, ip);
     return NextResponse.json({ ok: false, error: 'Too many requests' }, {
       status: 429, headers: { 'Retry-After': '60' },
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 // GET /api/sync-user — health check
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  if (!checkRateLimit(`sync-user-get:${ip}`, 10, 60_000)) {
+  if (!(await checkRateLimit(`sync-user-get:${ip}`, 10, 60_000))) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
