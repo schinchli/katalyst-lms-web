@@ -12,6 +12,7 @@ function makeQueryChain(resolveValue: unknown) {
     select:  jest.fn().mockReturnThis(),
     eq:      jest.fn().mockReturnThis(),
     order:   jest.fn().mockReturnThis(),
+    limit:   jest.fn().mockReturnThis(),
     single:  jest.fn().mockResolvedValue(resolveValue),
     upsert:  jest.fn().mockResolvedValue(resolveValue),
     insert:  jest.fn().mockResolvedValue(resolveValue),
