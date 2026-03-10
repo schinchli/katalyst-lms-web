@@ -11,6 +11,11 @@ import {
   DEFAULT_PLATFORM_THEME,
   normalizePlatformTheme,
 } from '@/lib/platformTheme';
+import {
+  applyThemePrefs,
+  normalizeThemePrefs,
+  DEFAULT_THEME_PREFS,
+} from '@/lib/themePacks';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
@@ -185,6 +190,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } catch {
       applyPlatformThemePreset(DEFAULT_PLATFORM_THEME.presetId);
     }
+
+    // If user opted out of platform theme, apply their custom pack
+    try {
+      const raw = localStorage.getItem('katalyst-theme');
+      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      if (!prefs.usePlatform) applyThemePrefs(prefs);
+    } catch { /* best-effort */ }
   }, []);
 
   // Fetch platform theme from server so all clients stay consistent.
@@ -196,6 +208,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (!active || !d?.ok) return;
         const theme = normalizePlatformTheme(d.theme);
         applyPlatformThemePreset(theme.presetId);
+        try {
+          const raw = localStorage.getItem('katalyst-theme');
+          const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+          if (!prefs.usePlatform) applyThemePrefs(prefs);
+        } catch { /* best-effort */ }
       })
       .catch(() => { /* best-effort */ });
 
@@ -207,6 +224,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setDark(next);
     document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
     localStorage.setItem('theme', next ? 'dark' : 'light');
+    try {
+      const raw = localStorage.getItem('katalyst-theme');
+      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      if (!prefs.usePlatform) applyThemePrefs(prefs);
+    } catch { /* best-effort */ }
   };
 
   // Search

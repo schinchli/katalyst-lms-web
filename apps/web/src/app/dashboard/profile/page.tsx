@@ -7,6 +7,15 @@ import { supabase } from '@/lib/supabase';
 import type { QuizResult } from '@/types';
 import { getQuizResults, saveUserProfile, getUserProfile, deleteAllQuizResults } from '@/lib/db';
 import { PLATFORM_THEME_PRESETS, normalizePlatformTheme } from '@/lib/platformTheme';
+import {
+  THEME_PACKS,
+  FONT_OPTIONS,
+  FONT_SIZES,
+  DEFAULT_THEME_PREFS,
+  normalizeThemePrefs,
+  applyThemePrefs,
+  type AppThemePrefs,
+} from '@/lib/themePacks';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -42,6 +51,7 @@ export default function ProfilePage() {
   const [role,         setRole]         = useState('AWS Learner');
   const [saved,        setSaved]        = useState(false);
   const [authUserId,   setAuthUserId]   = useState<string | null>(null);
+  const [theme,        setTheme]        = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
   const [timezone,     setTimezone]     = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [platformName, setPlatformName] = useState('Neon Aurora');
   const [confirmReset, setConfirmReset] = useState(false);
@@ -52,17 +62,17 @@ export default function ProfilePage() {
     setRole(localStorage.getItem('profile-role') || 'AWS Learner');
 
     try {
-      const raw = localStorage.getItem(USER_PREFS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { timezone?: string };
-        if (parsed.timezone) setTimezone(parsed.timezone);
-      }
+      const raw = localStorage.getItem('katalyst-theme');
+      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      setTheme(prefs);
+      setTimezone(prefs.timezone);
+      if (!prefs.usePlatform) applyThemePrefs(prefs);
     } catch { /* ignore */ }
 
     try {
       const raw = localStorage.getItem('katalyst-platform-theme-cache');
-      const theme = normalizePlatformTheme(raw ? JSON.parse(raw) : null);
-      const preset = PLATFORM_THEME_PRESETS.find((p) => p.id === theme.presetId);
+      const t = normalizePlatformTheme(raw ? JSON.parse(raw) : null);
+      const preset = PLATFORM_THEME_PRESETS.find((p) => p.id === t.presetId);
       if (preset) setPlatformName(preset.label);
     } catch { /* ignore */ }
 
@@ -96,6 +106,9 @@ export default function ProfilePage() {
     localStorage.setItem('profile-name',  name);
     localStorage.setItem('profile-email', email);
     localStorage.setItem('profile-role',  role);
+    const nextTheme = { ...theme, timezone };
+    localStorage.setItem('katalyst-theme', JSON.stringify(nextTheme));
+    if (!nextTheme.usePlatform) applyThemePrefs(nextTheme);
     localStorage.setItem(USER_PREFS_KEY, JSON.stringify({ timezone }));
     // Sync name + email to Supabase auth so it's persisted across devices
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
@@ -103,6 +116,12 @@ export default function ProfilePage() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
+
+  function updateTheme(patch: Partial<AppThemePrefs>) {
+    const next = { ...theme, ...patch };
+    setTheme(next);
+    if (!next.usePlatform) applyThemePrefs(next); // live preview
+  }
 
   const handleReset = async () => {
     if (!confirmReset) { setConfirmReset(true); return; }
@@ -263,15 +282,108 @@ export default function ProfilePage() {
       <div className="info-card" style={{ marginTop: 20 }}>
         <div className="info-card-header">Appearance</div>
         <div className="info-card-body">
-          <div className="form-field" style={{ marginBottom: 16 }}>
-            <label className="form-label">Platform Theme</label>
-            <div style={{ padding: '11px 12px', borderRadius: 10, background: 'var(--bg)', border: '1px solid var(--border)', fontSize: 13, color: 'var(--text)' }}>
-              {platformName} (managed by admin)
+          <div className="form-field" style={{ marginBottom: 12 }}>
+            <label className="form-label">Theme Mode</label>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => updateTheme({ usePlatform: true })}
+                className="btn"
+                style={{
+                  flex: 1,
+                  borderColor: theme.usePlatform ? 'var(--primary)' : 'var(--border)',
+                  background: theme.usePlatform ? 'var(--primary-light)' : 'var(--bg)',
+                  color: 'var(--text)',
+                }}
+              >
+                Use Platform ({platformName})
+              </button>
+              <button
+                onClick={() => updateTheme({ usePlatform: false })}
+                className="btn"
+                style={{
+                  flex: 1,
+                  borderColor: !theme.usePlatform ? 'var(--primary)' : 'var(--border)',
+                  background: !theme.usePlatform ? 'var(--primary-light)' : 'var(--bg)',
+                  color: 'var(--text)',
+                }}
+              >
+                Custom
+              </button>
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
-              Theme, gradients, fonts, and button style are synced globally across web and mobile.
+              Platform theme is admin default; choose Custom to override on this device.
             </div>
           </div>
+
+          {!theme.usePlatform && (
+            <>
+              <div className="form-field" style={{ marginBottom: 16 }}>
+                <label className="form-label">Theme Pack</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 10, marginTop: 6 }}>
+                  {THEME_PACKS.map((pack) => (
+                    <button
+                      key={pack.id}
+                      title={pack.label}
+                      onClick={() => updateTheme({ themeId: pack.id })}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '9px 10px', borderRadius: 12,
+                        border: `1.5px solid ${theme.themeId === pack.id ? pack.light.primary : 'var(--border)'}`,
+                        background: theme.themeId === pack.id ? `${pack.light.primary}18` : 'var(--bg)',
+                        cursor: 'pointer', transition: 'all 0.15s',
+                      }}
+                    >
+                      <span style={{ fontSize: 14 }}>{pack.emoji}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{pack.label}</span>
+                      <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+                        <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientFrom }} />
+                        <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientTo }} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div className="form-field">
+                  <label className="form-label">Font Family</label>
+                  <select
+                    className="form-input"
+                    value={theme.fontFamily}
+                    onChange={(e) => updateTheme({ fontFamily: e.target.value })}
+                    style={{ fontFamily: `'${theme.fontFamily}', sans-serif` }}
+                  >
+                    {FONT_OPTIONS.map((f) => (
+                      <option key={f.value} value={f.value} style={{ fontFamily: `'${f.value}', sans-serif` }}>
+                        {f.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-field">
+                  <label className="form-label">Font Size</label>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                    {FONT_SIZES.map((s) => (
+                      <button
+                        key={s.value}
+                        onClick={() => updateTheme({ fontSize: s.value })}
+                        style={{
+                          flex: 1, padding: '7px 4px', borderRadius: 'var(--radius)',
+                          border: `1.5px solid ${theme.fontSize === s.value ? 'var(--primary)' : 'var(--border)'}`,
+                          background: theme.fontSize === s.value ? 'var(--primary-light)' : 'var(--bg)',
+                          color: theme.fontSize === s.value ? 'var(--primary)' : 'var(--text-secondary)',
+                          fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s',
+                        }}
+                      >
+                        {s.label.split(' ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="form-field">
             <label className="form-label">Timezone — used for daily activity tracker</label>

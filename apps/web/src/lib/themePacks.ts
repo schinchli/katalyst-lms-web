@@ -20,6 +20,7 @@ export interface AppThemePrefs {
   fontFamily: string;
   fontSize: string;
   timezone: string;
+  usePlatform: boolean;
 }
 
 export const THEME_PACKS: ThemePack[] = [
@@ -102,6 +103,7 @@ export const DEFAULT_THEME_PREFS: AppThemePrefs = {
   fontFamily: 'Space Grotesk',
   fontSize: '14',
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  usePlatform: true,
 };
 
 export function resolveThemePack(themeId?: string): ThemePack {
@@ -116,6 +118,7 @@ export function normalizeThemePrefs(raw: unknown): AppThemePrefs {
     fontFamily: typeof r.fontFamily === 'string' ? r.fontFamily : DEFAULT_THEME_PREFS.fontFamily,
     fontSize: typeof r.fontSize === 'string' ? r.fontSize : DEFAULT_THEME_PREFS.fontSize,
     timezone: typeof r.timezone === 'string' ? r.timezone : DEFAULT_THEME_PREFS.timezone,
+    usePlatform: typeof r.usePlatform === 'boolean' ? r.usePlatform : DEFAULT_THEME_PREFS.usePlatform,
   };
 }
 
