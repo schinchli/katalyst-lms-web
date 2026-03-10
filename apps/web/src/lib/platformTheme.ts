@@ -1,4 +1,4 @@
-export type PlatformThemePresetId = 'aurora' | 'sandstone' | 'midnight';
+export type PlatformThemePresetId = 'datacamp' | 'aurora' | 'sandstone' | 'midnight';
 
 export interface PlatformThemeConfig {
   presetId: PlatformThemePresetId;
@@ -18,6 +18,15 @@ export const PLATFORM_THEME_KEY = 'platform_theme';
 export const PLATFORM_THEME_CACHE_KEY = 'katalyst-platform-theme-cache';
 
 export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
+  {
+    id: 'datacamp',
+    label: 'DataCamp Night',
+    description: 'Deep navy dashboards with green-violet highlights and cleaner learning rails.',
+    heroPreview: 'linear-gradient(135deg, #00152D 0%, #00ED64 18%, #3D7BFF 62%, #6F44FF 100%)',
+    buttonStyle: 'Rounded, bold green',
+    headingFont: 'Sora',
+    bodyFont: 'Inter',
+  },
   {
     id: 'aurora',
     label: 'Neon Aurora',
@@ -47,12 +56,12 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
   },
 ];
 
-export const DEFAULT_PLATFORM_THEME: PlatformThemeConfig = { presetId: 'aurora' };
+export const DEFAULT_PLATFORM_THEME: PlatformThemeConfig = { presetId: 'datacamp' };
 
 export function normalizePlatformTheme(raw: unknown): PlatformThemeConfig {
   if (!raw || typeof raw !== 'object') return DEFAULT_PLATFORM_THEME;
   const presetId = (raw as { presetId?: unknown }).presetId;
-  if (presetId === 'aurora' || presetId === 'sandstone' || presetId === 'midnight') {
+  if (presetId === 'datacamp' || presetId === 'aurora' || presetId === 'sandstone' || presetId === 'midnight') {
     return { presetId };
   }
   return DEFAULT_PLATFORM_THEME;
@@ -67,4 +76,3 @@ export function applyPlatformThemePreset(presetId: PlatformThemePresetId) {
     // best-effort cache
   }
 }
-

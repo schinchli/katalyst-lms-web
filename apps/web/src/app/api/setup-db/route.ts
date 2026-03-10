@@ -105,13 +105,13 @@ create table if not exists public.app_settings (
 );
 
 -- ── Row Level Security ────────────────────────────────────────────────────
-alter table public.user_profiles   enable row level security;
-alter table public.quiz_results    enable row level security;
-alter table public.subscriptions   enable row level security;
-alter table public.unlocked_courses enable row level security;
-alter table public.purchases       enable row level security;
-alter table public.profiles        enable row level security;
-alter table public.app_settings    enable row level security;
+ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.unlocked_courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
 drop policy if exists "own user_profiles"    on public.user_profiles;
 drop policy if exists "own quiz_results"     on public.quiz_results;

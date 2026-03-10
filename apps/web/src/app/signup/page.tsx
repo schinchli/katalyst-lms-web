@@ -1,58 +1,51 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { DEFAULT_PLATFORM_EXPERIENCE, normalizePlatformExperience } from '@/lib/platformExperience';
 
 type SignupStep = 'form' | 'confirm';
 
 export default function SignupPage() {
   const router = useRouter();
   const { execute: recaptcha } = useRecaptcha();
-  const [step,     setStep]     = useState<SignupStep>('form');
-  const [name,     setName]     = useState('');
-  const [email,    setEmail]    = useState('');
+  const [step, setStep] = useState<SignupStep>('form');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error,    setError]    = useState('');
-  const [loading,  setLoading]  = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [copy, setCopy] = useState(DEFAULT_PLATFORM_EXPERIENCE.copy);
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    fetch('/api/platform-config')
+      .then((res) => res.json())
+      .then((body: { config?: unknown }) => setCopy(normalizePlatformExperience(body.config).copy))
+      .catch(() => {});
+  }, []);
+
+  const handleSignup = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError('');
 
-    // Rules 82–86: Enforce strong password before calling Supabase
-    if (password.length < 12) {
-      setError('Password must be at least 12 characters.');
-      return;
-    }
-    if (!/[A-Z]/.test(password)) {
-      setError('Password must contain at least one uppercase letter.');
-      return;
-    }
-    if (!/[a-z]/.test(password)) {
-      setError('Password must contain at least one lowercase letter.');
-      return;
-    }
-    if (!/[0-9]/.test(password)) {
-      setError('Password must contain at least one number.');
-      return;
-    }
-    if (!/[^A-Za-z0-9]/.test(password)) {
-      setError('Password must contain at least one special character (e.g. @, !, #).');
-      return;
-    }
+    if (password.length < 12) return setError('Password must be at least 12 characters.');
+    if (!/[A-Z]/.test(password)) return setError('Password must contain at least one uppercase letter.');
+    if (!/[a-z]/.test(password)) return setError('Password must contain at least one lowercase letter.');
+    if (!/[0-9]/.test(password)) return setError('Password must contain at least one number.');
+    if (!/[^A-Za-z0-9]/.test(password)) return setError('Password must contain at least one special character.');
 
     setLoading(true);
 
-    // ── reCAPTCHA v3 — best-effort, never blocks the user ────────────────
     try {
       const token = await recaptcha('signup');
       if (token) {
-        const res   = await fetch('/api/recaptcha/verify', {
-          method:  'POST',
+        const res = await fetch('/api/recaptcha/verify', {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ token, action: 'signup' }),
+          body: JSON.stringify({ token, action: 'signup' }),
         });
         const check = await res.json() as { ok: boolean };
         if (!check.ok) {
@@ -61,9 +54,11 @@ export default function SignupPage() {
           return;
         }
       }
-    } catch { /* reCAPTCHA unavailable — continue; rate limiter protects */ }
+    } catch {
+      // best-effort
+    }
 
-    const { data, error: err } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -73,152 +68,87 @@ export default function SignupPage() {
     });
     setLoading(false);
 
-    if (err) {
-      setError(err.message);
+    if (authError) {
+      setError(authError.message);
       return;
     }
 
-    // If session exists, email confirmation is disabled — go straight to dashboard
     if (data.session) {
       router.push('/dashboard');
       return;
     }
 
-    // Otherwise show "check your email" screen
     setStep('confirm');
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', borderRadius: 8,
-    border: '1px solid var(--border)', background: 'var(--bg)',
-    color: 'var(--text)', fontSize: 14, fontFamily: 'inherit',
-    outline: 'none', boxSizing: 'border-box',
-  };
-
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg)', fontFamily: 'inherit',
-    }}>
-      <div style={{
-        background: 'var(--surface)', borderRadius: 16, padding: '40px 36px',
-        width: '100%', maxWidth: 400, boxShadow: '0 4px 24px rgba(47,43,61,0.12)',
-        border: '1px solid var(--border)',
-      }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%)', boxShadow: '0 8px 20px rgba(14,165,233,0.35)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 800, fontSize: 20,
-          }}>K</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>Katalyst</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Supercharge Your Career. Learn Skills Faster.</div>
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, background: '#00152D' }}>
+      <div style={{ width: '100%', maxWidth: 1180, display: 'grid', gridTemplateColumns: '1fr 0.92fr', gap: 24 }}>
+        <section className="dc-hero" style={{ padding: 36, minHeight: 720 }}>
+          <div className="dc-chip">Start your path</div>
+          <h1 style={{ margin: '22px 0 14px', fontSize: 'clamp(48px, 7vw, 78px)', lineHeight: 0.95, color: '#fff' }}>{copy.authHeadline}</h1>
+          <p style={{ margin: 0, maxWidth: 620, fontSize: 22, lineHeight: 1.55, color: 'var(--text-secondary)' }}>{copy.authSubheadline}</p>
+
+          <div style={{ marginTop: 40, display: 'grid', gap: 16 }}>
+            {[
+              'Practice cards and course rails designed for momentum',
+              'Admin-managed content, theme, and screen layout controls',
+              'Cleaner premium gating and stronger social proof sections',
+            ].map((item) => (
+              <div key={item} className="dc-card" style={{ padding: 18, background: 'rgba(255,255,255,0.05)' }}>
+                <div style={{ color: '#fff', fontWeight: 700 }}>{item}</div>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {step === 'confirm' ? (
-          /* ── Email confirmation screen ── */
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
-            <h1 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Check your email</h1>
-            <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              We sent a confirmation link to <strong style={{ color: 'var(--text)' }}>{email}</strong>.
-              Click the link to activate your account, then sign in below.
-            </p>
-            <Link
-              href="/login"
-              style={{
-                display: 'block', padding: '11px', borderRadius: 8, textAlign: 'center',
-                background: 'var(--primary)', color: '#fff', fontSize: 14, fontWeight: 600,
-                textDecoration: 'none',
-              }}
-            >
-              Go to Sign In
-            </Link>
-          </div>
-        ) : (
-          /* ── Sign up form ── */
-          <>
-            <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Create account</h1>
-            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Your AWS &amp; GenAI certification journey starts here</p>
+        <section className="dc-card" style={{ padding: 34, alignSelf: 'center' }}>
+          {step === 'confirm' ? (
+            <div style={{ textAlign: 'center' }}>
+              <div className="dc-chip">Check your inbox</div>
+              <h2 style={{ margin: '18px 0 10px', fontSize: 34, fontWeight: 700 }}>Confirm your email</h2>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+                We sent a confirmation link to <strong style={{ color: 'var(--text)' }}>{email}</strong>. Open it, then return here to continue into the dashboard.
+              </p>
+              <Link href="/login" className="btn-primary" style={{ display: 'inline-flex', marginTop: 24, textDecoration: 'none' }}>
+                Go to sign in
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="dc-chip">Create account</div>
+              <h2 style={{ margin: '18px 0 10px', fontSize: 34, fontWeight: 700 }}>Join the platform</h2>
+              <p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                Create your account to unlock the redesigned home, course rails, growth dashboard, and editorial learning flow.
+              </p>
 
-            <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Full Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Smith"
-                  style={inputStyle}
-                />
-              </div>
+              <form onSubmit={handleSignup} style={{ display: 'grid', gap: 16 }}>
+                <label>
+                  <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Full name</div>
+                  <input value={name} onChange={(event) => setName(event.target.value)} className="admin-field-input" placeholder="Jane Smith" />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Email</div>
+                  <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="admin-field-input" required placeholder="you@example.com" />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Password</div>
+                  <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" className="admin-field-input" required placeholder="12+ chars, upper/lower/number/symbol" />
+                </label>
 
-              <div>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="you@example.com"
-                  style={inputStyle}
-                />
-              </div>
+                {error && <div style={{ padding: '12px 14px', borderRadius: 14, background: 'rgba(139,92,246,0.16)', border: '1px solid rgba(139,92,246,0.24)', color: '#e9ddff' }}>{error}</div>}
 
-              <div>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Min 12 chars, upper+lower+number+symbol"
-                  style={inputStyle}
-                />
-              </div>
+                <button type="submit" className="btn-primary" disabled={loading} style={{ minHeight: 52 }}>
+                  {loading ? 'Creating account…' : 'Create account'}
+                </button>
+              </form>
 
-              {error && (
-                <div style={{
-                  padding: '10px 14px', borderRadius: 8,
-                  background: '#FF4C5114', border: '1px solid #FF4C5140',
-                  color: '#FF4C51', fontSize: 13,
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  padding: '11px', borderRadius: 8, marginTop: 4,
-                  background: loading ? 'var(--primary-light)' : 'var(--primary)',
-                  color: loading ? 'var(--primary-text)' : '#fff',
-                  fontSize: 14, fontWeight: 600, border: 'none',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.15s',
-                }}
-              >
-                {loading ? 'Creating account…' : 'Create account'}
-              </button>
-            </form>
-
-            <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'var(--text-secondary)' }}>
-              Already have an account?{' '}
-              <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
-            </p>
-            <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-secondary)' }}>
-              Protected by reCAPTCHA —{' '}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Privacy</a>
-              {' & '}
-              <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Terms</a>
-            </p>
-          </>
-        )}
+              <p style={{ marginTop: 24, color: 'var(--text-secondary)' }}>
+                Already have an account? <Link href="/login" style={{ color: 'var(--primary-text)', fontWeight: 700 }}>Sign in</Link>
+              </p>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );

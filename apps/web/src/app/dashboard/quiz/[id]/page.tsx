@@ -9,6 +9,7 @@ import { AdBanner } from '@/components/AdBanner';
 import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
+import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = {
@@ -19,8 +20,6 @@ const Q_TIME = 30;
 type Phase = 'intro' | 'quiz' | 'results' | 'upsell';
 type PaywallTab = 'course' | 'pro';
 
-// ── Upsell messaging — editable from Admin Dashboard ─────────────────────────
-const ADMIN_MSGS_KEY = 'katalyst-admin-msgs';
 interface UpsellConfig {
   freeLimit:      number;
   headline:       string;
@@ -30,19 +29,13 @@ interface UpsellConfig {
   skipCtaLabel:   string;
 }
 const DEFAULT_UPSELL: UpsellConfig = {
-  freeLimit:      25,
-  headline:       "You've cracked {n}. The exam has {remaining} more waiting.",
-  subtext:        "You're scoring {score} in the free zone — not bad. But the questions that decide pass or fail are the ones you haven't touched yet: Security deep-dives, Technology edge cases, full-length stamina. Go all-in and walk into the exam knowing every corner of CLF-C02.",
-  proCtaLabel:    '⭐ Unlock All {total} Questions — Pro ₹999/yr',
-  courseCtaLabel: '🔓 Finish This Quiz — ₹{price} one-time',
-  skipCtaLabel:   '← Browse Other Quizzes',
+  freeLimit: 25,
+  headline: "You've completed the free preview — {n} questions",
+  subtext: 'Unlock all {remaining} remaining questions, deeper explanations, and the full certification path. Current score: {score}.',
+  proCtaLabel: 'Unlock all {total} questions',
+  courseCtaLabel: 'Unlock this course for ₹{price}',
+  skipCtaLabel: 'Browse other quizzes',
 };
-function loadUpsellConfig(): UpsellConfig {
-  try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_MSGS_KEY) : null;
-    return raw ? { ...DEFAULT_UPSELL, ...JSON.parse(raw) as Partial<UpsellConfig> } : DEFAULT_UPSELL;
-  } catch { return DEFAULT_UPSELL; }
-}
 function interpolate(tpl: string, vars: Record<string, string>): string {
   return Object.entries(vars).reduce((s, [k, v]) => s.replace(new RegExp(`\\{${k}\\}`, 'g'), v), tpl);
 }
@@ -92,6 +85,7 @@ const LayersSvg = () => (
 );
 
 export default function QuizPage() {
+  const { config: platformConfig } = usePlatformExperience();
   const { id }    = useParams<{ id: string }>();
   const router    = useRouter();
   const quiz      = quizzes.find((q) => q.id === id);
@@ -117,8 +111,16 @@ export default function QuizPage() {
   // Whether this user is on the free tier for this quiz
   const isFreeUser = !isPro && !unlockedCourses.includes(id ?? '');
 
-  // Load admin-editable upsell messaging on mount
-  useEffect(() => { setUpsellCfg(loadUpsellConfig()); }, []);
+  useEffect(() => {
+    setUpsellCfg({
+      freeLimit: platformConfig.layout.paywallFreeLimit,
+      headline: platformConfig.copy.paywallHeadline,
+      subtext: platformConfig.copy.paywallSubtext,
+      proCtaLabel: platformConfig.copy.paywallProCta,
+      courseCtaLabel: platformConfig.copy.paywallCourseCta,
+      skipCtaLabel: platformConfig.copy.paywallSkipCta,
+    });
+  }, [platformConfig]);
 
   // Fetch real student count for this quiz
   useEffect(() => {

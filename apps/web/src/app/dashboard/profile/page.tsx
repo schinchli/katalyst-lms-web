@@ -1,11 +1,12 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from 'react';
+
+import { useEffect, useMemo, useState } from 'react';
 import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import type { QuizResult } from '@/types';
-import { getQuizResults, saveUserProfile, getUserProfile, deleteAllQuizResults } from '@/lib/db';
+import { deleteAllQuizResults, getQuizResults, getUserProfile, saveUserProfile } from '@/lib/db';
 import { PLATFORM_THEME_PRESETS, normalizePlatformTheme } from '@/lib/platformTheme';
 import {
   THEME_PACKS,
@@ -17,445 +18,214 @@ import {
   type AppThemePrefs,
 } from '@/lib/themePacks';
 import { fetchUserTheme, saveUserTheme } from '@/lib/userTheme';
+import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
-  try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem('quiz-results') || '[]') as QuizResult[];
+  } catch {
+    return [];
+  }
 }
 
-// Common timezones grouped for usability
-const TIMEZONES = [
-  { label: 'UTC',                          value: 'UTC'                      },
-  { label: 'IST — India (UTC+5:30)',        value: 'Asia/Kolkata'             },
-  { label: 'GST — Gulf (UTC+4)',            value: 'Asia/Dubai'               },
-  { label: 'SGT — Singapore (UTC+8)',       value: 'Asia/Singapore'           },
-  { label: 'CST — China (UTC+8)',           value: 'Asia/Shanghai'            },
-  { label: 'JST — Japan (UTC+9)',           value: 'Asia/Tokyo'               },
-  { label: 'AEST — Sydney (UTC+10)',        value: 'Australia/Sydney'         },
-  { label: 'GMT — London (UTC+0)',          value: 'Europe/London'            },
-  { label: 'CET — Central Europe (UTC+1)', value: 'Europe/Berlin'            },
-  { label: 'EET — Eastern Europe (UTC+2)', value: 'Europe/Helsinki'          },
-  { label: 'MSK — Moscow (UTC+3)',          value: 'Europe/Moscow'            },
-  { label: 'EST — New York (UTC-5)',        value: 'America/New_York'         },
-  { label: 'CST — Chicago (UTC-6)',         value: 'America/Chicago'          },
-  { label: 'MST — Denver (UTC-7)',          value: 'America/Denver'           },
-  { label: 'PST — Los Angeles (UTC-8)',     value: 'America/Los_Angeles'      },
-  { label: 'BRT — São Paulo (UTC-3)',       value: 'America/Sao_Paulo'        },
-];
-
-const USER_PREFS_KEY = 'katalyst-user-prefs';
+function score(result: QuizResult) {
+  return Math.round((result.score / result.totalQuestions) * 100);
+}
 
 export default function ProfilePage() {
-  const [results,      setResults]      = useState<QuizResult[]>([]);
-  const [name,         setName]         = useState('');
-  const [email,        setEmail]        = useState('');
-  const [role,         setRole]         = useState('AWS Learner');
-  const [saved,        setSaved]        = useState(false);
-  const [authUserId,   setAuthUserId]   = useState<string | null>(null);
-  const [theme,        setTheme]        = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
-  const [timezone,     setTimezone]     = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const [platformName, setPlatformName] = useState('Neon Aurora');
+  const { config } = usePlatformExperience();
+  const { isPro } = useSubscription();
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('Focused learner');
+  const [saved, setSaved] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
-  const { isPro, unlockedCourses } = useSubscription();
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [theme, setTheme] = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
+  const [platformThemeName, setPlatformThemeName] = useState('DataCamp Night');
 
   useEffect(() => {
     setResults(getLocalResults());
-    setRole(localStorage.getItem('profile-role') || 'AWS Learner');
 
     try {
       const raw = localStorage.getItem('katalyst-theme');
-      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
-      setTheme(prefs);
-      setTimezone(prefs.timezone);
-      if (!prefs.usePlatform) applyThemePrefs(prefs);
-    } catch { /* ignore */ }
+      const next = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      setTheme(next);
+      if (!next.usePlatform) applyThemePrefs(next);
+    } catch {
+      // ignore
+    }
 
     try {
       const raw = localStorage.getItem('katalyst-platform-theme-cache');
-      const t = normalizePlatformTheme(raw ? JSON.parse(raw) : null);
-      const preset = PLATFORM_THEME_PRESETS.find((p) => p.id === t.presetId);
-      if (preset) setPlatformName(preset.label);
-    } catch { /* ignore */ }
+      const presetId = normalizePlatformTheme(raw ? JSON.parse(raw) : null).presetId;
+      setPlatformThemeName(PLATFORM_THEME_PRESETS.find((item) => item.id === presetId)?.label ?? 'DataCamp Night');
+    } catch {
+      // ignore
+    }
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (user) {
-        setAuthUserId(user.id);
-        const supabaseName = (user.user_metadata?.name as string | undefined)
-                          ?? user.email?.split('@')[0]
-                          ?? 'Learner';
+      if (!user) return;
+      setAuthUserId(user.id);
+      setEmail(user.email || '');
+      const profile = await getUserProfile(user.id);
+      setName(profile?.name || (user.user_metadata?.name as string | undefined) || localStorage.getItem('profile-name') || 'Learner');
+      setRole(profile?.role || localStorage.getItem('profile-role') || 'Focused learner');
 
-        // Load profile from Supabase, fallback to localStorage
-        const profile = await getUserProfile(user.id);
-        setName(profile?.name || localStorage.getItem('profile-name') || supabaseName);
-        setRole(profile?.role || localStorage.getItem('profile-role') || 'AWS Learner');
-        setEmail(localStorage.getItem('profile-email') || user.email || '');
+      const remoteResults = await getQuizResults(user.id);
+      if (remoteResults.length > 0) setResults(remoteResults);
 
-        // User theme from Supabase (sync cross-device)
-        fetchUserTheme(user.id)
-          .then((prefs) => {
-            setTheme(prefs);
-            setTimezone(prefs.timezone);
-            if (!prefs.usePlatform) applyThemePrefs(prefs);
-          })
-          .catch(() => {});
-
-        // Load quiz results from Supabase
-        const supabaseResults = await getQuizResults(user.id);
-        if (supabaseResults.length > 0) {
-          setResults(supabaseResults);
-          try { localStorage.setItem('quiz-results', JSON.stringify(supabaseResults)); } catch { /* best-effort */ }
-        }
-      } else {
-        setName(localStorage.getItem('profile-name')  || 'Learner');
-        setEmail(localStorage.getItem('profile-email') || '');
-      }
+      fetchUserTheme(user.id)
+        .then((prefs) => {
+          setTheme(prefs);
+          if (!prefs.usePlatform) applyThemePrefs(prefs);
+        })
+        .catch(() => {});
     });
   }, []);
 
+  const completedCount = useMemo(() => new Set(results.map((item) => item.quizId)).size, [results]);
+  const average = results.length ? Math.round(results.reduce((sum, item) => sum + score(item), 0) / results.length) : 0;
+  const studyHours = Math.max(0, Math.floor(results.reduce((sum, item) => sum + item.timeTaken, 0) / 3600));
+
   const handleSave = async () => {
-    localStorage.setItem('profile-name',  name);
+    localStorage.setItem('profile-name', name);
     localStorage.setItem('profile-email', email);
-    localStorage.setItem('profile-role',  role);
-    const nextTheme = { ...theme, timezone };
-    localStorage.setItem('katalyst-theme', JSON.stringify(nextTheme));
-    if (!nextTheme.usePlatform) applyThemePrefs(nextTheme);
-    localStorage.setItem(USER_PREFS_KEY, JSON.stringify({ timezone }));
-    if (authUserId) {
-      saveUserTheme(authUserId, nextTheme).catch(() => {});
-    }
-    // Sync name + email to Supabase auth so it's persisted across devices
+    localStorage.setItem('profile-role', role);
+    localStorage.setItem('katalyst-theme', JSON.stringify(theme));
+
+    if (!theme.usePlatform) applyThemePrefs(theme);
+
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
-    if (authUserId) await saveUserProfile(authUserId, { name, role });
+    if (authUserId) {
+      await saveUserProfile(authUserId, { name, role });
+      await saveUserTheme(authUserId, theme);
+    }
+
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => setSaved(false), 1800);
   };
 
-  function updateTheme(patch: Partial<AppThemePrefs>) {
-    const next = { ...theme, ...patch };
-    setTheme(next);
-    if (!next.usePlatform) applyThemePrefs(next); // live preview
-  }
-
-  const handleReset = async () => {
-    if (!confirmReset) { setConfirmReset(true); return; }
+  const handleResetHistory = async () => {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      return;
+    }
     setConfirmReset(false);
     localStorage.removeItem('quiz-results');
-    if (authUserId) await deleteAllQuizResults(authUserId).catch(() => { /* best-effort */ });
     setResults([]);
+    if (authUserId) await deleteAllQuizResults(authUserId).catch(() => {});
   };
 
-  const completed  = new Set(results.map((r) => r.quizId));
-  const avgScore   = results.length ? Math.round(results.reduce((s, r) => s + Math.round((r.score / r.totalQuestions) * 100), 0) / results.length) : 0;
-  const level      = Math.max(1, Math.floor(completed.size / 3));
-  const totalSecs  = results.reduce((s, r) => s + (r.timeTaken ?? 0), 0);
-  const totalHrs   = Math.floor(totalSecs / 3600);
-  const initial    = name.charAt(0).toUpperCase() || 'L';
-
   return (
-    <div className="page-content profile-page">
-      {/* Profile card */}
-      <div className="profile-card">
-        {/* Banner with name overlay */}
-        <div className="profile-banner">
-          <div className="profile-banner-bg">
-            <svg width="100%" height="220" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid slice">
-              <defs>
-                <linearGradient id="bannerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--gradient-from)" />
-                  <stop offset="60%" stopColor="var(--primary)" />
-                  <stop offset="100%" stopColor="var(--gradient-to)" />
-                </linearGradient>
-              </defs>
-              <rect width="900" height="220" fill="url(#bannerGrad)" />
-              <circle cx="820" cy="40"  r="90"  fill="white" opacity="0.07" />
-              <circle cx="750" cy="180" r="130" fill="white" opacity="0.05" />
-              <circle cx="100" cy="10"  r="70"  fill="white" opacity="0.06" />
-              <circle cx="200" cy="200" r="50"  fill="white" opacity="0.04" />
-              {[30,60,90,120,150,180,210,240,270,300,330,360,390,420,450,480,510,540,570,600,630,660,690,720,750,780,810,840,870].map((x) =>
-                [40,80,120,160,200].map((y) => (
-                  <circle key={`${x}-${y}`} cx={x} cy={y} r="1.5" fill="white" opacity="0.2" />
-                ))
-              )}
-            </svg>
+    <div className="page-content dc-shell">
+      <section className="dc-hero" style={{ padding: 30 }}>
+        <div className="dc-grid" style={{ gridTemplateColumns: 'auto 1fr auto', gap: 22, alignItems: 'center' }}>
+          <div style={{ width: 132, height: 132, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))', display: 'grid', placeItems: 'center', fontSize: 46, fontWeight: 700 }}>
+            {(name || email || 'L').charAt(0).toUpperCase()}
           </div>
-          {/* Name / role text — white on the purple gradient */}
-          <div style={{ position: 'absolute', bottom: 52, left: 148, right: 28 }}>
-            <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: '0 0 3px', textShadow: '0 1px 4px rgba(0,0,0,0.25)' }}>{name || email}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 13, margin: 0 }}>{role}</p>
+          <div>
+            <div className="dc-chip">{isPro ? 'Premium member' : 'Free learner'}</div>
+            <h1 style={{ margin: '16px 0 10px', fontSize: 'clamp(32px, 4.2vw, 50px)', lineHeight: 1.03 }}>{name || 'Learner'}</h1>
+            <div style={{ color: 'var(--text-secondary)', fontSize: 18 }}>{email || 'No email set'}</div>
+            <div style={{ marginTop: 8, color: 'var(--text-secondary)' }}>{role}</div>
+          </div>
+          <div className="dc-card" style={{ padding: 20, minWidth: 240 }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Current platform theme</div>
+            <div style={{ marginTop: 10, fontSize: 28, fontWeight: 700 }}>{platformThemeName}</div>
+            <div style={{ marginTop: 10, color: 'var(--text-secondary)' }}>End users can override this with their own theme pack below.</div>
           </div>
         </div>
 
-        {/* Avatar + badges row */}
-        <div className="profile-avatar-row">
-          <div className="profile-avatar">{initial}</div>
-          <div className="profile-avatar-info">
-            <div className="profile-badges">
-              <span className="profile-badge" style={isPro ? { background: '#FF9F4318', color: '#FF9F43', fontWeight: 700 } : { background: 'var(--bg)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
-                {isPro ? '⭐ Pro' : 'Free Plan'}
-              </span>
-              <span className="profile-badge" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>Level {level}</span>
-              <span className="profile-badge" style={{ background: '#28C76F18', color: '#28C76F' }}>{completed.size} Completed</span>
-              {avgScore > 0 && (
-                <span className="profile-badge" style={{ background: '#FF9F4318', color: '#FF9F43' }}>Avg {avgScore}%</span>
-              )}
+        <div className="dc-kpi-grid" style={{ marginTop: 24 }}>
+          {[
+            { label: 'Courses completed', value: String(completedCount), tone: 'var(--text)' },
+            { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
+            { label: 'Study hours', value: `${studyHours}`, tone: '#ffd84d' },
+            { label: 'Course library', value: String(quizzes.length), tone: 'var(--platform-premium-accent)' },
+          ].map((item) => (
+            <div key={item.label} className="dc-card" style={{ padding: 20 }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{item.label}</div>
+              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: item.tone }}>{item.value}</div>
             </div>
-          </div>
+          ))}
         </div>
+      </section>
 
-        {/* Stats row */}
-        <div className="profile-stats-row">
-          <div className="profile-stat-cell">
-            <div className="profile-stat-val" style={{ color: 'var(--primary)' }}>{completed.size}</div>
-            <div className="profile-stat-lbl">Quizzes Done</div>
+      {config.widgets.showProfileOffer && (
+        <section className="dc-card" style={{ padding: 26 }}>
+          <div className="dc-grid" style={{ gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'center' }}>
+            <div>
+              <h2 className="dc-section-title" style={{ fontSize: 34 }}>{config.copy.profileOfferTitle}</h2>
+              <p className="dc-section-subtitle" style={{ color: 'var(--platform-profile-offer-accent)', fontWeight: 700 }}>{config.copy.profileOfferSubtitle}</p>
+            </div>
+            <button className="btn-primary">{isPro ? 'Manage plan' : 'Upgrade now'}</button>
           </div>
-          <div className="profile-stat-cell">
-            <div className="profile-stat-val" style={{ color: '#FF9F43' }}>{avgScore}%</div>
-            <div className="profile-stat-lbl">Avg Score</div>
-          </div>
-          <div className="profile-stat-cell">
-            <div className="profile-stat-val" style={{ color: '#28C76F' }}>{Math.max(totalHrs, results.length > 0 ? 1 : 0)}h</div>
-            <div className="profile-stat-lbl">Study Hours</div>
-          </div>
-        </div>
-      </div>
+        </section>
+      )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        {/* About */}
-        <div className="info-card">
-          <div className="info-card-header">About</div>
-          <div className="info-card-body">
-            <div className="info-row">
-              <span className="info-label">Full Name</span>
-              <span className="info-value">{name}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Email</span>
-              <span className="info-value">{email || 'Not set'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Role</span>
-              <span className="info-value">{role}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Level</span>
-              <span className="info-value">Level {level} — AWS Learner</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Subscription</span>
-              <span className="info-value" style={isPro ? { color: '#FF9F43', fontWeight: 700 } : {}}>
-                {isPro ? '⭐ Pro — Unlimited access' : `Free — ${unlockedCourses.length} course${unlockedCourses.length !== 1 ? 's' : ''} unlocked`}
-              </span>
-            </div>
-            {!isPro && unlockedCourses.length > 0 && (
-              <div className="info-row" style={{ alignItems: 'flex-start' }}>
-                <span className="info-label">Unlocked</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {unlockedCourses.map((cId) => {
-                    const q = quizzes.find((quiz) => quiz.id === cId);
-                    return (
-                      <span key={cId} className="info-value" style={{ fontSize: 12 }}>
-                        ✓ {q?.title ?? cId}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            <div className="info-row">
-              <span className="info-label">Platform</span>
-              <span className="info-value">Katalyst Quiz Platform</span>
+      <section className="dc-settings-grid">
+        <div className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Profile details</h2>
+          <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Full name</div>
+              <input value={name} onChange={(event) => setName(event.target.value)} className="admin-field-input" />
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Email</div>
+              <input value={email} onChange={(event) => setEmail(event.target.value)} className="admin-field-input" />
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Role / headline</div>
+              <input value={role} onChange={(event) => setRole(event.target.value)} className="admin-field-input" />
+            </label>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button className="btn-primary" onClick={handleSave}>{saved ? 'Saved' : 'Save profile'}</button>
+              <button className="settings-btn-ghost" onClick={handleResetHistory}>{confirmReset ? 'Confirm reset history' : 'Reset quiz history'}</button>
             </div>
           </div>
         </div>
 
-        {/* Recent Results */}
-        <div className="info-card">
-          <div className="info-card-header">Recent Activity</div>
-          <div className="info-card-body">
-            {results.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>No quizzes taken yet.</p>
-            ) : (
-              results.slice(-5).reverse().map((r, i) => {
-                const q    = quizzes.find((q) => q.id === r.quizId);
-                const pct  = Math.round((r.score / r.totalQuestions) * 100);
-                const pass = pct >= 70;
-                return (
-                  <div key={i} className="info-row" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 10, marginBottom: 10 }}>
-                    <span className="info-label" style={{ fontSize: 12 }}>{q?.title ?? r.quizId}</span>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: pass ? '#28C76F' : '#FF4C51' }}>{pct}%</span>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Appearance */}
-      <div className="info-card" style={{ marginTop: 20 }}>
-        <div className="info-card-header">Appearance</div>
-        <div className="info-card-body">
-          <div className="form-field" style={{ marginBottom: 12 }}>
-            <label className="form-label">Theme Mode</label>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button
-                onClick={() => updateTheme({ usePlatform: true })}
-                className="btn"
-                style={{
-                  flex: 1,
-                  borderColor: theme.usePlatform ? 'var(--primary)' : 'var(--border)',
-                  background: theme.usePlatform ? 'var(--primary-light)' : 'var(--bg)',
-                  color: 'var(--text)',
-                }}
-              >
-                Use Platform ({platformName})
-              </button>
-              <button
-                onClick={() => updateTheme({ usePlatform: false })}
-                className="btn"
-                style={{
-                  flex: 1,
-                  borderColor: !theme.usePlatform ? 'var(--primary)' : 'var(--border)',
-                  background: !theme.usePlatform ? 'var(--primary-light)' : 'var(--bg)',
-                  color: 'var(--text)',
-                }}
-              >
-                Custom
-              </button>
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
-              Platform theme is admin default; choose Custom to override on this device.
-            </div>
-          </div>
-
-          {!theme.usePlatform && (
-            <>
-              <div className="form-field" style={{ marginBottom: 16 }}>
-                <label className="form-label">Theme Pack</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 10, marginTop: 6 }}>
-                  {THEME_PACKS.map((pack) => (
-                    <button
-                      key={pack.id}
-                      title={pack.label}
-                      onClick={() => updateTheme({ themeId: pack.id })}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10,
-                        padding: '9px 10px', borderRadius: 12,
-                        border: `1.5px solid ${theme.themeId === pack.id ? pack.light.primary : 'var(--border)'}`,
-                        background: theme.themeId === pack.id ? `${pack.light.primary}18` : 'var(--bg)',
-                        cursor: 'pointer', transition: 'all 0.15s',
-                      }}
-                    >
-                      <span style={{ fontSize: 14 }}>{pack.emoji}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{pack.label}</span>
-                      <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientFrom }} />
-                        <span style={{ width: 10, height: 10, borderRadius: 99, background: pack.light.gradientTo }} />
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div className="form-field">
-                  <label className="form-label">Font Family</label>
-                  <select
-                    className="form-input"
-                    value={theme.fontFamily}
-                    onChange={(e) => updateTheme({ fontFamily: e.target.value })}
-                    style={{ fontFamily: `'${theme.fontFamily}', sans-serif` }}
-                  >
-                    {FONT_OPTIONS.map((f) => (
-                      <option key={f.value} value={f.value} style={{ fontFamily: `'${f.value}', sans-serif` }}>
-                        {f.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label className="form-label">Font Size</label>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                    {FONT_SIZES.map((s) => (
-                      <button
-                        key={s.value}
-                        onClick={() => updateTheme({ fontSize: s.value })}
-                        style={{
-                          flex: 1, padding: '7px 4px', borderRadius: 'var(--radius)',
-                          border: `1.5px solid ${theme.fontSize === s.value ? 'var(--primary)' : 'var(--border)'}`,
-                          background: theme.fontSize === s.value ? 'var(--primary-light)' : 'var(--bg)',
-                          color: theme.fontSize === s.value ? 'var(--primary)' : 'var(--text-secondary)',
-                          fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s',
-                        }}
-                      >
-                        {s.label.split(' ')[0]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="form-field">
-            <label className="form-label">Timezone — used for daily activity tracker</label>
-            <select
-              className="goal-select"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
+        <div className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Appearance</h2>
+          <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Theme pack</div>
+              <select value={theme.themeId} onChange={(event) => setTheme((prev) => ({ ...prev, themeId: event.target.value, usePlatform: false }))} className="admin-field-input">
+                {THEME_PACKS.map((pack) => <option key={pack.id} value={pack.id}>{pack.label}</option>)}
+              </select>
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Heading font</div>
+              <select value={theme.fontFamily} onChange={(event) => setTheme((prev) => ({ ...prev, fontFamily: event.target.value, usePlatform: false }))} className="admin-field-input">
+                {FONT_OPTIONS.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
+              </select>
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Base font size</div>
+              <select value={theme.fontSize} onChange={(event) => setTheme((prev) => ({ ...prev, fontSize: event.target.value, usePlatform: false }))} className="admin-field-input">
+                {FONT_SIZES.map((size) => <option key={size.value} value={size.value}>{size.label}</option>)}
+              </select>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text-secondary)' }}>
+              <input type="checkbox" checked={theme.usePlatform} onChange={(event) => setTheme((prev) => ({ ...prev, usePlatform: event.target.checked }))} />
+              Use platform theme by default
+            </label>
+            <button
+              className="settings-btn-ghost"
+              onClick={() => {
+                localStorage.setItem('katalyst-theme', JSON.stringify(theme));
+                if (!theme.usePlatform) applyThemePrefs(theme);
+              }}
             >
-              {TIMEZONES.map((tz) => (
-                <option key={tz.value} value={tz.value}>{tz.label}</option>
-              ))}
-            </select>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 4 }}>
-              Auto-detected: <strong>{Intl.DateTimeFormat().resolvedOptions().timeZone}</strong>
-            </div>
+              Preview locally
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Edit form */}
-      <div className="info-card" style={{ marginTop: 20 }}>
-        <div className="info-card-header">Edit Profile</div>
-        <div className="info-card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-            <div className="form-field">
-              <label className="form-label">Display Name</label>
-              <input className="form-input" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="form-field">
-              <label className="form-label">Email</label>
-              <input className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-          </div>
-          <div className="form-field" style={{ maxWidth: 300 }}>
-            <label className="form-label">Role / Title</label>
-            <input className="form-input" value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. AWS Solutions Architect" />
-          </div>
-          <button className="btn-primary" onClick={handleSave}>{saved ? '✓ Saved!' : 'Save Changes'}</button>
-        </div>
-      </div>
-
-      {/* Danger zone */}
-      <div className="info-card" style={{ marginTop: 20, borderColor: '#FF4C5133' }}>
-        <div className="info-card-header" style={{ color: '#FF4C51' }}>Danger Zone</div>
-        <div className="info-card-body">
-          <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
-            Reset your quiz progress. All scores and completions will be permanently deleted.
-          </p>
-          {confirmReset ? (
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Are you sure? This cannot be undone.</span>
-              <button className="btn-danger" onClick={handleReset}>Yes, delete everything</button>
-              <button className="settings-btn-ghost" onClick={() => setConfirmReset(false)}>Cancel</button>
-            </div>
-          ) : (
-            <button className="btn-danger" onClick={handleReset}>Reset All Progress</button>
-          )}
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

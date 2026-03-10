@@ -1,634 +1,372 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { quizzes } from '@/data/quizzes';
-import type { Quiz, QuizResult } from '@/types';
+import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
-
-const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
-const CERT_COLOR: Record<string, string> = {
-  foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0',
-};
-
-// ── Milestone types ───────────────────────────────────────────────────────────
-interface Milestone {
-  certFilter: string;
-  certLabel:  string;
-  targetDate: string; // YYYY-MM-DD
-  startDate:  string; // YYYY-MM-DD
-}
-
-interface MilestoneStats {
-  daysLeft:               number;
-  daysTotal:              number;
-  targetPct:              number;
-  actualPct:              number;
-  status:                 'ahead' | 'ontrack' | 'behind';
-  milestoneQuizCount:     number;
-  milestoneCompletedCount: number;
-}
-
-const CERT_OPTIONS = [
-  { value: 'all',          label: 'All Tracks'          },
-  { value: 'cloud-core',   label: 'Cloud Foundations'   },
-  { value: 'frontend',     label: 'Frontend & UX'       },
-  { value: 'backend',      label: 'APIs & Databases'    },
-  { value: 'product',      label: 'Product Engineering' },
-  { value: 'ai',           label: 'AI & GenAI'          },
-];
-
-const STATUS_META = {
-  ahead:   { label: '🚀 Ahead of Schedule', color: '#28C76F', bg: '#28C76F18' },
-  ontrack: { label: '✅ On Track',           color: '#FF9F43', bg: '#FF9F4318' },
-  behind:  { label: '⚠️ Behind Schedule',    color: '#FF4C51', bg: '#FF4C5118' },
-};
-
-const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-const QUOTES = [
-  { text: 'Every expert was once a beginner. Keep going.', author: 'Helen Hayes' },
-  { text: 'Small daily improvements lead to stunning long-term results.', author: 'Robin Sharma' },
-  { text: 'The more that you read, the more things you will know.', author: 'Dr. Seuss' },
-  { text: 'Consistency is the key to achieving and maintaining momentum.', author: '' },
-  { text: 'Learning is not attained by chance; it must be sought with ardor.', author: 'Abigail Adams' },
-  { text: 'Push yourself, because no one else is going to do it for you.', author: '' },
-  { text: 'Great things never come from comfort zones.', author: '' },
-  { text: 'Success is the sum of small efforts repeated day in and day out.', author: 'Robert Collier' },
-  { text: 'Do not wait to be ready. Start before you feel ready.', author: '' },
-  { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
-  { text: 'You do not have to be great to start, but you have to start to be great.', author: 'Zig Ziglar' },
-  { text: 'It does not matter how slowly you go, as long as you do not stop.', author: 'Confucius' },
-  { text: 'An investment in knowledge pays the best interest.', author: 'Benjamin Franklin' },
-  { text: 'The capacity to learn is a gift; the ability to learn is a skill; the willingness to learn is a choice.', author: 'Brian Herbert' },
-  { text: 'Discipline is the bridge between goals and accomplishment.', author: 'Jim Rohn' },
-  { text: 'Knowledge is power. Sharing knowledge is the beginning of wisdom.', author: '' },
-  { text: 'A year from now you will wish you had started today.', author: 'Karen Lamb' },
-  { text: 'The expert in anything was once a beginner.', author: '' },
-  { text: 'Your future self is watching you right now through your memories.', author: 'Aubrey De Grey' },
-  { text: 'Winners are not people who never fail, but people who never quit.', author: '' },
-];
-
-function filterForMilestone(all: Quiz[], certFilter: string): Quiz[] {
-  if (certFilter === 'all') return all;
-  if (certFilter === 'clf-c02') return all.filter((q) => q.category === 'clf-c02');
-  return all.filter((q) => q.certLevel === certFilter);
-}
-
-function daysBetween(a: Date, b: Date): number {
-  return Math.ceil((b.getTime() - a.getTime()) / 86400000);
-}
+import { FEATURED_ARTICLES, PLATFORM_TESTIMONIALS } from '@/lib/experienceFixtures';
+import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
-  try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem('quiz-results') || '[]') as QuizResult[];
+  } catch {
+    return [];
+  }
 }
 
-// ── SVG icons ─────────────────────────────────────────────────────────────────
-const ClockSvg = ({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-const BookSvg = ({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-  </svg>
-);
-const TrendSvg = ({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
-  </svg>
-);
-const AwardSvg = ({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-  </svg>
-);
-const CalSvg = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-);
-const PlaySvg = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-);
-
-const TargetSvg = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-  </svg>
-);
-const EditSvg = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-  </svg>
-);
+function pct(result: QuizResult) {
+  return Math.round((result.score / result.totalQuestions) * 100);
+}
 
 export default function DashboardPage() {
-  const [results, setResults]             = useState<QuizResult[]>([]);
-  const [name, setName]                   = useState('Learner');
-  const [milestone, setMilestone]         = useState<Milestone | null>(null);
-  const [showGoalForm, setShowGoalForm]   = useState(false);
-  const [goalCert, setGoalCert]           = useState('clf-c02');
-  const [goalDate, setGoalDate]           = useState('');
-  const [userTimezone, setUserTimezone]   = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const { config } = usePlatformExperience();
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const [name, setName] = useState('Learner');
 
   useEffect(() => {
     setResults(getLocalResults());
 
-    try {
-      const raw = localStorage.getItem('katalyst-milestone');
-      if (raw) setMilestone(JSON.parse(raw) as Milestone);
-    } catch { /* ignore */ }
-
-    try {
-      const prefsRaw = localStorage.getItem('katalyst-user-prefs') ?? localStorage.getItem('katalyst-theme');
-      if (prefsRaw) {
-        const p = JSON.parse(prefsRaw) as { timezone?: string };
-        if (p.timezone) setUserTimezone(p.timezone);
-      }
-    } catch { /* ignore */ }
-
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      const supabaseName =
-        (user?.user_metadata?.name as string | undefined) ||
-        user?.email ||
-        'Learner';
-      setName(localStorage.getItem('profile-name') || supabaseName);
-
-      if (user) {
-        const supabaseResults = await getQuizResults(user.id);
-        if (supabaseResults.length > 0) {
-          setResults(supabaseResults);
-          try { localStorage.setItem('quiz-results', JSON.stringify(supabaseResults)); } catch { /* best-effort */ }
+      if (!user) return;
+      setName((user.user_metadata?.name as string | undefined) || localStorage.getItem('profile-name') || user.email?.split('@')[0] || 'Learner');
+      const remoteResults = await getQuizResults(user.id);
+      if (remoteResults.length > 0) {
+        setResults(remoteResults);
+        try {
+          localStorage.setItem('quiz-results', JSON.stringify(remoteResults));
+        } catch {
+          // best-effort
         }
       }
     });
   }, []);
 
-  // Date string in user's configured timezone (avoids UTC midnight offset bugs)
-  function toLocalDate(d: Date): string {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone: userTimezone,
-      year: 'numeric', month: '2-digit', day: '2-digit',
-    }).formatToParts(d);
-    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
-    return `${get('year')}-${get('month')}-${get('day')}`;
-  }
-
-  function saveMilestone() {
-    if (!goalDate) return;
-    const option = CERT_OPTIONS.find((o) => o.value === goalCert) ?? CERT_OPTIONS[0];
-    const m: Milestone = {
-      certFilter: goalCert,
-      certLabel:  option.label,
-      targetDate: goalDate,
-      startDate:  toLocalDate(new Date()),
-    };
-    localStorage.setItem('katalyst-milestone', JSON.stringify(m));
-    setMilestone(m);
-    setShowGoalForm(false);
-  }
-
-  function clearMilestone() {
-    localStorage.removeItem('katalyst-milestone');
-    setMilestone(null);
-    setShowGoalForm(false);
-  }
-
-  // ── Core stats ────────────────────────────────────────────────────────────
-  const completed = new Set(results.map((r) => r.quizId));
-  const avgScore  = results.length
-    ? Math.round(results.reduce((s, r) => s + Math.round((r.score / r.totalQuestions) * 100), 0) / results.length)
-    : 0;
-  const totalSecs = results.reduce((s, r) => s + (r.timeTaken ?? 0), 0);
-  const totalHrs  = Math.floor(totalSecs / 3600);
-  const totalMins = Math.floor((totalSecs % 3600) / 60);
-  const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const quote = QUOTES[new Date().getDate() % QUOTES.length]!;
-
-  // ── Milestone stats ───────────────────────────────────────────────────────
-  const todayDate = new Date();
-  todayDate.setHours(0, 0, 0, 0);
-
-  let milestoneStats: MilestoneStats | null = null;
-  if (milestone) {
-    const target      = new Date(milestone.targetDate + 'T00:00:00');
-    const start       = new Date(milestone.startDate  + 'T00:00:00');
-    const daysLeft    = Math.max(0, daysBetween(todayDate, target));
-    const daysTotal   = Math.max(1, daysBetween(start, target));
-    const elapsedDays = Math.max(0, daysTotal - daysLeft);
-
-    const mQuizzes        = filterForMilestone(quizzes, milestone.certFilter);
-    const mCompletedCount = mQuizzes.filter((q) => completed.has(q.id)).length;
-    const mQuizCount      = mQuizzes.length;
-
-    const actualPct = mQuizCount > 0 ? Math.round((mCompletedCount / mQuizCount) * 100) : 0;
-    const targetPct = Math.min(100, Math.round((elapsedDays / daysTotal) * 100));
-    const gap       = actualPct - targetPct;
-    const status    = gap >= 5 ? 'ahead' : gap >= -15 ? 'ontrack' : 'behind';
-
-    milestoneStats = { daysLeft, daysTotal, targetPct, actualPct, status, milestoneQuizCount: mQuizCount, milestoneCompletedCount: mCompletedCount };
-  }
-
-  // ── Daily activity — last 7 days ──────────────────────────────────────────
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(todayDate);
-    d.setDate(d.getDate() - (6 - i));
-    return toLocalDate(d);
-  });
-  // completedAt is an ISO string — convert to local date before comparing
-  const studiedDays  = new Set(
-    results
-      .map((r) => r.completedAt ? toLocalDate(new Date(r.completedAt)) : null)
-      .filter((d): d is string => d !== null)
-  );
-  const studiedCount = last7Days.filter((d) => studiedDays.has(d)).length;
-  const todayStudied = studiedDays.has(last7Days[6] as string);
-
-  // ── Quiz lists ────────────────────────────────────────────────────────────
-  const takingQuizzes    = quizzes.filter((q) => completed.has(q.id));
-  const suggestedQuizzes = quizzes.filter((q) => !q.certLevel && !completed.has(q.id)).slice(0, 4);
-
-  const minDateStr = (() => {
-    const d = new Date(todayDate);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  })();
-
-  const stats = [
-    { icon: <ClockSvg color="#7367F0" />, label: 'Time Spendings',    value: totalSecs > 0 ? `${totalHrs}h ${totalMins}m` : '0h', sub: `${results.length} sessions`,       color: '#7367F0', bg: '#7367F018' },
-    { icon: <BookSvg  color="#28C76F" />, label: 'Hours Spent',       value: results.length > 0 ? `${Math.max(1, totalHrs)}h` : '0h', sub: 'total study time',             color: '#28C76F', bg: '#28C76F18' },
-    { icon: <TrendSvg color="#FF9F43" />, label: 'Test Results',      value: `${avgScore}%`,                                          sub: 'average score',                 color: '#FF9F43', bg: '#FF9F4318' },
-    { icon: <AwardSvg color="#FF4C51" />, label: 'Courses Completed', value: String(completed.size),                                  sub: `of ${quizzes.length} total`,    color: '#FF4C51', bg: '#FF4C5118' },
-  ];
+  const completedIds = useMemo(() => new Set(results.map((item) => item.quizId)), [results]);
+  const continueCourse = useMemo(() => quizzes.find((quiz) => completedIds.has(quiz.id)) ?? quizzes[0], [completedIds]);
+  const featured = useMemo(() => quizzes.slice(0, config.layout.featuredCourseCount), [config.layout.featuredCourseCount]);
+  const popular = useMemo(() => quizzes.slice(0, config.layout.popularCourseCount), [config.layout.popularCourseCount]);
+  const practice = useMemo(() => quizzes.filter((quiz) => !quiz.isPremium).slice(0, config.layout.practiceCourseCount), [config.layout.practiceCourseCount]);
+  const articles = useMemo(() => FEATURED_ARTICLES.slice(0, config.layout.resourcesArticleCount), [config.layout.resourcesArticleCount]);
+  const completion = quizzes.length ? Math.round((completedIds.size / quizzes.length) * 100) : 0;
+  const average = results.length ? Math.round(results.reduce((sum, item) => sum + pct(item), 0) / results.length) : 0;
+  const todayXp = results.slice(-3).reduce((sum, item) => sum + pct(item), 0);
+  const currentStreak = Math.min(7, Math.max(0, results.length));
+  const actionClass = config.layout.homeActionsStyle === 'stack' ? 'dc-actions-stack' : 'dc-actions-grid';
 
   return (
-    <div className="page-content">
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title">Welcome back, {name}! 👋</h1>
-        <p className="page-subtitle">
-          <span className="dashboard-quote-mark">"</span>
-          {quote.text}
-          {quote.author && <span className="dashboard-quote-author"> — {quote.author}</span>}
-        </p>
-      </div>
+    <div className="page-content dc-shell">
+      <section className="dc-hero" style={{ padding: '34px 34px 30px' }}>
+        <div className="dc-grid" style={{ gridTemplateColumns: '1.2fr 0.9fr', gap: 24, alignItems: 'stretch' }}>
+          <div>
+            <span className="dc-chip">{config.copy.homeEyebrow}</span>
+            <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(36px, 5vw, 58px)', lineHeight: 1.03, color: 'var(--text)' }}>
+              {config.copy.homeHeroTitle}
+            </h1>
+            <p style={{ margin: 0, maxWidth: 680, fontSize: 17, lineHeight: 1.8, color: 'var(--text-secondary)' }}>
+              {config.copy.homeHeroSubtitle}
+            </p>
 
-      {/* Stat cards — all dynamically computed from quiz results */}
-      <div className="dash-stats-grid">
-        {stats.map((s) => (
-          <div key={s.label} className="dash-stat-card">
-            <div className="dash-stat-icon" style={{ background: s.bg }}>{s.icon}</div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 28 }}>
+              <Link href={`/dashboard/quiz/${continueCourse.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
+                {config.copy.homePrimaryCta}
+              </Link>
+              <Link
+                href="/dashboard/quizzes"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 46,
+                  padding: '0 22px',
+                  borderRadius: 'var(--button-radius)',
+                  border: '1px solid color-mix(in srgb, var(--primary) 36%, var(--border))',
+                  color: 'var(--text)',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  background: 'rgba(255,255,255,0.03)',
+                }}
+              >
+                {config.copy.homeSecondaryCta}
+              </Link>
+            </div>
+          </div>
+
+          <div className="dc-card" style={{ padding: 22, background: 'var(--platform-home-hero-course-bg)', minHeight: 320 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  Continue path
+                </div>
+                <div style={{ marginTop: 8, fontSize: 34, fontWeight: 700, color: 'var(--text)' }}>{continueCourse.title}</div>
+              </div>
+              <span className="dc-chip" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text)' }}>
+                {completion}%
+              </span>
+            </div>
+
+            <div style={{ marginTop: 28, display: 'grid', placeItems: 'center' }}>
+              <div style={{
+                width: 190,
+                height: 190,
+                borderRadius: '50%',
+                display: 'grid',
+                placeItems: 'center',
+                background: `conic-gradient(var(--primary) ${completion}%, rgba(255,255,255,0.09) ${completion}% 100%)`,
+                boxShadow: '0 0 0 10px rgba(255,255,255,0.04)',
+              }}>
+                <div style={{
+                  width: 146,
+                  height: 146,
+                  borderRadius: '50%',
+                  background: '#0b1730',
+                  display: 'grid',
+                  placeItems: 'center',
+                  color: 'var(--text)',
+                  fontSize: 42,
+                  fontWeight: 700,
+                }}>
+                  {completion}%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {config.widgets.showHomeStats && (
+          <div className="dc-kpi-grid" style={{ marginTop: 22 }}>
+            {[
+              { label: 'Courses started', value: String(completedIds.size || 0), tone: 'var(--text)' },
+              { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
+              { label: 'Today XP', value: `${todayXp}`, tone: '#ffd84d' },
+              { label: 'Current streak', value: `${currentStreak} days`, tone: 'var(--platform-premium-accent)' },
+            ].map((stat) => (
+              <div key={stat.label} className="dc-card" style={{ padding: 20 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{stat.label}</div>
+                <div style={{ marginTop: 10, fontSize: 30, fontWeight: 700, color: stat.tone }}>{stat.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {config.widgets.showHomeActions && (
+        <section>
+          <div className={actionClass}>
+            {[
+              { title: 'Flashcards', subtitle: 'Review concepts with fast recall loops.', href: '/dashboard/quizzes', emoji: '🗂' },
+              { title: 'Practice', subtitle: 'Jump into hands-on question sets and drills.', href: '/dashboard/quizzes', emoji: '🏋️' },
+              { title: 'Resources', subtitle: 'Read cheat sheets, guides, and editorials.', href: '/dashboard/learn', emoji: '📚' },
+              { title: 'Growth', subtitle: 'Track streaks, results, and learning momentum.', href: '/dashboard/progress', emoji: '📈' },
+            ].map((item) => (
+              <Link key={item.title} href={item.href} className="dc-card" style={{ padding: 22, textDecoration: 'none' }}>
+                <div style={{ fontSize: 32 }}>{item.emoji}</div>
+                <div style={{ marginTop: 18, fontSize: 28, fontWeight: 700, color: 'var(--text)' }}>{item.title}</div>
+                <div style={{ marginTop: 10, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{item.subtitle}</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', marginBottom: 18 }}>
+          <div>
+            <h2 className="dc-section-title">Featured courses</h2>
+            <p className="dc-section-subtitle">Horizontal discovery rails like the mobile redesign, but tuned for wider screens.</p>
+          </div>
+          <Link href="/dashboard/quizzes" style={{ color: 'var(--text)', fontWeight: 700 }}>See all</Link>
+        </div>
+        <div className="dc-rail">
+          {featured.map((quiz, index) => (
+            <Link
+              key={quiz.id}
+              href={`/dashboard/quiz/${quiz.id}`}
+              className="dc-card"
+              style={{
+                textDecoration: 'none',
+                overflow: 'hidden',
+                background: `linear-gradient(180deg, rgba(255,255,255,0.03), transparent), ${index % 2 === 0 ? 'var(--platform-home-hero-course-bg)' : 'var(--platform-rail-card-overlay)'}`,
+              }}
+            >
+              <div style={{ padding: 18, minHeight: 162, display: 'grid', alignContent: 'space-between', gap: 16 }}>
+                <span className="dc-chip" style={{ width: 'fit-content', background: 'rgba(0,0,0,0.26)', color: '#fff' }}>{quiz.examCode ?? quiz.category}</span>
+                <div>
+                  <div style={{ fontSize: 28 }}>{quiz.icon}</div>
+                  <div style={{ marginTop: 14, fontSize: 28, fontWeight: 700, lineHeight: 1.1, color: '#fff' }}>{quiz.title}</div>
+                </div>
+              </div>
+              <div style={{ padding: 18, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: 13 }}>
+                  <span>{quiz.questionCount} questions</span>
+                  <span>{quiz.duration} min</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {config.widgets.showPopularCourses && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', marginBottom: 18 }}>
             <div>
-              <div className="dash-stat-value" style={{ color: s.color }}>{s.value}</div>
-              <div className="dash-stat-label">{s.label}</div>
-              <div className="dash-stat-sub">{s.sub}</div>
+              <h2 className="dc-section-title">Popular courses</h2>
+              <p className="dc-section-subtitle">A cleaner course carousel for scrolling through tracks, levels, and cert prep quickly.</p>
             </div>
+            <Link href="/dashboard/quizzes" style={{ color: 'var(--text)', fontWeight: 700 }}>See all</Link>
           </div>
-        ))}
-      </div>
-
-      {/* Main grid */}
-      <div className="dash-main-grid">
-        {/* ── Left column ── */}
-        <div>
-
-          {/* Daily activity strip */}
-          <div className="activity-strip-card">
-            <div className="activity-strip-header">
-              <span className="activity-strip-title">Daily Activity</span>
-              <span className="activity-strip-sub">
-                {studiedCount === 0
-                  ? 'No activity this week'
-                  : `${studiedCount} of 7 days studied`}
-              </span>
-            </div>
-            <div className="activity-strip">
-              {last7Days.map((day, i) => {
-                const active  = studiedDays.has(day);
-                const isToday = i === 6;
-                return (
-                  <div key={day} className="activity-dot-col">
-                    <div
-                      className={['activity-dot', active ? 'active' : '', isToday ? 'today' : ''].filter(Boolean).join(' ')}
-                      title={day}
-                    />
-                    <span className="activity-day-label">
-                      {DAY_LABELS[new Date(day + 'T12:00:00').getDay()]}
-                    </span>
+          <div className="dc-rail">
+            {popular.map((quiz) => {
+              const existing = results.find((item) => item.quizId === quiz.id);
+              const score = existing ? pct(existing) : 0;
+              return (
+                <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="dc-card" style={{ padding: 18, textDecoration: 'none' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                    <span className="dc-chip">{quiz.isPremium ? 'Premium' : 'Track'}</span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.duration} min</span>
                   </div>
-                );
-              })}
-              <div className="activity-today-pill-wrap">
-                <span className={['activity-today-pill', todayStudied ? 'done' : ''].filter(Boolean).join(' ')}>
-                  {todayStudied ? '✓ Done today' : '● Study today'}
-                </span>
-              </div>
-            </div>
+                  <div style={{ marginTop: 18, fontSize: 48 }}>{quiz.icon}</div>
+                  <div style={{ marginTop: 14, fontSize: 28, fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
+                  <p style={{ margin: '12px 0 18px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{quiz.description}</p>
+                  <div style={{ height: 12, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${score}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-2))' }} />
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 13, color: 'var(--text-secondary)' }}>{score ? `${score}% complete` : 'Not started yet'}</div>
+                </Link>
+              );
+            })}
           </div>
+        </section>
+      )}
 
-          {/* Courses You Are Taking */}
-          {takingQuizzes.length > 0 && (
-            <>
-              <div className="section-header">
-                <h2 className="section-title">Courses You Are Taking</h2>
-                <Link href="/dashboard/quizzes" className="section-link">View All →</Link>
-              </div>
-              <div className="course-list">
-                {takingQuizzes.map((quiz) => {
-                  const res    = results.find((r) => r.quizId === quiz.id);
-                  const score  = res ? Math.round((res.score / res.totalQuestions) * 100) : null;
-                  const pct    = score ?? 0;
-                  const accent = quiz.certLevel ? CERT_COLOR[quiz.certLevel] : (DIFF_COLOR[quiz.difficulty] ?? '#7367F0');
-                  return (
-                    <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="course-item">
-                      <div className="course-item-icon" style={{ background: accent + '18' }}>📖</div>
-                      <div className="course-item-info">
-                        <div className="course-item-title">{quiz.title}</div>
-                        <div className="course-item-meta">{quiz.questionCount} questions · {quiz.duration}m</div>
-                        <div className="course-progress-bar">
-                          <div className="course-progress-fill" style={{ width: `${pct}%`, background: accent }} />
-                        </div>
-                      </div>
-                      <div className="course-item-right">
-                        {score !== null && (
-                          <div className="course-score" style={{ color: score >= 70 ? '#28C76F' : '#FF4C51' }}>{score}%</div>
-                        )}
-                        <div className="course-item-btn" style={{ background: '#28C76F18', color: '#28C76F' }}>✓ Done</div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </>
-          )}
+      {config.widgets.showFlashcards && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', marginBottom: 18 }}>
+            <div>
+              <h2 className="dc-section-title">Practice rails</h2>
+              <p className="dc-section-subtitle">Keep practice lists horizontal so the experience matches the reference direction across web and mobile.</p>
+            </div>
+            <Link href="/dashboard/quizzes" style={{ color: 'var(--text)', fontWeight: 700 }}>Open library</Link>
+          </div>
+          <div className="dc-rail">
+            {practice.map((quiz) => (
+              <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="dc-card" style={{ padding: 18, textDecoration: 'none' }}>
+                <div className="dc-chip" style={{ width: 'fit-content' }}>{quiz.difficulty}</div>
+                <div style={{ marginTop: 18, fontSize: 48 }}>{quiz.icon}</div>
+                <div style={{ marginTop: 12, fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
+                <div style={{ marginTop: 10, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{quiz.questionCount} questions · {quiz.duration} minutes</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-          {/* Courses You Can Explore */}
-          {takingQuizzes.length === 0 && (
-            <>
-              <div className="section-header">
-                <h2 className="section-title">Courses You Can Explore</h2>
-                <Link href="/dashboard/quizzes" className="section-link">View All →</Link>
-              </div>
-              <div className="course-list">
-                {quizzes.map((quiz) => {
-                  const accent = quiz.certLevel ? CERT_COLOR[quiz.certLevel] : (DIFF_COLOR[quiz.difficulty] ?? '#7367F0');
-                  return (
-                    <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="course-item">
-                      <div className="course-item-icon" style={{ background: accent + '18' }}>📖</div>
-                      <div className="course-item-info">
-                        <div className="course-item-title">{quiz.title}</div>
-                        <div className="course-item-meta">{quiz.questionCount} questions · {quiz.duration}m · {quiz.difficulty}</div>
-                        <div className="course-progress-bar">
-                          <div className="course-progress-fill" style={{ width: '0%', background: accent }} />
-                        </div>
-                      </div>
-                      <div className="course-item-right">
-                        <div className="course-item-btn" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>Start</div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </>
-          )}
-
-          {/* Suggested — only when user has started some courses */}
-          {takingQuizzes.length > 0 && suggestedQuizzes.length > 0 && (
-            <>
-              <div className="section-header" style={{ marginTop: 28 }}>
-                <h2 className="section-title">Suggested For You</h2>
-              </div>
-              <div className="course-list">
-                {suggestedQuizzes.map((quiz) => {
-                  const accent = DIFF_COLOR[quiz.difficulty] ?? '#7367F0';
-                  return (
-                    <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="course-item">
-                      <div className="course-item-icon" style={{ background: accent + '18' }}>📖</div>
-                      <div className="course-item-info">
-                        <div className="course-item-title">{quiz.title}</div>
-                        <div className="course-item-meta">{quiz.questionCount} questions · {quiz.duration}m · {quiz.difficulty}</div>
-                        <div className="course-progress-bar">
-                          <div className="course-progress-fill" style={{ width: '0%', background: accent }} />
-                        </div>
-                      </div>
-                      <div className="course-item-right">
-                        <div className="course-item-btn" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>Start</div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </>
-          )}
+      <section className="dc-grid" style={{ gridTemplateColumns: '1.15fr 0.85fr' }}>
+        <div className="dc-card" style={{ padding: 26 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start' }}>
+            <div>
+              <h2 className="dc-section-title" style={{ fontSize: 30 }}>{config.copy.resourcesTitle}</h2>
+              <p className="dc-section-subtitle" style={{ maxWidth: 'unset' }}>Dynamic article counts are now admin-controlled instead of hardcoded into the page.</p>
+            </div>
+            <span className="dc-chip">{config.layout.resourcesArticleCount} visible</span>
+          </div>
+          <div className="dc-resource-list" style={{ marginTop: 22 }}>
+            {articles.map((article) => (
+              <article key={article.slug} className="dc-resource-card">
+                <span className="dc-chip" style={{ background: 'rgba(0,237,100,0.12)', color: 'inherit' }}>{article.tag}</span>
+                <h3 style={{ margin: '18px 0 14px', fontSize: 42, lineHeight: 1.06 }}>{article.title}</h3>
+                <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: 'inherit', opacity: 0.72 }}>{article.description}</p>
+                <div style={{ marginTop: 24, fontSize: 15, opacity: 0.68 }}>{article.author} · {article.date}</div>
+              </article>
+            ))}
+          </div>
         </div>
 
-        {/* ── Right column ── */}
-        <div className="dash-right-col">
-
-          {/* Upcoming Webinar */}
-          <div className="webinar-card">
-            <div style={{ background: 'linear-gradient(135deg, #EBE9FD 0%, #D5F0FF 100%)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 130, position: 'relative', overflow: 'hidden' }}>
-              <svg viewBox="0 0 220 120" style={{ width: '100%', maxWidth: 220, height: 120 }}>
-                <defs>
-                  <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#7367F0" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="#7367F0" stopOpacity="0.05" />
-                  </linearGradient>
-                </defs>
-                <circle cx="15" cy="15" r="4" fill="#7367F0" opacity="0.3" />
-                <circle cx="30" cy="35" r="2.5" fill="#7367F0" opacity="0.2" />
-                <circle cx="200" cy="20" r="3" fill="#7367F0" opacity="0.25" />
-                <rect x="80" y="55" width="100" height="55" rx="5" fill="white" opacity="0.9" />
-                <rect x="84" y="59" width="92" height="44" rx="3" fill="#7367F0" opacity="0.12" />
-                <rect x="87" y="62" width="32" height="4" rx="2" fill="#7367F0" opacity="0.5" />
-                <rect x="87" y="70" width="24" height="3" rx="1.5" fill="#A8AAAE" opacity="0.5" />
-                <rect x="87" y="77" width="28" height="3" rx="1.5" fill="#A8AAAE" opacity="0.4" />
-                <rect x="87" y="84" width="20" height="3" rx="1.5" fill="#A8AAAE" opacity="0.3" />
-                <rect x="70" y="110" width="120" height="4" rx="2" fill="#DBDADE" />
-                <circle cx="45" cy="55" r="18" fill="#EBE9FD" />
-                <circle cx="45" cy="48" r="9" fill="#7367F0" opacity="0.8" />
-                <path d="M28 75 Q45 63 62 75" fill="#7367F0" opacity="0.6" />
-                <text x="155" y="28" fontSize="13" fill="#FF9F43">★</text>
-                <text x="168" y="18" fontSize="9" fill="#FF9F43">★</text>
-                <text x="175" y="34" fontSize="7" fill="#FF9F43">★</text>
-              </svg>
-            </div>
-            <div className="webinar-body">
-              <div className="webinar-tag">Upcoming Webinar</div>
-              <h3 className="webinar-title">AWS GenAI Professional Certification Masterclass</h3>
-              <div className="webinar-meta">
-                <span className="webinar-meta-item"><CalSvg /> 24 Mar 2026</span>
-                <span className="webinar-meta-item"><ClockSvg size={14} /> 60 min</span>
-              </div>
-              <button className="webinar-btn"><PlaySvg /> Join the event</button>
-            </div>
-          </div>
-
-          {/* Course completion — dynamic: updates as quizzes are finished */}
-          <div className="completion-card">
-            <div className="completion-header">
-              <h3 className="completion-title">Course Completion</h3>
-              <span className="completion-pct" style={{ color: 'var(--primary)' }}>
-                {Math.round((completed.size / quizzes.length) * 100)}%
-              </span>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${Math.round((completed.size / quizzes.length) * 100)}%`, background: 'var(--primary)' }} />
-            </div>
-            <div className="completion-sub">{completed.size} of {quizzes.length} courses done</div>
-          </div>
-
-          {/* ── Milestone / Goal card ── */}
-          <div className="milestone-card">
-            <div className="milestone-card-header">
-              <div className="milestone-card-title">
-                <TargetSvg />
-                <span>My Certification Goal</span>
-              </div>
-              {milestone && !showGoalForm && (
-                <button
-                  className="milestone-edit-btn"
-                  onClick={() => {
-                    setGoalCert(milestone.certFilter);
-                    setGoalDate(milestone.targetDate);
-                    setShowGoalForm(true);
-                  }}
-                >
-                  <EditSvg /> Edit
-                </button>
-              )}
-            </div>
-
-            {/* Empty state */}
-            {!milestone && !showGoalForm && (
-              <div className="milestone-empty">
-                <p className="milestone-empty-text">
-                  Set a target date for your certification and we will tell you if you are on track, ahead, or behind.
-                </p>
-                <button className="milestone-set-btn" onClick={() => setShowGoalForm(true)}>
-                  🎯 Set a Goal
-                </button>
-              </div>
-            )}
-
-            {/* Goal form */}
-            {showGoalForm && (
-              <div className="goal-form">
-                <label className="goal-label">Target Certification</label>
-                <select
-                  className="goal-select"
-                  value={goalCert}
-                  onChange={(e) => setGoalCert(e.target.value)}
-                >
-                  {CERT_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-
-                <label className="goal-label">Target Date</label>
-                <input
-                  type="date"
-                  className="goal-date-input"
-                  value={goalDate}
-                  min={minDateStr}
-                  onChange={(e) => setGoalDate(e.target.value)}
-                />
-
-                <div className="goal-form-actions">
-                  <button className="goal-save-btn" onClick={saveMilestone} disabled={!goalDate}>
-                    Save Goal
-                  </button>
-                  <button className="goal-cancel-btn" onClick={() => setShowGoalForm(false)}>
-                    Cancel
-                  </button>
-                  {milestone && (
-                    <button className="goal-clear-btn" onClick={clearMilestone}>Clear</button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Milestone display */}
-            {milestone && milestoneStats && !showGoalForm && (
-              <div className="milestone-body">
-                <div className="milestone-cert-label">{milestone.certLabel}</div>
-
-                {/* Counters row */}
-                <div className="milestone-counters">
-                  <div className="milestone-counter">
-                    <div
-                      className="milestone-counter-num"
-                      style={{ color: milestoneStats.daysLeft <= 7 ? '#FF4C51' : milestoneStats.daysLeft <= 30 ? '#FF9F43' : '#7367F0' }}
-                    >
-                      {milestoneStats.daysLeft}
-                    </div>
-                    <div className="milestone-counter-sub">days to go</div>
+        <div className="dc-grid" style={{ gap: 18 }}>
+          {config.widgets.showGrowthWidget && (
+            <div className="dc-card" style={{ padding: 24 }}>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Streak and activity</div>
+              <div style={{ marginTop: 10, fontSize: 42, fontWeight: 700, color: 'var(--text)' }}>{currentStreak} days</div>
+              <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+                {Array.from({ length: 7 }, (_, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      height: 56,
+                      borderRadius: 18,
+                      border: index < currentStreak ? '1px solid rgba(255,216,77,0.5)' : '1px solid var(--border)',
+                      background: index < currentStreak ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      color: index < currentStreak ? '#ffd84d' : 'var(--text-secondary)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}
                   </div>
-                  <div className="milestone-counter-divider" />
-                  <div className="milestone-counter">
-                    <div className="milestone-counter-num" style={{ color: '#28C76F' }}>
-                      {milestoneStats.milestoneCompletedCount}
-                      <span className="milestone-counter-of">/{milestoneStats.milestoneQuizCount}</span>
-                    </div>
-                    <div className="milestone-counter-sub">quizzes done</div>
-                  </div>
-                </div>
-
-                {/* Status badge */}
-                <div
-                  className="milestone-status-badge"
-                  style={{
-                    background: STATUS_META[milestoneStats.status].bg,
-                    color:      STATUS_META[milestoneStats.status].color,
-                  }}
-                >
-                  {STATUS_META[milestoneStats.status].label}
-                </div>
-
-                {/* Progress vs expected bars */}
-                <div className="milestone-bars">
-                  <div className="milestone-bar-row">
-                    <span className="milestone-bar-label">Your progress</span>
-                    <div className="milestone-bar-track">
-                      <div
-                        className="milestone-bar-fill"
-                        style={{ width: `${milestoneStats.actualPct}%`, background: '#7367F0' }}
-                      />
-                    </div>
-                    <span className="milestone-bar-pct" style={{ color: '#7367F0' }}>
-                      {milestoneStats.actualPct}%
-                    </span>
-                  </div>
-                  <div className="milestone-bar-row">
-                    <span className="milestone-bar-label">Needed by now</span>
-                    <div className="milestone-bar-track">
-                      <div
-                        className="milestone-bar-fill"
-                        style={{ width: `${milestoneStats.targetPct}%`, background: '#DBDADE' }}
-                      />
-                    </div>
-                    <span className="milestone-bar-pct" style={{ color: 'var(--text-secondary)' }}>
-                      {milestoneStats.targetPct}%
-                    </span>
-                  </div>
-                </div>
-
-                <div className="milestone-target-date">
-                  📅 Target: {new Date(milestone.targetDate + 'T12:00:00').toLocaleDateString('en-US', {
-                    day: 'numeric', month: 'long', year: 'numeric',
-                  })}
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
+          {config.widgets.showLeaderboardPreview && (
+            <div className="dc-card" style={{ padding: 24 }}>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Momentum snapshot</div>
+              <div style={{ marginTop: 16, display: 'grid', gap: 12 }}>
+                {results.slice(-4).reverse().map((item) => (
+                  <div key={`${item.quizId}-${item.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quizzes.find((quiz) => quiz.id === item.quizId)?.title ?? item.quizId}</div>
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(item.completedAt).toLocaleDateString()}</div>
+                    </div>
+                    <div style={{ color: pct(item) >= 70 ? 'var(--platform-success-accent)' : 'var(--platform-danger-accent)', fontWeight: 700 }}>
+                      {pct(item)}%
+                    </div>
+                  </div>
+                ))}
+                {results.length === 0 && <div style={{ color: 'var(--text-secondary)' }}>Take your first quiz to start filling this dashboard.</div>}
+              </div>
+            </div>
+          )}
+
+          {config.widgets.showTestimonials && (
+            <div className="dc-card" style={{ padding: 24 }}>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{config.copy.testimonialsTitle}</div>
+              <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{config.copy.testimonialsSubtitle}</div>
+              <div style={{ marginTop: 18, display: 'grid', gap: 12 }}>
+                {PLATFORM_TESTIMONIALS.map((item) => (
+                  <div key={item.company} style={{ padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>{item.company}</div>
+                    <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.quote}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
+
+      {config.widgets.showProfileOffer && (
+        <section className="dc-card" style={{ padding: 26, borderColor: 'color-mix(in srgb, var(--platform-profile-offer-accent) 35%, var(--border))' }}>
+          <div className="dc-grid" style={{ gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 46, fontWeight: 700, color: 'var(--text)' }}>{config.copy.profileOfferTitle}</div>
+              <div style={{ marginTop: 8, fontSize: 18, color: 'var(--platform-profile-offer-accent)', fontWeight: 700 }}>
+                {config.copy.profileOfferSubtitle}
+              </div>
+            </div>
+            <Link href="/dashboard/profile" className="btn-primary" style={{ textDecoration: 'none' }}>
+              Open profile
+            </Link>
+          </div>
+          <div style={{ marginTop: 16, color: 'var(--text-secondary)' }}>Welcome back, {name}. The home experience, rails, copy, and section counts are now coming from platform settings instead of page constants.</div>
+        </section>
+      )}
     </div>
   );
 }

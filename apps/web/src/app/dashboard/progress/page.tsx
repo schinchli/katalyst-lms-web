@@ -1,125 +1,119 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { quizzes } from '@/data/quizzes';
 import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
+import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
-  try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem('quiz-results') || '[]') as QuizResult[];
+  } catch {
+    return [];
+  }
+}
+
+function percentage(item: QuizResult) {
+  return Math.round((item.score / item.totalQuestions) * 100);
 }
 
 export default function ProgressPage() {
+  const { config } = usePlatformExperience();
   const [results, setResults] = useState<QuizResult[]>([]);
 
   useEffect(() => {
-    // Start with localStorage for immediate display
     setResults(getLocalResults());
-
-    // Then load from Supabase if authenticated
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      const supabaseResults = await getQuizResults(user.id);
-      if (supabaseResults.length > 0) {
-        setResults(supabaseResults);
-        // Keep localStorage in sync
-        try { localStorage.setItem('quiz-results', JSON.stringify(supabaseResults)); } catch { /* best-effort */ }
-      }
+      const remote = await getQuizResults(user.id);
+      if (remote.length > 0) setResults(remote);
     });
   }, []);
 
-  const completed = new Set(results.map((r) => r.quizId));
-  const avgScore  = results.length ? Math.round(results.reduce((s, r) => s + Math.round((r.score / r.totalQuestions) * 100), 0) / results.length) : 0;
-  const bestScore = results.length ? Math.max(...results.map((r) => Math.round((r.score / r.totalQuestions) * 100))) : 0;
-  const pct       = Math.round((completed.size / quizzes.length) * 100);
-
-  const stats = [
-    { val: `${pct}%`,       label: 'Completion',    color: 'var(--primary)',   bg: 'var(--primary-light)' },
-    { val: `${avgScore}%`,  label: 'Average Score', color: '#FF9F43',          bg: '#FF9F4318' },
-    { val: `${bestScore}%`, label: 'Best Score',    color: '#28C76F',          bg: '#28C76F18' },
-    { val: results.length,  label: 'Quizzes Taken', color: '#FF4C51',          bg: '#FF4C5118' },
-  ];
+  const completed = useMemo(() => new Set(results.map((item) => item.quizId)), [results]);
+  const completion = quizzes.length ? Math.round((completed.size / quizzes.length) * 100) : 0;
+  const average = results.length ? Math.round(results.reduce((sum, item) => sum + percentage(item), 0) / results.length) : 0;
+  const best = results.length ? Math.max(...results.map(percentage)) : 0;
+  const xp = results.reduce((sum, item) => sum + percentage(item), 0);
+  const streak = Math.min(30, results.length);
 
   return (
-    <div className="page-content" style={{ maxWidth: 960 }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title">My Progress</h1>
-        <p className="page-subtitle">Track your Katalyst learning journey</p>
-      </div>
+    <div className="page-content dc-shell">
+      <section className="dc-hero" style={{ padding: 30 }}>
+        <span className="dc-chip">Growth</span>
+        <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>{config.copy.progressTitle}</h1>
+        <p style={{ margin: 0, maxWidth: 760, color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.8 }}>
+          {config.copy.progressSubtitle}
+        </p>
+        <div className="dc-kpi-grid" style={{ marginTop: 24 }}>
+          {[
+            { label: 'Completion', value: `${completion}%`, tone: 'var(--primary)' },
+            { label: 'Average score', value: `${average}%`, tone: '#ffd84d' },
+            { label: 'Best score', value: `${best}%`, tone: 'var(--platform-success-accent)' },
+            { label: 'XP earned', value: `${xp}`, tone: 'var(--platform-premium-accent)' },
+          ].map((item) => (
+            <div key={item.label} className="dc-card" style={{ padding: 20 }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{item.label}</div>
+              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: item.tone }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
-        {stats.map((s) => (
-          <div key={s.label} style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', padding: '20px 24px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.val}</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{s.label}</div>
+      <section className="dc-grid" style={{ gridTemplateColumns: '0.9fr 1.1fr' }}>
+        <div className="dc-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start' }}>
+            <div>
+              <h2 className="dc-section-title" style={{ fontSize: 30 }}>Streaks</h2>
+              <p className="dc-section-subtitle">Build habit loops with a clearer weekly view inspired by the mobile growth screens.</p>
+            </div>
+            <span className="dc-chip">{streak} days</span>
           </div>
-        ))}
-      </div>
-
-      {/* Overall progress bar */}
-      <div className="completion-card" style={{ marginBottom: 24 }}>
-        <div className="completion-header">
-          <h3 className="completion-title">Overall Completion</h3>
-          <span className="completion-pct" style={{ color: 'var(--primary)' }}>{pct}%</span>
-        </div>
-        <div className="progress-bar" style={{ height: 10 }}>
-          <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--primary)' }} />
-        </div>
-        <div className="completion-sub" style={{ marginTop: 10 }}>
-          {completed.size} of {quizzes.length} quizzes completed
-        </div>
-      </div>
-
-      {/* History table */}
-      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Quiz History</h3>
-          <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{results.length} entries</span>
-        </div>
-
-        {results.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No quizzes completed yet.{' '}
-            <Link href="/dashboard/quizzes" style={{ color: 'var(--primary-text)', fontWeight: 600 }}>Start your first quiz →</Link>
+          <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10 }}>
+            {Array.from({ length: 7 }, (_, index) => (
+              <div key={index} style={{ padding: '16px 0', borderRadius: 18, border: index < Math.min(streak, 7) ? '1px solid rgba(255,216,77,0.45)' : '1px solid var(--border)', background: index < Math.min(streak, 7) ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)', textAlign: 'center' }}>
+                <div style={{ color: 'var(--text-secondary)', marginBottom: 10 }}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}</div>
+                <div style={{ fontSize: 24 }}>{index < Math.min(streak, 7) ? '⚡' : '·'}</div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
-                {['Quiz', 'Score', 'Questions', 'Date', 'Status'].map((h) => (
-                  <th key={h} style={{ padding: '12px 24px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.6 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {results.slice().reverse().map((r, i) => {
-                const q    = quizzes.find((q) => q.id === r.quizId);
-                const pct  = Math.round((r.score / r.totalQuestions) * 100);
-                const pass = pct >= 70;
-                return (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '14px 24px', fontWeight: 500, fontSize: 14 }}>{q?.title ?? r.quizId}</td>
-                    <td style={{ padding: '14px 24px' }}>
-                      <span style={{ fontWeight: 700, color: pass ? '#28C76F' : '#FF4C51', fontSize: 15 }}>{pct}%</span>
-                    </td>
-                    <td style={{ padding: '14px 24px', fontSize: 13, color: 'var(--text-secondary)' }}>{r.score}/{r.totalQuestions}</td>
-                    <td style={{ padding: '14px 24px', fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(r.completedAt).toLocaleDateString()}</td>
-                    <td style={{ padding: '14px 24px' }}>
-                      <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, background: pass ? '#28C76F18' : '#FF4C5118', color: pass ? '#28C76F' : '#FF4C51' }}>
-                        {pass ? 'Pass' : 'Fail'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+        </div>
+
+        <div className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 30 }}>Recent results</h2>
+          <p className="dc-section-subtitle">A more polished history panel with pass/fail tones and immediate context.</p>
+          <div style={{ marginTop: 20, display: 'grid', gap: 12 }}>
+            {results.length === 0 && (
+              <div style={{ color: 'var(--text-secondary)' }}>
+                No quiz history yet. <Link href="/dashboard/quizzes" style={{ color: 'var(--primary-text)', fontWeight: 700 }}>Start a course</Link>
+              </div>
+            )}
+            {results.slice().reverse().map((result) => {
+              const quiz = quizzes.find((item) => item.id === result.quizId);
+              const pct = percentage(result);
+              return (
+                <div key={`${result.quizId}-${result.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz?.title ?? result.quizId}</div>
+                    <div style={{ marginTop: 4, fontSize: 13, color: 'var(--text-secondary)' }}>
+                      {result.score}/{result.totalQuestions} · {new Date(result.completedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 700, color: pct >= 70 ? 'var(--platform-success-accent)' : 'var(--platform-danger-accent)', fontSize: 20 }}>{pct}%</div>
+                    <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{pct >= 70 ? 'Passed' : 'Keep practicing'}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

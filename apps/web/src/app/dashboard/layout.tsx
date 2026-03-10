@@ -17,6 +17,7 @@ import {
   normalizeThemePrefs,
   DEFAULT_THEME_PREFS,
 } from '@/lib/themePacks';
+import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvider';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
@@ -274,7 +275,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="page-wrapper">
+    <PlatformExperienceProvider>
+      <div className="page-wrapper">
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-header">
@@ -402,7 +404,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main */}
-      <main className="main-content">{children}</main>
-    </div>
+        <main className="main-content">{children}</main>
+      </div>
+    </PlatformExperienceProvider>
   );
 }
