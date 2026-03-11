@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { applyPlatformThemePreset } from '@/lib/platformTheme';
+import { applyQuizCatalogOverrides } from '@/lib/quizCatalog';
 import {
   applyPlatformExperience,
   DEFAULT_PLATFORM_EXPERIENCE,
@@ -29,9 +30,14 @@ export function PlatformExperienceProvider({ children }: { children: React.React
   const load = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/platform-config');
-      const body = await res.json() as { ok?: boolean; config?: unknown };
-      const next = normalizePlatformExperience(body?.config);
+      const [platformRes, quizCatalogRes] = await Promise.all([
+        fetch('/api/platform-config'),
+        fetch('/api/quiz-catalog'),
+      ]);
+      const platformBody = await platformRes.json() as { ok?: boolean; config?: unknown };
+      const quizCatalogBody = await quizCatalogRes.json() as { ok?: boolean; overrides?: unknown };
+      const next = normalizePlatformExperience(platformBody?.config);
+      applyQuizCatalogOverrides(quizCatalogBody?.overrides);
       setConfig(next);
       applyPlatformExperience(next);
       applyPlatformThemePreset(next.theme.platformPreset);

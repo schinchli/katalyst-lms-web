@@ -4,6 +4,8 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { quizzes } from '@/data/quizzes';
+import { applyQuizCatalogOverrides, normalizeQuizCatalogOverrides, type QuizCatalogOverrides } from '@/lib/quizCatalog';
 import { PLATFORM_THEME_PRESETS, applyPlatformThemePreset } from '@/lib/platformTheme';
 import {
   applyPlatformExperience,
@@ -18,6 +20,7 @@ export default function SettingsPage() {
   const [accessToken, setAccessToken] = useState('');
   const [saved, setSaved] = useState(false);
   const [config, setConfig] = useState<PlatformExperienceConfig>(DEFAULT_PLATFORM_EXPERIENCE);
+  const [quizOverrides, setQuizOverrides] = useState<QuizCatalogOverrides>({});
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -38,11 +41,20 @@ export default function SettingsPage() {
         }
         setAuthorized(true);
 
-        const configRes = await fetch('/api/admin/mobile-config', {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
+        const [configRes, quizCatalogRes] = await Promise.all([
+          fetch('/api/admin/mobile-config', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
+          fetch('/api/admin/quiz-catalog', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
+        ]);
         const configBody = await configRes.json() as { config?: unknown };
+        const quizCatalogBody = await quizCatalogRes.json() as { overrides?: unknown };
         setConfig(normalizePlatformExperience(configBody.config));
+        const nextOverrides = normalizeQuizCatalogOverrides(quizCatalogBody.overrides);
+        setQuizOverrides(nextOverrides);
+        applyQuizCatalogOverrides(nextOverrides);
       } catch {
         router.replace('/dashboard');
       }
@@ -53,7 +65,7 @@ export default function SettingsPage() {
     if (!accessToken) return;
 
     const next = normalizePlatformExperience(config);
-    const [platformRes, themeRes] = await Promise.all([
+    const [platformRes, themeRes, quizRes] = await Promise.all([
       fetch('/api/admin/mobile-config', {
         method: 'POST',
         headers: {
@@ -70,13 +82,22 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({ presetId: next.theme.platformPreset }),
       }),
+      fetch('/api/admin/quiz-catalog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(quizOverrides),
+      }),
     ]);
 
-    if (!platformRes.ok || !themeRes.ok) return;
+    if (!platformRes.ok || !themeRes.ok || !quizRes.ok) return;
 
     setConfig(next);
     applyPlatformExperience(next);
     applyPlatformThemePreset(next.theme.platformPreset);
+    applyQuizCatalogOverrides(quizOverrides);
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   };
@@ -161,6 +182,70 @@ export default function SettingsPage() {
       </section>
 
       <section className="dc-settings-grid">
+        <div className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Quiz access controls</h2>
+          <p className="dc-section-subtitle">Mark any quiz as free or premium and set the one-time unlock price. These overrides feed the shared quiz catalog used by the mobile app and the web dashboard.</p>
+          <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>
+            {quizzes.map((quiz) => {
+              const effective = {
+                isPremium: quizOverrides[quiz.id]?.isPremium ?? quiz.isPremium,
+                price: quizOverrides[quiz.id]?.price ?? quiz.price ?? 0,
+              };
+
+              return (
+                <div key={quiz.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: 240 }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
+                      <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.id} · {quiz.examCode ?? quiz.category}</div>
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text)' }}>
+                      <input
+                        type="checkbox"
+                        checked={effective.isPremium}
+                        onChange={(event) => setQuizOverrides((prev) => ({
+                          ...prev,
+                          [quiz.id]: {
+                            ...prev[quiz.id],
+                            isPremium: event.target.checked,
+                            price: event.target.checked ? (prev[quiz.id]?.price ?? quiz.price ?? 149) : 0,
+                          },
+                        }))}
+                      />
+                      Premium
+                    </label>
+                  </div>
+
+                  <div className="dc-grid" style={{ gridTemplateColumns: '1fr 140px', gap: 12, marginTop: 14 }}>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.7 }}>{quiz.description}</div>
+                    <label>
+                      <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Price (INR)</div>
+                      <input
+                        className="admin-field-input"
+                        type="number"
+                        min={0}
+                        disabled={!effective.isPremium}
+                        value={effective.price}
+                        onChange={(event) => {
+                          const nextPrice = Number(event.target.value || 0);
+                          setQuizOverrides((prev) => ({
+                            ...prev,
+                            [quiz.id]: {
+                              ...prev[quiz.id],
+                              isPremium: effective.isPremium,
+                              price: Math.max(0, nextPrice),
+                            },
+                          }));
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="dc-card" style={{ padding: 24 }}>
           <h2 className="dc-section-title" style={{ fontSize: 28 }}>Core copy</h2>
           <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>

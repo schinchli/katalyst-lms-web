@@ -13,6 +13,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Push notifications (Expo + SNS)
 - Streak tracking + badge engine
 
+### Added
+- **Admin-managed quiz premium/free overrides** using `app_settings.key = quiz_catalog_overrides`
+  - New admin API: `GET/POST /api/admin/quiz-catalog`
+  - New public API: `GET /api/quiz-catalog`
+  - New shared merge layer: `apps/web/src/lib/quizCatalog.ts`
+  - Mobile startup sync now applies admin quiz overrides before the app renders the catalog
+  - Web dashboard settings page now exposes a per-quiz premium toggle and price field
+
+### Changed
+- CLF-C02 gating policy now defaults to:
+  - `clf-c02-full-exam` premium
+  - `clf-c02-cloud-concepts`, `clf-c02-security`, `clf-c02-technology`, `clf-c02-billing` free
+- Quiz gating is no longer treated as hardcoded catalog data only; admin overrides can change it without editing source files
+
 ---
 
 ## [0.7.0] — 2026-03-08 — Freemium Gating, AdSense, Upsell & Admin Messaging
