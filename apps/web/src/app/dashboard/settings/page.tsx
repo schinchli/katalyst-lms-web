@@ -240,6 +240,7 @@ export default function SettingsPage() {
       && systemFeatures.dailyQuizQuizId
       && (!configuredDailyQuiz || configuredDailyQuiz.enabled === false),
   );
+  const dailyQuizIsPremium = Boolean(configuredDailyQuiz?.isPremium);
 
   const saveConfig = async () => {
     if (!accessToken) return;
@@ -1168,8 +1169,12 @@ export default function SettingsPage() {
                 onChange={(event) => setSystemFeatures((prev) => ({ ...prev, dailyQuizQuizId: event.target.value }))}
               >
                 <option value="">Select a quiz</option>
-                {quizzes.filter((quiz) => (quizOverrides[quiz.id]?.enabled ?? quiz.enabled ?? true)).map((quiz) => (
-                  <option key={quiz.id} value={quiz.id}>{quiz.title}</option>
+                {dailyQuizCatalog.map((quiz) => (
+                  <option key={quiz.id} value={quiz.id}>
+                    {quiz.title}
+                    {quiz.enabled === false ? ' [disabled]' : ''}
+                    {quiz.isPremium ? ' [premium]' : ''}
+                  </option>
                 ))}
               </select>
             </label>
@@ -1183,21 +1188,30 @@ export default function SettingsPage() {
                     {resolvedDailyQuiz?.title ?? 'No daily quiz will be shown'}
                   </div>
                 </div>
-                <span
-                  className="dc-chip"
-                  style={{
-                    background: dailyQuizFallsBack ? 'rgba(255, 216, 77, 0.16)' : 'rgba(81, 207, 102, 0.16)',
-                    color: dailyQuizFallsBack ? '#ffd84d' : 'var(--platform-success-accent)',
-                  }}
-                >
-                  {dailyQuizFallsBack ? 'Fallback rotation active' : 'Selection valid'}
-                </span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span
+                    className="dc-chip"
+                    style={{
+                      background: dailyQuizFallsBack ? 'rgba(255, 216, 77, 0.16)' : 'rgba(81, 207, 102, 0.16)',
+                      color: dailyQuizFallsBack ? '#ffd84d' : 'var(--platform-success-accent)',
+                    }}
+                  >
+                    {dailyQuizFallsBack ? 'Fallback rotation active' : 'Selection valid'}
+                  </span>
+                  {dailyQuizIsPremium ? (
+                    <span className="dc-chip" style={{ background: 'rgba(255, 216, 77, 0.16)', color: '#ffd84d' }}>
+                      Premium daily quiz
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div style={{ marginTop: 10, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>
                 {!systemFeatures.dailyQuizEnabled
                   ? 'Daily quiz is disabled. Home and discovery surfaces will not feature a quiz until this is turned back on.'
                   : dailyQuizFallsBack
                     ? 'The selected quiz is missing or disabled, so the app will rotate across visible non-premium quizzes for today instead.'
+                    : dailyQuizIsPremium
+                      ? 'A premium quiz is configured as the daily quiz. This is allowed, but it can turn the featured daily slot into a paywall unless the user has access.'
                     : configuredDailyQuiz
                       ? `Configured quiz ID: ${configuredDailyQuiz.id}${configuredDailyQuiz.isPremium ? ' · premium quiz selected' : ''}`
                       : 'No specific quiz selected. The app will rotate across visible non-premium quizzes by date.'}

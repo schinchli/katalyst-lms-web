@@ -25,6 +25,10 @@ function score(result?: QuizResult) {
   return result ? Math.round((result.score / result.totalQuestions) * 100) : 0;
 }
 
+function isSameLocalDay(isoDate: string, reference = new Date()) {
+  return new Date(isoDate).toDateString() === reference.toDateString();
+}
+
 const DIFFICULTIES = ['all', 'beginner', 'intermediate', 'advanced'] as const;
 
 export default function QuizzesPage() {
@@ -69,6 +73,10 @@ export default function QuizzesPage() {
   const popular = filtered.slice(0, config.layout.popularCourseCount);
   const practice = filtered.filter((quiz) => !quiz.isPremium).slice(0, config.layout.practiceCourseCount);
   const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes), [systemFeatures, quizContentVersion]);
+  const dailyQuizCompleted = useMemo(
+    () => (dailyQuiz ? results.some((entry) => entry.quizId === dailyQuiz.id && isSameLocalDay(entry.completedAt)) : false),
+    [dailyQuiz, results],
+  );
 
   return (
     <div className="page-content dc-shell">
@@ -143,6 +151,7 @@ export default function QuizzesPage() {
               const progress = score(result);
               const unlocked = canAccess(quiz.id);
               const isDailyQuiz = dailyQuiz?.id === quiz.id;
+              const dailyQuizActionLabel = isDailyQuiz ? (dailyQuizCompleted ? 'Review Daily Quiz' : 'Play Daily Quiz') : null;
               const background = section.tinted
                 ? `linear-gradient(180deg, rgba(255,255,255,0.04), transparent), ${index % 2 === 0 ? 'var(--platform-home-hero-course-bg)' : 'var(--platform-rail-card-overlay)'}`
                 : 'var(--surface)';
@@ -185,8 +194,15 @@ export default function QuizzesPage() {
                     <div style={{ height: 12, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-2))' }} />
                     </div>
-                    <div style={{ marginTop: 10, color: progress >= 70 ? 'var(--platform-success-accent)' : 'var(--text-secondary)', fontWeight: progress ? 700 : 500 }}>
-                      {progress ? `${progress}% recent score` : quiz.isPremium ? 'Unlock for full access' : 'Start this course'}
+                    <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ color: progress >= 70 ? 'var(--platform-success-accent)' : 'var(--text-secondary)', fontWeight: progress ? 700 : 500 }}>
+                        {progress ? `${progress}% recent score` : quiz.isPremium ? 'Unlock for full access' : 'Start this course'}
+                      </div>
+                      {dailyQuizActionLabel ? (
+                        <span className="dc-chip" style={{ background: dailyQuizCompleted ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255,216,77,0.16)', color: dailyQuizCompleted ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+                          {dailyQuizActionLabel}
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                 </Link>

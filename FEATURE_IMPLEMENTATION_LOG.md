@@ -47,6 +47,7 @@
 - Added daily quiz emphasis to leaderboard/performance surfaces on web and Expo.
 - Added daily quiz identity and completion messaging to web and Expo quiz detail/result screens.
 - Added direct daily quiz open/review actions to web and Expo leaderboard/progress surfaces, plus admin preview and fallback validation for the selected daily quiz.
+- Added admin-side daily quiz selector state hints for disabled and premium quizzes, plus daily-quiz-specific CTA labels in web and Expo quiz discovery cards.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
