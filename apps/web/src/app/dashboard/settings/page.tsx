@@ -79,6 +79,11 @@ function createManagedQuestion(quizId: string, index: number): Question {
   };
 }
 
+function getNextOptionId(options: Question['options']) {
+  const candidates = ['a', 'b', 'c', 'd', 'e'];
+  return candidates.find((candidate) => !options.some((option) => option.id === candidate)) ?? `opt-${options.length + 1}`;
+}
+
 function mergeManagedQuizContent(current: ManagedQuizContent, incoming: ManagedQuizContent): ManagedQuizContent {
   const quizMap = new Map(current.quizzes.map((quiz) => [quiz.id, quiz] as const));
   incoming.quizzes.forEach((quiz) => {
@@ -432,6 +437,46 @@ export default function SettingsPage() {
               }
             : question
         )),
+      },
+    }));
+  };
+
+  const addManagedOption = (quizId: string, questionId: string) => {
+    setManagedQuizContent((prev) => ({
+      ...prev,
+      questions: {
+        ...prev.questions,
+        [quizId]: (prev.questions[quizId] ?? []).map((question) => {
+          if (question.id !== questionId || question.options.length >= 5) return question;
+          return {
+            ...question,
+            options: [
+              ...question.options,
+              { id: getNextOptionId(question.options), text: '' },
+            ],
+          };
+        }),
+      },
+    }));
+  };
+
+  const removeManagedOption = (quizId: string, questionId: string, optionId: string) => {
+    setManagedQuizContent((prev) => ({
+      ...prev,
+      questions: {
+        ...prev.questions,
+        [quizId]: (prev.questions[quizId] ?? []).map((question) => {
+          if (question.id !== questionId || question.options.length <= 2) return question;
+          const nextOptions = question.options.filter((option) => option.id !== optionId);
+          const nextCorrectOptionId = question.correctOptionId === optionId
+            ? nextOptions[0]?.id ?? question.correctOptionId
+            : question.correctOptionId;
+          return {
+            ...question,
+            options: nextOptions,
+            correctOptionId: nextCorrectOptionId,
+          };
+        }),
       },
     }));
   };
@@ -921,12 +966,33 @@ export default function SettingsPage() {
                             ))}
                           </select>
                         </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
+                            {question.options.length} options
+                          </div>
+                          <button
+                            className="settings-btn-ghost"
+                            onClick={() => addManagedOption(selectedManagedQuiz.id, question.id)}
+                            disabled={question.options.length >= 5}
+                          >
+                            Add option
+                          </button>
+                        </div>
                         <div className="dc-grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
                           {question.options.map((option) => (
-                            <label key={option.id}>
-                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Option {option.id.toUpperCase()}</div>
+                            <div key={option.id}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', marginBottom: 8 }}>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Option {option.id.toUpperCase()}</div>
+                                <button
+                                  className="settings-btn-ghost"
+                                  onClick={() => removeManagedOption(selectedManagedQuiz.id, question.id, option.id)}
+                                  disabled={question.options.length <= 2}
+                                >
+                                  Remove
+                                </button>
+                              </div>
                               <input className="admin-field-input" value={option.text} onChange={(event) => updateManagedOption(selectedManagedQuiz.id, question.id, option.id, event.target.value)} />
-                            </label>
+                            </div>
                           ))}
                         </div>
                       </div>
