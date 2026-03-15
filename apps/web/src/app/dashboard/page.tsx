@@ -25,6 +25,10 @@ function pct(result: QuizResult) {
   return Math.round((result.score / result.totalQuestions) * 100);
 }
 
+function isSameLocalDay(isoDate: string, reference = new Date()) {
+  return new Date(isoDate).toDateString() === reference.toDateString();
+}
+
 export default function DashboardPage() {
   const quizContentVersion = useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
@@ -70,6 +74,10 @@ export default function DashboardPage() {
   const dailyQuiz = useMemo(
     () => resolveDailyQuiz(systemFeatures, visibleQuizzes),
     [systemFeatures, visibleQuizzes],
+  );
+  const dailyQuizCompleted = useMemo(
+    () => (dailyQuiz ? results.some((result) => result.quizId === dailyQuiz.id && isSameLocalDay(result.completedAt)) : false),
+    [dailyQuiz, results],
   );
 
   return (
@@ -172,16 +180,21 @@ export default function DashboardPage() {
         <section>
           <div className="dc-card" style={{ padding: 24, display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
-                {systemFeatures.dailyQuizLabel}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+                  {systemFeatures.dailyQuizLabel}
+                </div>
+                <span className="dc-chip" style={{ background: dailyQuizCompleted ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizCompleted ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+                  {dailyQuizCompleted ? 'Completed today' : 'Ready today'}
+                </span>
               </div>
               <div style={{ marginTop: 10, fontSize: 30, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
               <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {dailyQuiz.description}
+                {dailyQuizCompleted ? 'Today\'s daily quiz is complete. Reopen it to review or improve your result.' : dailyQuiz.description}
               </div>
             </div>
             <Link href={`/dashboard/quiz/${dailyQuiz.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
-              Start Daily Quiz
+              {dailyQuizCompleted ? 'Review Daily Quiz' : 'Start Daily Quiz'}
             </Link>
           </div>
         </section>

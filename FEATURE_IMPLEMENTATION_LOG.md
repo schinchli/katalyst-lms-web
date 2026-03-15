@@ -40,6 +40,7 @@
 - Updated Expo challenge and progress scoring summaries to use managed quiz point rules.
 - Updated Expo perfect-score badge and bonus logic to use managed scoring percentages.
 - Added daily quiz fallback rotation so web and Expo home stay functional when the configured daily quiz is blank, stale, or disabled.
+- Added daily quiz completion status on web and Expo home cards using existing result history.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
