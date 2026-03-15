@@ -24,6 +24,7 @@ export interface Quiz {
   certLevel?: CertLevel;
   examCode?: string;
   enabled?: boolean;
+  fixedQuestionCount?: number;
   correctScore?: number;
   wrongScore?: number;
   /** Cloud provider — 'aws' | 'azure' | 'gcp' | 'nvidia' | 'kubernetes' | ... */

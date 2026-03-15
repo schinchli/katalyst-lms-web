@@ -97,6 +97,9 @@ function normalizeQuiz(raw: unknown, index: number): Quiz | null {
         : undefined,
     examCode: typeof value.examCode === 'string' && value.examCode.trim() ? value.examCode.trim() : undefined,
     enabled: typeof value.enabled === 'boolean' ? value.enabled : true,
+    fixedQuestionCount: typeof value.fixedQuestionCount === 'number' && Number.isFinite(value.fixedQuestionCount)
+      ? Math.max(0, Math.round(value.fixedQuestionCount))
+      : undefined,
     correctScore: typeof value.correctScore === 'number' && Number.isFinite(value.correctScore) ? value.correctScore : 1,
     wrongScore: typeof value.wrongScore === 'number' && Number.isFinite(value.wrongScore) ? value.wrongScore : 0,
     provider: typeof value.provider === 'string' && value.provider.trim() ? value.provider.trim() : undefined,
@@ -164,6 +167,7 @@ export function buildManagedQuizDataset(value: unknown): ManagedQuizContent {
       questionCount: questions?.length ?? quiz.questionCount,
       price: quiz.isPremium ? Math.max(0, quiz.price ?? 0) : 0,
       enabled: quiz.enabled ?? true,
+      fixedQuestionCount: quiz.fixedQuestionCount,
       correctScore: quiz.correctScore ?? 1,
       wrongScore: quiz.wrongScore ?? 0,
     };

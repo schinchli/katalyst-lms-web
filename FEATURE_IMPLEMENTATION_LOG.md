@@ -33,6 +33,7 @@
 - Added a true/false preset button in the managed question editor.
 - Added per-question duplication in the managed question editor.
 - Added per-quiz correct-score and wrong-deduction controls to managed quiz editing.
+- Added per-quiz fixed question count controls to managed quiz editing.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks

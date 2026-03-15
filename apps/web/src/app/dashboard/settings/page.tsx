@@ -51,6 +51,7 @@ function createManagedQuiz(seed = ''): Quiz {
     price: 0,
     icon: 'book',
     enabled: true,
+    fixedQuestionCount: 0,
     correctScore: 1,
     wrongScore: 0,
   };
@@ -965,6 +966,16 @@ export default function SettingsPage() {
                   <label>
                     <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Wrong answer deduction</div>
                     <input className="admin-field-input" type="number" value={selectedManagedQuiz.wrongScore ?? 0} onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { wrongScore: Number(event.target.value || 0) })} />
+                  </label>
+                  <label>
+                    <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Fixed question count</div>
+                    <input
+                      className="admin-field-input"
+                      type="number"
+                      min={0}
+                      value={selectedManagedQuiz.fixedQuestionCount ?? 0}
+                      onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { fixedQuestionCount: Math.max(0, Number(event.target.value || 0)) })}
+                    />
                   </label>
                 </div>
 
