@@ -45,6 +45,7 @@
 - Added daily quiz highlighting in web and Expo quiz discovery lists.
 - Highlighted daily quiz attempts inside web history entries and added recent attempt visibility on Expo progress.
 - Added daily quiz emphasis to leaderboard/performance surfaces on web and Expo.
+- Added daily quiz identity and completion messaging to web and Expo quiz detail/result screens.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks

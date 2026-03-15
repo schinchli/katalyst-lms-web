@@ -13,6 +13,7 @@ import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { usePayment } from '@/hooks/usePayment';
 import type { PaymentSuccessResult, Gateway } from '@/hooks/usePayment';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = {
@@ -112,6 +113,7 @@ export default function QuizPage() {
   const [activeQuestions, setActiveQuestions] = useState<typeof questions>([]);
   const [upsellCfg,       setUpsellCfg]       = useState<UpsellConfig>(DEFAULT_UPSELL);
   const [studentCount,    setStudentCount]    = useState<number | null>(null);
+  const [systemFeatures,  setSystemFeatures]  = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const quizStartTs = useRef<number>(0); // unix ms when quiz started
   const { isPro, unlockedCourses, canAccess, upgradeToPremium, unlockCourse } = useSubscription();
@@ -167,6 +169,13 @@ export default function QuizPage() {
     });
   }, [platformConfig]);
 
+  useEffect(() => {
+    fetch('/api/system-features')
+      .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
+      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
+  }, []);
+
   // Fetch real student count for this quiz
   useEffect(() => {
     if (!id) return;
@@ -201,6 +210,8 @@ export default function QuizPage() {
 
   const currentQ = activeQuestions[idx];
   const isLast   = idx === activeQuestions.length - 1;
+  const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes.filter((item) => item.enabled !== false)), [systemFeatures]);
+  const isDailyQuiz = dailyQuiz?.id === quiz?.id;
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -363,6 +374,7 @@ export default function QuizPage() {
                 <span className="course-cert-tag" style={{ background: accent }}>{quiz.certLevel}</span>
               )}
               <span className="course-tag" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>{catLabel}</span>
+              {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>
             <p className="course-hero-desc">{quiz.description}</p>
@@ -379,6 +391,11 @@ export default function QuizPage() {
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
               <span style={{ color: 'var(--text-secondary)' }}>{quiz.duration}m duration</span>
             </div>
+            {isDailyQuiz ? (
+              <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,216,77,0.24)', background: 'rgba(255,216,77,0.08)', color: '#ffe89a', fontSize: 14, lineHeight: 1.6 }}>
+                Today&apos;s featured quiz. Complete it now to keep your daily progress surfaces updated.
+              </div>
+            ) : null}
           </div>
           <div className="course-hero-icon">
             <div style={{
@@ -675,6 +692,16 @@ export default function QuizPage() {
     const passed = pct >= 70;
     return (
       <div style={{ padding: '40px 32px', maxWidth: 700, margin: '0 auto' }}>
+        {isDailyQuiz ? (
+          <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: `1px solid ${passed ? 'rgba(81,207,102,0.28)' : 'rgba(255,216,77,0.24)'}`, background: passed ? 'rgba(81,207,102,0.08)' : 'rgba(255,216,77,0.08)' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: passed ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+              {systemFeatures.dailyQuizLabel}
+            </div>
+            <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {passed ? 'Daily quiz completed successfully. Your result now feeds the app’s daily progress surfaces.' : 'Daily quiz attempt saved. Retry to improve today’s featured result.'}
+            </div>
+          </div>
+        ) : null}
         <h1 style={{ textAlign: 'center', marginBottom: 8 }}>Scoreboard</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0' }}>
           <div style={{ width: 140, height: 140, borderRadius: 70, background: (passed ? '#28C76F' : '#FF4C51') + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
