@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { quizzes } from '@/data/quizzes';
+import { quizQuestions, quizzes } from '@/data/quizzes';
 import { DEFAULT_APP_CONTENT, normalizeAppContent, type AppContentConfig } from '@/lib/appContent';
 import { applyQuizCatalogOverrides, normalizeQuizCatalogOverrides, type QuizCatalogOverrides } from '@/lib/quizCatalog';
 import { PLATFORM_THEME_PRESETS, applyPlatformThemePreset } from '@/lib/platformTheme';
@@ -77,6 +77,7 @@ export default function SettingsPage() {
   const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const [managedQuizContent, setManagedQuizContent] = useState<ManagedQuizContent>(EMPTY_MANAGED_CONTENT);
   const [selectedManagedQuizId, setSelectedManagedQuizId] = useState('');
+  const [importSourceQuizId, setImportSourceQuizId] = useState('');
   const managedContentFields: Array<{ label: string; key: keyof AppContentConfig; multiline: boolean }> = [
     { label: 'App name', key: 'appName', multiline: false },
     { label: 'Support email', key: 'supportEmail', multiline: false },
@@ -214,6 +215,10 @@ export default function SettingsPage() {
   const managedQuizList = useMemo(() => managedQuizContent.quizzes, [managedQuizContent]);
   const selectedManagedQuiz = managedQuizList.find((quiz) => quiz.id === selectedManagedQuizId) ?? managedQuizList[0] ?? null;
   const selectedManagedQuestions = selectedManagedQuiz ? managedQuizContent.questions[selectedManagedQuiz.id] ?? [] : [];
+  const importableQuizzes = useMemo(
+    () => quizzes.filter((quiz) => !managedQuizList.some((managedQuiz) => managedQuiz.id === quiz.id)),
+    [managedQuizList],
+  );
 
   const updateManagedQuiz = (quizId: string, patch: Partial<Quiz>) => {
     setManagedQuizContent((prev) => ({
@@ -265,6 +270,34 @@ export default function SettingsPage() {
       },
     }));
     setSelectedManagedQuizId(quiz.id);
+  };
+
+  const importExistingQuiz = () => {
+    if (!importSourceQuizId) return;
+
+    const sourceQuiz = quizzes.find((quiz) => quiz.id === importSourceQuizId);
+    if (!sourceQuiz) return;
+
+    const sourceQuestions = quizQuestions[sourceQuiz.id] ?? [];
+    setManagedQuizContent((prev) => ({
+      quizzes: [
+        ...prev.quizzes,
+        {
+          ...sourceQuiz,
+          questionCount: sourceQuestions.length || sourceQuiz.questionCount,
+          enabled: sourceQuiz.enabled ?? true,
+        },
+      ],
+      questions: {
+        ...prev.questions,
+        [sourceQuiz.id]: sourceQuestions.map((question) => ({
+          ...question,
+          options: question.options.map((option) => ({ ...option })),
+        })),
+      },
+    }));
+    setSelectedManagedQuizId(sourceQuiz.id);
+    setImportSourceQuizId('');
   };
 
   const deleteManagedQuiz = (quizId: string) => {
@@ -557,7 +590,21 @@ export default function SettingsPage() {
               <h2 className="dc-section-title" style={{ fontSize: 28 }}>Managed quizzes</h2>
               <p className="dc-section-subtitle">Create or override quiz/question sets stored in Supabase and reflected on the website plus Expo app.</p>
             </div>
-            <button className="settings-btn-ghost" onClick={addManagedQuiz}>Add managed quiz</button>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <select
+                className="admin-field-input"
+                value={importSourceQuizId}
+                onChange={(event) => setImportSourceQuizId(event.target.value)}
+                style={{ minWidth: 220 }}
+              >
+                <option value="">Import existing quiz</option>
+                {importableQuizzes.map((quiz) => (
+                  <option key={quiz.id} value={quiz.id}>{quiz.title}</option>
+                ))}
+              </select>
+              <button className="settings-btn-ghost" onClick={importExistingQuiz} disabled={!importSourceQuizId}>Import quiz</button>
+              <button className="settings-btn-ghost" onClick={addManagedQuiz}>Add managed quiz</button>
+            </div>
           </div>
 
           <div className="dc-grid" style={{ gridTemplateColumns: '280px 1fr', gap: 18, marginTop: 20 }}>
