@@ -9,6 +9,8 @@ import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { FEATURED_ARTICLES, PLATFORM_TESTIMONIALS } from '@/lib/experienceFixtures';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+import { DEFAULT_SYSTEM_FEATURES, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -24,9 +26,11 @@ function pct(result: QuizResult) {
 }
 
 export default function DashboardPage() {
+  const quizContentVersion = useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
   const [results, setResults] = useState<QuizResult[]>([]);
   const [name, setName] = useState('Learner');
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -44,19 +48,30 @@ export default function DashboardPage() {
         }
       }
     });
+
+    fetch('/api/system-features')
+      .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
+      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
   }, []);
 
+  const visibleQuizzes = useMemo(() => quizzes.filter((quiz) => quiz.enabled !== false), [quizContentVersion]);
   const completedIds = useMemo(() => new Set(results.map((item) => item.quizId)), [results]);
-  const continueCourse = useMemo(() => quizzes.find((quiz) => completedIds.has(quiz.id)) ?? quizzes[0], [completedIds]);
-  const featured = useMemo(() => quizzes.slice(0, config.layout.featuredCourseCount), [config.layout.featuredCourseCount]);
-  const popular = useMemo(() => quizzes.slice(0, config.layout.popularCourseCount), [config.layout.popularCourseCount]);
-  const practice = useMemo(() => quizzes.filter((quiz) => !quiz.isPremium).slice(0, config.layout.practiceCourseCount), [config.layout.practiceCourseCount]);
+  const continueCourse = useMemo(() => visibleQuizzes.find((quiz) => completedIds.has(quiz.id)) ?? visibleQuizzes[0], [completedIds, visibleQuizzes]);
+  const featured = useMemo(() => visibleQuizzes.slice(0, config.layout.featuredCourseCount), [config.layout.featuredCourseCount, visibleQuizzes]);
+  const popular = useMemo(() => visibleQuizzes.slice(0, config.layout.popularCourseCount), [config.layout.popularCourseCount, visibleQuizzes]);
+  const practice = useMemo(() => visibleQuizzes.filter((quiz) => !quiz.isPremium).slice(0, config.layout.practiceCourseCount), [config.layout.practiceCourseCount, visibleQuizzes]);
   const articles = useMemo(() => FEATURED_ARTICLES.slice(0, config.layout.resourcesArticleCount), [config.layout.resourcesArticleCount]);
-  const completion = quizzes.length ? Math.round((completedIds.size / quizzes.length) * 100) : 0;
+  const completion = visibleQuizzes.length ? Math.round((completedIds.size / visibleQuizzes.length) * 100) : 0;
   const average = results.length ? Math.round(results.reduce((sum, item) => sum + pct(item), 0) / results.length) : 0;
   const todayXp = results.slice(-3).reduce((sum, item) => sum + pct(item), 0);
   const currentStreak = Math.min(7, Math.max(0, results.length));
   const actionClass = config.layout.homeActionsStyle === 'stack' ? 'dc-actions-stack' : 'dc-actions-grid';
+  const dailyQuiz = useMemo(() => (
+    systemFeatures.dailyQuizEnabled
+      ? visibleQuizzes.find((quiz) => quiz.id === systemFeatures.dailyQuizQuizId) ?? null
+      : null
+  ), [systemFeatures, visibleQuizzes]);
 
   return (
     <div className="page-content dc-shell">
@@ -153,6 +168,25 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+
+      {dailyQuiz ? (
+        <section>
+          <div className="dc-card" style={{ padding: 24, display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+                {systemFeatures.dailyQuizLabel}
+              </div>
+              <div style={{ marginTop: 10, fontSize: 30, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
+              <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                {dailyQuiz.description}
+              </div>
+            </div>
+            <Link href={`/dashboard/quiz/${dailyQuiz.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
+              Start Daily Quiz
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       {config.widgets.showHomeActions && (
         <section>

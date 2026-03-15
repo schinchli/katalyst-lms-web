@@ -20,6 +20,7 @@ import {
   DEFAULT_THEME_PREFS,
 } from '@/lib/themePacks';
 import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvider';
+import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
@@ -130,7 +131,8 @@ function SettingsIcon({ active }: { active: boolean }) {
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0' };
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
+  useManagedQuizContentVersion();
   const pathname = usePathname();
   const router   = useRouter();
   const [dark,        setDark]        = useState(true);
@@ -415,5 +417,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="main-content">{children}</main>
       </div>
     </PlatformExperienceProvider>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ManagedQuizContentProvider>
+      <DashboardLayoutInner>{children}</DashboardLayoutInner>
+    </ManagedQuizContentProvider>
   );
 }

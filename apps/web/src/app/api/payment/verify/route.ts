@@ -21,10 +21,15 @@ import { logger } from '@/lib/logger';
 
 const ROUTE = '/api/payment/verify';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRoleKey) {
+    throw new Error('Supabase admin env vars are required.');
+  }
+
+  return createClient(url, serviceRoleKey);
+}
 
 const BodySchema = z.object({
   razorpay_payment_id: z.string().min(1),
@@ -68,6 +73,14 @@ async function fetchRazorpayOrder(orderId: string): Promise<{
 }
 
 export async function POST(req: NextRequest) {
+  let supabaseAdmin;
+  try {
+    supabaseAdmin = getSupabaseAdmin();
+  } catch (error) {
+    logger.error(ROUTE, 'supabase_env_missing', { reason: String(error) });
+    return NextResponse.json({ error: 'Server configuration incomplete' }, { status: 500 });
+  }
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   if (!(await checkRateLimit(`payment-verify:${ip}`, 10, 60_000))) {

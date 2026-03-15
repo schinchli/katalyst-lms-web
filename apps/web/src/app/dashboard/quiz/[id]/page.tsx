@@ -12,6 +12,7 @@ import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { usePayment } from '@/hooks/usePayment';
 import type { PaymentSuccessResult, Gateway } from '@/hooks/usePayment';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = {
@@ -88,6 +89,7 @@ const LayersSvg = () => (
 );
 
 export default function QuizPage() {
+  useManagedQuizContentVersion();
   const { config: platformConfig } = usePlatformExperience();
   const { id }    = useParams<{ id: string }>();
   const router    = useRouter();

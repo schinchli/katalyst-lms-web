@@ -17,10 +17,15 @@ import { logger } from '@/lib/logger';
 
 const ROUTE = '/api/payment/create-order';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRoleKey) {
+    throw new Error('Supabase admin env vars are required.');
+  }
+
+  return createClient(url, serviceRoleKey);
+}
 
 /** Prices in paise (₹ × 100) — hardcoded server-side, cannot be spoofed. */
 const SUBSCRIPTION_PRICES: Record<'annual' | 'monthly', number> = {
@@ -37,6 +42,7 @@ const BodySchema = z.object({
 
 /** Looks up course price in paise from app_settings.quiz_catalog_overrides. */
 async function getCoursePricePaise(courseId: string): Promise<number | null> {
+  const supabaseAdmin = getSupabaseAdmin();
   const { data } = await supabaseAdmin
     .from('app_settings')
     .select('value')
@@ -54,6 +60,14 @@ async function getCoursePricePaise(courseId: string): Promise<number | null> {
 }
 
 export async function POST(req: NextRequest) {
+  let supabaseAdmin;
+  try {
+    supabaseAdmin = getSupabaseAdmin();
+  } catch (error) {
+    logger.error(ROUTE, 'supabase_env_missing', { reason: String(error) });
+    return NextResponse.json({ error: 'Server configuration incomplete' }, { status: 500 });
+  }
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   if (!(await checkRateLimit(`payment-create:${ip}`, 10, 60_000))) {

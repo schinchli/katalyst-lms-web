@@ -9,6 +9,7 @@ import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -26,6 +27,7 @@ function score(result?: QuizResult) {
 const DIFFICULTIES = ['all', 'beginner', 'intermediate', 'advanced'] as const;
 
 export default function QuizzesPage() {
+  const quizContentVersion = useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
   const { canAccess } = useSubscription();
   const [results, setResults] = useState<QuizResult[]>([]);
@@ -55,7 +57,7 @@ export default function QuizzesPage() {
       }
       return true;
     });
-  }, [difficulty, premiumOnly, search]);
+  }, [difficulty, premiumOnly, quizContentVersion, search]);
 
   const featured = filtered.slice(0, Math.max(4, config.layout.featuredCourseCount));
   const popular = filtered.slice(0, config.layout.popularCourseCount);

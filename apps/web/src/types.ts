@@ -23,6 +23,7 @@ export interface Quiz {
   icon: string;
   certLevel?: CertLevel;
   examCode?: string;
+  enabled?: boolean;
   /** Cloud provider — 'aws' | 'azure' | 'gcp' | 'nvidia' | 'kubernetes' | ... */
   provider?: string;
 }
@@ -147,4 +148,5 @@ export type QuizCategory =
   | 'ans-c01'
   | 'scs-c03'
   | 'pas-c01'
-  | 'mls-c01';
+  | 'mls-c01'
+  | (string & {});

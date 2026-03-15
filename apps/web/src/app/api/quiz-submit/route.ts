@@ -18,6 +18,7 @@ import { z }                        from 'zod';
 import { checkRateLimit }           from '@/lib/rateLimiter';
 import { logger }                   from '@/lib/logger';
 import { quizQuestions, quizzes }   from '@/data/quizzes';
+import { buildManagedQuizDataset, MANAGED_QUIZ_CONTENT_KEY } from '@/lib/managedQuizContent';
 
 const ROUTE = '/api/quiz-submit';
 
@@ -80,7 +81,15 @@ export async function POST(req: NextRequest) {
   const { quizId, answers, startedAt } = parsed.data;
 
   // Validate quiz exists
-  const quiz = quizzes.find((q) => q.id === quizId);
+  const settings = await adminClient()
+    .from('app_settings')
+    .select('value')
+    .eq('key', MANAGED_QUIZ_CONTENT_KEY)
+    .maybeSingle();
+  const managedDataset = buildManagedQuizDataset(settings.data?.value);
+  const availableQuizzes = managedDataset.quizzes.length > 0 ? managedDataset.quizzes : quizzes;
+  const availableQuestions = Object.keys(managedDataset.questions).length > 0 ? managedDataset.questions : quizQuestions;
+  const quiz = availableQuizzes.find((q) => q.id === quizId);
   if (!quiz) {
     return NextResponse.json({ ok: false, error: 'Quiz not found' }, { status: 404 });
   }
@@ -102,7 +111,7 @@ export async function POST(req: NextRequest) {
   const timeTaken = Math.min(elapsedSecs, quiz.duration * 60);
 
   // Load questions and calculate score server-side
-  const questions = quizQuestions[quizId] ?? [];
+  const questions = availableQuestions[quizId] ?? [];
   if (questions.length === 0) {
     logger.error(ROUTE, 'no_questions', { ip, userId: user.id, quizId });
     return NextResponse.json({ ok: false, error: 'Quiz data unavailable' }, { status: 500 });

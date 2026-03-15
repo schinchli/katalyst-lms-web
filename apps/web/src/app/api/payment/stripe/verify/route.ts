@@ -9,18 +9,33 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { logger } from '@/lib/logger';
 
 const ROUTE = '/api/payment/stripe/verify';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRoleKey) {
+    throw new Error('Supabase admin env vars are required.');
+  }
+
+  return createClient(url, serviceRoleKey);
+}
 
 export async function GET(req: NextRequest) {
+  let supabaseAdmin;
+  let stripe;
+  try {
+    supabaseAdmin = getSupabaseAdmin();
+    stripe = getStripe();
+  } catch (error) {
+    logger.error(ROUTE, 'payment_env_missing', { reason: String(error) });
+    return NextResponse.json({ error: 'Server configuration incomplete' }, { status: 500 });
+  }
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   if (!(await checkRateLimit(`stripe-verify:${ip}`, 10, 60_000))) {
