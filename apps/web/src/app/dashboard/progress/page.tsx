@@ -126,10 +126,18 @@ export default function ProgressPage() {
             {results.slice().reverse().map((result) => {
               const quiz = quizzes.find((item) => item.id === result.quizId);
               const pct = percentage(result);
+              const isDailyQuizAttempt = dailyQuiz?.id === result.quizId && isSameLocalDay(result.completedAt);
               return (
                 <div key={`${result.quizId}-${result.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
                   <div>
-                    <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz?.title ?? result.quizId}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz?.title ?? result.quizId}</div>
+                      {isDailyQuizAttempt ? (
+                        <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>
+                          {systemFeatures.dailyQuizLabel}
+                        </span>
+                      ) : null}
+                    </div>
                     <div style={{ marginTop: 4, fontSize: 13, color: 'var(--text-secondary)' }}>
                       {result.score}/{result.totalQuestions} · {new Date(result.completedAt).toLocaleDateString()}
                     </div>
