@@ -54,6 +54,15 @@ function createManagedQuiz(seed = ''): Quiz {
   };
 }
 
+function getUniqueManagedQuizId(baseId: string, existingIds: string[]) {
+  if (!existingIds.includes(baseId)) return baseId;
+  let counter = 2;
+  while (existingIds.includes(`${baseId}-${counter}`)) {
+    counter += 1;
+  }
+  return `${baseId}-${counter}`;
+}
+
 function createManagedQuestion(quizId: string, index: number): Question {
   return {
     id: `${quizId}-question-${index + 1}`,
@@ -353,6 +362,36 @@ export default function SettingsPage() {
     }));
     setSelectedManagedQuizId(sourceQuiz.id);
     setImportSourceQuizId('');
+  };
+
+  const duplicateManagedQuiz = (quizId: string) => {
+    const sourceQuiz = managedQuizList.find((quiz) => quiz.id === quizId);
+    if (!sourceQuiz) return;
+
+    const nextId = getUniqueManagedQuizId(`${quizId}-copy`, managedQuizList.map((quiz) => quiz.id));
+    const sourceQuestions = managedQuizContent.questions[quizId] ?? [];
+
+    setManagedQuizContent((prev) => ({
+      quizzes: [
+        ...prev.quizzes,
+        {
+          ...sourceQuiz,
+          id: nextId,
+          title: `${sourceQuiz.title} Copy`,
+          questionCount: sourceQuestions.length || sourceQuiz.questionCount,
+        },
+      ],
+      questions: {
+        ...prev.questions,
+        [nextId]: sourceQuestions.map((question, index) => ({
+          ...question,
+          id: `${nextId}-question-${index + 1}`,
+          quizId: nextId,
+          options: question.options.map((option) => ({ ...option })),
+        })),
+      },
+    }));
+    setSelectedManagedQuizId(nextId);
   };
 
   const deleteManagedQuiz = (quizId: string) => {
@@ -748,7 +787,10 @@ export default function SettingsPage() {
               <div style={{ display: 'grid', gap: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                   <h3 style={{ margin: 0, fontSize: 22, color: 'var(--text)' }}>{selectedManagedQuiz.title}</h3>
-                  <button className="settings-btn-ghost" onClick={() => deleteManagedQuiz(selectedManagedQuiz.id)}>Delete quiz</button>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <button className="settings-btn-ghost" onClick={() => duplicateManagedQuiz(selectedManagedQuiz.id)}>Duplicate quiz</button>
+                    <button className="settings-btn-ghost" onClick={() => deleteManagedQuiz(selectedManagedQuiz.id)}>Delete quiz</button>
+                  </div>
                 </div>
 
                 <div className="dc-grid" style={{ gap: 14 }}>
