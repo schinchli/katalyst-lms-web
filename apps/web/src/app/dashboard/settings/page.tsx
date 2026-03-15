@@ -241,6 +241,13 @@ export default function SettingsPage() {
       && (!configuredDailyQuiz || configuredDailyQuiz.enabled === false),
   );
   const dailyQuizIsPremium = Boolean(configuredDailyQuiz?.isPremium);
+  const resolvedDailyQuizSource = !systemFeatures.dailyQuizEnabled
+    ? 'disabled'
+    : configuredDailyQuiz && !dailyQuizFallsBack
+      ? 'configured'
+      : resolvedDailyQuiz
+        ? 'fallback rotation'
+        : 'none';
 
   const saveConfig = async () => {
     if (!accessToken) return;
@@ -1216,6 +1223,17 @@ export default function SettingsPage() {
                       ? `Configured quiz ID: ${configuredDailyQuiz.id}${configuredDailyQuiz.isPremium ? ' · premium quiz selected' : ''}`
                       : 'No specific quiz selected. The app will rotate across visible non-premium quizzes by date.'}
               </div>
+              {resolvedDailyQuiz ? (
+                <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                    Resolved daily target
+                  </div>
+                  <div style={{ marginTop: 6, color: 'var(--text)', fontWeight: 700 }}>{resolvedDailyQuiz.title}</div>
+                  <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>
+                    {resolvedDailyQuiz.id} · source: {resolvedDailyQuizSource}
+                  </div>
+                </div>
+              ) : null}
             </div>
             <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
               <input

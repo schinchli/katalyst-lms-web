@@ -77,6 +77,7 @@ export default function QuizzesPage() {
     () => (dailyQuiz ? results.some((entry) => entry.quizId === dailyQuiz.id && isSameLocalDay(entry.completedAt)) : false),
     [dailyQuiz, results],
   );
+  const dailyQuizFilteredOut = Boolean(dailyQuiz && !filtered.some((quiz) => quiz.id === dailyQuiz.id));
 
   return (
     <div className="page-content dc-shell">
@@ -131,6 +132,26 @@ export default function QuizzesPage() {
           </select>
         </div>
       </section>
+
+      {dailyQuiz && dailyQuizFilteredOut ? (
+        <section style={{ marginBottom: 24 }}>
+          <div className="dc-card" style={{ padding: 22, display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span>
+                <span className="dc-chip">{dailyQuizCompleted ? 'Review available' : 'Pinned above filters'}</span>
+              </div>
+              <div style={{ marginTop: 12, fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
+              <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                Your current search or filter hides today&apos;s featured quiz, but it stays accessible here.
+              </div>
+            </div>
+            <Link href={`/dashboard/quiz/${dailyQuiz.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
+              {dailyQuizCompleted ? 'Review Daily Quiz' : 'Play Daily Quiz'}
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       {[
         { title: 'Featured tracks', subtitle: 'Horizontal cards match the visual direction from the mobile references.', items: featured, tinted: true },

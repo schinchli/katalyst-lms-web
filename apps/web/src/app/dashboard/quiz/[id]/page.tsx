@@ -212,6 +212,7 @@ export default function QuizPage() {
   const isLast   = idx === activeQuestions.length - 1;
   const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes.filter((item) => item.enabled !== false)), [systemFeatures]);
   const isDailyQuiz = dailyQuiz?.id === quiz?.id;
+  const isTrueFalseQuiz = questionPool.length > 0 && questionPool.every((question) => question.options.length === 2);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -375,6 +376,7 @@ export default function QuizPage() {
               )}
               <span className="course-tag" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>{catLabel}</span>
               {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span> : null}
+              {isTrueFalseQuiz ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>
             <p className="course-hero-desc">{quiz.description}</p>
@@ -390,6 +392,12 @@ export default function QuizPage() {
               <span style={{ color: 'var(--text-secondary)' }}>{questionPool.length} questions</span>
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
               <span style={{ color: 'var(--text-secondary)' }}>{quiz.duration}m duration</span>
+              {isTrueFalseQuiz ? (
+                <>
+                  <span style={{ color: 'var(--text-secondary)' }}>·</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>2-option mode</span>
+                </>
+              ) : null}
             </div>
             {isDailyQuiz ? (
               <div style={{ marginTop: 16, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,216,77,0.24)', background: 'rgba(255,216,77,0.08)', color: '#ffe89a', fontSize: 14, lineHeight: 1.6 }}>
@@ -445,6 +453,7 @@ export default function QuizPage() {
                   'Practice mode — retry as many times as you like',
                   `${questionPool.length} expertly crafted practice questions`,
                   `Scoring: +${correctPoints} / ${wrongPoints >= 0 ? '+' : ''}${wrongPoints}`,
+                  ...(isTrueFalseQuiz ? ['True/False mode with two-option questions'] : []),
                 ].map((f) => (
                   <div key={f} className="feature-item">
                     <span className="feature-check"><CheckSvg /></span>

@@ -1,58 +1,169 @@
 # Desired Features Backlog
 
 ## Goal
-- Reach functional parity with the Elite Quiz reference where it is compatible with the LMS product direction, web app architecture, Expo app constraints, and Apple/Google store policies.
+- Reach practical Elite Quiz feature parity across website, admin dashboard, and Expo app without breaking LMS architecture, store compliance, or shared CRUD foundations.
 
-## P0: Current Functional Foundation
-- Replace static quiz-only configuration with admin-managed quiz and question content.
-- Keep website, admin dashboard, and Expo app in sync from shared backend settings.
-- Ensure all POST routes have rate limits and payload limits.
-- Remove mobile-only compliance blockers for digital purchases.
-- Keep feature work behind stable CRUD and shared config primitives.
+## Completed Work
 
-## P1: Content and Admin CRUD
-- Managed quiz CRUD for create, update, delete.
-- Question CRUD inside managed quizzes.
-- Import existing static quizzes into managed content.
-- Bulk import flow for quiz/question payloads.
+### Shared Config and Admin-Controlled Content
+- Added admin-managed app content for privacy, terms, about, and instructions.
+- Added public and admin APIs for app content and system feature config.
+- Synced managed app content into website public pages and Expo screens.
+- Added managed quiz content normalization, storage, admin API access, and shared runtime application.
+- Replaced static-only quiz editing with website admin CRUD for managed quizzes and questions.
+- Added quiz import from static catalog into managed content.
+- Added bulk JSON import and JSON export for managed quiz payloads.
+- Added managed quiz duplication and question duplication.
+- Added question reordering and variable option-count controls with 2-5 option guardrails.
+- Added editable question category and difficulty fields.
+- Added true/false authoring preset for questions.
+- Added per-quiz scoring fields and fixed-question-count controls.
+
+### Runtime Wiring Already Done
+- Website quiz runtime now honors managed `fixedQuestionCount`, `correctScore`, and `wrongScore`.
+- Expo quiz runtime now honors managed `fixedQuestionCount`, `correctScore`, and `wrongScore`.
+- Website quiz submission API now validates and scores using managed quiz data.
+- Expo summaries and reward paths now use managed point scoring instead of old raw-correct assumptions.
+
+### Daily Quiz Features Already Done
+- Added admin-controlled daily quiz enablement, label, and selected quiz.
+- Added deterministic fallback rotation across visible non-premium quizzes when the configured daily quiz is invalid.
+- Added daily quiz cards and completion state to website dashboard and Expo home.
+- Added daily quiz status to progress/history surfaces on website and Expo.
+- Added daily quiz emphasis to discovery lists, history entries, leaderboard surfaces, and quiz detail/result screens.
+- Added direct daily-quiz CTAs in progress and leaderboard surfaces on website and Expo.
+- Added admin preview/validation for configured daily quiz, including disabled/premium warnings.
+- Added discovery-card daily quiz CTA language on website and Expo.
+- Preserved daily quiz visibility when search/filter state would otherwise hide it on website and Expo.
+- Added admin-side resolved daily target preview showing actual title, ID, and source.
+
+### Verification and Hardening Already Done
+- Restored missing mobile challenge mappings and fixed related runtime/test issues.
+- Hardened mobile font-scale fallback and flashcard hint rendering.
+- Fixed Jest setup drift for the mobile theme store.
+- Removed import-time payment env crashes in website payment routes by lazy initialization.
+- Added missing admin TS config shell.
+- Ensured current validation loop stays green with:
+- `npm run type-check`
+- `npm run build --workspace=apps/web`
+- `npm test --workspace=mobile`
+
+## Pending Work
+
+### P0: Finish Shared CRUD Foundation
 - Category and subcategory CRUD.
-- Per-quiz scoring, duration, visibility, and fixed-question settings.
-- Daily quiz content assignment from managed quiz pool.
+  Implementation notes:
+  Add admin data model and API routes for categories/subcategories, wire them into managed quiz editing, and remove remaining direct string-only category assumptions in both web and Expo discovery screens.
+- Quiz/question delete safety and dependency checks.
+  Implementation notes:
+  Add explicit delete flows with confirmation UI, prevent orphaned question records, and ensure daily quiz / leaderboard / progress references degrade safely when a managed quiz is removed.
+- Managed content persistence cleanup.
+  Implementation notes:
+  Audit remaining places that still read directly from static `quizzes` / `quizQuestions` at runtime and switch them to managed-content-aware selectors first, falling back to static only where migration is incomplete.
 
-## P2: Core Elite Quiz Modes
-- True/False mode.
-- Daily quiz completion and history.
-- Exam mode with exam-specific controls.
-- Multi Match mode.
-- Fun and Learn mode.
-- Guess the Word mode.
-- Audio quiz mode.
-- Maths quiz mode.
-- Bookmark parity and review flows.
+### P1: Complete Daily Quiz and Managed Discovery Parity
+- Daily quiz-aware reusable cards/components.
+  Implementation notes:
+  Extend shared card/list components to accept `isDailyQuiz`, `dailyActionLabel`, and `dailyCompleted` props so the same state is not manually duplicated in each screen.
+- Daily quiz filtering behavior consistency.
+  Implementation notes:
+  Keep the featured quiz visible across any future filter/search entry points, not only the current discovery tabs, and centralize that logic into shared selectors.
+- Daily quiz analytics/admin observability.
+  Implementation notes:
+  Add admin-facing counts for how many attempts today hit the resolved daily quiz and whether traffic is using configured selection or fallback rotation.
 
-## P3: Competitive Modes
-- Contest lifecycle and admin management.
-- One vs one battle.
-- Group battle.
-- Random battle.
-- Self challenge.
-- Realtime leaderboard and battle state sync.
+### P2: True/False Mode
+- True/False gameplay mode end to end.
+  Implementation notes:
+  Detect true/false quizzes from managed content or explicit mode metadata, show true/false-specific copy on quiz intro/results, ensure answer review UI stays clean for two-option questions, and expose mode badges in discovery/admin.
+- True/False mode admin controls.
+  Implementation notes:
+  Add explicit quiz-level mode metadata instead of inferring solely from option count, so admins can intentionally mark quizzes as `true_false` and future migrations remain stable.
+- True/False reporting and history.
+  Implementation notes:
+  Make progress/history surfaces distinguish true/false attempts from standard MCQ attempts where Elite Quiz parity expects separate mode identity.
 
-## P4: Economy and Monetization
-- Coins earn/spend flows.
+### P3: Exam Mode
+- Exam-mode runtime.
+  Implementation notes:
+  Add quiz-level `mode = exam`, timed full-session flow, exam copy/branding, exam result summary, and stricter retry/review behavior where configured.
+- Exam-mode admin settings.
+  Implementation notes:
+  Add per-quiz exam flags for review allowed, answer visibility timing, screenshot/screen-record restriction hints, and scoring controls aligned with store/platform constraints.
+- Exam-mode compliance surface.
+  Implementation notes:
+  Apply platform-safe screen-protection behaviors where supported and document unsupported cases clearly instead of implying protection that does not exist.
+
+### P4: Remaining Elite Quiz Modes
+- Multi Match.
+  Implementation notes:
+  Add managed question schema for match pairs, runtime UI for drag/select matching, answer validation, scoring, and admin CRUD/import support.
+- Fun and Learn.
+  Implementation notes:
+  Add content type that emphasizes explanation-first progression and post-answer learning blocks rather than standard scoreboard-first quiz flow.
+- Guess the Word.
+  Implementation notes:
+  Add per-question character/word payloads, hint handling, answer entry UI, and result validation across web and Expo.
+- Audio Quiz.
+  Implementation notes:
+  Add audio asset support, preload/playback controls, accessibility fallback text, and admin upload/reference fields.
+- Maths Quiz.
+  Implementation notes:
+  Add numeric answer support, formatted question rendering, and validation paths that are not limited to current option-based MCQ assumptions.
+- Bookmark/review parity.
+  Implementation notes:
+  Finish bookmark management across every quiz surface and ensure bookmarked questions can be reviewed in a dedicated mode, not only toggled ad hoc.
+
+### P5: Competitive Modes
+- Contest lifecycle.
+  Implementation notes:
+  Add admin CRUD for contests, publication windows, entry rules, and results surfaces on both website and Expo.
+- One vs One Battle, Group Battle, Random Battle, Self Challenge.
+  Implementation notes:
+  Define battle/session models, invitation or matchmaking flows, question synchronization, score updates, timeout handling, and end-state reconciliation.
+- Realtime state sync.
+  Implementation notes:
+  Choose backend transport and state model for multiplayer events, then build leaderboard/battle updates without relying on static or local-only state.
+
+### P6: Economy and Monetization
+- Coins earn/spend ledger.
+  Implementation notes:
+  Replace local-only reward assumptions with backend ledgering, reason codes, anti-duplication checks, and visible transaction history.
 - Referrals and reward crediting.
+  Implementation notes:
+  Add referral codes, redemption rules, abuse prevention, and admin visibility into referral conversion/reward issuance.
 - Coin store.
-- Store-compliant IAP / subscriptions.
-- Remove-ads purchase.
-- Banner, interstitial, and rewarded ad controls.
+  Implementation notes:
+  Build admin-managed packs, storefront UI, purchase verification, and balance updates from a single backend source of truth.
+- Store-compliant subscriptions and IAP.
+  Implementation notes:
+  Remove non-compliant mobile digital purchase flows, move mobile digital goods/subscriptions to App Store / Play billing where required, and keep website payment flows segmented appropriately.
+- Remove-ads purchase and ad controls.
+  Implementation notes:
+  Build entitlement-aware ad rendering with admin toggles for banner/interstitial/rewarded placements and safe fallback behavior when ads are disabled.
 
-## P5: Platform, Compliance, and Store Readiness
-- Maintenance mode and force update flows.
-- App/privacy/account deletion evidence.
-- ATT/privacy manifest review.
-- Screenshot / recording restrictions for exam mode where allowed.
-- App Store compliant digital purchase flows.
-- Play Store policy alignment and production asset checks.
+### P7: Platform, Compliance, and Release Readiness
+- Maintenance mode and force-update flows.
+  Implementation notes:
+  Add shared remote config support, blocking and non-blocking update messaging, and environment-safe rollout controls.
+- Privacy/account deletion evidence.
+  Implementation notes:
+  Provide visible in-app deletion path, privacy disclosures, and support/contact routing required for store review.
+- ATT / privacy manifest / data safety completion.
+  Implementation notes:
+  Audit tracking usage, SDK manifests, consent flows, and store-declared data collection against actual runtime behavior.
+- Production policy audit.
+  Implementation notes:
+  Re-check App Store and Play Store rules after monetization changes, especially around digital goods, ads, user-generated content, and account management.
 
-## Active Next Smallest Task
-- Add “import existing quiz into managed content” from the website admin settings page so static quizzes can be converted into editable managed records without manual re-entry.
+## Recommended Next Implementation Order
+1. Finish category/subcategory CRUD and remaining managed-content selectors.
+2. Add explicit quiz mode metadata, then complete true/false mode end to end.
+3. Build exam mode on top of the same mode metadata.
+4. Move to remaining single-player modes before multiplayer/battle systems.
+5. Replace mobile digital purchases with store-compliant IAP/subscription flows before calling the app store-ready.
+
+## Current Verification Standard
+- `npm run type-check`
+- `npm run build --workspace=apps/web`
+- `npm test --workspace=mobile`
