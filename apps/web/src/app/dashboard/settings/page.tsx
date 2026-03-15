@@ -466,6 +466,28 @@ export default function SettingsPage() {
     });
   };
 
+  const moveManagedQuestion = (quizId: string, questionId: string, direction: 'up' | 'down') => {
+    setManagedQuizContent((prev) => {
+      const items = [...(prev.questions[quizId] ?? [])];
+      const index = items.findIndex((question) => question.id === questionId);
+      if (index === -1) return prev;
+
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= items.length) return prev;
+
+      const [item] = items.splice(index, 1);
+      items.splice(targetIndex, 0, item);
+
+      return {
+        ...prev,
+        questions: {
+          ...prev.questions,
+          [quizId]: items,
+        },
+      };
+    });
+  };
+
   const bulkImportManagedContent = () => {
     if (!bulkImportValue.trim()) return;
 
@@ -860,7 +882,23 @@ export default function SettingsPage() {
                     <div key={question.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                         <strong style={{ color: 'var(--text)' }}>Question {questionIndex + 1}</strong>
-                        <button className="settings-btn-ghost" onClick={() => deleteManagedQuestion(selectedManagedQuiz.id, question.id)}>Delete</button>
+                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                          <button
+                            className="settings-btn-ghost"
+                            onClick={() => moveManagedQuestion(selectedManagedQuiz.id, question.id, 'up')}
+                            disabled={questionIndex === 0}
+                          >
+                            Move up
+                          </button>
+                          <button
+                            className="settings-btn-ghost"
+                            onClick={() => moveManagedQuestion(selectedManagedQuiz.id, question.id, 'down')}
+                            disabled={questionIndex === selectedManagedQuestions.length - 1}
+                          >
+                            Move down
+                          </button>
+                          <button className="settings-btn-ghost" onClick={() => deleteManagedQuestion(selectedManagedQuiz.id, question.id)}>Delete</button>
+                        </div>
                       </div>
                       <div className="dc-grid" style={{ gap: 12, marginTop: 14 }}>
                         <label>
