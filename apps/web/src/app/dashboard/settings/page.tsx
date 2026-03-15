@@ -84,6 +84,13 @@ function getNextOptionId(options: Question['options']) {
   return candidates.find((candidate) => !options.some((option) => option.id === candidate)) ?? `opt-${options.length + 1}`;
 }
 
+function buildTrueFalseOptions() {
+  return [
+    { id: 'a', text: 'True' },
+    { id: 'b', text: 'False' },
+  ];
+}
+
 function mergeManagedQuizContent(current: ManagedQuizContent, incoming: ManagedQuizContent): ManagedQuizContent {
   const quizMap = new Map(current.quizzes.map((quiz) => [quiz.id, quiz] as const));
   incoming.quizzes.forEach((quiz) => {
@@ -456,6 +463,24 @@ export default function SettingsPage() {
             ],
           };
         }),
+      },
+    }));
+  };
+
+  const applyTrueFalsePreset = (quizId: string, questionId: string) => {
+    setManagedQuizContent((prev) => ({
+      ...prev,
+      questions: {
+        ...prev.questions,
+        [quizId]: (prev.questions[quizId] ?? []).map((question) => (
+          question.id === questionId
+            ? {
+                ...question,
+                options: buildTrueFalseOptions(),
+                correctOptionId: question.correctOptionId === 'b' ? 'b' : 'a',
+              }
+            : question
+        )),
       },
     }));
   };
@@ -992,13 +1017,21 @@ export default function SettingsPage() {
                           <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
                             {question.options.length} options
                           </div>
-                          <button
-                            className="settings-btn-ghost"
-                            onClick={() => addManagedOption(selectedManagedQuiz.id, question.id)}
-                            disabled={question.options.length >= 5}
-                          >
-                            Add option
-                          </button>
+                          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                            <button
+                              className="settings-btn-ghost"
+                              onClick={() => applyTrueFalsePreset(selectedManagedQuiz.id, question.id)}
+                            >
+                              True / False
+                            </button>
+                            <button
+                              className="settings-btn-ghost"
+                              onClick={() => addManagedOption(selectedManagedQuiz.id, question.id)}
+                              disabled={question.options.length >= 5}
+                            >
+                              Add option
+                            </button>
+                          </div>
                         </div>
                         <div className="dc-grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
                           {question.options.map((option) => (
