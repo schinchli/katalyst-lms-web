@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { FEATURED_ARTICLES, PLATFORM_TESTIMONIALS } from '@/lib/experienceFixtures';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
-import { DEFAULT_SYSTEM_FEATURES, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 function getLocalResults(): QuizResult[] {
@@ -67,11 +67,10 @@ export default function DashboardPage() {
   const todayXp = results.slice(-3).reduce((sum, item) => sum + pct(item), 0);
   const currentStreak = Math.min(7, Math.max(0, results.length));
   const actionClass = config.layout.homeActionsStyle === 'stack' ? 'dc-actions-stack' : 'dc-actions-grid';
-  const dailyQuiz = useMemo(() => (
-    systemFeatures.dailyQuizEnabled
-      ? visibleQuizzes.find((quiz) => quiz.id === systemFeatures.dailyQuizQuizId) ?? null
-      : null
-  ), [systemFeatures, visibleQuizzes]);
+  const dailyQuiz = useMemo(
+    () => resolveDailyQuiz(systemFeatures, visibleQuizzes),
+    [systemFeatures, visibleQuizzes],
+  );
 
   return (
     <div className="page-content dc-shell">

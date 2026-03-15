@@ -27,3 +27,35 @@ export function normalizeSystemFeatures(value: unknown): SystemFeaturesConfig {
     optionEEnabled: typeof raw.optionEEnabled === 'boolean' ? raw.optionEEnabled : DEFAULT_SYSTEM_FEATURES.optionEEnabled,
   };
 }
+
+export interface DailyQuizCandidate {
+  id: string;
+  enabled?: boolean;
+  isPremium?: boolean;
+}
+
+function getUtcDaySeed(date = new Date()) {
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86_400_000;
+}
+
+export function resolveDailyQuiz<T extends DailyQuizCandidate>(
+  config: SystemFeaturesConfig,
+  quizzes: T[],
+  date = new Date(),
+) {
+  if (!config.dailyQuizEnabled || quizzes.length === 0) return null;
+
+  const visible = quizzes.filter((quiz) => quiz.enabled !== false);
+  if (visible.length === 0) return null;
+
+  const configured = config.dailyQuizQuizId
+    ? visible.find((quiz) => quiz.id === config.dailyQuizQuizId) ?? null
+    : null;
+
+  if (configured) return configured;
+
+  const fallbackPool = visible.filter((quiz) => !quiz.isPremium);
+  const rotationPool = fallbackPool.length > 0 ? fallbackPool : visible;
+  const index = getUtcDaySeed(date) % rotationPool.length;
+  return rotationPool[index] ?? null;
+}
