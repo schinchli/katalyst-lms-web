@@ -24,6 +24,10 @@ import {
 
 const EMPTY_MANAGED_CONTENT: ManagedQuizContent = { quizzes: [], questions: {} };
 
+interface QuizImportBundle extends Partial<Quiz> {
+  questions?: Question[];
+}
+
 function toSlug(value: string) {
   return value
     .toLowerCase()
@@ -66,6 +70,55 @@ function createManagedQuestion(quizId: string, index: number): Question {
   };
 }
 
+function mergeManagedQuizContent(current: ManagedQuizContent, incoming: ManagedQuizContent): ManagedQuizContent {
+  const quizMap = new Map(current.quizzes.map((quiz) => [quiz.id, quiz] as const));
+  incoming.quizzes.forEach((quiz) => {
+    quizMap.set(quiz.id, quiz);
+  });
+
+  return {
+    quizzes: Array.from(quizMap.values()),
+    questions: {
+      ...current.questions,
+      ...incoming.questions,
+    },
+  };
+}
+
+function parseBulkManagedQuizImport(source: string): ManagedQuizContent {
+  const parsed = JSON.parse(source) as unknown;
+
+  if (Array.isArray(parsed)) {
+    const bundles = parsed as QuizImportBundle[];
+    const normalized = normalizeManagedQuizContent({
+      quizzes: bundles.map(({ questions: _questions, ...quiz }) => quiz),
+      questions: Object.fromEntries(
+        bundles.map((bundle) => [bundle.id ?? '', bundle.questions ?? []]).filter(([quizId]) => Boolean(quizId)),
+      ),
+    });
+    return normalized;
+  }
+
+  if (parsed && typeof parsed === 'object') {
+    const value = parsed as { quizzes?: unknown; questions?: unknown; questionsList?: unknown };
+    if ('quizzes' in value || 'questions' in value) {
+      return normalizeManagedQuizContent(value);
+    }
+
+    if ('id' in value || 'title' in value) {
+      const bundle = value as QuizImportBundle;
+      return normalizeManagedQuizContent({
+        quizzes: [{ ...bundle, questionCount: Array.isArray(bundle.questions) ? bundle.questions.length : bundle.questionCount }],
+        questions: {
+          [String(bundle.id ?? '')]: bundle.questions ?? value.questionsList ?? [],
+        },
+      });
+    }
+  }
+
+  throw new Error('Unsupported import format. Use a managed content object, a single quiz bundle, or an array of quiz bundles.');
+}
+
 export default function SettingsPage() {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
@@ -78,6 +131,8 @@ export default function SettingsPage() {
   const [managedQuizContent, setManagedQuizContent] = useState<ManagedQuizContent>(EMPTY_MANAGED_CONTENT);
   const [selectedManagedQuizId, setSelectedManagedQuizId] = useState('');
   const [importSourceQuizId, setImportSourceQuizId] = useState('');
+  const [bulkImportValue, setBulkImportValue] = useState('');
+  const [bulkImportError, setBulkImportError] = useState('');
   const managedContentFields: Array<{ label: string; key: keyof AppContentConfig; multiline: boolean }> = [
     { label: 'App name', key: 'appName', multiline: false },
     { label: 'Support email', key: 'supportEmail', multiline: false },
@@ -372,6 +427,21 @@ export default function SettingsPage() {
     });
   };
 
+  const bulkImportManagedContent = () => {
+    if (!bulkImportValue.trim()) return;
+
+    try {
+      const imported = parseBulkManagedQuizImport(bulkImportValue);
+      const merged = mergeManagedQuizContent(managedQuizContent, imported);
+      setManagedQuizContent(merged);
+      setSelectedManagedQuizId(imported.quizzes[0]?.id ?? selectedManagedQuizId);
+      setBulkImportValue('');
+      setBulkImportError('');
+    } catch (error) {
+      setBulkImportError(error instanceof Error ? error.message : 'Failed to import JSON.');
+    }
+  };
+
   if (!authorized) return null;
 
   return (
@@ -605,6 +675,33 @@ export default function SettingsPage() {
               <button className="settings-btn-ghost" onClick={importExistingQuiz} disabled={!importSourceQuizId}>Import quiz</button>
               <button className="settings-btn-ghost" onClick={addManagedQuiz}>Add managed quiz</button>
             </div>
+          </div>
+
+          <div style={{ marginTop: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontWeight: 700, color: 'var(--text)' }}>Bulk import JSON</div>
+                <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>
+                  Accepts a managed content object, a single quiz bundle, or an array of quiz bundles. Imported quizzes overwrite matching IDs.
+                </div>
+              </div>
+              <button className="settings-btn-ghost" onClick={bulkImportManagedContent} disabled={!bulkImportValue.trim()}>
+                Import JSON
+              </button>
+            </div>
+            <textarea
+              className="admin-field-input"
+              value={bulkImportValue}
+              onChange={(event) => {
+                setBulkImportValue(event.target.value);
+                if (bulkImportError) setBulkImportError('');
+              }}
+              placeholder={'{\n  "id": "sample-quiz",\n  "title": "Sample Quiz",\n  "description": "Imported quiz",\n  "category": "general",\n  "difficulty": "beginner",\n  "duration": 10,\n  "icon": "book",\n  "questions": [\n    {\n      "id": "sample-q1",\n      "text": "Question text",\n      "correctOptionId": "a",\n      "options": [\n        { "id": "a", "text": "Option A" },\n        { "id": "b", "text": "Option B" }\n      ]\n    }\n  ]\n}'}
+              style={{ minHeight: 220, marginTop: 14, fontFamily: 'monospace' }}
+            />
+            {bulkImportError ? (
+              <div style={{ marginTop: 10, color: '#ff8e8e', fontSize: 13 }}>{bulkImportError}</div>
+            ) : null}
           </div>
 
           <div className="dc-grid" style={{ gridTemplateColumns: '280px 1fr', gap: 18, marginTop: 20 }}>
