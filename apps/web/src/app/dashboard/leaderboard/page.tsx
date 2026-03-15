@@ -3,6 +3,10 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { LeaderboardEntry } from '@/types';
+import type { QuizResult } from '@/types';
+import { quizzes } from '@/data/quizzes';
+import { getQuizResults } from '@/lib/db';
+import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 type Period = 'daily' | 'monthly' | 'alltime';
 
@@ -16,15 +20,40 @@ const MEDAL_COLOR = ['#FFD700', '#C0C0C0', '#CD7F32'];
 const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 const PODIUM_H    = [100, 80, 66];
 
+function getLocalResults(): QuizResult[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem('quiz-results') || '[]') as QuizResult[];
+  } catch {
+    return [];
+  }
+}
+
+function isSameLocalDay(isoDate: string, reference = new Date()) {
+  return new Date(isoDate).toDateString() === reference.toDateString();
+}
+
 export default function LeaderboardPage() {
   const [period,  setPeriod]  = useState<Period>('alltime');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId,  setUserId]  = useState<string | null>(null);
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
 
   // Resolve current user
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    setResults(getLocalResults());
+    supabase.auth.getUser().then(async ({ data }) => {
+      setUserId(data.user?.id ?? null);
+      if (!data.user) return;
+      const remoteResults = await getQuizResults(data.user.id);
+      if (remoteResults.length > 0) setResults(remoteResults);
+    });
+    fetch('/api/system-features')
+      .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
+      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
   }, []);
 
   // Fetch real leaderboard data whenever period changes
@@ -48,6 +77,10 @@ export default function LeaderboardPage() {
 
   const top3 = taggedEntries.slice(0, 3);
   const rest  = taggedEntries.slice(3);
+  const dailyQuiz = resolveDailyQuiz(systemFeatures, quizzes.filter((quiz) => quiz.enabled !== false));
+  const dailyQuizResult = dailyQuiz
+    ? results.find((result) => result.quizId === dailyQuiz.id && isSameLocalDay(result.completedAt))
+    : undefined;
 
   // Podium layout: 2nd place left, 1st centre, 3rd right
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as LeaderboardEntry[];
@@ -70,6 +103,27 @@ export default function LeaderboardPage() {
       <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--text-secondary)' }}>
         Top performers across all tracks
       </p>
+
+      {dailyQuiz ? (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+          padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', marginBottom: 20,
+        }}>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+              {systemFeatures.dailyQuizLabel}
+            </div>
+            <div style={{ marginTop: 6, fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
+          </div>
+          <span style={{
+            padding: '6px 10px', borderRadius: 999, fontSize: 12, fontWeight: 700,
+            background: dailyQuizResult ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)',
+            color: dailyQuizResult ? 'var(--platform-success-accent)' : '#ffd84d',
+          }}>
+            {dailyQuizResult ? `Your score: ${Math.round((dailyQuizResult.score / Math.max(1, dailyQuizResult.totalQuestions)) * 100)}%` : 'Complete it to boost your stats'}
+          </span>
+        </div>
+      ) : null}
 
       {/* ── Period tabs ────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', borderBottom: '2px solid var(--border)', marginBottom: 32 }}>
