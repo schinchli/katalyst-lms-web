@@ -1,6 +1,6 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { quizzes, quizQuestions } from '@/data/quizzes';
@@ -102,6 +102,7 @@ export default function QuizPage() {
   const [feedback,    setFeedback]    = useState(false);
   const [timeLeft,    setTimeLeft]    = useState(Q_TIME);
   const [score,       setScore]       = useState(0);
+  const [pointScore,  setPointScore]  = useState(0);
   const [showPaywall,   setShowPaywall]  = useState(false);
   const [paywallTab,    setPaywallTab]   = useState<PaywallTab>('course');
   const [gatewayTab,    setGatewayTab]   = useState<GatewayTab>('razorpay');
@@ -114,6 +115,13 @@ export default function QuizPage() {
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const quizStartTs = useRef<number>(0); // unix ms when quiz started
   const { isPro, unlockedCourses, canAccess, upgradeToPremium, unlockCourse } = useSubscription();
+  const correctPoints = quiz?.correctScore ?? 1;
+  const wrongPoints = quiz?.wrongScore ?? 0;
+  const fixedQuestionCount = Math.max(0, quiz?.fixedQuestionCount ?? 0);
+  const questionPool = useMemo(
+    () => (fixedQuestionCount > 0 ? questions.slice(0, Math.min(fixedQuestionCount, questions.length)) : questions),
+    [fixedQuestionCount, questions],
+  );
 
   const onPaymentSuccess = useCallback((result: PaymentSuccessResult) => {
     setShowPaywall(false);
@@ -213,7 +221,12 @@ export default function QuizPage() {
     if (feedback) return;
     stopTimer();
     setAnswers((a) => ({ ...a, [currentQ.id]: optionId }));
-    if (optionId === currentQ.correctOptionId) setScore((s) => s + 1);
+    if (optionId === currentQ.correctOptionId) {
+      setScore((s) => s + 1);
+      setPointScore((s) => s + correctPoints);
+    } else {
+      setPointScore((s) => s + wrongPoints);
+    }
     setFeedback(true);
   };
 
@@ -224,12 +237,18 @@ export default function QuizPage() {
         const q = activeQuestions.find((q) => q.id === qId);
         return q && answers[qId] === q.correctOptionId ? s + 1 : s;
       }, 0);
+      const finalPointScore = Object.entries(answers).reduce((sum, [qId, answer]) => {
+        const q = activeQuestions.find((question) => question.id === qId);
+        if (!q) return sum;
+        return sum + (answer === q.correctOptionId ? correctPoints : wrongPoints);
+      }, 0);
       const startedAt = quizStartTs.current > 0
         ? new Date(quizStartTs.current).toISOString()
         : new Date().toISOString();
 
       // Submit server-side for validation + score calculation
       let serverScore = finalScore;
+      let serverPointScore = finalPointScore;
       let serverTimeTaken = quizStartTs.current > 0
         ? Math.round((Date.now() - quizStartTs.current) / 1000) : 0;
       let serverCompletedAt = new Date().toISOString();
@@ -246,9 +265,10 @@ export default function QuizPage() {
             body: JSON.stringify({ quizId: id!, answers, startedAt }),
           });
           if (res.ok) {
-            const d = await res.json() as { ok: boolean; score: number; totalQuestions: number; timeTaken: number; completedAt: string };
+            const d = await res.json() as { ok: boolean; score: number; pointScore?: number; totalQuestions: number; timeTaken: number; completedAt: string };
             if (d.ok) {
               serverScore       = d.score;
+              serverPointScore  = d.pointScore ?? serverPointScore;
               serverTimeTaken   = d.timeTaken;
               serverCompletedAt = d.completedAt;
             }
@@ -265,8 +285,10 @@ export default function QuizPage() {
         completedAt:    serverCompletedAt,
       };
       saveResultLocally(result);
+      setScore(serverScore);
+      setPointScore(serverPointScore);
       // Free users who only saw the limited set → upsell; everyone else → results
-      const hitFreeLimit = isFreeUser && questions.length > activeQuestions.length;
+      const hitFreeLimit = isFreeUser && questionPool.length > activeQuestions.length;
       setPhase(hitFreeLimit ? 'upsell' : 'results');
     } else {
       setIdx((i) => i + 1);
@@ -275,16 +297,16 @@ export default function QuizPage() {
 
   const startQuiz = (forceAllQuestions = false) => {
     // Free users get a random subset; Pro / unlocked users get every question
-    const shouldLimit = !forceAllQuestions && isFreeUser && questions.length > upsellCfg.freeLimit;
-    let qs = questions;
+    const shouldLimit = !forceAllQuestions && isFreeUser && questionPool.length > upsellCfg.freeLimit;
+    let qs = questionPool;
     if (shouldLimit) {
       // Fisher-Yates shuffle → take first freeLimit
-      const shuffled = [...questions].sort(() => Math.random() - 0.5);
+      const shuffled = [...questionPool].sort(() => Math.random() - 0.5);
       qs = shuffled.slice(0, upsellCfg.freeLimit);
     }
     setActiveQuestions(qs);
     quizStartTs.current = Date.now();
-    setIdx(0); setAnswers({}); setFeedback(false); setScore(0); setPhase('quiz');
+    setIdx(0); setAnswers({}); setFeedback(false); setScore(0); setPointScore(0); setPhase('quiz');
   };
 
   // ── Payment handlers ──────────────────────────────────────────────────────
@@ -302,7 +324,7 @@ export default function QuizPage() {
     void initiatePayment({ type: 'subscription', plan }, gw, id);
   };
 
-  if (!quiz || questions.length === 0) {
+  if (!quiz || questionPool.length === 0) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
         <h2>Quiz not found</h2>
@@ -353,7 +375,7 @@ export default function QuizPage() {
                 <span style={{ color: 'var(--text-secondary)' }}>({studentCount.toLocaleString()} students)</span>
               )}
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
-              <span style={{ color: 'var(--text-secondary)' }}>{questions.length} questions</span>
+              <span style={{ color: 'var(--text-secondary)' }}>{questionPool.length} questions</span>
               <span style={{ color: 'var(--text-secondary)' }}>·</span>
               <span style={{ color: 'var(--text-secondary)' }}>{quiz.duration}m duration</span>
             </div>
@@ -379,11 +401,11 @@ export default function QuizPage() {
               <div className="course-section-hd">
                 Course Curriculum
                 <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 400, marginLeft: 8 }}>
-                  {questions.length} questions
+                  {questionPool.length} questions
                 </span>
               </div>
               <div className="course-section-bd">
-                {questions.map((q, i) => (
+                {questionPool.map((q, i) => (
                   <div key={q.id} className="curr-item">
                     <div className="curr-num" style={{ background: accent + '15', color: accent }}>{i + 1}</div>
                     <div className="curr-text">
@@ -404,8 +426,8 @@ export default function QuizPage() {
                   'Instant feedback with detailed explanations',
                   'Score tracking and performance history',
                   'Practice mode — retry as many times as you like',
-                  `${questions.length} expertly crafted practice questions`,
-                  'Pass/fail threshold at 70% — industry standard',
+                  `${questionPool.length} expertly crafted practice questions`,
+                  `Scoring: +${correctPoints} / ${wrongPoints >= 0 ? '+' : ''}${wrongPoints}`,
                 ].map((f) => (
                   <div key={f} className="feature-item">
                     <span className="feature-check"><CheckSvg /></span>
@@ -458,7 +480,7 @@ export default function QuizPage() {
                   onClick={() => startQuiz()}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                    <PlaySvg /> {isFreeUser ? `Start Free — ${upsellCfg.freeLimit} Questions` : 'Start Practice'}
+                    <PlaySvg /> {isFreeUser ? `Start Free — ${Math.min(upsellCfg.freeLimit, questionPool.length)} Questions` : 'Start Practice'}
                   </span>
                 </button>
               )}
@@ -537,7 +559,7 @@ export default function QuizPage() {
                           </div>
                           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>one-time · permanent access</div>
                         </div>
-                        {[`${questions.length} practice questions for ${quiz.title}`, 'Instant feedback with detailed explanations', 'Unlimited retries', 'Score history saved to your profile'].map((f) => (
+                        {[`${questionPool.length} practice questions for ${quiz.title}`, 'Instant feedback with detailed explanations', 'Unlimited retries', 'Score history saved to your profile'].map((f) => (
                           <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                             <span style={{ color: '#28C76F', fontWeight: 700 }}>✓</span>
                             <span style={{ fontSize: 13, color: 'var(--text)' }}>{f}</span>
@@ -615,7 +637,7 @@ export default function QuizPage() {
               {/* Meta */}
               <div className="course-meta-list">
                 {[
-                  { icon: <QuestionSvg />, key: 'Questions',  val: String(questions.length) },
+                  { icon: <QuestionSvg />, key: 'Questions',  val: String(questionPool.length) },
                   { icon: <ClockSvg />,    key: 'Duration',   val: `${quiz.duration} min` },
                   { icon: <LayersSvg />,   key: 'Difficulty', val: quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1) },
                   { icon: <UsersSvg />,    key: 'Students',   val: studentCount !== null ? studentCount.toLocaleString() : '–' },
@@ -648,7 +670,8 @@ export default function QuizPage() {
 
   // ── RESULTS ────────────────────────────────────────────────────────────────
   if (phase === 'results') {
-    const pct    = Math.round((score / questions.length) * 100);
+    const maxPoints = Math.max(1, activeQuestions.length * correctPoints);
+    const pct    = Math.max(0, Math.round((pointScore / maxPoints) * 100));
     const passed = pct >= 70;
     return (
       <div style={{ padding: '40px 32px', maxWidth: 700, margin: '0 auto' }}>
@@ -666,9 +689,10 @@ export default function QuizPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'Correct', val: score,                                             color: '#28C76F' },
-            { label: 'Wrong',   val: Object.keys(answers).length - score,               color: '#FF4C51' },
-            { label: 'Skipped', val: questions.length - Object.keys(answers).length,    color: 'var(--text-secondary)' },
+            { label: 'Correct', val: score,                                                color: '#28C76F' },
+            { label: 'Wrong',   val: Object.keys(answers).length - score,                  color: '#FF4C51' },
+            { label: 'Points',  val: pointScore,                                            color: accent },
+            { label: 'Skipped', val: activeQuestions.length - Object.keys(answers).length,  color: 'var(--text-secondary)' },
           ].map((s) => (
             <div key={s.label} style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', padding: '16px', textAlign: 'center', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.val}</div>
@@ -693,10 +717,11 @@ export default function QuizPage() {
 
   // ── UPSELL (free-limit checkpoint) ────────────────────────────────────────
   if (phase === 'upsell') {
-    const pct       = activeQuestions.length > 0 ? Math.round((score / activeQuestions.length) * 100) : 0;
+    const maxPoints = Math.max(1, activeQuestions.length * correctPoints);
+    const pct       = activeQuestions.length > 0 ? Math.max(0, Math.round((pointScore / maxPoints) * 100)) : 0;
     const passed    = pct >= 70;
-    const remaining = questions.length - activeQuestions.length;
-    const vars      = { n: String(activeQuestions.length), remaining: String(remaining), score: `${pct}%`, total: String(questions.length), price: String(quiz.price ?? 499) };
+    const remaining = questionPool.length - activeQuestions.length;
+    const vars      = { n: String(activeQuestions.length), remaining: String(remaining), score: `${pct}%`, total: String(questionPool.length), price: String(quiz.price ?? 499) };
 
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
@@ -706,10 +731,10 @@ export default function QuizPage() {
             ← Quizzes
           </button>
           <div style={{ flex: 1, background: 'var(--border)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: '#FF9F43', width: `${(activeQuestions.length / questions.length) * 100}%`, borderRadius: 4 }} />
+            <div style={{ height: '100%', background: '#FF9F43', width: `${(activeQuestions.length / questionPool.length) * 100}%`, borderRadius: 4 }} />
           </div>
           <span style={{ fontSize: 12, color: '#FF9F43', fontWeight: 700, minWidth: 72, textAlign: 'right' }}>
-            {activeQuestions.length} / {questions.length} Q
+            {activeQuestions.length} / {questionPool.length} Q
           </span>
         </div>
 
@@ -844,7 +869,7 @@ export default function QuizPage() {
           <div style={{ height: '100%', background: timerColor, width: `${(timeLeft / Q_TIME) * 100}%`, borderRadius: 3, transition: 'width 1s linear, background 0.3s' }} />
         </div>
         <span style={{ fontSize: 13, fontWeight: 700, color: timerColor, minWidth: 36, textAlign: 'right' }}>{timeLeft}s</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#28C76F', marginLeft: 8 }}>✓ {score}</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: '#28C76F', marginLeft: 8 }}>Pts {pointScore}</span>
       </div>
 
       {/* Question */}

@@ -111,7 +111,9 @@ export async function POST(req: NextRequest) {
   const timeTaken = Math.min(elapsedSecs, quiz.duration * 60);
 
   // Load questions and calculate score server-side
-  const questions = availableQuestions[quizId] ?? [];
+  const allQuestions = availableQuestions[quizId] ?? [];
+  const fixedQuestionCount = Math.max(0, quiz.fixedQuestionCount ?? 0);
+  const questions = fixedQuestionCount > 0 ? allQuestions.slice(0, Math.min(fixedQuestionCount, allQuestions.length)) : allQuestions;
   if (questions.length === 0) {
     logger.error(ROUTE, 'no_questions', { ip, userId: user.id, quizId });
     return NextResponse.json({ ok: false, error: 'Quiz data unavailable' }, { status: 500 });
@@ -120,10 +122,19 @@ export async function POST(req: NextRequest) {
   // Only score questions that are actually in this quiz (ignore extra submitted keys)
   const validQIds  = new Set(questions.map((q) => q.id));
   let   finalScore = 0;
+  let   pointScore = 0;
+  const correctScore = quiz.correctScore ?? 1;
+  const wrongScore = quiz.wrongScore ?? 0;
   for (const [qId, chosen] of Object.entries(answers)) {
     if (!validQIds.has(qId)) continue;
     const q = questions.find((q) => q.id === qId);
-    if (q && chosen === q.correctOptionId) finalScore++;
+    if (!q) continue;
+    if (chosen === q.correctOptionId) {
+      finalScore++;
+      pointScore += correctScore;
+    } else {
+      pointScore += wrongScore;
+    }
   }
 
   const totalQuestions = questions.length;
@@ -149,11 +160,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Failed to save result' }, { status: 500 });
   }
 
-  logger.info(ROUTE, 'submit_ok', { userId: user.id, quizId, score: finalScore, totalQuestions, timeTaken });
+  logger.info(ROUTE, 'submit_ok', { userId: user.id, quizId, score: finalScore, pointScore, totalQuestions, timeTaken });
 
   return NextResponse.json({
     ok: true,
     score:          finalScore,
+    pointScore,
     totalQuestions,
     timeTaken,
     completedAt,
