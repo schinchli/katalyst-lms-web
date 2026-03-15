@@ -37,6 +37,7 @@
 - Wired fixed question count and score/deduction behavior into the web quiz runtime and server-side quiz submission.
 - Wired fixed question count and point scoring behavior into the Expo quiz runtime and results flow.
 - Reflected managed fixed question counts across core Expo discovery and premium-entry surfaces.
+- Updated Expo challenge and progress scoring summaries to use managed quiz point rules.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
