@@ -135,7 +135,7 @@ export const DEFAULT_PLATFORM_EXPERIENCE: PlatformExperienceConfig = {
     showLearnPlaylist: true,
   },
   theme: {
-    platformPreset: 'datacamp',
+    platformPreset: 'deep-navy',
   },
 };
 
@@ -177,7 +177,7 @@ export function normalizePlatformExperience(value: unknown): PlatformExperienceC
     theme: {
       ...DEFAULT_PLATFORM_EXPERIENCE.theme,
       ...(raw.theme ?? {}),
-      platformPreset: raw.theme?.platformPreset === 'sandstone' || raw.theme?.platformPreset === 'midnight' || raw.theme?.platformPreset === 'aurora' || raw.theme?.platformPreset === 'datacamp'
+      platformPreset: raw.theme?.platformPreset === 'sandstone' || raw.theme?.platformPreset === 'midnight' || raw.theme?.platformPreset === 'aurora' || raw.theme?.platformPreset === 'deep-navy'
         ? raw.theme.platformPreset
         : DEFAULT_PLATFORM_EXPERIENCE.theme.platformPreset,
     },

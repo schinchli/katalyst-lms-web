@@ -86,7 +86,7 @@ export default function LoginPage() {
           </div>
 
           <div style={{ maxWidth: 620, marginTop: 80 }}>
-            <div className="dc-chip">datacamp-inspired experience</div>
+            <div className="dc-chip">Katalyst design system</div>
             <h1 style={{ margin: '22px 0 14px', fontSize: 'clamp(48px, 7vw, 80px)', lineHeight: 0.96, color: '#fff' }}>{copy.authHeadline}</h1>
             <p style={{ margin: 0, fontSize: 22, lineHeight: 1.55, color: 'var(--text-secondary)' }}>{copy.authSubheadline}</p>
             <div style={{ marginTop: 34, display: 'grid', gap: 12 }}>

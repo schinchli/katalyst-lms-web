@@ -51,19 +51,19 @@ export const FEATURED_ARTICLES = [
 
 export const PLATFORM_TESTIMONIALS = [
   {
-    company: 'Google',
-    quote: 'Structured practice and faster review loops helped our learners stay consistent without making the product feel heavy.',
+    company: 'Learner',
+    quote: 'Structured practice and faster review loops helped me stay consistent without the product feeling heavy.',
   },
   {
-    company: 'PayPal',
-    quote: 'The streak and certification workflow gives teams a cleaner path from theory into applied skill-building.',
+    company: 'Learner',
+    quote: 'The streak and certification workflow gave me a cleaner path from theory into applied skill-building.',
   },
   {
-    company: 'Uber',
-    quote: 'The upgrade narrative is calmer, clearer, and much more premium than the old experience.',
+    company: 'Learner',
+    quote: 'The upgrade flow is calmer, clearer, and much more premium than anything else I have tried.',
   },
   {
-    company: 'eBay',
+    company: 'Learner',
     quote: 'Course discovery, editorial content, and guided practice now feel like one system instead of separate surfaces.',
   },
 ];

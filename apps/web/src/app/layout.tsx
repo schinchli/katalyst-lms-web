@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" data-platform-theme="datacamp">
+    <html lang="en" data-theme="dark" data-platform-theme="deep-navy">
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
           {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&typeof o.presetId==='string'){document.documentElement.setAttribute('data-platform-theme',o.presetId);}}}catch(e){}`}

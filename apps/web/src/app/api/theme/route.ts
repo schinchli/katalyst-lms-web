@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import {
@@ -7,8 +7,8 @@ import {
   normalizePlatformTheme,
 } from '@/lib/platformTheme';
 
-export async function GET() {
-  const ip = 'public-theme';
+export async function GET(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   if (!(await checkRateLimit(`theme-get:${ip}`, 60, 60_000))) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }

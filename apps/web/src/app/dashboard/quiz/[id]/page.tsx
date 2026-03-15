@@ -10,6 +10,8 @@ import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+import { usePayment } from '@/hooks/usePayment';
+import type { PaymentSuccessResult, Gateway } from '@/hooks/usePayment';
 
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = {
@@ -19,6 +21,7 @@ const Q_TIME = 30;
 
 type Phase = 'intro' | 'quiz' | 'results' | 'upsell';
 type PaywallTab = 'course' | 'pro';
+type GatewayTab = 'razorpay' | 'stripe';
 
 interface UpsellConfig {
   freeLimit:      number;
@@ -97,16 +100,48 @@ export default function QuizPage() {
   const [feedback,    setFeedback]    = useState(false);
   const [timeLeft,    setTimeLeft]    = useState(Q_TIME);
   const [score,       setScore]       = useState(0);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [paywallTab,  setPaywallTab]  = useState<PaywallTab>('course');
-  const [paymentNotice, setPaymentNotice] = useState('');
+  const [showPaywall,   setShowPaywall]  = useState(false);
+  const [paywallTab,    setPaywallTab]   = useState<PaywallTab>('course');
+  const [gatewayTab,    setGatewayTab]   = useState<GatewayTab>('razorpay');
+  const [paymentError,  setPaymentError] = useState('');
+  const [countryCode,   setCountryCode]  = useState<string>('IN');
   const [authUserId,      setAuthUserId]      = useState<string | null>(null);
   const [activeQuestions, setActiveQuestions] = useState<typeof questions>([]);
   const [upsellCfg,       setUpsellCfg]       = useState<UpsellConfig>(DEFAULT_UPSELL);
   const [studentCount,    setStudentCount]    = useState<number | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const quizStartTs = useRef<number>(0); // unix ms when quiz started
-  const { isPro, unlockedCourses, canAccess } = useSubscription();
+  const { isPro, unlockedCourses, canAccess, upgradeToPremium, unlockCourse } = useSubscription();
+
+  const onPaymentSuccess = useCallback((result: PaymentSuccessResult) => {
+    setShowPaywall(false);
+    setPaymentError('');
+    if (result.purchaseType === 'subscription') {
+      upgradeToPremium(result.plan);
+    } else if (result.purchaseType === 'course' && result.courseId) {
+      unlockCourse(result.courseId);
+    }
+    // If user was at upsell checkpoint, advance to full quiz
+    if (phase === 'upsell') startQuiz(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, upgradeToPremium, unlockCourse]);
+
+  const { initiatePayment, loading: paymentLoading } = usePayment({
+    onSuccess: onPaymentSuccess,
+    onError:   (msg) => setPaymentError(msg),
+  });
+
+  // Detect country → set default gateway
+  useEffect(() => {
+    fetch('/api/payment/country')
+      .then((r) => r.json())
+      .then((d: { country?: string }) => {
+        const code = d.country ?? 'IN';
+        setCountryCode(code);
+        setGatewayTab(code === 'IN' ? 'razorpay' : 'stripe');
+      })
+      .catch(() => {}); // best-effort
+  }, []);
 
   // Whether this user is on the free tier for this quiz
   const isFreeUser = !isPro && !unlockedCourses.includes(id ?? '');
@@ -252,14 +287,17 @@ export default function QuizPage() {
 
   // ── Payment handlers ──────────────────────────────────────────────────────
 
-  const handleCourseUnlock = () => {
-    if (!quiz?.price) return;
-    setPaymentNotice(`Razorpay checkout coming soon. You'll be notified when ₹${quiz.price} one-time payments go live.`);
+  const handleCourseUnlock = (gateway?: Gateway) => {
+    if (!quiz?.price || !id) return;
+    setPaymentError('');
+    const gw: Gateway = gateway ?? gatewayTab;
+    void initiatePayment({ type: 'course', courseId: id }, gw, id);
   };
 
-  const handleSubscription = (plan: 'annual' | 'monthly') => {
-    const price = plan === 'annual' ? 999 : 149;
-    setPaymentNotice(`Razorpay checkout coming soon. You'll be notified when Pro ₹${price}/${plan === 'annual' ? 'yr' : 'mo'} payments go live.`);
+  const handleSubscription = (plan: 'annual' | 'monthly', gateway?: Gateway) => {
+    setPaymentError('');
+    const gw: Gateway = gateway ?? gatewayTab;
+    void initiatePayment({ type: 'subscription', plan }, gw, id);
   };
 
   if (!quiz || questions.length === 0) {
@@ -270,6 +308,7 @@ export default function QuizPage() {
       </div>
     );
   }
+
 
   const accent = quiz.certLevel ? CERT_COLOR[quiz.certLevel] : (DIFF_COLOR[quiz.difficulty] ?? '#7367F0');
   const diffStars = { beginner: 1, intermediate: 2, advanced: 3 }[quiz.difficulty] ?? 1;
@@ -428,7 +467,7 @@ export default function QuizPage() {
                   style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: '#FF9F43', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 16, fontFamily: 'inherit' }}
                   onClick={() => { setPaywallTab('pro'); setShowPaywall(true); }}
                 >
-                  ⭐ Go Pro — All Access ₹999/yr
+                  ⭐ Go Pro — All Access {countryCode === 'IN' ? '₹999/yr' : '$9.99/yr'}
                 </button>
               )}
 
@@ -439,66 +478,77 @@ export default function QuizPage() {
                   onClick={() => setShowPaywall(false)}
                 >
                   <div
-                    style={{ background: 'var(--surface)', borderRadius: '24px 24px 0 0', padding: 32, maxWidth: 480, width: '100%', paddingBottom: 48 }}
+                    style={{ background: 'var(--surface)', borderRadius: '24px 24px 0 0', padding: 32, maxWidth: 500, width: '100%', paddingBottom: 48, maxHeight: '90vh', overflowY: 'auto' }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Close */}
+                    {/* Header */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                       <div style={{ fontSize: 20, fontWeight: 700 }}>Unlock Access</div>
-                      <button onClick={() => { setShowPaywall(false); setPaymentNotice(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--text-secondary)' }}>✕</button>
+                      <button onClick={() => { setShowPaywall(false); setPaymentError(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--text-secondary)' }}>✕</button>
                     </div>
 
-                    {/* Payment coming-soon notice */}
-                    {paymentNotice && (
-                      <div style={{ padding: '10px 14px', borderRadius: 8, background: '#7367F015', border: '1px solid #7367F030', color: 'var(--text)', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
-                        ⚡ {paymentNotice}
+                    {/* Error */}
+                    {paymentError && (
+                      <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: '#FF4C51', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
+                        {paymentError}
                       </div>
                     )}
 
-                    {/* Tabs */}
-                    <div style={{ display: 'flex', gap: 4, background: 'var(--bg)', borderRadius: 10, padding: 4, marginBottom: 24 }}>
+                    {/* Purchase type tabs */}
+                    <div style={{ display: 'flex', gap: 4, background: 'var(--bg)', borderRadius: 10, padding: 4, marginBottom: 20 }}>
                       {(['course', 'pro'] as PaywallTab[]).map((tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => setPaywallTab(tab)}
-                          style={{
-                            flex: 1, height: 36, borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                            fontSize: 13, fontWeight: 700,
-                            background: paywallTab === tab ? 'var(--surface)' : 'transparent',
-                            color:      paywallTab === tab ? 'var(--primary)' : 'var(--text-secondary)',
-                            boxShadow:  paywallTab === tab ? 'var(--shadow)' : 'none',
-                          }}
-                        >
-                          {tab === 'course' ? `Unlock This Quiz` : 'Go Pro — All Access'}
+                        <button key={tab} onClick={() => setPaywallTab(tab)} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, background: paywallTab === tab ? 'var(--surface)' : 'transparent', color: paywallTab === tab ? 'var(--primary)' : 'var(--text-secondary)', boxShadow: paywallTab === tab ? 'var(--shadow)' : 'none' }}>
+                          {tab === 'course' ? 'Unlock This Quiz' : 'Go Pro — All Access'}
                         </button>
                       ))}
                     </div>
 
-                    {/* Tab: course unlock */}
+                    {/* Gateway selector */}
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        Payment method {countryCode === 'IN' ? '🇮🇳 India' : '🌍 International'}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => setGatewayTab('razorpay')}
+                          style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${gatewayTab === 'razorpay' ? '#7367F0' : 'var(--border)'}`, background: gatewayTab === 'razorpay' ? 'var(--primary-light)' : 'var(--surface)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                        >
+                          <div style={{ fontSize: 13, fontWeight: 700, color: gatewayTab === 'razorpay' ? 'var(--primary-text)' : 'var(--text)' }}>Razorpay</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>INR · UPI, cards, netbanking</div>
+                        </button>
+                        <button
+                          onClick={() => setGatewayTab('stripe')}
+                          style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${gatewayTab === 'stripe' ? '#635BFF' : 'var(--border)'}`, background: gatewayTab === 'stripe' ? 'rgba(99,91,255,0.08)' : 'var(--surface)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                        >
+                          <div style={{ fontSize: 13, fontWeight: 700, color: gatewayTab === 'stripe' ? '#635BFF' : 'var(--text)' }}>Stripe</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>USD · Global cards</div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ── Course unlock ── */}
                     {paywallTab === 'course' && (
                       <>
                         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                          <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
-                            ₹{quiz.price}
+                          <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
+                            {gatewayTab === 'razorpay' ? `₹${quiz.price}` : `$${((quiz.price ?? 499) / 80).toFixed(2)}`}
                           </div>
                           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>one-time · permanent access</div>
                         </div>
-                        {[
-                          `${questions.length} practice questions for ${quiz.title}`,
-                          'Instant feedback with detailed explanations',
-                          'Unlimited retries — practice as many times as you like',
-                          'Score history saved to your profile',
-                        ].map((f) => (
+                        {[`${questions.length} practice questions for ${quiz.title}`, 'Instant feedback with detailed explanations', 'Unlimited retries', 'Score history saved to your profile'].map((f) => (
                           <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                            <span style={{ color: '#28C76F', fontWeight: 700, fontSize: 16 }}>✓</span>
+                            <span style={{ color: '#28C76F', fontWeight: 700 }}>✓</span>
                             <span style={{ fontSize: 13, color: 'var(--text)' }}>{f}</span>
                           </div>
                         ))}
                         <button
-                          style={{ width: '100%', height: 52, borderRadius: 12, background: accent, color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer', marginTop: 20, fontFamily: 'inherit' }}
-                          onClick={handleCourseUnlock}
+                          style={{ width: '100%', height: 52, borderRadius: 12, background: gatewayTab === 'stripe' ? '#635BFF' : accent, color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: paymentLoading ? 'wait' : 'pointer', marginTop: 20, fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
+                          onClick={() => handleCourseUnlock()}
+                          disabled={paymentLoading}
                         >
-                          {`Unlock for ₹${quiz.price}`}
+                          {paymentLoading
+                            ? (gatewayTab === 'stripe' ? 'Redirecting to Stripe…' : 'Opening Razorpay…')
+                            : (gatewayTab === 'razorpay' ? `Unlock via Razorpay ₹${quiz.price}` : `Unlock via Stripe $${((quiz.price ?? 499) / 80).toFixed(2)}`)}
                         </button>
                         <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, marginBottom: 0 }}>
                           Or <button style={{ background: 'none', border: 'none', color: '#FF9F43', fontWeight: 700, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', padding: 0 }} onClick={() => setPaywallTab('pro')}>Go Pro for all quizzes →</button>
@@ -506,45 +556,53 @@ export default function QuizPage() {
                       </>
                     )}
 
-                    {/* Tab: pro subscription */}
+                    {/* ── Pro subscription ── */}
                     {paywallTab === 'pro' && (
                       <>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 20, marginTop: 0 }}>
-                          Unlock all 5 CLF-C02 quizzes and upcoming certification content.
+                        <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 16, marginTop: 0 }}>
+                          All 5 CLF-C02 quizzes · upcoming certification tracks · Pro badge.
                         </p>
                         <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
                           <div style={{ flex: 1, border: '2px solid #FF9F43', borderRadius: 12, padding: 16, textAlign: 'center', background: '#FF9F4310' }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: '#FF9F43', textTransform: 'uppercase', letterSpacing: 1 }}>Annual</div>
-                            <div style={{ fontSize: 24, fontWeight: 800, margin: '4px 0' }}>₹999<span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>/yr</span></div>
+                            <div style={{ fontSize: 22, fontWeight: 800, margin: '4px 0' }}>
+                              {gatewayTab === 'razorpay' ? '₹999' : '$9.99'}
+                              <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>/yr</span>
+                            </div>
                             <div style={{ background: '#FF9F43', color: '#fff', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 700, display: 'inline-block' }}>Save 44%</div>
                           </div>
                           <div style={{ flex: 1, border: '1.5px solid var(--border)', borderRadius: 12, padding: 16, textAlign: 'center' }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 1 }}>Monthly</div>
-                            <div style={{ fontSize: 24, fontWeight: 800, margin: '4px 0' }}>₹149<span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>/mo</span></div>
+                            <div style={{ fontSize: 22, fontWeight: 800, margin: '4px 0' }}>
+                              {gatewayTab === 'razorpay' ? '₹149' : '$1.99'}
+                              <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>/mo</span>
+                            </div>
                           </div>
                         </div>
-                        {['All 5 CLF-C02 quizzes (195 questions)', 'Security & Technology domains', 'Upcoming certification prep content', 'Advanced analytics & insights', 'Exclusive Pro badges'].map((f) => (
+                        {['All 5 CLF-C02 quizzes (195 questions)', 'Security & Technology domains', 'Upcoming certification content', 'Advanced analytics & insights'].map((f) => (
                           <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                            <span style={{ color: '#28C76F', fontWeight: 700, fontSize: 16 }}>✓</span>
+                            <span style={{ color: '#28C76F', fontWeight: 700 }}>✓</span>
                             <span style={{ fontSize: 13, color: 'var(--text)' }}>{f}</span>
                           </div>
                         ))}
                         <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
                           <button
-                            style={{ flex: 1, height: 52, borderRadius: 12, background: '#FF9F43', color: '#fff', fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-                            onClick={() => handleSubscription('annual')}
+                            style={{ flex: 1, height: 52, borderRadius: 12, background: gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43', color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
+                            onClick={() => handleSubscription('annual', gatewayTab)}
+                            disabled={paymentLoading}
                           >
-                            ⭐ Subscribe ₹999/yr
+                            {paymentLoading ? '…' : `⭐ ${gatewayTab === 'razorpay' ? '₹999/yr' : '$9.99/yr'}`}
                           </button>
                           <button
-                            style={{ flex: 1, height: 52, borderRadius: 12, background: 'transparent', color: '#FF9F43', fontSize: 15, fontWeight: 700, border: '1.5px solid #FF9F43', cursor: 'pointer', fontFamily: 'inherit' }}
-                            onClick={() => handleSubscription('monthly')}
+                            style={{ flex: 1, height: 52, borderRadius: 12, background: 'transparent', color: gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43', fontSize: 14, fontWeight: 700, border: `1.5px solid ${gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43'}`, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
+                            onClick={() => handleSubscription('monthly', gatewayTab)}
+                            disabled={paymentLoading}
                           >
-                            ₹149/mo
+                            {gatewayTab === 'razorpay' ? '₹149/mo' : '$1.99/mo'}
                           </button>
                         </div>
                         <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)', marginTop: 12 }}>
-                          Secure payment via Razorpay · Cancel anytime
+                          Secure payment via {gatewayTab === 'razorpay' ? 'Razorpay · UPI, cards, netbanking' : 'Stripe · All major cards worldwide'}
                         </p>
                       </>
                     )}
@@ -688,20 +746,38 @@ export default function QuizPage() {
               ))}
             </div>
 
+            {/* Gateway toggle on upsell screen */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+              {(['razorpay', 'stripe'] as GatewayTab[]).map((gw) => (
+                <button
+                  key={gw}
+                  onClick={() => setGatewayTab(gw)}
+                  style={{ flex: 1, height: 32, borderRadius: 8, border: `1.5px solid ${gatewayTab === gw ? (gw === 'stripe' ? '#635BFF' : '#7367F0') : 'var(--border)'}`, background: gatewayTab === gw ? (gw === 'stripe' ? 'rgba(99,91,255,0.1)' : 'var(--primary-light)') : 'transparent', color: gatewayTab === gw ? (gw === 'stripe' ? '#635BFF' : 'var(--primary-text)') : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  {gw === 'razorpay' ? 'Razorpay (₹ INR)' : 'Stripe ($ USD)'}
+                </button>
+              ))}
+            </div>
+
             {/* Primary CTA — Pro */}
             <button
               className="upsell-pro-btn"
-              onClick={() => handleSubscription('annual')}
+              onClick={() => handleSubscription('annual', gatewayTab)}
+              disabled={paymentLoading}
+              style={{ opacity: paymentLoading ? 0.7 : undefined, cursor: paymentLoading ? 'wait' : undefined }}
             >
-              {interpolate(upsellCfg.proCtaLabel, vars)}
+              {paymentLoading
+                ? (gatewayTab === 'stripe' ? 'Redirecting to Stripe…' : 'Opening Razorpay…')
+                : interpolate(upsellCfg.proCtaLabel, vars)}
             </button>
 
             {/* Monthly option */}
             <button
-              style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: '#FF9F43', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginTop: 8 }}
-              onClick={() => handleSubscription('monthly')}
+              style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: '#FF9F43', fontSize: 13, fontWeight: 700, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', marginTop: 8, opacity: paymentLoading ? 0.7 : 1 }}
+              onClick={() => handleSubscription('monthly', gatewayTab)}
+              disabled={paymentLoading}
             >
-              Or ₹149/month — cancel anytime
+              {gatewayTab === 'razorpay' ? 'Or ₹149/month — cancel anytime' : 'Or $1.99/month — cancel anytime'}
             </button>
 
             {/* Divider */}
@@ -711,16 +787,18 @@ export default function QuizPage() {
             {(quiz.price ?? 0) > 0 && (
               <button
                 className="upsell-course-btn"
-                onClick={handleCourseUnlock}
+                onClick={() => handleCourseUnlock()}
+                disabled={paymentLoading}
+                style={{ opacity: paymentLoading ? 0.7 : undefined, cursor: paymentLoading ? 'wait' : undefined }}
               >
                 {interpolate(upsellCfg.courseCtaLabel, vars)}
               </button>
             )}
 
-            {/* Payment coming-soon notice */}
-            {paymentNotice && (
-              <div style={{ padding: '10px 14px', borderRadius: 8, background: '#7367F015', border: '1px solid #7367F030', color: 'var(--text)', fontSize: 13, margin: '12px 0', lineHeight: 1.5, textAlign: 'left' }}>
-                ⚡ {paymentNotice}
+            {/* Payment error notice */}
+            {paymentError && (
+              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: '#FF4C51', fontSize: 13, margin: '12px 0', lineHeight: 1.5, textAlign: 'left' }}>
+                {paymentError}
               </div>
             )}
 

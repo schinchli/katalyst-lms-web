@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Script from 'next/script';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { quizzes } from '@/data/quizzes';
@@ -14,6 +15,7 @@ import {
 import { fetchUserTheme } from '@/lib/userTheme';
 import {
   applyThemePrefs,
+  applyFontSize,
   normalizeThemePrefs,
   DEFAULT_THEME_PREFS,
 } from '@/lib/themePacks';
@@ -164,6 +166,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         .then((prefs) => {
           try {
             localStorage.setItem('katalyst-theme', JSON.stringify(prefs));
+            applyFontSize(prefs.fontSize);          // always apply font size
             if (!prefs.usePlatform) applyThemePrefs(prefs);
           } catch { /* ignore */ }
         })
@@ -203,10 +206,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       applyPlatformThemePreset(DEFAULT_PLATFORM_THEME.presetId);
     }
 
-    // If user opted out of platform theme, apply their custom pack
+    // Apply font size from cache immediately (prevents FOUC on reload)
+    // Always applied regardless of usePlatform — font size is a universal preference
     try {
       const raw = localStorage.getItem('katalyst-theme');
       const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      applyFontSize(prefs.fontSize);
       if (!prefs.usePlatform) applyThemePrefs(prefs);
     } catch { /* best-effort */ }
   }, []);
@@ -223,6 +228,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         try {
           const raw = localStorage.getItem('katalyst-theme');
           const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+          applyFontSize(prefs.fontSize);
           if (!prefs.usePlatform) applyThemePrefs(prefs);
         } catch { /* best-effort */ }
       })
@@ -276,6 +282,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <PlatformExperienceProvider>
+      {/* Razorpay checkout — loaded lazily once for all dashboard pages */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="page-wrapper">
       {/* Sidebar */}
       <aside className="sidebar">

@@ -15,6 +15,7 @@ import {
   DEFAULT_THEME_PREFS,
   normalizeThemePrefs,
   applyThemePrefs,
+  applyFontSize,
   type AppThemePrefs,
 } from '@/lib/themePacks';
 import { fetchUserTheme, saveUserTheme } from '@/lib/userTheme';
@@ -44,7 +45,7 @@ export default function ProfilePage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
-  const [platformThemeName, setPlatformThemeName] = useState('DataCamp Night');
+  const [platformThemeName, setPlatformThemeName] = useState('Deep Navy');
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -61,7 +62,7 @@ export default function ProfilePage() {
     try {
       const raw = localStorage.getItem('katalyst-platform-theme-cache');
       const presetId = normalizePlatformTheme(raw ? JSON.parse(raw) : null).presetId;
-      setPlatformThemeName(PLATFORM_THEME_PRESETS.find((item) => item.id === presetId)?.label ?? 'DataCamp Night');
+      setPlatformThemeName(PLATFORM_THEME_PRESETS.find((item) => item.id === presetId)?.label ?? 'Deep Navy');
     } catch {
       // ignore
     }
@@ -96,6 +97,7 @@ export default function ProfilePage() {
     localStorage.setItem('profile-role', role);
     localStorage.setItem('katalyst-theme', JSON.stringify(theme));
 
+    applyFontSize(theme.fontSize);
     if (!theme.usePlatform) applyThemePrefs(theme);
 
     await supabase.auth.updateUser({ data: { name }, email: email || undefined });
@@ -204,12 +206,38 @@ export default function ProfilePage() {
                 {FONT_OPTIONS.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
               </select>
             </label>
-            <label>
-              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Base font size</div>
-              <select value={theme.fontSize} onChange={(event) => setTheme((prev) => ({ ...prev, fontSize: event.target.value, usePlatform: false }))} className="admin-field-input">
-                {FONT_SIZES.map((size) => <option key={size.value} value={size.value}>{size.label}</option>)}
-              </select>
-            </label>
+            <div>
+              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Text size</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {FONT_SIZES.map((size) => {
+                  const active = theme.fontSize === size.value;
+                  return (
+                    <button
+                      key={size.value}
+                      type="button"
+                      onClick={() => setTheme((prev) => ({ ...prev, fontSize: size.value, usePlatform: false }))}
+                      style={{
+                        flex: 1,
+                        padding: '10px 0',
+                        borderRadius: 10,
+                        border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                        background: active ? 'var(--primary-light)' : 'var(--surface)',
+                        color: active ? 'var(--primary-text)' : 'var(--text)',
+                        fontWeight: active ? 700 : 500,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                        fontSize: size.value === '14' ? 13 : size.value === '16' ? 15 : 18,
+                      }}
+                    >
+                      {size.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop: 6, color: 'var(--text-secondary)', fontSize: 12 }}>
+                Medium (16px) follows W3C / WCAG body text guidelines
+              </div>
+            </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text-secondary)' }}>
               <input type="checkbox" checked={theme.usePlatform} onChange={(event) => setTheme((prev) => ({ ...prev, usePlatform: event.target.checked }))} />
               Use platform theme by default
@@ -218,6 +246,7 @@ export default function ProfilePage() {
               className="settings-btn-ghost"
               onClick={() => {
                 localStorage.setItem('katalyst-theme', JSON.stringify(theme));
+                applyFontSize(theme.fontSize);
                 if (!theme.usePlatform) applyThemePrefs(theme);
               }}
             >
