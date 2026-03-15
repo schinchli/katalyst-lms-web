@@ -89,6 +89,8 @@ export interface Quiz {
   certLevel?: CertLevel;
   examCode?: string;
   enabled?: boolean;
+  correctScore?: number;
+  wrongScore?: number;
 }
 
 export type QuizCategory =
