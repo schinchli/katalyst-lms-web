@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -31,6 +32,7 @@ export default function QuizzesPage() {
   const { config } = usePlatformExperience();
   const { canAccess } = useSubscription();
   const [results, setResults] = useState<QuizResult[]>([]);
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const [search, setSearch] = useState('');
   const [difficulty, setDifficulty] = useState<(typeof DIFFICULTIES)[number]>('all');
   const [premiumOnly, setPremiumOnly] = useState<'all' | 'free' | 'premium'>('all');
@@ -44,6 +46,10 @@ export default function QuizzesPage() {
         setResults(remoteResults);
       }
     });
+    fetch('/api/system-features')
+      .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
+      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
   }, []);
 
   const filtered = useMemo(() => {
@@ -62,6 +68,7 @@ export default function QuizzesPage() {
   const featured = filtered.slice(0, Math.max(4, config.layout.featuredCourseCount));
   const popular = filtered.slice(0, config.layout.popularCourseCount);
   const practice = filtered.filter((quiz) => !quiz.isPremium).slice(0, config.layout.practiceCourseCount);
+  const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes), [systemFeatures, quizContentVersion]);
 
   return (
     <div className="page-content dc-shell">
@@ -135,6 +142,7 @@ export default function QuizzesPage() {
               const result = results.find((entry) => entry.quizId === quiz.id);
               const progress = score(result);
               const unlocked = canAccess(quiz.id);
+              const isDailyQuiz = dailyQuiz?.id === quiz.id;
               const background = section.tinted
                 ? `linear-gradient(180deg, rgba(255,255,255,0.04), transparent), ${index % 2 === 0 ? 'var(--platform-home-hero-course-bg)' : 'var(--platform-rail-card-overlay)'}`
                 : 'var(--surface)';
@@ -147,9 +155,16 @@ export default function QuizzesPage() {
                   style={{ padding: 20, textDecoration: 'none', minHeight: 320, background }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
-                    <span className="dc-chip" style={{ background: section.tinted ? 'rgba(0,0,0,0.24)' : undefined, color: section.tinted ? '#fff' : undefined }}>
-                      {quiz.isPremium ? 'Premium' : 'Track'}
-                    </span>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <span className="dc-chip" style={{ background: section.tinted ? 'rgba(0,0,0,0.24)' : undefined, color: section.tinted ? '#fff' : undefined }}>
+                        {quiz.isPremium ? 'Premium' : 'Track'}
+                      </span>
+                      {isDailyQuiz ? (
+                        <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.18)', color: section.tinted ? '#fff7bf' : '#ffd84d' }}>
+                          {systemFeatures.dailyQuizLabel}
+                        </span>
+                      ) : null}
+                    </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ color: section.tinted ? '#fff' : 'var(--text)', fontWeight: 700 }}>{quiz.examCode ?? quiz.category}</div>
                       <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.duration} min</div>
