@@ -958,6 +958,28 @@ export default function SettingsPage() {
                           <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Explanation</div>
                           <textarea className="admin-field-input" value={question.explanation ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { explanation: event.target.value })} style={{ minHeight: 72 }} />
                         </label>
+                        <div className="dc-grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+                          <label>
+                            <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Question difficulty</div>
+                            <select
+                              className="admin-field-input"
+                              value={question.difficulty ?? 'beginner'}
+                              onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { difficulty: event.target.value as Question['difficulty'] })}
+                            >
+                              <option value="beginner">Beginner</option>
+                              <option value="intermediate">Intermediate</option>
+                              <option value="advanced">Advanced</option>
+                            </select>
+                          </label>
+                          <label>
+                            <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Question category</div>
+                            <input
+                              className="admin-field-input"
+                              value={question.category ?? ''}
+                              onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { category: event.target.value || undefined })}
+                            />
+                          </label>
+                        </div>
                         <label>
                           <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Correct option</div>
                           <select className="admin-field-input" value={question.correctOptionId} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { correctOptionId: event.target.value })}>

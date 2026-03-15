@@ -29,6 +29,7 @@
 - Added managed quiz duplication from the admin settings screen, cloning metadata and questions into a new editable quiz.
 - Added question reordering controls in the managed quiz editor.
 - Added option count controls in the managed question editor with 2-5 option guardrails.
+- Added editable question difficulty and category fields in the managed question editor.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
