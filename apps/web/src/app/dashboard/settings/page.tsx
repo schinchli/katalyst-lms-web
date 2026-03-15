@@ -536,6 +536,33 @@ export default function SettingsPage() {
     });
   };
 
+  const duplicateManagedQuestion = (quizId: string, questionId: string) => {
+    setManagedQuizContent((prev) => {
+      const items = [...(prev.questions[quizId] ?? [])];
+      const index = items.findIndex((question) => question.id === questionId);
+      if (index === -1) return prev;
+
+      const source = items[index];
+      const duplicate: Question = {
+        ...source,
+        id: `${quizId}-question-${items.length + 1}`,
+        text: `${source.text}${source.text ? ' (Copy)' : ''}`,
+        options: source.options.map((option) => ({ ...option })),
+      };
+      items.splice(index + 1, 0, duplicate);
+
+      return {
+        quizzes: prev.quizzes.map((quiz) => (
+          quiz.id === quizId ? { ...quiz, questionCount: items.length } : quiz
+        )),
+        questions: {
+          ...prev.questions,
+          [quizId]: items,
+        },
+      };
+    });
+  };
+
   const moveManagedQuestion = (quizId: string, questionId: string, direction: 'up' | 'down') => {
     setManagedQuizContent((prev) => {
       const items = [...(prev.questions[quizId] ?? [])];
@@ -953,6 +980,12 @@ export default function SettingsPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                         <strong style={{ color: 'var(--text)' }}>Question {questionIndex + 1}</strong>
                         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                          <button
+                            className="settings-btn-ghost"
+                            onClick={() => duplicateManagedQuestion(selectedManagedQuiz.id, question.id)}
+                          >
+                            Duplicate
+                          </button>
                           <button
                             className="settings-btn-ghost"
                             onClick={() => moveManagedQuestion(selectedManagedQuiz.id, question.id, 'up')}

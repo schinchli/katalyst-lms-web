@@ -31,6 +31,7 @@
 - Added option count controls in the managed question editor with 2-5 option guardrails.
 - Added editable question difficulty and category fields in the managed question editor.
 - Added a true/false preset button in the managed question editor.
+- Added per-question duplication in the managed question editor.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
