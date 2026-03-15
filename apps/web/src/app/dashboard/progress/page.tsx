@@ -8,6 +8,7 @@ import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -22,9 +23,14 @@ function percentage(item: QuizResult) {
   return Math.round((item.score / item.totalQuestions) * 100);
 }
 
+function isSameLocalDay(isoDate: string, reference = new Date()) {
+  return new Date(isoDate).toDateString() === reference.toDateString();
+}
+
 export default function ProgressPage() {
   const { config } = usePlatformExperience();
   const [results, setResults] = useState<QuizResult[]>([]);
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -33,6 +39,10 @@ export default function ProgressPage() {
       const remote = await getQuizResults(user.id);
       if (remote.length > 0) setResults(remote);
     });
+    fetch('/api/system-features')
+      .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
+      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
   }, []);
 
   const completed = useMemo(() => new Set(results.map((item) => item.quizId)), [results]);
@@ -41,6 +51,11 @@ export default function ProgressPage() {
   const best = results.length ? Math.max(...results.map(percentage)) : 0;
   const xp = results.reduce((sum, item) => sum + percentage(item), 0);
   const streak = Math.min(30, results.length);
+  const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes), [systemFeatures]);
+  const dailyQuizResult = useMemo(
+    () => (dailyQuiz ? results.find((result) => result.quizId === dailyQuiz.id && isSameLocalDay(result.completedAt)) ?? null : null),
+    [dailyQuiz, results],
+  );
 
   return (
     <div className="page-content dc-shell">
@@ -85,6 +100,21 @@ export default function ProgressPage() {
         </div>
 
         <div className="dc-card" style={{ padding: 24 }}>
+          {dailyQuiz ? (
+            <div style={{ marginBottom: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+                    {systemFeatures.dailyQuizLabel}
+                  </div>
+                  <div style={{ marginTop: 8, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
+                </div>
+                <span className="dc-chip" style={{ background: dailyQuizResult ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizResult ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+                  {dailyQuizResult ? `${percentage(dailyQuizResult)}% today` : 'Pending today'}
+                </span>
+              </div>
+            </div>
+          ) : null}
           <h2 className="dc-section-title" style={{ fontSize: 30 }}>Recent results</h2>
           <p className="dc-section-subtitle">A more polished history panel with pass/fail tones and immediate context.</p>
           <div style={{ marginTop: 20, display: 'grid', gap: 12 }}>
