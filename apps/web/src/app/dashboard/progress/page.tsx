@@ -113,6 +113,15 @@ export default function ProgressPage() {
                   {dailyQuizResult ? `${percentage(dailyQuizResult)}% today` : 'Pending today'}
                 </span>
               </div>
+              <div style={{ marginTop: 12 }}>
+                <Link
+                  href={`/dashboard/quiz/${dailyQuiz.id}`}
+                  className="btn-primary"
+                  style={{ display: 'inline-flex', textDecoration: 'none' }}
+                >
+                  {dailyQuizResult ? 'Review Daily Quiz' : 'Open Daily Quiz'}
+                </Link>
+              </div>
             </div>
           ) : null}
           <h2 className="dc-section-title" style={{ fontSize: 30 }}>Recent results</h2>

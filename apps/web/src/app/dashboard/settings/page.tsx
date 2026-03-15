@@ -8,7 +8,7 @@ import { quizQuestions, quizzes } from '@/data/quizzes';
 import { DEFAULT_APP_CONTENT, normalizeAppContent, type AppContentConfig } from '@/lib/appContent';
 import { applyQuizCatalogOverrides, normalizeQuizCatalogOverrides, type QuizCatalogOverrides } from '@/lib/quizCatalog';
 import { PLATFORM_THEME_PRESETS, applyPlatformThemePreset } from '@/lib/platformTheme';
-import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 import {
   applyManagedQuizContent,
   normalizeManagedQuizContent,
@@ -222,6 +222,24 @@ export default function SettingsPage() {
       }
     });
   }, [router]);
+
+  const dailyQuizCatalog = useMemo(
+    () => quizzes.map((quiz) => ({ ...quiz, ...(quizOverrides[quiz.id] ?? {}) })),
+    [quizOverrides],
+  );
+  const configuredDailyQuiz = useMemo(
+    () => (systemFeatures.dailyQuizQuizId ? dailyQuizCatalog.find((quiz) => quiz.id === systemFeatures.dailyQuizQuizId) ?? null : null),
+    [dailyQuizCatalog, systemFeatures.dailyQuizQuizId],
+  );
+  const resolvedDailyQuiz = useMemo(
+    () => resolveDailyQuiz(systemFeatures, dailyQuizCatalog),
+    [dailyQuizCatalog, systemFeatures],
+  );
+  const dailyQuizFallsBack = Boolean(
+    systemFeatures.dailyQuizEnabled
+      && systemFeatures.dailyQuizQuizId
+      && (!configuredDailyQuiz || configuredDailyQuiz.enabled === false),
+  );
 
   const saveConfig = async () => {
     if (!accessToken) return;
@@ -1155,6 +1173,36 @@ export default function SettingsPage() {
                 ))}
               </select>
             </label>
+            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>
+                    Daily quiz preview
+                  </div>
+                  <div style={{ marginTop: 8, color: 'var(--text)', fontSize: 16, fontWeight: 700 }}>
+                    {resolvedDailyQuiz?.title ?? 'No daily quiz will be shown'}
+                  </div>
+                </div>
+                <span
+                  className="dc-chip"
+                  style={{
+                    background: dailyQuizFallsBack ? 'rgba(255, 216, 77, 0.16)' : 'rgba(81, 207, 102, 0.16)',
+                    color: dailyQuizFallsBack ? '#ffd84d' : 'var(--platform-success-accent)',
+                  }}
+                >
+                  {dailyQuizFallsBack ? 'Fallback rotation active' : 'Selection valid'}
+                </span>
+              </div>
+              <div style={{ marginTop: 10, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>
+                {!systemFeatures.dailyQuizEnabled
+                  ? 'Daily quiz is disabled. Home and discovery surfaces will not feature a quiz until this is turned back on.'
+                  : dailyQuizFallsBack
+                    ? 'The selected quiz is missing or disabled, so the app will rotate across visible non-premium quizzes for today instead.'
+                    : configuredDailyQuiz
+                      ? `Configured quiz ID: ${configuredDailyQuiz.id}${configuredDailyQuiz.isPremium ? ' · premium quiz selected' : ''}`
+                      : 'No specific quiz selected. The app will rotate across visible non-premium quizzes by date.'}
+              </div>
+            </div>
             <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
               <input
                 type="checkbox"

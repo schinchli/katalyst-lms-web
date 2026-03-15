@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import type { LeaderboardEntry } from '@/types';
 import type { QuizResult } from '@/types';
@@ -122,6 +123,9 @@ export default function LeaderboardPage() {
           }}>
             {dailyQuizResult ? `Your score: ${Math.round((dailyQuizResult.score / Math.max(1, dailyQuizResult.totalQuestions)) * 100)}%` : 'Complete it to boost your stats'}
           </span>
+          <Link href={`/dashboard/quiz/${dailyQuiz.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
+            {dailyQuizResult ? 'Review Daily Quiz' : 'Play Daily Quiz'}
+          </Link>
         </div>
       ) : null}
 
