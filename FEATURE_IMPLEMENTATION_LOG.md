@@ -25,6 +25,7 @@
 - Updated server-side quiz submission validation to honor managed quiz content.
 - Added website admin CRUD editor for managed quizzes and questions in dashboard settings.
 - Added admin import flows for existing static quizzes and pasted JSON bulk import into managed quiz content.
+- Added managed quiz JSON export from the admin settings screen for round-trip import/export workflow.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks

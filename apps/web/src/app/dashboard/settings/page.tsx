@@ -442,6 +442,19 @@ export default function SettingsPage() {
     }
   };
 
+  const exportManagedQuizContent = () => {
+    const payload = JSON.stringify(normalizeManagedQuizContent(managedQuizContent), null, 2);
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `managed-quiz-content-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (!authorized) return null;
 
   return (
@@ -673,6 +686,7 @@ export default function SettingsPage() {
                 ))}
               </select>
               <button className="settings-btn-ghost" onClick={importExistingQuiz} disabled={!importSourceQuizId}>Import quiz</button>
+              <button className="settings-btn-ghost" onClick={exportManagedQuizContent} disabled={managedQuizList.length === 0}>Export JSON</button>
               <button className="settings-btn-ghost" onClick={addManagedQuiz}>Add managed quiz</button>
             </div>
           </div>
