@@ -38,6 +38,7 @@
 - Wired fixed question count and point scoring behavior into the Expo quiz runtime and results flow.
 - Reflected managed fixed question counts across core Expo discovery and premium-entry surfaces.
 - Updated Expo challenge and progress scoring summaries to use managed quiz point rules.
+- Updated Expo perfect-score badge and bonus logic to use managed scoring percentages.
 - Re-verified this slice with `npm run type-check`, `npm run build --workspace=apps/web`, and `npm test --workspace=mobile`.
 
 ### Constraints / Risks
