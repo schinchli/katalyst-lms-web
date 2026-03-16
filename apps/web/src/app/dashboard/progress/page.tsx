@@ -8,6 +8,7 @@ import type { QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 function getLocalResults(): QuizResult[] {
@@ -28,6 +29,7 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
 }
 
 export default function ProgressPage() {
+  useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
   const [results, setResults] = useState<QuizResult[]>([]);
   const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
@@ -136,6 +138,7 @@ export default function ProgressPage() {
               const quiz = quizzes.find((item) => item.id === result.quizId);
               const pct = percentage(result);
               const isDailyQuizAttempt = dailyQuiz?.id === result.quizId && isSameLocalDay(result.completedAt);
+              const quizMode = quiz?.mode;
               return (
                 <div key={`${result.quizId}-${result.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
                   <div>
@@ -144,6 +147,15 @@ export default function ProgressPage() {
                       {isDailyQuizAttempt ? (
                         <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>
                           {systemFeatures.dailyQuizLabel}
+                        </span>
+                      ) : null}
+                      {quizMode === 'true_false' ? (
+                        <span className="dc-chip" style={{ background: 'rgba(115,103,240,0.12)', color: 'var(--primary-text)', fontSize: 11 }}>
+                          T/F
+                        </span>
+                      ) : quizMode === 'exam' ? (
+                        <span className="dc-chip" style={{ background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 11 }}>
+                          EXAM
                         </span>
                       ) : null}
                     </div>

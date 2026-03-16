@@ -382,6 +382,7 @@ export default function QuizPage() {
               <span className="course-tag" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>{catLabel}</span>
               {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span> : null}
               {quizMode === 'true_false' ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
+              {/* Screen recording/screenshot protection is not available on web. Platform-safe enforcement is mobile-only. */}
               {quizMode === 'exam' ? <span className="course-tag" style={{ background: 'rgba(255, 76, 81, 0.12)', color: '#FF4C51' }}>EXAM</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>

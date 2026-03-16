@@ -133,8 +133,56 @@
 
 #### Still pending (not yet done)
 - P0: Full audit/migration of remaining static `quizzes`/`quizQuestions` call sites
-- P0: Category save-to-API render block in settings (state ready, JSX section needs verification)
-- P1: Shared daily-quiz card components, daily quiz analytics
-- P2: True/False history distinction in progress surfaces
-- P3: Exam mode compliance surface (admin toggle, screen-record hints)
+- P1: Daily quiz analytics backend (attempt counts)
 - P4–P7: Unstarted (Multi Match, Fun and Learn, Guess the Word, Audio, Maths, Bookmarks, Contest, Battle, Economy, Store compliance)
+
+---
+
+### Slices 1–5 — Call-site Cleanup, DailyQuizBadge, Mode History, Exam Compliance, Mobile Mode Detection
+**Validation:** `npm run type-check` clean (web) · mobile tests 262/262
+
+#### Slice 1a — Category UI save-to-API (verified complete)
+- Confirmed: settings page already fetches GET `/api/admin/categories` on mount and POSTs on "Save categories" button click. No changes needed.
+
+#### Slice 1b — Category dropdown in managed quiz editor (`apps/web/src/app/dashboard/settings/page.tsx`)
+- Category field now renders a `<select>` dropdown populated from `managedCategories` when categories exist, with an "Other / custom" fallback option.
+- When the current quiz category doesn't match any managed category ID, a plain text input is shown below the dropdown for free-form entry.
+- Falls back to a plain text `<input>` when no managed categories have been created yet.
+
+#### Slice 1c — Static call-site audit
+- `apps/web/src/app/dashboard/page.tsx`: already calls `useManagedQuizContentVersion()` — no change needed.
+- `apps/web/src/app/dashboard/quizzes/page.tsx`: already calls `useManagedQuizContentVersion()` — no change needed.
+- `apps/web/src/app/dashboard/progress/page.tsx`: added `useManagedQuizContentVersion()` hook call at component top.
+- `apps/web/src/app/dashboard/leaderboard/page.tsx`: added `useManagedQuizContentVersion()` hook call at component top.
+
+#### Slice 2a — `DailyQuizBadge` shared component (`apps/web/src/components/DailyQuizBadge.tsx`) — new file
+- Props: `{ label, completed, compact? }`.
+- `compact=true` (default): renders a `dc-chip` span with green check (completed) or amber (pending).
+- `compact=false`: renders a banner pill with CTA text.
+
+#### Slice 2b — Quiz cards use `DailyQuizBadge` (`apps/web/src/app/dashboard/quizzes/page.tsx`)
+- Replaced inline daily-quiz chip spans (2 instances) with `<DailyQuizBadge label={...} completed={...} compact />`.
+
+#### Slice 2c — Daily quiz analytics placeholder (`apps/web/src/app/dashboard/settings/page.tsx`)
+- Added a read-only info card in the system features section: "Analytics: coming soon" with a note that the backend does not yet support daily quiz attempt tracking. No fake data shown.
+
+#### Slice 3a — `mode` field in quiz-submit API (`apps/web/src/app/api/quiz-submit/route.ts`)
+- Added `mode: quiz.mode ?? null` to the `quiz_results` upsert payload.
+- Added migration note comment: `ALTER TABLE quiz_results ADD COLUMN IF NOT EXISTS mode text;`.
+
+#### Slice 3b — Mode badge in progress/history (`apps/web/src/app/dashboard/progress/page.tsx`)
+- Each result row now shows a small "T/F" badge when `quiz.mode === 'true_false'`, or "EXAM" badge when `quiz.mode === 'exam'`. No badge for default `quiz_zone`.
+
+#### Slice 4a — `examReviewAllowed` admin toggle (verified complete)
+- Confirmed: settings page already has the `examReviewAllowed` checkbox, visible only when `selectedManagedQuiz.mode === 'exam'`. No changes needed.
+
+#### Slice 4b — Screen-protection limitation comment (`apps/web/src/app/dashboard/quiz/[id]/page.tsx`)
+- Added JSX comment above the EXAM badge render: "Screen recording/screenshot protection is not available on web. Platform-safe enforcement is mobile-only."
+
+#### Slice 4c — Mobile exam mode hint (`mobile/app/quiz/[id].tsx`)
+- Added a hint text in the intro phase: "This is an exam — answers will not be shown after submission", rendered conditionally when `quiz.mode === 'exam' && quiz.examReviewAllowed === false`.
+
+#### Slice 5a — Mobile quiz mode field + exam timer suppression (`mobile/app/quiz/[id].tsx`)
+- Added `quizMode = quiz?.mode ?? (isTrueFalseQuiz ? 'true_false' : 'quiz_zone')` detection.
+- Added `isExamMode = quizMode === 'exam'` derived constant.
+- Timer `useEffect` now skips starting the per-question countdown when `isExamMode` is true, matching the web quiz player behavior.

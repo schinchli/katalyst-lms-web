@@ -1088,7 +1088,33 @@ export default function SettingsPage() {
                 <div className="dc-grid" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
                   <label>
                     <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Category</div>
-                    <input className="admin-field-input" value={selectedManagedQuiz.category} onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { category: event.target.value })} />
+                    {managedCategories.length > 0 ? (
+                      <select
+                        className="admin-field-input"
+                        value={managedCategories.some((c) => c.id === selectedManagedQuiz.category) ? selectedManagedQuiz.category : '__other__'}
+                        onChange={(event) => {
+                          if (event.target.value !== '__other__') {
+                            updateManagedQuiz(selectedManagedQuiz.id, { category: event.target.value });
+                          }
+                        }}
+                      >
+                        {managedCategories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                        <option value="__other__">Other / custom</option>
+                      </select>
+                    ) : (
+                      <input className="admin-field-input" value={selectedManagedQuiz.category} onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { category: event.target.value })} />
+                    )}
+                    {managedCategories.length > 0 && !managedCategories.some((c) => c.id === selectedManagedQuiz.category) && (
+                      <input
+                        className="admin-field-input"
+                        style={{ marginTop: 8 }}
+                        placeholder="Custom category value"
+                        value={selectedManagedQuiz.category}
+                        onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { category: event.target.value })}
+                      />
+                    )}
                   </label>
                   <label>
                     <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Difficulty</div>
@@ -1393,6 +1419,14 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ) : null}
+            </div>
+            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                Daily quiz analytics
+              </div>
+              <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 13 }}>
+                Analytics: coming soon — attempt count and completion rate will appear here once the backend supports daily quiz tracking.
+              </div>
             </div>
             <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
               <input

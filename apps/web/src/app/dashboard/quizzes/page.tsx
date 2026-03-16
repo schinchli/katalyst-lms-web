@@ -11,6 +11,7 @@ import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { DailyQuizBadge } from '@/components/DailyQuizBadge';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -190,9 +191,7 @@ export default function QuizzesPage() {
                         {quiz.isPremium ? 'Premium' : 'Track'}
                       </span>
                       {isDailyQuiz ? (
-                        <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.18)', color: section.tinted ? '#fff7bf' : '#ffd84d' }}>
-                          {systemFeatures.dailyQuizLabel}
-                        </span>
+                        <DailyQuizBadge label={systemFeatures.dailyQuizLabel} completed={dailyQuizCompleted} compact />
                       ) : null}
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -220,9 +219,7 @@ export default function QuizzesPage() {
                         {progress ? `${progress}% recent score` : quiz.isPremium ? 'Unlock for full access' : 'Start this course'}
                       </div>
                       {dailyQuizActionLabel ? (
-                        <span className="dc-chip" style={{ background: dailyQuizCompleted ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255,216,77,0.16)', color: dailyQuizCompleted ? 'var(--platform-success-accent)' : '#ffd84d' }}>
-                          {dailyQuizActionLabel}
-                        </span>
+                        <DailyQuizBadge label={systemFeatures.dailyQuizLabel} completed={dailyQuizCompleted} compact />
                       ) : null}
                     </div>
                   </div>

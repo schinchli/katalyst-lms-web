@@ -51,36 +51,26 @@
 ## Pending Work
 
 ### P0: Finish Shared CRUD Foundation
-- Category and subcategory CRUD. **PARTIAL (2026-03-16)** — `ManagedCategory`/`ManagedSubcategory` types, `normalizeManagedCategories()`, `/api/admin/categories` GET+POST route, and settings-page state + handlers (add/delete category, add/delete subcategory) are all in place. Remaining: verify the settings-page render block for the category list saves correctly to the API; wire category names into quiz editor dropdowns on Expo discovery.
+- ~~Category and subcategory CRUD.~~ **DONE (2026-03-16/03-16)** — Types, API route, settings state/handlers, and save-to-API all verified complete. Category dropdown now wired into managed quiz editor (select populated from managed categories; falls back to plain text input when no categories exist or category doesn't match).
 - ~~Quiz/question delete safety and dependency checks.~~ **DONE (2026-03-16)** — DELETE on `/api/admin/quiz-content` removes quiz + questions, clears `dailyQuizQuizId` if matched. Settings page shows inline React confirmation modals (no `window.confirm`; passes security gate).
-- Managed content persistence cleanup.
-  Implementation notes:
-  Audit remaining places that still read directly from static `quizzes` / `quizQuestions` at runtime and switch them to managed-content-aware selectors first, falling back to static only where migration is incomplete.
+- Managed content persistence cleanup. **PARTIAL** — `progress/page.tsx` and `leaderboard/page.tsx` now call `useManagedQuizContentVersion()` to re-render on content changes. Full migration of remaining `quizzes`/`quizQuestions` static reads to managed-aware selectors is still pending.
 
 ### P1: Complete Daily Quiz and Managed Discovery Parity
-- Daily quiz-aware reusable cards/components.
-  Implementation notes:
-  Extend shared card/list components to accept `isDailyQuiz`, `dailyActionLabel`, and `dailyCompleted` props so the same state is not manually duplicated in each screen.
+- ~~Daily quiz-aware reusable cards/components.~~ **DONE** — `DailyQuizBadge` component created (`apps/web/src/components/DailyQuizBadge.tsx`). Quiz discovery cards now use it instead of inline chip styles.
 - Daily quiz filtering behavior consistency.
   Implementation notes:
   Keep the featured quiz visible across any future filter/search entry points, not only the current discovery tabs, and centralize that logic into shared selectors.
-- Daily quiz analytics/admin observability.
-  Implementation notes:
-  Add admin-facing counts for how many attempts today hit the resolved daily quiz and whether traffic is using configured selection or fallback rotation.
+- Daily quiz analytics/admin observability. **PARTIAL** — Admin settings section shows a "coming soon" placeholder. Backend attempt-count tracking not yet built.
 
 ### P2: True/False Mode
 - ~~True/False gameplay mode end to end.~~ **DONE (2026-03-16)** — Mode badge on intro, auto-detected from `quiz.mode === 'true_false'` or all-2-option questions, large TRUE/FALSE buttons in quiz runtime.
 - ~~True/False mode admin controls.~~ **DONE (2026-03-16)** — Mode dropdown in admin settings with `true_false` option; `QuizMode` type in web and mobile types.
-- True/False reporting and history.
-  Implementation notes:
-  Make progress/history surfaces distinguish true/false attempts from standard MCQ attempts where Elite Quiz parity expects separate mode identity.
+- ~~True/False reporting and history.~~ **DONE** — Progress/history page now shows a small "T/F" badge next to result entries for `mode === 'true_false'` quizzes, and an "EXAM" badge for `mode === 'exam'`. Mode is looked up from the static quiz metadata.
 
 ### P3: Exam Mode
 - ~~Exam-mode runtime.~~ **DONE (2026-03-16)** — `mode = 'exam'` disables per-question timer, shows EXAM header badge, shows "Question N of M" progress, hides correct answers in results when `examReviewAllowed = false`.
 - ~~Exam-mode admin settings.~~ **DONE (2026-03-16)** — Mode dropdown with Exam option, `examReviewAllowed` checkbox (visible only when mode = exam) in the managed quiz editor.
-- Exam-mode compliance surface.
-  Implementation notes:
-  Apply platform-safe screen-protection behaviors where supported and document unsupported cases clearly instead of implying protection that does not exist.
+- ~~Exam-mode compliance surface.~~ **DONE** — Web quiz player now has a comment documenting that screen-recording protection is not available on web (mobile-only). Mobile intro shows "answers will not be shown after submission" hint when `examReviewAllowed === false`. `examReviewAllowed` admin toggle already present in settings.
 
 ### P4: Remaining Elite Quiz Modes
 - Multi Match.

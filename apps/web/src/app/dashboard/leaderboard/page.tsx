@@ -8,6 +8,7 @@ import type { QuizResult } from '@/types';
 import { quizzes } from '@/data/quizzes';
 import { getQuizResults } from '@/lib/db';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 type Period = 'daily' | 'monthly' | 'alltime';
 
@@ -35,6 +36,7 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
 }
 
 export default function LeaderboardPage() {
+  useManagedQuizContentVersion();
   const [period,  setPeriod]  = useState<Period>('alltime');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
