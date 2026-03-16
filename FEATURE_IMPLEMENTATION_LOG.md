@@ -93,3 +93,48 @@
 ### Constraints / Risks
 - Remote git push has not yet been confirmed from this environment.
 - App Store / Play Store compliance blockers still remain outside this phase, especially mobile digital purchase flow and privacy/account-deletion requirements.
+
+---
+
+## 2026-03-16
+
+### P0 + P2 + P3 — Quiz Modes, Category CRUD, Delete Safety, True/False + Exam Runtime
+**Commit:** `4a4a9de`
+**Validation:** `npm run type-check` clean · mobile tests 262/262 · security gate 18/18 passed
+
+#### What was implemented
+
+**`apps/web/src/types.ts`**
+- Added `QuizMode` union: `quiz_zone | true_false | exam | fun_and_learn | guess_the_word | audio | maths_quiz | multi_match`
+- Added `mode?: QuizMode` and `examReviewAllowed?: boolean` to `Quiz` interface
+- Added `ManagedCategory` and `ManagedSubcategory` interfaces
+
+**`apps/web/src/lib/managedQuizContent.ts`**
+- Added `MANAGED_CATEGORIES_KEY`, `normalizeManagedCategories()` export
+- `ManagedQuizContent` now includes `categories?: ManagedCategory[]`
+- `normalizeQuiz()` now preserves `mode` (validated) and `examReviewAllowed`
+
+**`apps/web/src/app/api/admin/categories/route.ts`** _(new)_
+- GET/POST for category CRUD; Zod-validated, rate-limited, auth-guarded
+
+**`apps/web/src/app/api/admin/quiz-content/route.ts`**
+- Added DELETE (removes quiz + questions, clears daily quiz ref if matched)
+- Added PATCH (single-quiz partial update without full dataset replace)
+
+**`apps/web/src/app/dashboard/quiz/[id]/page.tsx`**
+- Quiz mode detection from `quiz.mode` field (fallback: infer true_false from 2-option questions)
+- True/False mode: large side-by-side TRUE / FALSE buttons (green/red)
+- Exam mode: per-question timer disabled, EXAM badge, question count label, answers hidden when `examReviewAllowed=false`, Exam Result banner
+
+**`apps/web/src/app/dashboard/settings/page.tsx`**
+- Category management state + handlers (add/delete category, add/delete subcategory)
+- Delete quiz/category with inline React confirmation modals (no window.confirm — passes security gate)
+- Mode selector added to managed quiz editor
+
+#### Still pending (not yet done)
+- P0: Full audit/migration of remaining static `quizzes`/`quizQuestions` call sites
+- P0: Category save-to-API render block in settings (state ready, JSX section needs verification)
+- P1: Shared daily-quiz card components, daily quiz analytics
+- P2: True/False history distinction in progress surfaces
+- P3: Exam mode compliance surface (admin toggle, screen-record hints)
+- P4–P7: Unstarted (Multi Match, Fun and Learn, Guess the Word, Audio, Maths, Bookmarks, Contest, Battle, Economy, Store compliance)

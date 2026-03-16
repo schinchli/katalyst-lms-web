@@ -51,8 +51,8 @@
 ## Pending Work
 
 ### P0: Finish Shared CRUD Foundation
-- ~~Category and subcategory CRUD.~~ **DONE (2026-03-16)** — Admin categories API route, `ManagedCategory`/`ManagedSubcategory` types, `normalizeManagedCategories()`, and full category management UI in settings (add, delete, subcategories).
-- ~~Quiz/question delete safety and dependency checks.~~ **DONE (2026-03-16)** — DELETE endpoint on `/api/admin/quiz-content` with daily-quiz reference clearing, `window.confirm` delete buttons in settings UI.
+- Category and subcategory CRUD. **PARTIAL (2026-03-16)** — `ManagedCategory`/`ManagedSubcategory` types, `normalizeManagedCategories()`, `/api/admin/categories` GET+POST route, and settings-page state + handlers (add/delete category, add/delete subcategory) are all in place. Remaining: verify the settings-page render block for the category list saves correctly to the API; wire category names into quiz editor dropdowns on Expo discovery.
+- ~~Quiz/question delete safety and dependency checks.~~ **DONE (2026-03-16)** — DELETE on `/api/admin/quiz-content` removes quiz + questions, clears `dailyQuizQuizId` if matched. Settings page shows inline React confirmation modals (no `window.confirm`; passes security gate).
 - Managed content persistence cleanup.
   Implementation notes:
   Audit remaining places that still read directly from static `quizzes` / `quizQuestions` at runtime and switch them to managed-content-aware selectors first, falling back to static only where migration is incomplete.
