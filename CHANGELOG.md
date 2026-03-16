@@ -14,6 +14,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Streak tracking + badge engine
 
 ### Added
+- **P6 — Economy and Monetisation (2026-03-16)**
+  - **Coin Ledger API** — quiz-submit awards coins after each attempt: `quiz_complete` (score × correctScore), `perfect_score` (+10), `daily_quiz` (+5); inserts into `coin_transactions` table and calls `increment_user_coins` RPC on `user_profiles`
+  - **Remove-Ads Entitlement** — new `GET /api/ads` returns per-user `adsRemoved` flag from `user_profiles.ads_removed`; `AdBanner.tsx` and `AdBanner.native.tsx` check global kill-switch (`systemFeatures.adsEnabled + bannerAdsEnabled`) AND per-user entitlement before rendering
+  - **SystemFeaturesConfig ad controls** — added `adsEnabled`, `bannerAdsEnabled`, `interstitialAdsEnabled`, `rewardedAdsEnabled` (all default `true`) with matching `DEFAULT_SYSTEM_FEATURES` and `normalizeSystemFeatures` handlers
+  - **Progress page coin balance** — coin balance KPI card + last-5 transaction feed with reason labels and link to `/dashboard/coins`
+  - **Mobile IAP notice** — "Premium Subscription" panel in profile tab explaining App Store / Google Play billing and "Restore Purchases" button (placeholder until `expo-iap` integration); no Razorpay calls for digital goods on mobile
+  - **Referral system** — `GET /api/referral` derives code from userId; web profile page shows share card with `navigator.share` + clipboard fallback
+  - **Coin store** — admin coin packs CRUD via `GET/POST /api/admin/coin-packs`; public packs via `GET /api/coin-packs`; admin Settings UI; web `/dashboard/store` page; mobile coin store screen with compliance notice
 - **Admin-managed quiz premium/free overrides** using `app_settings.key = quiz_catalog_overrides`
   - New admin API: `GET/POST /api/admin/quiz-catalog`
   - New public API: `GET /api/quiz-catalog`
