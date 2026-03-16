@@ -59,6 +59,12 @@ export interface ManagedSubcategory {
   categoryId: string;
 }
 
+export interface MatchPair {
+  id: string;
+  left: string;
+  right: string;
+}
+
 export interface Question {
   id: string;
   text: string;
@@ -68,6 +74,12 @@ export interface Question {
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   category?: string;
   quizId?: string;
+  wordAnswer?: string;           // Guess the Word / Maths Quiz: correct text/numeric answer
+  numericAnswer?: number;        // Maths Quiz: exact numeric answer
+  hint?: string;                 // Guess the Word: optional hint shown on demand
+  audioUrl?: string;             // Audio Quiz: URL to audio clip (admin-set)
+  audioFallbackText?: string;    // Audio Quiz: accessibility text when audio unavailable
+  matchPairs?: MatchPair[];      // Multi Match: array of left/right pairs
 }
 
 export interface Option {

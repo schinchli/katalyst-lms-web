@@ -1,12 +1,12 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { quizzes, quizQuestions } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { AdBanner } from '@/components/AdBanner';
-import type { QuizMode, QuizResult } from '@/types';
+import type { MatchPair, Question, QuizMode, QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
@@ -92,10 +92,12 @@ const LayersSvg = () => (
 export default function QuizPage() {
   useManagedQuizContentVersion();
   const { config: platformConfig } = usePlatformExperience();
-  const { id }    = useParams<{ id: string }>();
-  const router    = useRouter();
-  const quiz      = quizzes.find((q) => q.id === id);
-  const questions = quizQuestions[id ?? ''] ?? [];
+  const { id }          = useParams<{ id: string }>();
+  const searchParams    = useSearchParams();
+  const isBookmarkReview = searchParams.get('review') === 'bookmarks';
+  const router          = useRouter();
+  const quiz            = quizzes.find((q) => q.id === id);
+  const questions       = quizQuestions[id ?? ''] ?? [];
 
   const [phase,       setPhase]       = useState<Phase>('intro');
   const [idx,         setIdx]         = useState(0);
@@ -104,6 +106,21 @@ export default function QuizPage() {
   const [timeLeft,    setTimeLeft]    = useState(Q_TIME);
   const [score,       setScore]       = useState(0);
   const [pointScore,  setPointScore]  = useState(0);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  // Fun and Learn: track if explanation has been revealed before showing options
+  const [funLearnRevealed, setFunLearnRevealed] = useState(false);
+  // Guess the Word: text input value
+  const [wordInputValue, setWordInputValue] = useState('');
+  const [wordFeedbackCorrect, setWordFeedbackCorrect] = useState<boolean | null>(null);
+  const [showHint, setShowHint] = useState(false);
+  // Maths Quiz: numeric input value
+  const [numericInputValue, setNumericInputValue] = useState('');
+  const [numericFeedbackCorrect, setNumericFeedbackCorrect] = useState<boolean | null>(null);
+  // Multi Match: state
+  const [matchSelectedLeft, setMatchSelectedLeft] = useState<string | null>(null);
+  const [matchCorrect, setMatchCorrect] = useState<Set<string>>(new Set());
+  const [matchWrong, setMatchWrong] = useState<string | null>(null);
+  const [shuffledRightItems, setShuffledRightItems] = useState<MatchPair[]>([]);
   const [showPaywall,   setShowPaywall]  = useState(false);
   const [paywallTab,    setPaywallTab]   = useState<PaywallTab>('course');
   const [gatewayTab,    setGatewayTab]   = useState<GatewayTab>('razorpay');
@@ -208,6 +225,24 @@ export default function QuizPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Load bookmarks from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('web-bookmarks');
+      const parsed: string[] = stored ? (JSON.parse(stored) as string[]) : [];
+      setBookmarkedIds(new Set(Array.isArray(parsed) ? parsed : []));
+    } catch { /* best-effort */ }
+  }, []);
+
+  const toggleBookmark = useCallback((questionId: string) => {
+    setBookmarkedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(questionId)) { next.delete(questionId); } else { next.add(questionId); }
+      try { localStorage.setItem('web-bookmarks', JSON.stringify(Array.from(next))); } catch { /* best-effort */ }
+      return next;
+    });
+  }, []);
+
   const currentQ = activeQuestions[idx];
   const isLast   = idx === activeQuestions.length - 1;
   const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes.filter((item) => item.enabled !== false)), [systemFeatures]);
@@ -233,6 +268,28 @@ export default function QuizPage() {
     return stopTimer;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, idx, feedback, isExamMode]);
+
+  // Reset per-mode states when question index changes
+  useEffect(() => {
+    setFunLearnRevealed(false);
+    setWordInputValue('');
+    setWordFeedbackCorrect(null);
+    setShowHint(false);
+    setNumericInputValue('');
+    setNumericFeedbackCorrect(null);
+    setMatchSelectedLeft(null);
+    setMatchCorrect(new Set());
+    setMatchWrong(null);
+  }, [idx]);
+
+  // Shuffle right items for multi-match when question changes
+  useEffect(() => {
+    if (currentQ?.matchPairs && currentQ.matchPairs.length > 0) {
+      const shuffled = [...currentQ.matchPairs].sort(() => Math.random() - 0.5);
+      setShuffledRightItems(shuffled);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, activeQuestions]);
 
   const handleAnswer = (optionId: string) => {
     if (feedback) return;
@@ -312,7 +369,90 @@ export default function QuizPage() {
     }
   };
 
+  const handleWordSubmit = () => {
+    if (!currentQ || !wordInputValue.trim()) return;
+    stopTimer();
+    const correct = wordInputValue.trim().toLowerCase() === (currentQ.wordAnswer ?? '').toLowerCase();
+    setWordFeedbackCorrect(correct);
+    if (correct) {
+      setScore((s) => s + 1);
+      setPointScore((s) => s + correctPoints);
+    } else {
+      setPointScore((s) => s + wrongPoints);
+    }
+    setAnswers((a) => ({ ...a, [currentQ.id]: wordInputValue.trim() }));
+    setFeedback(true);
+  };
+
+  const handleNumericSubmit = () => {
+    if (!currentQ || numericInputValue.trim() === '') return;
+    stopTimer();
+    const entered = parseFloat(numericInputValue);
+    const target  = currentQ.numericAnswer ?? 0;
+    const correct = Math.abs(entered - target) <= 0.01;
+    setNumericFeedbackCorrect(correct);
+    if (correct) {
+      setScore((s) => s + 1);
+      setPointScore((s) => s + correctPoints);
+    } else {
+      setPointScore((s) => s + wrongPoints);
+    }
+    setAnswers((a) => ({ ...a, [currentQ.id]: numericInputValue.trim() }));
+    setFeedback(true);
+  };
+
+  const handleMatchLeft = (pairId: string) => {
+    if (!feedback) setMatchSelectedLeft(pairId);
+  };
+
+  const handleMatchRight = (pairId: string) => {
+    if (!matchSelectedLeft || feedback) return;
+    const isCorrect = matchSelectedLeft === pairId;
+    if (isCorrect) {
+      const next = new Set(matchCorrect);
+      next.add(pairId);
+      setMatchCorrect(next);
+      setMatchSelectedLeft(null);
+      // Check if all pairs are matched
+      if (currentQ?.matchPairs && next.size === currentQ.matchPairs.length) {
+        stopTimer();
+        setScore((s) => s + 1);
+        setPointScore((s) => s + correctPoints);
+        setAnswers((a) => ({ ...a, [currentQ.id]: currentQ.correctOptionId }));
+        setFeedback(true);
+      }
+    } else {
+      setMatchWrong(pairId);
+      setMatchSelectedLeft(null);
+      setTimeout(() => setMatchWrong(null), 700);
+    }
+  };
+
+  // Build bookmark review question set across all quizzes
+  const bookmarkReviewQuestions = useMemo(() => {
+    if (!isBookmarkReview) return [];
+    const allQ: Question[] = [];
+    const ids = (() => {
+      try {
+        const s = localStorage.getItem('web-bookmarks');
+        return s ? (JSON.parse(s) as string[]) : [];
+      } catch { return []; }
+    })();
+    Object.values(quizQuestions).forEach((qs) => {
+      qs.forEach((q) => { if (ids.includes(q.id)) allQ.push(q); });
+    });
+    return allQ;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBookmarkReview]);
+
   const startQuiz = (forceAllQuestions = false) => {
+    // If bookmark review mode, use bookmarked questions
+    if (isBookmarkReview && bookmarkReviewQuestions.length > 0) {
+      setActiveQuestions(bookmarkReviewQuestions);
+      quizStartTs.current = Date.now();
+      setIdx(0); setAnswers({}); setFeedback(false); setScore(0); setPointScore(0); setPhase('quiz');
+      return;
+    }
     // Free users get a random subset; Pro / unlocked users get every question
     const shouldLimit = !forceAllQuestions && isFreeUser && questionPool.length > upsellCfg.freeLimit;
     let qs = questionPool;
@@ -384,6 +524,11 @@ export default function QuizPage() {
               {quizMode === 'true_false' ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
               {/* Screen recording/screenshot protection is not available on web. Platform-safe enforcement is mobile-only. */}
               {quizMode === 'exam' ? <span className="course-tag" style={{ background: 'rgba(255, 76, 81, 0.12)', color: '#FF4C51' }}>EXAM</span> : null}
+              {quizMode === 'fun_and_learn' ? <span className="course-tag" style={{ background: 'rgba(115,103,240,0.14)', color: '#7367F0' }}>📖 Fun and Learn</span> : null}
+              {quizMode === 'guess_the_word' ? <span className="course-tag" style={{ background: 'rgba(0,186,209,0.14)', color: '#00BAD1' }}>✏️ Guess the Word</span> : null}
+              {quizMode === 'maths_quiz' ? <span className="course-tag" style={{ background: 'rgba(40,199,111,0.14)', color: '#28C76F' }}>🔢 Maths Quiz</span> : null}
+              {quizMode === 'multi_match' ? <span className="course-tag" style={{ background: 'rgba(255,159,67,0.14)', color: '#FF9F43' }}>🔗 Multi Match</span> : null}
+              {quizMode === 'audio' ? <span className="course-tag" style={{ background: 'rgba(255,76,81,0.12)', color: '#FF4C51' }}>🎧 Audio Quiz</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>
             <p className="course-hero-desc">{quiz.description}</p>
@@ -731,7 +876,7 @@ export default function QuizPage() {
             </div>
           </div>
         ) : null}
-        <h1 style={{ textAlign: 'center', marginBottom: 8 }}>Scoreboard</h1>
+        <h1 style={{ textAlign: 'center', marginBottom: 8 }}>{quizMode === 'fun_and_learn' ? 'Learning Complete!' : 'Scoreboard'}</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0' }}>
           <div style={{ width: 140, height: 140, borderRadius: 70, background: (passed ? '#28C76F' : '#FF4C51') + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: 110, height: 110, borderRadius: 55, background: passed ? '#D1F7E2' : '#FFE5E6', border: `4px solid ${passed ? '#28C76F' : '#FF4C51'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -739,8 +884,8 @@ export default function QuizPage() {
               <div style={{ fontSize: 11, fontWeight: 700, color: passed ? '#28C76F' : '#FF4C51', letterSpacing: 1 }}>{passed ? 'PASS' : 'FAIL'}</div>
             </div>
           </div>
-          <h2 style={{ margin: '16px 0 4px' }}>{passed ? 'Great job! 🎉' : 'Keep Practicing'}</h2>
-          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{quiz.title} · {passed ? 'You passed!' : '70% needed to pass'}</p>
+          <h2 style={{ margin: '16px 0 4px' }}>{quizMode === 'fun_and_learn' ? 'Well done! 📖' : passed ? 'Great job! 🎉' : 'Keep Practicing'}</h2>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{quiz.title} · {quizMode === 'fun_and_learn' ? `Questions explored: ${activeQuestions.length}` : (passed ? 'You passed!' : '70% needed to pass')}</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
@@ -908,6 +1053,27 @@ export default function QuizPage() {
   const userAnswer = answers[currentQ.id];
   const isCorrect  = userAnswer === currentQ.correctOptionId;
   const isTrueFalseMode = quizMode === 'true_false';
+  const isFunAndLearnMode = quizMode === 'fun_and_learn';
+  const isGuessTheWordMode = quizMode === 'guess_the_word';
+  const isMathsQuizMode = quizMode === 'maths_quiz';
+  const isMultiMatchMode = quizMode === 'multi_match';
+  const isAudioMode = quizMode === 'audio';
+  const isBookmarked = bookmarkedIds.has(currentQ.id);
+
+  // For multi-match: check if all pairs done
+  const allMatchesDone = isMultiMatchMode && currentQ.matchPairs
+    ? matchCorrect.size === currentQ.matchPairs.length
+    : false;
+
+  // Bottom nav: when to show Next button
+  const showNextButton = feedback || allMatchesDone;
+  // For modes where we show a prompt instead of an answer
+  const isInputMode = isGuessTheWordMode || isMathsQuizMode || isMultiMatchMode;
+  const inputSubmitted = isGuessTheWordMode
+    ? wordFeedbackCorrect !== null
+    : isMathsQuizMode
+    ? numericFeedbackCorrect !== null
+    : allMatchesDone;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -939,75 +1105,254 @@ export default function QuizPage() {
       {/* Question */}
       <div style={{ flex: 1, overflow: 'auto', padding: '32px 24px' }}>
         <div style={{ maxWidth: 680, margin: '0 auto' }}>
-          <p style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.6, marginBottom: 24, color: 'var(--text)' }}>{currentQ.text}</p>
 
-          {/* True/False mode: big side-by-side TRUE / FALSE buttons */}
-          {isTrueFalseMode ? (
-            <div style={{ display: 'flex', gap: 14 }}>
-              {currentQ.options.map((opt) => {
-                const isSelected = userAnswer === opt.id;
-                const isRight    = opt.id === currentQ.correctOptionId;
-                const isTrue     = opt.text.toLowerCase() === 'true';
-                let bg = isTrue ? 'rgba(40,199,111,0.08)' : 'rgba(255,76,81,0.08)';
-                let border = isTrue ? '#28C76F' : '#FF4C51';
-                let color  = isTrue ? '#28C76F' : '#FF4C51';
-                if (feedback) {
-                  if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
-                  else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
-                } else if (isSelected) {
-                  bg = isTrue ? 'rgba(40,199,111,0.22)' : 'rgba(255,76,81,0.22)';
-                }
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleAnswer(opt.id)}
-                    disabled={feedback}
-                    style={{
-                      flex: 1,
-                      height: 80,
-                      borderRadius: 14,
-                      background: bg,
-                      border: `2px solid ${border}`,
-                      color,
-                      fontSize: 20,
-                      fontWeight: 800,
-                      cursor: feedback ? 'default' : 'pointer',
-                      transition: 'all 0.15s',
-                      fontFamily: 'inherit',
-                      letterSpacing: 1,
-                    }}
-                  >
-                    {opt.text.toUpperCase()}
-                  </button>
-                );
-              })}
+          {/* Audio Quiz: audio player */}
+          {isAudioMode && currentQ.audioUrl && (
+            <div style={{ marginBottom: 20 }}>
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <audio controls style={{ width: '100%', borderRadius: 8 }} aria-label={currentQ.audioFallbackText ?? currentQ.text}>
+                <source src={currentQ.audioUrl} />
+                {currentQ.audioFallbackText ?? 'Audio not available'}
+              </audio>
             </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {currentQ.options.map((opt) => {
-                const isSelected = userAnswer === opt.id;
-                const isRight    = opt.id === currentQ.correctOptionId;
-                let bg = 'var(--surface)', border = 'var(--border)', color = 'var(--text)';
-                if (feedback) {
-                  if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
-                  else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
-                } else if (isSelected) {
-                  bg = 'var(--primary-light)'; border = 'var(--primary)'; color = 'var(--primary-text)';
-                }
-                return (
-                  <button key={opt.id} onClick={() => handleAnswer(opt.id)} disabled={feedback} style={{ padding: '14px 18px', borderRadius: 10, textAlign: 'left', background: bg, border: `1.5px solid ${border}`, color, fontSize: 14, cursor: feedback ? 'default' : 'pointer', fontWeight: isSelected || (feedback && isRight) ? 600 : 400, transition: 'all 0.15s', fontFamily: 'inherit' }}>
-                    {opt.text}
-                  </button>
-                );
-              })}
+          )}
+          {isAudioMode && !currentQ.audioUrl && currentQ.audioFallbackText && (
+            <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 10, background: 'rgba(255,76,81,0.07)', border: '1px solid rgba(255,76,81,0.2)', fontSize: 13, color: 'var(--text-secondary)' }}>
+              🎧 {currentQ.audioFallbackText}
             </div>
           )}
 
-          {/* Explanation — hidden in exam mode when examReviewAllowed is false */}
-          {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && (
-            <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
-              <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
+          {/* Question text row — with bookmark button */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 24 }}>
+            <p style={{ flex: 1, fontSize: isMathsQuizMode ? 22 : 16, fontWeight: 600, lineHeight: 1.6, margin: 0, color: 'var(--text)' }}>
+              {currentQ.text}
+            </p>
+            <button
+              onClick={() => toggleBookmark(currentQ.id)}
+              title={isBookmarked ? 'Remove bookmark' : 'Bookmark this question'}
+              aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark this question'}
+              style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 4, marginTop: 2 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={isBookmarked ? '#FF9F43' : 'none'} stroke="#FF9F43" strokeWidth="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Fun and Learn mode: show learning card before options */}
+          {isFunAndLearnMode && !funLearnRevealed && currentQ.explanation && (
+            <div style={{ marginBottom: 24, padding: 20, borderRadius: 12, background: 'rgba(115,103,240,0.10)', border: '1.5px solid rgba(115,103,240,0.25)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#7367F0', letterSpacing: 0.5, marginBottom: 8 }}>📖 Learn first:</div>
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--text)', lineHeight: 1.7, fontStyle: 'italic' }}>{currentQ.explanation}</p>
+              <button
+                onClick={() => setFunLearnRevealed(true)}
+                style={{ marginTop: 16, height: 38, paddingInline: 20, borderRadius: 8, background: '#7367F0', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 13, fontFamily: 'inherit' }}
+              >
+                Got it →
+              </button>
             </div>
+          )}
+
+          {/* Guess the Word mode */}
+          {isGuessTheWordMode && (
+            <div>
+              {currentQ.hint && (
+                <div style={{ marginBottom: 14 }}>
+                  {!showHint ? (
+                    <button onClick={() => setShowHint(true)} style={{ background: 'none', border: '1px dashed var(--border)', borderRadius: 8, padding: '6px 14px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      Show Hint 💡
+                    </button>
+                  ) : (
+                    <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,159,67,0.1)', border: '1px solid rgba(255,159,67,0.3)', fontSize: 13, color: '#FF9F43' }}>
+                      💡 {currentQ.hint}
+                    </div>
+                  )}
+                </div>
+              )}
+              {wordFeedbackCorrect === null ? (
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <input
+                    type="text"
+                    value={wordInputValue}
+                    onChange={(e) => setWordInputValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleWordSubmit(); }}
+                    placeholder="Type your answer…"
+                    style={{ flex: 1, height: 48, borderRadius: 10, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 15, paddingInline: 16, fontFamily: 'inherit', outline: 'none' }}
+                  />
+                  <button
+                    onClick={handleWordSubmit}
+                    disabled={!wordInputValue.trim()}
+                    style={{ height: 48, paddingInline: 24, borderRadius: 10, background: 'var(--primary)', color: '#fff', fontWeight: 700, fontSize: 15, border: 'none', cursor: wordInputValue.trim() ? 'pointer' : 'not-allowed', opacity: wordInputValue.trim() ? 1 : 0.5, fontFamily: 'inherit' }}
+                  >
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <div style={{ padding: 16, borderRadius: 10, background: wordFeedbackCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${wordFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: wordFeedbackCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                  <strong>{wordFeedbackCorrect ? '✓ Correct!' : `✗ Incorrect. The answer is: "${currentQ.wordAnswer}"`}</strong>
+                  {currentQ.explanation && <div style={{ marginTop: 8 }}>{currentQ.explanation}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Maths Quiz mode */}
+          {isMathsQuizMode && (
+            <div>
+              {numericFeedbackCorrect === null ? (
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <input
+                    type="number"
+                    value={numericInputValue}
+                    onChange={(e) => setNumericInputValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleNumericSubmit(); }}
+                    placeholder="Enter numeric answer…"
+                    style={{ flex: 1, height: 48, borderRadius: 10, border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 18, paddingInline: 16, fontFamily: 'inherit', outline: 'none' }}
+                  />
+                  <button
+                    onClick={handleNumericSubmit}
+                    disabled={numericInputValue.trim() === ''}
+                    style={{ height: 48, paddingInline: 24, borderRadius: 10, background: 'var(--primary)', color: '#fff', fontWeight: 700, fontSize: 15, border: 'none', cursor: numericInputValue.trim() ? 'pointer' : 'not-allowed', opacity: numericInputValue.trim() ? 1 : 0.5, fontFamily: 'inherit' }}
+                  >
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <div style={{ padding: 16, borderRadius: 10, background: numericFeedbackCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${numericFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: numericFeedbackCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                  <strong>{numericFeedbackCorrect ? '✓ Correct!' : `✗ Incorrect. The correct answer is: ${currentQ.numericAnswer}`}</strong>
+                  {currentQ.explanation && <div style={{ marginTop: 8 }}>{currentQ.explanation}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Multi Match mode */}
+          {isMultiMatchMode && currentQ.matchPairs && currentQ.matchPairs.length > 0 && (
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                {/* Left column: left items in order */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Match from</div>
+                  {currentQ.matchPairs.map((pair) => {
+                    const isMatched = matchCorrect.has(pair.id);
+                    const isSelected = matchSelectedLeft === pair.id;
+                    return (
+                      <button
+                        key={pair.id}
+                        onClick={() => !isMatched && handleMatchLeft(pair.id)}
+                        disabled={isMatched || allMatchesDone}
+                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? '#D1F7E2' : isSelected ? 'var(--primary-light)' : 'var(--surface)', border: `1.5px solid ${isMatched ? '#28C76F' : isSelected ? 'var(--primary)' : 'var(--border)'}`, color: isMatched ? '#0F6B35' : isSelected ? 'var(--primary-text)' : 'var(--text)', fontWeight: isSelected ? 600 : 400 }}
+                      >
+                        {pair.left}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Right column: shuffled right items */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Match to</div>
+                  {shuffledRightItems.map((pair) => {
+                    const isMatched = matchCorrect.has(pair.id);
+                    const isWrong = matchWrong === pair.id;
+                    return (
+                      <button
+                        key={pair.id}
+                        onClick={() => !isMatched && handleMatchRight(pair.id)}
+                        disabled={isMatched || allMatchesDone || !matchSelectedLeft}
+                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched || !matchSelectedLeft ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? '#D1F7E2' : isWrong ? '#FFE5E6' : 'var(--surface)', border: `1.5px solid ${isMatched ? '#28C76F' : isWrong ? '#FF4C51' : 'var(--border)'}`, color: isMatched ? '#0F6B35' : isWrong ? '#B52D2E' : 'var(--text)', opacity: !matchSelectedLeft && !isMatched ? 0.6 : 1 }}
+                      >
+                        {pair.right}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              {allMatchesDone && (
+                <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: '#D1F7E2', border: '1px solid #28C76F44', fontSize: 14, color: '#0F6B35', fontWeight: 600 }}>
+                  ✓ All pairs matched correctly!
+                  {currentQ.explanation && <div style={{ fontWeight: 400, marginTop: 6 }}>{currentQ.explanation}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Standard MCQ / True-False / Fun and Learn (after reveal) */}
+          {!isGuessTheWordMode && !isMathsQuizMode && !isMultiMatchMode && (!isFunAndLearnMode || funLearnRevealed) && (
+            <>
+              {isTrueFalseMode ? (
+                <div style={{ display: 'flex', gap: 14 }}>
+                  {currentQ.options.map((opt) => {
+                    const isSelected = userAnswer === opt.id;
+                    const isRight    = opt.id === currentQ.correctOptionId;
+                    const isTrue     = opt.text.toLowerCase() === 'true';
+                    let bg = isTrue ? 'rgba(40,199,111,0.08)' : 'rgba(255,76,81,0.08)';
+                    let border = isTrue ? '#28C76F' : '#FF4C51';
+                    let color  = isTrue ? '#28C76F' : '#FF4C51';
+                    if (feedback) {
+                      if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
+                      else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                    } else if (isSelected) {
+                      bg = isTrue ? 'rgba(40,199,111,0.22)' : 'rgba(255,76,81,0.22)';
+                    }
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleAnswer(opt.id)}
+                        disabled={feedback}
+                        style={{
+                          flex: 1,
+                          height: 80,
+                          borderRadius: 14,
+                          background: bg,
+                          border: `2px solid ${border}`,
+                          color,
+                          fontSize: 20,
+                          fontWeight: 800,
+                          cursor: feedback ? 'default' : 'pointer',
+                          transition: 'all 0.15s',
+                          fontFamily: 'inherit',
+                          letterSpacing: 1,
+                        }}
+                      >
+                        {opt.text.toUpperCase()}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {currentQ.options.map((opt) => {
+                    const isSelected = userAnswer === opt.id;
+                    const isRight    = opt.id === currentQ.correctOptionId;
+                    let bg = 'var(--surface)', border = 'var(--border)', color = 'var(--text)';
+                    if (feedback) {
+                      if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
+                      else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                    } else if (isSelected) {
+                      bg = 'var(--primary-light)'; border = 'var(--primary)'; color = 'var(--primary-text)';
+                    }
+                    return (
+                      <button key={opt.id} onClick={() => handleAnswer(opt.id)} disabled={feedback} style={{ padding: '14px 18px', borderRadius: 10, textAlign: 'left', background: bg, border: `1.5px solid ${border}`, color, fontSize: 14, cursor: feedback ? 'default' : 'pointer', fontWeight: isSelected || (feedback && isRight) ? 600 : 400, transition: 'all 0.15s', fontFamily: 'inherit' }}>
+                        {opt.text}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Explanation — hidden in exam mode when examReviewAllowed is false */}
+              {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && !isFunAndLearnMode && (
+                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                  <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
+                </div>
+              )}
+              {/* Fun and Learn: explanation already shown before options; on feedback show correct/incorrect only */}
+              {isFunAndLearnMode && feedback && (
+                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                  <strong>{isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -1017,8 +1362,14 @@ export default function QuizPage() {
         {idx > 0 && (
           <button onClick={() => { setFeedback(true); setIdx((i) => i - 1); }} style={{ flex: 1, height: 48, borderRadius: 10, border: `1.5px solid var(--primary-text)`, background: 'transparent', color: 'var(--primary-text)', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>← Previous</button>
         )}
-        {feedback ? (
+        {showNextButton || inputSubmitted ? (
           <button onClick={handleNext} style={{ flex: 1, height: 48, borderRadius: 10, background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'inherit' }}>{isLast ? 'See Results →' : 'Next Question →'}</button>
+        ) : isInputMode ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: 14 }}>
+            {isMultiMatchMode ? 'Click to match pairs above' : 'Enter your answer above'}
+          </div>
+        ) : isFunAndLearnMode && !funLearnRevealed ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: 14 }}>Read the explanation first</div>
         ) : (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: 14 }}>Select an answer above</div>
         )}

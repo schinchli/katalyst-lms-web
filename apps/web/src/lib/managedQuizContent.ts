@@ -1,5 +1,5 @@
 import { quizQuestions, quizzes } from '@/data/quizzes';
-import type { ManagedCategory, ManagedSubcategory, Question, Quiz, QuizMode } from '@/types';
+import type { ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
 
 export const MANAGED_QUIZ_CONTENT_KEY = 'managed_quiz_content';
 export const MANAGED_CATEGORIES_KEY = 'managed_categories';
@@ -30,6 +30,7 @@ function cloneQuestion(question: Question): Question {
   return {
     ...question,
     options: question.options.map((option) => ({ ...option })),
+    matchPairs: question.matchPairs ? question.matchPairs.map((pair) => ({ ...pair })) : undefined,
   };
 }
 
@@ -62,6 +63,19 @@ function normalizeQuestion(raw: unknown, quizId: string, index: number): Questio
       ? value.correctOptionId
       : options[0].id;
 
+  // Validate matchPairs: each entry must have non-empty id, left, right
+  const matchPairs: MatchPair[] | undefined = Array.isArray(value.matchPairs)
+    ? (value.matchPairs as unknown[]).reduce<MatchPair[]>((acc, item) => {
+        if (!item || typeof item !== 'object') return acc;
+        const pair = item as Partial<MatchPair>;
+        const pairId = typeof pair.id === 'string' ? pair.id.trim() : '';
+        const left   = typeof pair.left === 'string' ? pair.left.trim() : '';
+        const right  = typeof pair.right === 'string' ? pair.right.trim() : '';
+        if (pairId && left && right) acc.push({ id: pairId, left, right });
+        return acc;
+      }, [])
+    : undefined;
+
   return {
     id: typeof value.id === 'string' && value.id.trim() ? value.id.trim() : `${quizId}-question-${index + 1}`,
     text,
@@ -74,6 +88,12 @@ function normalizeQuestion(raw: unknown, quizId: string, index: number): Questio
         : 'beginner',
     category: typeof value.category === 'string' && value.category.trim() ? value.category.trim() : undefined,
     quizId,
+    wordAnswer: typeof value.wordAnswer === 'string' && value.wordAnswer.trim() ? value.wordAnswer.trim() : undefined,
+    numericAnswer: typeof value.numericAnswer === 'number' && Number.isFinite(value.numericAnswer) ? value.numericAnswer : undefined,
+    hint: typeof value.hint === 'string' && value.hint.trim() ? value.hint.trim() : undefined,
+    audioUrl: typeof value.audioUrl === 'string' && value.audioUrl.trim() ? value.audioUrl.trim() : undefined,
+    audioFallbackText: typeof value.audioFallbackText === 'string' && value.audioFallbackText.trim() ? value.audioFallbackText.trim() : undefined,
+    matchPairs: matchPairs && matchPairs.length > 0 ? matchPairs : undefined,
   };
 }
 

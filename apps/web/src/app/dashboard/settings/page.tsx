@@ -15,7 +15,7 @@ import {
   normalizeManagedCategories,
   type ManagedQuizContent,
 } from '@/lib/managedQuizContent';
-import type { ManagedCategory, ManagedSubcategory, Question, Quiz, QuizMode } from '@/types';
+import type { ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
 import {
   applyPlatformExperience,
   DEFAULT_PLATFORM_EXPERIENCE,
@@ -93,6 +93,10 @@ function buildTrueFalseOptions() {
     { id: 'a', text: 'True' },
     { id: 'b', text: 'False' },
   ];
+}
+
+function generateMatchPairId() {
+  return `pair-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
 function mergeManagedQuizContent(current: ManagedQuizContent, incoming: ManagedQuizContent): ManagedQuizContent {
@@ -1315,6 +1319,111 @@ export default function SettingsPage() {
                             </div>
                           ))}
                         </div>
+
+                        {/* ── Mode-specific fields ── */}
+                        {(selectedManagedQuiz.mode === 'guess_the_word') && (
+                          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: '#00BAD1', textTransform: 'uppercase', letterSpacing: 0.5 }}>✏️ Guess the Word</div>
+                            <label>
+                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Word Answer (correct text, case-insensitive)</div>
+                              <input className="admin-field-input" value={question.wordAnswer ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { wordAnswer: event.target.value || undefined })} placeholder="e.g. Elastic" />
+                            </label>
+                            <label>
+                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Hint (optional)</div>
+                              <input className="admin-field-input" value={question.hint ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { hint: event.target.value || undefined })} placeholder="e.g. It starts with 'E'" />
+                            </label>
+                          </div>
+                        )}
+
+                        {(selectedManagedQuiz.mode === 'maths_quiz') && (
+                          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: '#28C76F', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔢 Maths Quiz</div>
+                            <label>
+                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Numeric Answer (±0.01 tolerance)</div>
+                              <input
+                                type="number"
+                                className="admin-field-input"
+                                value={question.numericAnswer ?? ''}
+                                onChange={(event) => {
+                                  const v = parseFloat(event.target.value);
+                                  updateManagedQuestion(selectedManagedQuiz.id, question.id, { numericAnswer: Number.isFinite(v) ? v : undefined });
+                                }}
+                                placeholder="e.g. 42"
+                              />
+                            </label>
+                          </div>
+                        )}
+
+                        {(selectedManagedQuiz.mode === 'audio') && (
+                          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: '#FF4C51', textTransform: 'uppercase', letterSpacing: 0.5 }}>🎧 Audio Quiz</div>
+                            <label>
+                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Audio URL</div>
+                              <input className="admin-field-input" value={question.audioUrl ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { audioUrl: event.target.value || undefined })} placeholder="https://…/audio.mp3" />
+                            </label>
+                            <label>
+                              <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Fallback Text (when audio unavailable)</div>
+                              <input className="admin-field-input" value={question.audioFallbackText ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { audioFallbackText: event.target.value || undefined })} placeholder="Description of the audio content" />
+                            </label>
+                          </div>
+                        )}
+
+                        {(selectedManagedQuiz.mode === 'multi_match') && (
+                          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: '#FF9F43', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔗 Match Pairs</div>
+                              <button
+                                className="settings-btn-ghost"
+                                onClick={() => {
+                                  const newPair: MatchPair = { id: generateMatchPairId(), left: '', right: '' };
+                                  updateManagedQuestion(selectedManagedQuiz.id, question.id, {
+                                    matchPairs: [...(question.matchPairs ?? []), newPair],
+                                  });
+                                }}
+                              >
+                                + Add Pair
+                              </button>
+                            </div>
+                            {(question.matchPairs ?? []).map((pair, pairIdx) => (
+                              <div key={pair.id} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                <div style={{ fontSize: 12, color: 'var(--text-secondary)', minWidth: 24 }}>#{pairIdx + 1}</div>
+                                <input
+                                  className="admin-field-input"
+                                  placeholder="Left"
+                                  value={pair.left}
+                                  onChange={(event) => {
+                                    const next = (question.matchPairs ?? []).map((p) => p.id === pair.id ? { ...p, left: event.target.value } : p);
+                                    updateManagedQuestion(selectedManagedQuiz.id, question.id, { matchPairs: next });
+                                  }}
+                                  style={{ flex: 1 }}
+                                />
+                                <span style={{ color: 'var(--text-secondary)', fontSize: 16 }}>→</span>
+                                <input
+                                  className="admin-field-input"
+                                  placeholder="Right"
+                                  value={pair.right}
+                                  onChange={(event) => {
+                                    const next = (question.matchPairs ?? []).map((p) => p.id === pair.id ? { ...p, right: event.target.value } : p);
+                                    updateManagedQuestion(selectedManagedQuiz.id, question.id, { matchPairs: next });
+                                  }}
+                                  style={{ flex: 1 }}
+                                />
+                                <button
+                                  className="settings-btn-ghost"
+                                  onClick={() => {
+                                    const next = (question.matchPairs ?? []).filter((p) => p.id !== pair.id);
+                                    updateManagedQuestion(selectedManagedQuiz.id, question.id, { matchPairs: next.length > 0 ? next : undefined });
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))}
+                            {(question.matchPairs ?? []).length === 0 && (
+                              <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>No pairs yet. Click "+ Add Pair" to add match pairs.</div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

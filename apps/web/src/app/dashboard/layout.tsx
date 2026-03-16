@@ -28,6 +28,7 @@ const NAV = [
   { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
   { href: '/dashboard/progress',     label: 'Progress',    icon: TrendIcon },
   { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
+  { href: '/dashboard/bookmarks',    label: 'Bookmarks',   icon: BookmarkNavIcon },
   { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
 ];
 
@@ -76,6 +77,13 @@ function SunIcon() {
       <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
       <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
+function BookmarkNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
