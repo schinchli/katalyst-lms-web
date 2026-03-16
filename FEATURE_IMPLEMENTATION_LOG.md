@@ -215,3 +215,84 @@
 
 #### Slice 5 — Mobile Mode Detection
 - `mobile/app/quiz/[id].tsx`: added `quizMode`/`isExamMode` constants; timer `useEffect` skips countdown in exam mode; intro screen shows exam no-answers warning when `quiz.mode === 'exam' && quiz.examReviewAllowed === false`.
+
+---
+
+## 2026-03-16 (session 3)
+
+### P4 — Remaining Elite Quiz Modes (All Slices A–F Complete)
+**Web commit:** `6ff00d1` | **Mobile commit:** `0463ea1`
+**Validation:** `npx tsc --noEmit` clean · 262/262 mobile tests · security gate passed (9 intentional-public-route warnings, 0 failures)
+
+#### Slice A — Bookmark / Review Parity
+
+**A1 — Extended Question type (web + mobile)**
+- `apps/web/src/types.ts`: added `MatchPair` interface; added optional fields `wordAnswer`, `numericAnswer`, `hint`, `audioUrl`, `audioFallbackText`, `matchPairs` to `Question` interface.
+- `mobile/types/index.ts`: same additions — keeps web/mobile type parity.
+
+**A2 — Web bookmark toggle in quiz player**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `bookmarkedIds` state populated from `localStorage.getItem('web-bookmarks')`; `toggleBookmark()` callback persists JSON array back to localStorage; bookmark ☆/★ button rendered top-right of question text in quiz phase.
+
+**A3 — Web `/dashboard/bookmarks` page + sidebar link**
+- `apps/web/src/app/dashboard/bookmarks/page.tsx` (new): `'use client'` + `force-dynamic`; reads `localStorage` bookmarks; renders list with quiz title, difficulty badge, Remove button, and Start Review button navigating to `?review=bookmarks` query param on first entry's quiz; empty state with CTA.
+- `apps/web/src/app/dashboard/layout.tsx`: added `BookmarkNavIcon` SVG and Bookmarks entry to `NAV` array (between Leaderboard and Profile).
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `useSearchParams` + `isBookmarkReview` detection; `bookmarkReviewQuestions` built via `useMemo` scanning all `quizQuestions`; `startQuiz()` branches on bookmark review mode.
+
+**A4 — Mobile bookmark review screen**
+- `mobile/app/(tabs)/bookmarks.tsx`: added `hasBookmarks` derived variable; "Start Review (N)" `Pressable` navigating to `/quiz/bookmarks-review`; disabled state view when no bookmarks; added `reviewBtn`/`reviewBtnDisabled`/`reviewBtnText` styles.
+- `mobile/app/quiz/bookmarks-review.tsx` (new): flat question index across all `quizzes` + `quizQuestions`; `ReviewPhase = 'quiz' | 'results'`; standard quiz flow with correct/incorrect highlighting and explanation feedback; results screen with score circle, pass/retry label, retry and done buttons; empty state.
+
+#### Slice B — Fun and Learn
+
+**B1 — Web**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `funLearnRevealed` state (reset on `idx` change); learning card rendering `currentQ.explanation` as a "Learning Card" before options; "Got it →" button reveals options; results headline becomes "Learning Complete!" with "Questions explored: N" sub-label; mode badge on intro screen.
+
+**B2 — Mobile**
+- `mobile/app/quiz/[id].tsx`: added `funLearnRevealed` state; `isFunAndLearnMode` constant; learning card shown before options; "Got it →" button; `modeStyles.learnCard` style; results headline updated for fun_and_learn; mode badge on intro.
+
+#### Slice C — Guess the Word
+
+**C1 — Web**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `wordInputValue`, `wordFeedbackCorrect`, `showHint` states; `handleWordSubmit()` with case-insensitive comparison against `currentQ.wordAnswer`; text input + optional hint toggle render in quiz phase; feedback shows correct answer if wrong; mode badge on intro.
+
+**C2 — Admin fields**
+- `apps/web/src/app/dashboard/settings/page.tsx`: Word Answer text input and Hint text input added to question editor, shown when `selectedManagedQuiz.mode === 'guess_the_word'`.
+
+**C3 — Mobile**
+- `mobile/app/quiz/[id].tsx`: `TextInput`, `KeyboardAvoidingView`, `Platform` added to imports; `wordInputValue`, `wordFeedbackCorrect`, `showHint` states; `isGuessTheWordMode` constant; `handleWordSubmit()`; text input + hint toggle rendered inside `KeyboardAvoidingView`; mode badge on intro.
+
+#### Slice D — Maths Quiz
+
+**D1 — Web**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `numericInputValue`, `numericFeedbackCorrect` states; `handleNumericSubmit()` with ±0.01 float tolerance against `currentQ.numericAnswer`; numeric `<input type="number">` with larger font; feedback shows correct answer if wrong; mode badge on intro.
+
+**D2 — Admin fields**
+- `apps/web/src/app/dashboard/settings/page.tsx`: Numeric Answer `<input type="number">` added to question editor, shown when `selectedManagedQuiz.mode === 'maths_quiz'`.
+
+**D3 — Mobile**
+- `mobile/app/quiz/[id].tsx`: `numericInputValue`, `numericFeedbackCorrect` states; `isMathsQuizMode` constant; `handleNumericSubmit()` with ±0.01 tolerance; `<TextInput keyboardType="numeric">` with larger font style; mode badge on intro.
+
+#### Slice E — Multi Match
+
+**E1 — Web**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: added `matchSelectedLeft`, `matchCorrect`, `matchWrong`, `shuffledRightItems` states; `shuffledRightItems` populated via `useEffect` on `idx` change (Fisher-Yates); `handleMatchLeft()` / `handleMatchRight()` handlers — wrong pair flashes red (1s timeout → clears), correct pair added to `matchCorrect`; all pairs correct → `setFeedback(true)`; match grid rendered with left/right columns; mode badge on intro.
+
+**E2 — Admin pair editor**
+- `apps/web/src/app/dashboard/settings/page.tsx`: Match Pairs section added to question editor when `selectedManagedQuiz.mode === 'multi_match'`; add pair button; per-pair left/right text inputs; remove pair button; `generateMatchPairId()` helper.
+
+**E3 — Normalization**
+- `apps/web/src/lib/managedQuizContent.ts`: added `MatchPair` to imports; `normalizeQuestion()` validates `matchPairs` (each entry requires non-empty `id`, `left`, `right`); `cloneQuestion()` deep-copies `matchPairs` array; `wordAnswer`, `numericAnswer`, `hint`, `audioUrl`, `audioFallbackText` all preserved.
+
+**E4 — Mobile**
+- `mobile/app/quiz/[id].tsx`: `matchSelectedLeft`, `matchCorrect`, `matchWrong` states; `isMultiMatchMode` constant; `handleMatchLeft()` / `handleMatchRight()` handlers with wrong-pair red flash (1s); match grid with `modeStyles.matchGrid`; mode badge on intro.
+
+#### Slice F — Audio Quiz
+
+**F1 — Web**
+- `apps/web/src/app/dashboard/quiz/[id]/page.tsx`: HTML5 `<audio controls>` element rendered when `currentQ.audioUrl` is set; mode badge on intro.
+
+**F2 — Admin fields**
+- `apps/web/src/app/dashboard/settings/page.tsx`: Audio URL and Fallback Text inputs added to question editor, shown when `selectedManagedQuiz.mode === 'audio'`.
+
+**F3 — Mobile**
+- `mobile/app/quiz/[id].tsx`: `isAudioMode` constant; `expo-audio` not installed → graceful fallback: renders `audioFallbackText` or a static note ("Audio playback not available in this build"); mode badge on intro. No new native dependencies added.

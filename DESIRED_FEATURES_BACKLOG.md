@@ -73,24 +73,12 @@
 - ~~Exam-mode compliance surface.~~ **DONE** — Web quiz player now has a comment documenting that screen-recording protection is not available on web (mobile-only). Mobile intro shows "answers will not be shown after submission" hint when `examReviewAllowed === false`. `examReviewAllowed` admin toggle already present in settings.
 
 ### P4: Remaining Elite Quiz Modes
-- Multi Match.
-  Implementation notes:
-  Add managed question schema for match pairs, runtime UI for drag/select matching, answer validation, scoring, and admin CRUD/import support.
-- Fun and Learn.
-  Implementation notes:
-  Add content type that emphasizes explanation-first progression and post-answer learning blocks rather than standard scoreboard-first quiz flow.
-- Guess the Word.
-  Implementation notes:
-  Add per-question character/word payloads, hint handling, answer entry UI, and result validation across web and Expo.
-- Audio Quiz.
-  Implementation notes:
-  Add audio asset support, preload/playback controls, accessibility fallback text, and admin upload/reference fields.
-- Maths Quiz.
-  Implementation notes:
-  Add numeric answer support, formatted question rendering, and validation paths that are not limited to current option-based MCQ assumptions.
-- Bookmark/review parity.
-  Implementation notes:
-  Finish bookmark management across every quiz surface and ensure bookmarked questions can be reviewed in a dedicated mode, not only toggled ad hoc.
+- ~~Multi Match.~~ **DONE (2026-03-16)** — Click-to-pair left/right column UI; wrong pair flashes red; all-correct → feedback + Next. Admin pair editor (add/remove pairs). normalizeQuestion preserves matchPairs. Web + mobile.
+- ~~Fun and Learn.~~ **DONE (2026-03-16)** — Explanation shown as "Learning Card" before options; "Got it →" reveals options; results headline "Learning Complete!" + "Questions explored: N". Web + mobile. Mode badge on intro.
+- ~~Guess the Word.~~ **DONE (2026-03-16)** — Text input + optional hint reveal; case-insensitive comparison against wordAnswer; feedback shows correct answer if wrong. Admin wordAnswer + hint fields. Web + mobile.
+- ~~Audio Quiz.~~ **DONE (2026-03-16)** — HTML5 `<audio>` element on web; graceful fallback text on mobile (expo-audio not a dependency). Admin audioUrl + audioFallbackText fields. Mode badge on intro.
+- ~~Maths Quiz.~~ **DONE (2026-03-16)** — Numeric input; ±0.01 float tolerance; larger font for math questions; shows correct answer if wrong. Admin numericAnswer field. Web + mobile.
+- ~~Bookmark/review parity.~~ **DONE (2026-03-16)** — Web: bookmark toggle (☆/★) per question in quiz player, persisted to localStorage; /dashboard/bookmarks page with list + Remove + Start Review; sidebar Bookmarks link; quiz player supports ?review=bookmarks param. Mobile: Start Review button on bookmarks tab → /quiz/bookmarks-review screen with full quiz flow.
 
 ### P5: Competitive Modes
 - Contest lifecycle.
