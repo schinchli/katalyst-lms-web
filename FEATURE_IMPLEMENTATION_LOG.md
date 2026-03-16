@@ -1,5 +1,90 @@
 # Feature Implementation Log
 
+## 2026-03-16 (P5 — Competitive Modes)
+
+### Contest Lifecycle (P5-1)
+
+**`apps/web/src/app/api/admin/contests/route.ts`** — new file
+- Admin CRUD API for managed contests stored in `app_settings` under key `managed_contests`.
+- GET (admin-only), POST (normalizes + upserts), DELETE (removes by contestId).
+- Exports `MANAGED_CONTESTS_KEY` and `normalizeContest()` for use by public route.
+- Rate limit 20 req/min, 64 KB payload cap, Zod validation on all inputs.
+
+**`apps/web/src/app/api/contests/route.ts`** — new file
+- Public GET endpoint returning all managed contests from `app_settings`.
+- Rate limit 60 req/min, service-role Supabase client.
+- Imports `MANAGED_CONTESTS_KEY` and `normalizeContest` from admin route.
+
+**`apps/web/src/app/dashboard/contests/page.tsx`** — new file
+- `'use client'`, `dynamic = 'force-dynamic'`. Fetches `/api/contests` on mount.
+- Three sections: Live (red), Upcoming (purple), Past (muted). Card grid layout.
+- `ContestCard` with countdown timer for live contests, start time for upcoming, winner for past.
+- `useCountdown(endTime)` hook for live display. "Enter Contest" navigates to quiz player.
+
+**`apps/web/src/app/dashboard/settings/page.tsx`** — modified
+- Added Contests section with inline add/edit form and delete confirmation modal (no `window.confirm`).
+- Form: status select (live/upcoming/past), quizId select (static + managed quizzes), all Contest fields.
+- Extended parallel fetch to load `/api/admin/contests` alongside existing config fetches.
+- `saveContests()`, `handleContestFormSubmit()`, `startEditContest()`, `confirmDeleteContest()` helpers added.
+
+**`mobile/app/contest.tsx`** — modified
+- Replaced static `getContests()` import with live fetch from `${AppConfig.web.baseUrl}/api/contests`.
+- Added `allContests` + `loadingContests` state; `ActivityIndicator` while loading.
+- Tab counts and list data now driven by live API response.
+
+### Self Challenge Mode (P5-2)
+
+**`apps/web/src/app/dashboard/self-challenge/page.tsx`** — new file
+- Reads `localStorage.getItem('quiz-results')`, groups by quizId, computes best score/attempts.
+- `ScoreRing` SVG component with color-coded percentage ring.
+- "Beat X%" button navigates to `/dashboard/quiz/[quizId]?challenge=<bestScore>`.
+
+**`apps/web/src/app/dashboard/quiz/[id]/page.tsx`** — modified
+- Added `challengePreviousBest` from `?challenge=<n>` search param (clamped 0–100).
+- In results phase, renders Self Challenge comparison banner showing previous best, new score, +/- delta (color-coded green/orange/red).
+
+**`mobile/app/challenge.tsx`** — modified
+- CTA "Beat Your Best" now navigates with `?previousBest=${bestPct}` query param.
+- `recentResults` cast as `QuizResult[]` with Supabase sync TODO comment.
+
+### Battle Modes Foundation (P5-3)
+
+**`apps/web/src/types.ts`** — modified
+- `BattleStatus`: added `'active'` (kept for backward compat with existing battle/route.ts), `'in_progress'`, `'abandoned'`.
+- Added `BattleParticipant` interface: `{ userId, name, score, answers: Record<string,string>, finishedAt? }`.
+- `BattleSession` updated: added `type`, `participants`, `questionIds`, `currentQuestionIdx` while keeping backward-compat `mode?`, `players`, `currentQuestionIndex` fields.
+
+**`apps/web/src/app/dashboard/battles/page.tsx`** — new file
+- Three mode cards: Random (orange), 1v1 Challenge (red), Group Battle (purple).
+- `BattleLobbyOverlay`: Supabase Realtime channel `battle-{sessionId}` listens for `join` broadcast. 30s timeout for random → solo fallback. Shows invite code for 1v1/group.
+- `JoinByCodeDialog`: 6-char alphanumeric input.
+- Sessions stored in localStorage; `TODO: persist to Supabase battles table once migration is applied` comment added.
+
+**`apps/web/src/app/dashboard/layout.tsx`** — modified
+- Added three nav items: Contests (`/dashboard/contests`), Battles (`/dashboard/battles`), Self Challenge (`/dashboard/self-challenge`).
+- Added `ContestIcon`, `BattleIcon`, `SelfChallengeIcon` SVG components.
+
+**`apps/web/src/app/api/battle/route.ts`** — modified
+- Updated `newSession` object to include `type: mode`, `participants: []`, `questionIds: []`, `currentQuestionIdx: 0` to satisfy updated `BattleSession` interface.
+
+**`mobile/types/index.ts`** — modified
+- Added `BattleStatus`, `BattleParticipant`, `BattleSession` type definitions.
+
+**`mobile/app/battle.tsx`** — new file
+- Three mode selector cards (random/one_vs_one/group) with Feather icons.
+- Tapping navigates to `/battle-lobby?type=<mode>`.
+
+**`mobile/app/battle-lobby.tsx`** — new file
+- `useLocalSearchParams` for typed battle type param.
+- Shows invite code (1v1/group), spinner + 30s timeout for random.
+- Join-by-code TextInput. "Start Battle!" / "Play Solo Instead" once ready.
+
+### Validation Results
+- `npm run type-check` (web): 0 errors
+- `npm test` (mobile): 262 tests passing, 19 suites
+
+---
+
 ## 2026-03-16 (P7 — Platform, Compliance, and Release Readiness)
 
 ### Maintenance Mode + Force Update (P7-1)
