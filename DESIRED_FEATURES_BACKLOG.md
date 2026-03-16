@@ -51,12 +51,8 @@
 ## Pending Work
 
 ### P0: Finish Shared CRUD Foundation
-- Category and subcategory CRUD.
-  Implementation notes:
-  Add admin data model and API routes for categories/subcategories, wire them into managed quiz editing, and remove remaining direct string-only category assumptions in both web and Expo discovery screens.
-- Quiz/question delete safety and dependency checks.
-  Implementation notes:
-  Add explicit delete flows with confirmation UI, prevent orphaned question records, and ensure daily quiz / leaderboard / progress references degrade safely when a managed quiz is removed.
+- ~~Category and subcategory CRUD.~~ **DONE (2026-03-16)** — Admin categories API route, `ManagedCategory`/`ManagedSubcategory` types, `normalizeManagedCategories()`, and full category management UI in settings (add, delete, subcategories).
+- ~~Quiz/question delete safety and dependency checks.~~ **DONE (2026-03-16)** — DELETE endpoint on `/api/admin/quiz-content` with daily-quiz reference clearing, `window.confirm` delete buttons in settings UI.
 - Managed content persistence cleanup.
   Implementation notes:
   Audit remaining places that still read directly from static `quizzes` / `quizQuestions` at runtime and switch them to managed-content-aware selectors first, falling back to static only where migration is incomplete.
@@ -73,23 +69,15 @@
   Add admin-facing counts for how many attempts today hit the resolved daily quiz and whether traffic is using configured selection or fallback rotation.
 
 ### P2: True/False Mode
-- True/False gameplay mode end to end.
-  Implementation notes:
-  Detect true/false quizzes from managed content or explicit mode metadata, show true/false-specific copy on quiz intro/results, ensure answer review UI stays clean for two-option questions, and expose mode badges in discovery/admin.
-- True/False mode admin controls.
-  Implementation notes:
-  Add explicit quiz-level mode metadata instead of inferring solely from option count, so admins can intentionally mark quizzes as `true_false` and future migrations remain stable.
+- ~~True/False gameplay mode end to end.~~ **DONE (2026-03-16)** — Mode badge on intro, auto-detected from `quiz.mode === 'true_false'` or all-2-option questions, large TRUE/FALSE buttons in quiz runtime.
+- ~~True/False mode admin controls.~~ **DONE (2026-03-16)** — Mode dropdown in admin settings with `true_false` option; `QuizMode` type in web and mobile types.
 - True/False reporting and history.
   Implementation notes:
   Make progress/history surfaces distinguish true/false attempts from standard MCQ attempts where Elite Quiz parity expects separate mode identity.
 
 ### P3: Exam Mode
-- Exam-mode runtime.
-  Implementation notes:
-  Add quiz-level `mode = exam`, timed full-session flow, exam copy/branding, exam result summary, and stricter retry/review behavior where configured.
-- Exam-mode admin settings.
-  Implementation notes:
-  Add per-quiz exam flags for review allowed, answer visibility timing, screenshot/screen-record restriction hints, and scoring controls aligned with store/platform constraints.
+- ~~Exam-mode runtime.~~ **DONE (2026-03-16)** — `mode = 'exam'` disables per-question timer, shows EXAM header badge, shows "Question N of M" progress, hides correct answers in results when `examReviewAllowed = false`.
+- ~~Exam-mode admin settings.~~ **DONE (2026-03-16)** — Mode dropdown with Exam option, `examReviewAllowed` checkbox (visible only when mode = exam) in the managed quiz editor.
 - Exam-mode compliance surface.
   Implementation notes:
   Apply platform-safe screen-protection behaviors where supported and document unsupported cases clearly instead of implying protection that does not exist.

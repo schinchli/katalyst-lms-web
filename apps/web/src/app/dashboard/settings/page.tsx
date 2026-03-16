@@ -12,9 +12,10 @@ import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, resolveDailyQuiz, typ
 import {
   applyManagedQuizContent,
   normalizeManagedQuizContent,
+  normalizeManagedCategories,
   type ManagedQuizContent,
 } from '@/lib/managedQuizContent';
-import type { Question, Quiz } from '@/types';
+import type { ManagedCategory, ManagedSubcategory, Question, Quiz, QuizMode } from '@/types';
 import {
   applyPlatformExperience,
   DEFAULT_PLATFORM_EXPERIENCE,
@@ -157,6 +158,13 @@ export default function SettingsPage() {
   const [importSourceQuizId, setImportSourceQuizId] = useState('');
   const [bulkImportValue, setBulkImportValue] = useState('');
   const [bulkImportError, setBulkImportError] = useState('');
+  const [managedCategories, setManagedCategories] = useState<ManagedCategory[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  const [newSubcategoryInputs, setNewSubcategoryInputs] = useState<Record<string, { name: string; description: string }>>({});
+  const [pendingDeleteQuizId, setPendingDeleteQuizId] = useState<string | null>(null);
+  const [pendingDeleteCategoryId, setPendingDeleteCategoryId] = useState<string | null>(null);
+  const [categoriesSaved, setCategoriesSaved] = useState(false);
   const managedContentFields: Array<{ label: string; key: keyof AppContentConfig; multiline: boolean }> = [
     { label: 'App name', key: 'appName', multiline: false },
     { label: 'Support email', key: 'supportEmail', multiline: false },
@@ -185,7 +193,7 @@ export default function SettingsPage() {
         }
         setAuthorized(true);
 
-        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes] = await Promise.all([
+        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes] = await Promise.all([
           fetch('/api/admin/mobile-config', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
@@ -201,12 +209,16 @@ export default function SettingsPage() {
           fetch('/api/admin/quiz-content', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
+          fetch('/api/admin/categories', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
         ]);
         const configBody = await configRes.json() as { config?: unknown };
         const quizCatalogBody = await quizCatalogRes.json() as { overrides?: unknown };
         const appContentBody = await appContentRes.json() as { content?: unknown };
         const systemFeaturesBody = await systemFeaturesRes.json() as { config?: unknown };
         const quizContentBody = await quizContentRes.json() as { content?: unknown };
+        const categoriesBody = await categoriesRes.json() as { categories?: unknown };
         setConfig(normalizePlatformExperience(configBody.config));
         const nextOverrides = normalizeQuizCatalogOverrides(quizCatalogBody.overrides);
         setQuizOverrides(nextOverrides);
@@ -217,6 +229,7 @@ export default function SettingsPage() {
         setSelectedManagedQuizId(nextManagedContent.quizzes[0]?.id ?? '');
         applyManagedQuizContent(nextManagedContent);
         applyQuizCatalogOverrides(nextOverrides);
+        setManagedCategories(normalizeManagedCategories(categoriesBody.categories));
       } catch {
         router.replace('/dashboard');
       }
@@ -642,10 +655,117 @@ export default function SettingsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const deleteManagedQuizWithConfirm = (quizId: string) => {
+    setPendingDeleteQuizId(quizId);
+  };
+
+  const confirmDeleteQuiz = () => {
+    if (pendingDeleteQuizId) { deleteManagedQuiz(pendingDeleteQuizId); }
+    setPendingDeleteQuizId(null);
+  };
+
+  const addCategory = () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64) || `cat-${Date.now()}`;
+    const uniqueId = managedCategories.some((c) => c.id === id) ? `${id}-${Date.now()}` : id;
+    setManagedCategories((prev) => [
+      ...prev,
+      { id: uniqueId, name, description: newCategoryDescription.trim() || undefined, subcategories: [] },
+    ]);
+    setNewCategoryName('');
+    setNewCategoryDescription('');
+  };
+
+  const deleteCategory = (categoryId: string) => {
+    setPendingDeleteCategoryId(categoryId);
+  };
+
+  const confirmDeleteCategory = () => {
+    if (pendingDeleteCategoryId) { setManagedCategories((prev) => prev.filter((c) => c.id !== pendingDeleteCategoryId)); }
+    setPendingDeleteCategoryId(null);
+  };
+
+  const addSubcategory = (categoryId: string) => {
+    const input = newSubcategoryInputs[categoryId];
+    const name = input?.name.trim() ?? '';
+    if (!name) return;
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64) || `sub-${Date.now()}`;
+    setManagedCategories((prev) =>
+      prev.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        const existing = cat.subcategories ?? [];
+        const uniqueId = existing.some((s) => s.id === id) ? `${id}-${Date.now()}` : id;
+        const sub: ManagedSubcategory = {
+          id: uniqueId,
+          name,
+          description: input?.description.trim() || undefined,
+          categoryId,
+        };
+        return { ...cat, subcategories: [...existing, sub] };
+      }),
+    );
+    setNewSubcategoryInputs((prev) => ({ ...prev, [categoryId]: { name: '', description: '' } }));
+  };
+
+  const deleteSubcategory = (categoryId: string, subId: string) => {
+    setManagedCategories((prev) =>
+      prev.map((cat) =>
+        cat.id !== categoryId
+          ? cat
+          : { ...cat, subcategories: (cat.subcategories ?? []).filter((s) => s.id !== subId) },
+      ),
+    );
+  };
+
+  const saveCategories = async () => {
+    if (!accessToken) return;
+    const res = await fetch('/api/admin/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ categories: managedCategories }),
+    });
+    if (res.ok) {
+      setCategoriesSaved(true);
+      setTimeout(() => setCategoriesSaved(false), 1800);
+    }
+  };
+
   if (!authorized) return null;
 
   return (
     <div className="page-content dc-shell">
+      {/* Inline delete-quiz confirmation */}
+      {pendingDeleteQuizId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Quiz</h3>
+            <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
+              Delete &quot;{managedQuizList.find((q) => q.id === pendingDeleteQuizId)?.title ?? pendingDeleteQuizId}&quot;? This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setPendingDeleteQuizId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={confirmDeleteQuiz} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Inline delete-category confirmation */}
+      {pendingDeleteCategoryId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Category</h3>
+            <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
+              Delete &quot;{managedCategories.find((c) => c.id === pendingDeleteCategoryId)?.name ?? pendingDeleteCategoryId}&quot;? All subcategories will also be removed.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setPendingDeleteCategoryId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={confirmDeleteCategory} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="dc-hero" style={{ padding: 30 }}>
         <span className="dc-chip">Admin controls</span>
         <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>Website experience settings</h1>
@@ -912,22 +1032,31 @@ export default function SettingsPage() {
                   No managed quizzes yet.
                 </div>
               ) : managedQuizList.map((quiz) => (
-                <button
-                  key={quiz.id}
-                  onClick={() => setSelectedManagedQuizId(quiz.id)}
-                  style={{
-                    textAlign: 'left',
-                    padding: 14,
-                    borderRadius: 18,
-                    border: `1px solid ${selectedManagedQuiz?.id === quiz.id ? 'var(--primary)' : 'var(--border)'}`,
-                    background: selectedManagedQuiz?.id === quiz.id ? 'var(--primary-light)' : 'rgba(255,255,255,0.02)',
-                    color: 'var(--text)',
-                  }}
-                >
-                  <div style={{ fontWeight: 700 }}>{quiz.title}</div>
-                  <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.id}</div>
-                  <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 12 }}>{(managedQuizContent.questions[quiz.id] ?? []).length} questions</div>
-                </button>
+                <div key={quiz.id} style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setSelectedManagedQuizId(quiz.id)}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: 14,
+                      borderRadius: 18,
+                      border: `1px solid ${selectedManagedQuiz?.id === quiz.id ? 'var(--primary)' : 'var(--border)'}`,
+                      background: selectedManagedQuiz?.id === quiz.id ? 'var(--primary-light)' : 'rgba(255,255,255,0.02)',
+                      color: 'var(--text)',
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, paddingRight: 28 }}>{quiz.title}</div>
+                    <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.id}</div>
+                    <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 12 }}>{(managedQuizContent.questions[quiz.id] ?? []).length} questions{quiz.mode ? ` · ${quiz.mode.replace('_', ' ')}` : ''}</div>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteManagedQuizWithConfirm(quiz.id); }}
+                    title="Delete quiz"
+                    style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24, borderRadius: 6, border: 'none', background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit', padding: 0 }}
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
 
@@ -1013,6 +1142,36 @@ export default function SettingsPage() {
                   <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
                     <input type="checkbox" checked={selectedManagedQuiz.enabled ?? true} onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { enabled: event.target.checked })} />
                     Visible
+                  </label>
+                  {selectedManagedQuiz.mode === 'exam' && (
+                    <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedManagedQuiz.examReviewAllowed !== false}
+                        onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { examReviewAllowed: event.target.checked })}
+                      />
+                      Show correct answers after exam
+                    </label>
+                  )}
+                </div>
+
+                <div className="dc-grid" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }}>
+                  <label>
+                    <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Quiz mode</div>
+                    <select
+                      className="admin-field-input"
+                      value={selectedManagedQuiz.mode ?? ''}
+                      onChange={(event) => updateManagedQuiz(selectedManagedQuiz.id, { mode: event.target.value ? event.target.value as QuizMode : undefined })}
+                    >
+                      <option value="">Quiz Zone (default)</option>
+                      <option value="true_false">True / False</option>
+                      <option value="exam">Exam</option>
+                      <option value="fun_and_learn">Fun and Learn</option>
+                      <option value="guess_the_word">Guess the Word</option>
+                      <option value="audio">Audio Quiz</option>
+                      <option value="maths_quiz">Maths Quiz</option>
+                      <option value="multi_match">Multi Match</option>
+                    </select>
                   </label>
                 </div>
 
@@ -1279,6 +1438,102 @@ export default function SettingsPage() {
                 )}
               </label>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="dc-settings-grid">
+        <div className="dc-card" style={{ padding: 24, gridColumn: '1 / -1' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div>
+              <h2 className="dc-section-title" style={{ fontSize: 28 }}>Category management</h2>
+              <p className="dc-section-subtitle">Create categories and subcategories to organise quizzes in the mobile app and web portal.</p>
+            </div>
+            <button className="btn-primary" onClick={saveCategories} style={{ whiteSpace: 'nowrap' }}>
+              {categoriesSaved ? 'Saved ✓' : 'Save categories'}
+            </button>
+          </div>
+
+          <div className="dc-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 20 }}>
+            {/* Add category form */}
+            <div style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ fontWeight: 700, marginBottom: 12, color: 'var(--text)' }}>Add category</div>
+              <div className="dc-grid" style={{ gap: 10 }}>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Name</div>
+                  <input className="admin-field-input" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="e.g. Cloud Fundamentals" />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Description (optional)</div>
+                  <input className="admin-field-input" value={newCategoryDescription} onChange={(e) => setNewCategoryDescription(e.target.value)} placeholder="Short description" />
+                </label>
+              </div>
+              <button className="settings-btn-ghost" style={{ marginTop: 12 }} onClick={addCategory} disabled={!newCategoryName.trim()}>
+                Add category
+              </button>
+            </div>
+
+            {/* Category list */}
+            <div style={{ display: 'grid', gap: 12, alignContent: 'start' }}>
+              {managedCategories.length === 0 ? (
+                <div style={{ border: '1px dashed var(--border)', borderRadius: 18, padding: 18, color: 'var(--text-secondary)' }}>
+                  No categories yet. Add one on the left.
+                </div>
+              ) : managedCategories.map((cat) => (
+                <div key={cat.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{cat.name}</div>
+                      <div style={{ marginTop: 2, color: 'var(--text-secondary)', fontSize: 12 }}>{cat.id}</div>
+                      {cat.description ? <div style={{ marginTop: 4, color: 'var(--text-secondary)', fontSize: 13 }}>{cat.description}</div> : null}
+                    </div>
+                    <button
+                      onClick={() => deleteCategory(cat.id)}
+                      style={{ height: 30, padding: '0 10px', borderRadius: 8, border: 'none', background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  {/* Subcategories */}
+                  {(cat.subcategories ?? []).length > 0 && (
+                    <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {(cat.subcategories ?? []).map((sub) => (
+                        <span key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 20, background: 'var(--primary-light)', color: 'var(--primary-text)', fontSize: 12, fontWeight: 600 }}>
+                          {sub.name}
+                          <button
+                            onClick={() => deleteSubcategory(cat.id, sub.id)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 12, padding: 0, lineHeight: 1 }}
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add subcategory */}
+                  <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <input
+                      className="admin-field-input"
+                      style={{ flex: 1, fontSize: 12 }}
+                      placeholder="New subcategory name"
+                      value={newSubcategoryInputs[cat.id]?.name ?? ''}
+                      onChange={(e) => setNewSubcategoryInputs((prev) => ({ ...prev, [cat.id]: { ...prev[cat.id], name: e.target.value, description: prev[cat.id]?.description ?? '' } }))}
+                      onKeyDown={(e) => { if (e.key === 'Enter') addSubcategory(cat.id); }}
+                    />
+                    <button
+                      className="settings-btn-ghost"
+                      style={{ whiteSpace: 'nowrap' }}
+                      onClick={() => addSubcategory(cat.id)}
+                      disabled={!(newSubcategoryInputs[cat.id]?.name.trim())}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

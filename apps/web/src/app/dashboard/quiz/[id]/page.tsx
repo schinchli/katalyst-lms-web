@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { quizzes, quizQuestions } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { AdBanner } from '@/components/AdBanner';
-import type { QuizResult } from '@/types';
+import type { QuizMode, QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
@@ -213,12 +213,17 @@ export default function QuizPage() {
   const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes.filter((item) => item.enabled !== false)), [systemFeatures]);
   const isDailyQuiz = dailyQuiz?.id === quiz?.id;
   const isTrueFalseQuiz = questionPool.length > 0 && questionPool.every((question) => question.options.length === 2);
+  const quizMode: QuizMode = quiz?.mode ?? (isTrueFalseQuiz ? 'true_false' : 'quiz_zone');
+  const isExamMode = quizMode === 'exam';
+  const examReviewAllowed = quiz?.examReviewAllowed !== false;
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
   }, []);
 
   useEffect(() => {
+    // Exam mode: no per-question countdown
+    if (isExamMode) { stopTimer(); return; }
     if (phase !== 'quiz' || feedback) { stopTimer(); return; }
     setTimeLeft(Q_TIME);
     timerRef.current = setInterval(() => setTimeLeft((t) => {
@@ -227,7 +232,7 @@ export default function QuizPage() {
     }), 1000);
     return stopTimer;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, idx, feedback]);
+  }, [phase, idx, feedback, isExamMode]);
 
   const handleAnswer = (optionId: string) => {
     if (feedback) return;
@@ -376,7 +381,8 @@ export default function QuizPage() {
               )}
               <span className="course-tag" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>{catLabel}</span>
               {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span> : null}
-              {isTrueFalseQuiz ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
+              {quizMode === 'true_false' ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
+              {quizMode === 'exam' ? <span className="course-tag" style={{ background: 'rgba(255, 76, 81, 0.12)', color: '#FF4C51' }}>EXAM</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>
             <p className="course-hero-desc">{quiz.description}</p>
@@ -453,7 +459,8 @@ export default function QuizPage() {
                   'Practice mode — retry as many times as you like',
                   `${questionPool.length} expertly crafted practice questions`,
                   `Scoring: +${correctPoints} / ${wrongPoints >= 0 ? '+' : ''}${wrongPoints}`,
-                  ...(isTrueFalseQuiz ? ['True/False mode with two-option questions'] : []),
+                  ...(quizMode === 'true_false' ? ['True/False mode with two-option questions'] : []),
+                  ...(quizMode === 'exam' ? ['Exam mode — timed by total duration'] : []),
                 ].map((f) => (
                   <div key={f} className="feature-item">
                     <span className="feature-check"><CheckSvg /></span>
@@ -701,13 +708,25 @@ export default function QuizPage() {
     const passed = pct >= 70;
     return (
       <div style={{ padding: '40px 32px', maxWidth: 700, margin: '0 auto' }}>
+        {isExamMode && (
+          <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,76,81,0.24)', background: 'rgba(255,76,81,0.06)' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#FF4C51' }}>
+              Exam Result
+            </div>
+            <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              {examReviewAllowed
+                ? 'Your exam has been submitted. Review your answers below.'
+                : 'Your exam has been submitted. Correct answers are not shown for this exam.'}
+            </div>
+          </div>
+        )}
         {isDailyQuiz ? (
           <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: `1px solid ${passed ? 'rgba(81,207,102,0.28)' : 'rgba(255,216,77,0.24)'}`, background: passed ? 'rgba(81,207,102,0.08)' : 'rgba(255,216,77,0.08)' }}>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: passed ? 'var(--platform-success-accent)' : '#ffd84d' }}>
               {systemFeatures.dailyQuizLabel}
             </div>
             <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              {passed ? 'Daily quiz completed successfully. Your result now feeds the app’s daily progress surfaces.' : 'Daily quiz attempt saved. Retry to improve today’s featured result.'}
+              {passed ? 'Daily quiz completed successfully. Your result now feeds the app\u2019s daily progress surfaces.' : 'Daily quiz attempt saved. Retry to improve today\u2019s featured result.'}
             </div>
           </div>
         ) : null}
@@ -887,50 +906,104 @@ export default function QuizPage() {
   const timerColor = timeLeft <= 10 ? '#FF4C51' : timeLeft <= 20 ? '#FF9F43' : '#28C76F';
   const userAnswer = answers[currentQ.id];
   const isCorrect  = userAnswer === currentQ.correctOptionId;
+  const isTrueFalseMode = quizMode === 'true_false';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
         <button onClick={() => router.push('/dashboard/quizzes')} style={{ color: 'var(--text-secondary)', fontSize: 20 }}>✕</button>
+        {isExamMode && (
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,76,81,0.12)', color: '#FF4C51', whiteSpace: 'nowrap' }}>EXAM</span>
+        )}
         <div style={{ flex: 1, background: 'var(--border)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
           <div style={{ height: '100%', background: accent, width: `${((idx + 1) / activeQuestions.length) * 100}%`, borderRadius: 4, transition: 'width 0.3s' }} />
         </div>
-        <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, minWidth: 60, textAlign: 'right' }}>{idx + 1} / {activeQuestions.length}</span>
+        <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, minWidth: 60, textAlign: 'right' }}>
+          {isExamMode ? `Question ${idx + 1} of ${activeQuestions.length}` : `${idx + 1} / ${activeQuestions.length}`}
+        </span>
       </div>
 
-      {/* Timer bar */}
-      <div style={{ padding: '8px 24px', display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ flex: 1, background: 'var(--border)', borderRadius: 3, height: 5, overflow: 'hidden' }}>
-          <div style={{ height: '100%', background: timerColor, width: `${(timeLeft / Q_TIME) * 100}%`, borderRadius: 3, transition: 'width 1s linear, background 0.3s' }} />
+      {/* Timer bar — hidden in exam mode */}
+      {!isExamMode && (
+        <div style={{ padding: '8px 24px', display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ flex: 1, background: 'var(--border)', borderRadius: 3, height: 5, overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: timerColor, width: `${(timeLeft / Q_TIME) * 100}%`, borderRadius: 3, transition: 'width 1s linear, background 0.3s' }} />
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 700, color: timerColor, minWidth: 36, textAlign: 'right' }}>{timeLeft}s</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#28C76F', marginLeft: 8 }}>Pts {pointScore}</span>
         </div>
-        <span style={{ fontSize: 13, fontWeight: 700, color: timerColor, minWidth: 36, textAlign: 'right' }}>{timeLeft}s</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#28C76F', marginLeft: 8 }}>Pts {pointScore}</span>
-      </div>
+      )}
 
       {/* Question */}
       <div style={{ flex: 1, overflow: 'auto', padding: '32px 24px' }}>
         <div style={{ maxWidth: 680, margin: '0 auto' }}>
           <p style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.6, marginBottom: 24, color: 'var(--text)' }}>{currentQ.text}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {currentQ.options.map((opt) => {
-              const isSelected = userAnswer === opt.id;
-              const isRight    = opt.id === currentQ.correctOptionId;
-              let bg = 'var(--surface)', border = 'var(--border)', color = 'var(--text)';
-              if (feedback) {
-                if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
-                else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
-              } else if (isSelected) {
-                bg = 'var(--primary-light)'; border = 'var(--primary)'; color = 'var(--primary-text)';
-              }
-              return (
-                <button key={opt.id} onClick={() => handleAnswer(opt.id)} disabled={feedback} style={{ padding: '14px 18px', borderRadius: 10, textAlign: 'left', background: bg, border: `1.5px solid ${border}`, color, fontSize: 14, cursor: feedback ? 'default' : 'pointer', fontWeight: isSelected || (feedback && isRight) ? 600 : 400, transition: 'all 0.15s', fontFamily: 'inherit' }}>
-                  {opt.text}
-                </button>
-              );
-            })}
-          </div>
-          {feedback && currentQ.explanation && (
+
+          {/* True/False mode: big side-by-side TRUE / FALSE buttons */}
+          {isTrueFalseMode ? (
+            <div style={{ display: 'flex', gap: 14 }}>
+              {currentQ.options.map((opt) => {
+                const isSelected = userAnswer === opt.id;
+                const isRight    = opt.id === currentQ.correctOptionId;
+                const isTrue     = opt.text.toLowerCase() === 'true';
+                let bg = isTrue ? 'rgba(40,199,111,0.08)' : 'rgba(255,76,81,0.08)';
+                let border = isTrue ? '#28C76F' : '#FF4C51';
+                let color  = isTrue ? '#28C76F' : '#FF4C51';
+                if (feedback) {
+                  if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
+                  else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                } else if (isSelected) {
+                  bg = isTrue ? 'rgba(40,199,111,0.22)' : 'rgba(255,76,81,0.22)';
+                }
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => handleAnswer(opt.id)}
+                    disabled={feedback}
+                    style={{
+                      flex: 1,
+                      height: 80,
+                      borderRadius: 14,
+                      background: bg,
+                      border: `2px solid ${border}`,
+                      color,
+                      fontSize: 20,
+                      fontWeight: 800,
+                      cursor: feedback ? 'default' : 'pointer',
+                      transition: 'all 0.15s',
+                      fontFamily: 'inherit',
+                      letterSpacing: 1,
+                    }}
+                  >
+                    {opt.text.toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {currentQ.options.map((opt) => {
+                const isSelected = userAnswer === opt.id;
+                const isRight    = opt.id === currentQ.correctOptionId;
+                let bg = 'var(--surface)', border = 'var(--border)', color = 'var(--text)';
+                if (feedback) {
+                  if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
+                  else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                } else if (isSelected) {
+                  bg = 'var(--primary-light)'; border = 'var(--primary)'; color = 'var(--primary-text)';
+                }
+                return (
+                  <button key={opt.id} onClick={() => handleAnswer(opt.id)} disabled={feedback} style={{ padding: '14px 18px', borderRadius: 10, textAlign: 'left', background: bg, border: `1.5px solid ${border}`, color, fontSize: 14, cursor: feedback ? 'default' : 'pointer', fontWeight: isSelected || (feedback && isRight) ? 600 : 400, transition: 'all 0.15s', fontFamily: 'inherit' }}>
+                    {opt.text}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Explanation — hidden in exam mode when examReviewAllowed is false */}
+          {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && (
             <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
               <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
             </div>

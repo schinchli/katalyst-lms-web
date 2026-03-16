@@ -1,11 +1,18 @@
 import { quizQuestions, quizzes } from '@/data/quizzes';
-import type { Question, Quiz } from '@/types';
+import type { ManagedCategory, ManagedSubcategory, Question, Quiz, QuizMode } from '@/types';
 
 export const MANAGED_QUIZ_CONTENT_KEY = 'managed_quiz_content';
+export const MANAGED_CATEGORIES_KEY = 'managed_categories';
+
+const VALID_QUIZ_MODES: QuizMode[] = [
+  'quiz_zone', 'true_false', 'exam', 'fun_and_learn',
+  'guess_the_word', 'audio', 'maths_quiz', 'multi_match',
+];
 
 export interface ManagedQuizContent {
   quizzes: Quiz[];
   questions: Record<string, Question[]>;
+  categories?: ManagedCategory[];
 }
 
 const BASE_QUIZZES: Quiz[] = quizzes.map((quiz) => ({ ...quiz }));
@@ -103,7 +110,48 @@ function normalizeQuiz(raw: unknown, index: number): Quiz | null {
     correctScore: typeof value.correctScore === 'number' && Number.isFinite(value.correctScore) ? value.correctScore : 1,
     wrongScore: typeof value.wrongScore === 'number' && Number.isFinite(value.wrongScore) ? value.wrongScore : 0,
     provider: typeof value.provider === 'string' && value.provider.trim() ? value.provider.trim() : undefined,
+    mode: typeof value.mode === 'string' && VALID_QUIZ_MODES.includes(value.mode as QuizMode) ? value.mode as QuizMode : undefined,
+    examReviewAllowed: typeof value.examReviewAllowed === 'boolean' ? value.examReviewAllowed : true,
   };
+}
+
+function normalizeCategory(raw: unknown): ManagedCategory | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const value = raw as Partial<ManagedCategory>;
+  const id = typeof value.id === 'string' ? value.id.trim() : '';
+  const name = typeof value.name === 'string' ? value.name.trim() : '';
+  if (!id || !name) return null;
+
+  const subcategories: ManagedSubcategory[] | undefined = Array.isArray(value.subcategories)
+    ? value.subcategories.reduce<ManagedSubcategory[]>((acc, sub) => {
+        if (!sub || typeof sub !== 'object') return acc;
+        const s = sub as Partial<ManagedSubcategory>;
+        const subId = typeof s.id === 'string' ? s.id.trim() : '';
+        const subName = typeof s.name === 'string' ? s.name.trim() : '';
+        if (!subId || !subName) return acc;
+        acc.push({
+          id: subId,
+          name: subName,
+          description: typeof s.description === 'string' ? s.description : undefined,
+          categoryId: id,
+        });
+        return acc;
+      }, [])
+    : undefined;
+
+  return {
+    id,
+    name,
+    description: typeof value.description === 'string' ? value.description : undefined,
+    subcategories,
+  };
+}
+
+export function normalizeManagedCategories(value: unknown): ManagedCategory[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => normalizeCategory(item))
+    .filter((item): item is ManagedCategory => Boolean(item));
 }
 
 export function normalizeManagedQuizContent(value: unknown): ManagedQuizContent {

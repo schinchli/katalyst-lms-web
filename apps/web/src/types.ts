@@ -10,6 +10,16 @@ export interface User {
 
 export type CertLevel = 'foundational' | 'associate' | 'professional' | 'specialty';
 
+export type QuizMode =
+  | 'quiz_zone'
+  | 'true_false'
+  | 'exam'
+  | 'fun_and_learn'
+  | 'guess_the_word'
+  | 'audio'
+  | 'maths_quiz'
+  | 'multi_match';
+
 export interface Quiz {
   id: string;
   title: string;
@@ -29,6 +39,24 @@ export interface Quiz {
   wrongScore?: number;
   /** Cloud provider — 'aws' | 'azure' | 'gcp' | 'nvidia' | 'kubernetes' | ... */
   provider?: string;
+  /** Quiz mode — determines UI rendering and timer behavior */
+  mode?: QuizMode;
+  /** Exam mode: if false, correct answers are NOT shown in results */
+  examReviewAllowed?: boolean;
+}
+
+export interface ManagedCategory {
+  id: string;
+  name: string;
+  description?: string;
+  subcategories?: ManagedSubcategory[];
+}
+
+export interface ManagedSubcategory {
+  id: string;
+  name: string;
+  description?: string;
+  categoryId: string;
 }
 
 export interface Question {

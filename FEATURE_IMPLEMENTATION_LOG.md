@@ -1,5 +1,44 @@
 # Feature Implementation Log
 
+## 2026-03-16
+
+### Quiz Mode Metadata, True/False & Exam Mode, Category CRUD, Admin UX Hardening
+
+**Types (web + mobile)**
+- Added `QuizMode` union type and `mode?: QuizMode` field to web `Quiz` interface (`apps/web/src/types.ts`).
+- Added `examReviewAllowed?: boolean` to web `Quiz` interface.
+- Added `ManagedCategory` and `ManagedSubcategory` interfaces to `apps/web/src/types.ts`.
+- Added `QuizMode` type, `mode?: QuizMode`, and `examReviewAllowed?: boolean` to mobile `Quiz` interface in `mobile/types/index.ts`, keeping web/mobile in sync.
+
+**Managed quiz content library (`apps/web/src/lib/managedQuizContent.ts`)**
+- Added `MANAGED_CATEGORIES_KEY` constant.
+- Extended `ManagedQuizContent` interface with `categories?: ManagedCategory[]`.
+- `normalizeQuiz()` now validates and preserves `mode` (checked against `VALID_QUIZ_MODES`) and `examReviewAllowed` fields.
+- Added `normalizeCategory()` helper and exported `normalizeManagedCategories()` function.
+
+**Admin categories API route (`apps/web/src/app/api/admin/categories/route.ts`)** — new file
+- GET: fetch `managed_categories` from `app_settings` (admin auth required).
+- POST: save `managed_categories` to `app_settings` with Zod validation, 20 req/min rate limit, 64 KB payload cap.
+
+**Admin quiz-content API route (`apps/web/src/app/api/admin/quiz-content/route.ts`)**
+- Added `DELETE` handler: validates `{ quizId }`, removes quiz and its questions, clears `dailyQuizQuizId` in system features if the deleted quiz was the daily quiz.
+- Added `PATCH` handler: partial update for a single quiz's metadata or questions without replacing the full dataset.
+
+**Quiz player (`apps/web/src/app/dashboard/quiz/[id]/page.tsx`)**
+- `quizMode` derivation: `quiz?.mode ?? (isTrueFalseQuiz ? 'true_false' : 'quiz_zone')`.
+- Per-question timer disabled in exam mode.
+- Header: `EXAM` badge in exam mode; progress shows `"Question N of M"`.
+- Timer bar hidden in exam mode.
+- True/False mode: renders two large side-by-side TRUE/FALSE buttons (green/red).
+- Explanation hidden in exam mode when `examReviewAllowed` is `false`.
+- Results phase: exam result banner; review suppressed if `!examReviewAllowed`.
+
+**Admin settings page (`apps/web/src/app/dashboard/settings/page.tsx`)**
+- Added quiz mode `<select>` dropdown in the managed quiz editor.
+- Added `examReviewAllowed` checkbox (only when mode = exam).
+- Added red ✕ delete button on each quiz list item with `window.confirm`.
+- Added full category management section: add category, add subcategory per category, delete category/subcategory, save to `/api/admin/categories`.
+
 ## 2026-03-15
 
 ### Phase 1
