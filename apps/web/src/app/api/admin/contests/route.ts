@@ -97,6 +97,17 @@ export function normalizeContest(raw: unknown): Contest | null {
   if (typeof r.winner === 'string' && r.winner.trim()) {
     contest.winner = r.winner.trim();
   }
+  if (typeof r.rules === 'string' && r.rules.trim()) {
+    contest.rules = r.rules.trim();
+  }
+  if (r.maxAttempts !== undefined) {
+    const ma = Math.max(1, Math.round(Number(r.maxAttempts) || 1));
+    contest.maxAttempts = ma;
+  }
+  if (typeof r.resultsPublishedAt === 'string') {
+    const d = new Date(r.resultsPublishedAt);
+    if (!isNaN(d.getTime())) contest.resultsPublishedAt = d.toISOString();
+  }
 
   return contest;
 }

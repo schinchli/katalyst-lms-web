@@ -2,26 +2,31 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { DEFAULT_PLATFORM_EXPERIENCE, normalizePlatformExperience } from '@/lib/platformExperience';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { execute: recaptcha } = useRecaptcha();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copy, setCopy] = useState(DEFAULT_PLATFORM_EXPERIENCE.copy);
+  const [accountDeleted, setAccountDeleted] = useState(false);
 
   useEffect(() => {
+    if (searchParams.get('deleted') === '1') {
+      setAccountDeleted(true);
+    }
     fetch('/api/platform-config')
       .then((res) => res.json())
       .then((body: { config?: unknown }) => setCopy(normalizePlatformExperience(body.config).copy))
       .catch(() => {});
-  }, []);
+  }, [searchParams]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -105,6 +110,18 @@ export default function LoginPage() {
         </section>
 
         <section className="dc-card" style={{ padding: 34, alignSelf: 'center' }}>
+          {accountDeleted && (
+            <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 12, background: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.3)', color: '#28C76F', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+              <span>Your account has been deleted. All data has been permanently removed.</span>
+              <button
+                type="button"
+                onClick={() => setAccountDeleted(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#28C76F', fontWeight: 700, fontSize: 16 }}
+              >
+                ×
+              </button>
+            </div>
+          )}
           <div className="dc-chip">Log in</div>
           <h2 style={{ margin: '18px 0 8px', fontSize: 34, fontWeight: 700, color: 'var(--text)' }}>Welcome back</h2>
           <p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>Sign in to continue your learning path, streaks, and certification practice.</p>

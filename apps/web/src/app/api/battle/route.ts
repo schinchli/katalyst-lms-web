@@ -29,7 +29,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { checkRateLimit } from '@/lib/rateLimiter';
-import type { BattleSession, BattlePlayer, BattleStatus } from '@/types';
+import type { BattleSession, BattleParticipant, BattlePlayer, BattleStatus } from '@/types';
 
 const BATTLE_SESSIONS_KEY = 'battle_sessions';
 const SESSION_TTL_MS      = 2 * 60 * 60 * 1000; // 2 hours — auto-expire old sessions
@@ -189,12 +189,16 @@ export async function POST(req: NextRequest) {
     };
     const newSession: BattleSession = {
       id:                   sessionId,
+      type:                 mode,
       mode,
       status:               'waiting',
       quizId,
       hostUserId:           user.id,
       players:              [host],
+      participants:         [],
+      questionIds:          [],
       currentQuestionIndex: 0,
+      currentQuestionIdx:   0,
       inviteCode,
     };
     await saveSessions(db, [...sessions, newSession]);
@@ -209,23 +213,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Room not found or already started' }, { status: 404 });
     }
     const session = sessions[idx];
-    if (session.players.some((p) => p.userId === user.id)) {
-      // Rejoining — return current state
+    if (session.participants.some((p) => p.userId === user.id)) {
       return NextResponse.json({ ok: true, sessionId: session.id, session });
     }
-    const maxPlayers = session.mode === 'one_vs_one' ? 2 : 10;
-    if (session.players.length >= maxPlayers) {
+    const maxParticipants = session.type === 'one_vs_one' ? 2 : 10;
+    if (session.participants.length >= maxParticipants) {
       return NextResponse.json({ ok: false, error: 'Room is full' }, { status: 409 });
     }
-    const player: BattlePlayer = {
-      userId:        user.id,
-      name:          playerName ?? user.email?.split('@')[0] ?? 'Player',
-      score:         0,
-      answeredCount: 0,
-      isHost:        false,
-      isReady:       false,
+    const participant: BattleParticipant = {
+      userId:  user.id,
+      name:    playerName ?? user.email?.split('@')[0] ?? 'Player',
+      score:   0,
+      answers: {},
     };
-    const updated: BattleSession = { ...session, players: [...session.players, player] };
+    const updated: BattleSession = { ...session, participants: [...session.participants, participant] };
     sessions[idx] = updated;
     await saveSessions(db, sessions);
     return NextResponse.json({ ok: true, sessionId: updated.id, session: updated });
@@ -236,12 +237,7 @@ export async function POST(req: NextRequest) {
     const { sessionId } = parsed.data;
     const idx = sessions.findIndex((s) => s.id === sessionId);
     if (idx === -1) return NextResponse.json({ ok: false, error: 'Session not found' }, { status: 404 });
-    const session = sessions[idx];
-    const updatedPlayers: BattlePlayer[] = session.players.map((p) =>
-      p.userId === user.id ? { ...p, isReady: true } : p,
-    );
-    sessions[idx] = { ...session, players: updatedPlayers };
-    await saveSessions(db, sessions);
+    // ready acknowledged — return current state (isReady lives client-side for this prototype)
     return NextResponse.json({ ok: true, session: sessions[idx] });
   }
 
@@ -254,12 +250,12 @@ export async function POST(req: NextRequest) {
     if (session.hostUserId !== user.id) {
       return NextResponse.json({ ok: false, error: 'Only the host can start' }, { status: 403 });
     }
-    if (session.players.length < 1) {
-      return NextResponse.json({ ok: false, error: 'Need at least 1 player' }, { status: 400 });
+    if (session.participants.length < 1) {
+      return NextResponse.json({ ok: false, error: 'Need at least 1 participant' }, { status: 400 });
     }
     sessions[idx] = {
       ...session,
-      status:    'active' as BattleStatus,
+      status:    'in_progress' as BattleStatus,
       startedAt: new Date().toISOString(),
     };
     await saveSessions(db, sessions);
@@ -272,19 +268,19 @@ export async function POST(req: NextRequest) {
     const idx = sessions.findIndex((s) => s.id === sessionId);
     if (idx === -1) return NextResponse.json({ ok: false, error: 'Session not found' }, { status: 404 });
     const session = sessions[idx];
-    if (session.status !== 'active') {
+    if (session.status !== 'in_progress') {
       return NextResponse.json({ ok: false, error: 'Session is not active' }, { status: 400 });
     }
-    // NOTE: Answer scoring here is best-effort without DB quiz question lookup.
-    // In production, fetch question from DB and verify correctOptionId server-side.
-    const updatedPlayers: BattlePlayer[] = session.players.map((p) => {
+    // Record the answer for this participant
+    const updatedParticipants: BattleParticipant[] = session.participants.map((p) => {
       if (p.userId !== user.id) return p;
-      return { ...p, answeredCount: Math.max(p.answeredCount, questionIndex + 1) };
+      const qKey = String(questionIndex);
+      return { ...p, answers: { ...p.answers, [qKey]: optionId } };
     });
-    // Advance currentQuestionIndex if all players answered
-    const allAnswered = updatedPlayers.every((p) => p.answeredCount > questionIndex);
-    const nextIndex   = allAnswered ? questionIndex + 1 : session.currentQuestionIndex;
-    sessions[idx] = { ...session, players: updatedPlayers, currentQuestionIndex: nextIndex };
+    // Advance currentQuestionIdx when all participants have answered this question
+    const allAnswered = updatedParticipants.every((p) => p.answers[String(questionIndex)] !== undefined);
+    const nextIdx     = allAnswered ? questionIndex + 1 : session.currentQuestionIdx;
+    sessions[idx] = { ...session, participants: updatedParticipants, currentQuestionIdx: nextIdx };
     await saveSessions(db, sessions);
     return NextResponse.json({ ok: true, session: sessions[idx], answeredOptionId: optionId });
   }

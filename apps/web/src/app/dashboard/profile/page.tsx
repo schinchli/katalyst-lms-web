@@ -2,6 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +36,7 @@ function score(result: QuizResult) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { config } = usePlatformExperience();
   const { isPro } = useSubscription();
   const [results, setResults] = useState<QuizResult[]>([]);
@@ -48,6 +50,11 @@ export default function ProfilePage() {
   const [referral, setReferral] = useState<ReferralInfo | null>(null);
   const [referralCopied, setReferralCopied] = useState(false);
   const [platformThemeName, setPlatformThemeName] = useState('Deep Navy');
+  // Account deletion state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -155,6 +162,37 @@ export default function ProfilePage() {
     localStorage.removeItem('quiz-results');
     setResults([]);
     if (authUserId) await deleteAllQuizResults(authUserId).catch(() => {});
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') return;
+    setDeleteLoading(true);
+    setDeleteError('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        setDeleteError('Session expired. Please log in again.');
+        setDeleteLoading(false);
+        return;
+      }
+      const res = await fetch('/api/account/delete', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const body = await res.json() as { ok: boolean; error?: string };
+      if (!body.ok) {
+        setDeleteError(body.error ?? 'Deletion failed. Please try again.');
+        setDeleteLoading(false);
+        return;
+      }
+      // Clear local data and sign out before redirect
+      localStorage.clear();
+      await supabase.auth.signOut();
+      router.push('/login?deleted=1');
+    } catch {
+      setDeleteError('An unexpected error occurred. Please try again.');
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -325,6 +363,55 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
+      </section>
+
+      {/* ── Danger Zone ────────────────────────────────────────────────────── */}
+      <section className="dc-card" style={{ padding: 24, border: '1px solid rgba(239,68,68,0.3)', borderRadius: 18 }}>
+        <h2 className="dc-section-title" style={{ fontSize: 22, color: '#EF4444' }}>Danger Zone</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
+          Deleting your account is permanent and cannot be undone. All your quiz history, progress, and profile data will be erased immediately.
+        </p>
+        {!showDeleteModal ? (
+          <button
+            className="settings-btn-ghost"
+            style={{ borderColor: '#EF4444', color: '#EF4444' }}
+            onClick={() => { setShowDeleteModal(true); setDeleteConfirmText(''); setDeleteError(''); }}
+          >
+            Delete Account
+          </button>
+        ) : (
+          <div style={{ display: 'grid', gap: 14, maxWidth: 460 }}>
+            <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', fontSize: 14, lineHeight: 1.6 }}>
+              This action is irreversible. Type <strong>DELETE</strong> below to confirm you want to permanently delete your account.
+            </div>
+            <input
+              className="admin-field-input"
+              placeholder="Type DELETE to confirm"
+              value={deleteConfirmText}
+              onChange={(event) => setDeleteConfirmText(event.target.value)}
+              style={{ borderColor: deleteConfirmText === 'DELETE' ? '#EF4444' : undefined }}
+            />
+            {deleteError && (
+              <div style={{ color: '#EF4444', fontSize: 13 }}>{deleteError}</div>
+            )}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button
+                className="btn-primary"
+                style={{ background: '#EF4444', borderColor: '#EF4444' }}
+                disabled={deleteConfirmText !== 'DELETE' || deleteLoading}
+                onClick={handleDeleteAccount}
+              >
+                {deleteLoading ? 'Deleting…' : 'Permanently delete my account'}
+              </button>
+              <button
+                className="settings-btn-ghost"
+                onClick={() => { setShowDeleteModal(false); setDeleteConfirmText(''); setDeleteError(''); }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

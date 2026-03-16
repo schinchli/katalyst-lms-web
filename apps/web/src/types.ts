@@ -149,7 +149,16 @@ export interface Contest {
   resultsPublishedAt?: string;   // ISO when results were posted
 }
 
-export type BattleStatus = 'waiting' | 'active' | 'finished' | 'abandoned';
+export type BattleStatus = 'waiting' | 'active' | 'in_progress' | 'finished' | 'abandoned';
+
+/** Per-participant record for battle sessions. */
+export interface BattleParticipant {
+  userId: string;
+  name: string;
+  score: number;
+  answers: Record<string, string>;
+  finishedAt?: string;
+}
 
 export interface BattlePlayer {
   userId: string;
@@ -162,12 +171,18 @@ export interface BattlePlayer {
 
 export interface BattleSession {
   id: string;
-  mode: 'one_vs_one' | 'group' | 'random';
+  type: 'one_vs_one' | 'group' | 'random';
+  /** @deprecated use `type` — kept for backward compat */
+  mode?: 'one_vs_one' | 'group' | 'random';
   status: BattleStatus;
   quizId: string;
   hostUserId: string;
+  /** Active players in the battle (used by battle route) */
   players: BattlePlayer[];
+  participants: BattleParticipant[];
+  questionIds: string[];
   currentQuestionIndex: number;
+  currentQuestionIdx: number;
   startedAt?: string;
   finishedAt?: string;
   inviteCode?: string;

@@ -15,7 +15,7 @@ import {
   normalizeManagedCategories,
   type ManagedQuizContent,
 } from '@/lib/managedQuizContent';
-import type { Contest, ContestStatus, ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
+import type { CoinPack, Contest, ContestStatus, ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
 import { normalizeContest } from '@/app/api/admin/contests/route';
 import {
   applyPlatformExperience,
@@ -180,6 +180,13 @@ export default function SettingsPage() {
   });
   const [editingContestId, setEditingContestId] = useState<string | null>(null);
   const [categoriesSaved, setCategoriesSaved] = useState(false);
+  // ── Coin packs ──────────────────────────────────────────────────────────────
+  const [coinPacks, setCoinPacks] = useState<CoinPack[]>([]);
+  const [coinPacksSaved, setCoinPacksSaved] = useState(false);
+  const [pendingDeletePackId, setPendingDeletePackId] = useState<string | null>(null);
+  const [newPackForm, setNewPackForm] = useState<Omit<CoinPack, 'id'>>({
+    label: '', coins: 100, priceInr: 99, priceUsd: 1.19, popular: false, enabled: true,
+  });
   const managedContentFields: Array<{ label: string; key: keyof AppContentConfig; multiline: boolean }> = [
     { label: 'App name', key: 'appName', multiline: false },
     { label: 'Support email', key: 'supportEmail', multiline: false },
@@ -208,7 +215,7 @@ export default function SettingsPage() {
         }
         setAuthorized(true);
 
-        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes] = await Promise.all([
+        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes, coinPacksRes] = await Promise.all([
           fetch('/api/admin/mobile-config', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
@@ -230,6 +237,9 @@ export default function SettingsPage() {
           fetch('/api/admin/contests', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
+          fetch('/api/admin/coin-packs', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
         ]);
         const configBody = await configRes.json() as { config?: unknown };
         const quizCatalogBody = await quizCatalogRes.json() as { overrides?: unknown };
@@ -238,6 +248,7 @@ export default function SettingsPage() {
         const quizContentBody = await quizContentRes.json() as { content?: unknown };
         const categoriesBody = await categoriesRes.json() as { categories?: unknown };
         const contestsBody = await contestsRes.json() as { contests?: unknown };
+        const coinPacksBody = await coinPacksRes.json() as { ok?: boolean; packs?: unknown };
         setConfig(normalizePlatformExperience(configBody.config));
         const nextOverrides = normalizeQuizCatalogOverrides(quizCatalogBody.overrides);
         setQuizOverrides(nextOverrides);
@@ -251,6 +262,7 @@ export default function SettingsPage() {
         setManagedCategories(normalizeManagedCategories(categoriesBody.categories));
         const rawContests = Array.isArray(contestsBody.contests) ? contestsBody.contests : [];
         setContests(rawContests.map(normalizeContest).filter((c): c is Contest => c !== null));
+        setCoinPacks(Array.isArray(coinPacksBody.packs) ? coinPacksBody.packs as CoinPack[] : []);
       } catch {
         router.replace('/dashboard');
       }
@@ -1636,6 +1648,79 @@ export default function SettingsPage() {
               />
               Enable option E
             </label>
+
+            {/* ── Maintenance mode ───────────────────────────────────────── */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4, display: 'grid', gap: 12 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15 }}>Maintenance Mode</div>
+              <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
+                <input
+                  type="checkbox"
+                  checked={systemFeatures.maintenanceMode}
+                  onChange={(event) => setSystemFeatures((prev) => ({ ...prev, maintenanceMode: event.target.checked }))}
+                />
+                Enable maintenance mode (blocks all dashboard access on web + mobile)
+              </label>
+              <label>
+                <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Maintenance message</div>
+                <textarea
+                  className="admin-field-input"
+                  value={systemFeatures.maintenanceMessage}
+                  onChange={(event) => setSystemFeatures((prev) => ({ ...prev, maintenanceMessage: event.target.value }))}
+                  style={{ minHeight: 72 }}
+                />
+              </label>
+            </div>
+
+            {/* ── Force update ───────────────────────────────────────────── */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4, display: 'grid', gap: 12 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15 }}>Force Update</div>
+              <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
+                <input
+                  type="checkbox"
+                  checked={systemFeatures.forceUpdateEnabled}
+                  onChange={(event) => setSystemFeatures((prev) => ({ ...prev, forceUpdateEnabled: event.target.checked }))}
+                />
+                Enable force update (blocks users below minimum version)
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Minimum app version</div>
+                  <input
+                    className="admin-field-input"
+                    value={systemFeatures.minimumAppVersion}
+                    onChange={(event) => setSystemFeatures((prev) => ({ ...prev, minimumAppVersion: event.target.value }))}
+                    placeholder="1.0.0"
+                  />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Current app version</div>
+                  <input
+                    className="admin-field-input"
+                    value={systemFeatures.currentAppVersion}
+                    onChange={(event) => setSystemFeatures((prev) => ({ ...prev, currentAppVersion: event.target.value }))}
+                    placeholder="1.0.0"
+                  />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>App Store URL (iOS)</div>
+                  <input
+                    className="admin-field-input"
+                    value={systemFeatures.appStoreUrl}
+                    onChange={(event) => setSystemFeatures((prev) => ({ ...prev, appStoreUrl: event.target.value }))}
+                    placeholder="https://apps.apple.com/app/..."
+                  />
+                </label>
+                <label>
+                  <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Play Store URL (Android)</div>
+                  <input
+                    className="admin-field-input"
+                    value={systemFeatures.playStoreUrl}
+                    onChange={(event) => setSystemFeatures((prev) => ({ ...prev, playStoreUrl: event.target.value }))}
+                    placeholder="https://play.google.com/store/apps/details?id=..."
+                  />
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1865,6 +1950,7 @@ export default function SettingsPage() {
               { label: 'Quiz Title', key: 'quizTitle', type: 'text' },
               { label: 'Start Time', key: 'startTime', type: 'datetime-local' },
               { label: 'End Time', key: 'endTime', type: 'datetime-local' },
+              { label: 'Max Attempts', key: 'maxAttempts', type: 'number' },
             ].map(({ label, key, type }) => (
               <label key={key}>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>{label}</div>
@@ -1877,6 +1963,16 @@ export default function SettingsPage() {
                 />
               </label>
             ))}
+            <label style={{ gridColumn: '1 / -1' }}>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>Rules</div>
+              <textarea
+                className="admin-field-input"
+                rows={3}
+                style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: 13 }}
+                value={String(contestForm.rules ?? '')}
+                onChange={(e) => setContestForm((prev) => ({ ...prev, rules: e.target.value }))}
+              />
+            </label>
             <label>
               <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>Status</div>
               <select
@@ -1922,6 +2018,128 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+      </section>
+
+      {/* ── Coin Store ──────────────────────────────────────────────────────── */}
+      <section className="dc-card" style={{ padding: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 4 }}>Coin Store</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0 }}>Manage coin packs available for purchase in the store.</p>
+          </div>
+          {coinPacksSaved && <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>Saved</span>}
+        </div>
+
+        {/* IAP compliance note */}
+        <div style={{ padding: '12px 16px', background: 'var(--primary-light)', border: '1px solid var(--primary)', borderRadius: 10, marginBottom: 16, fontSize: 13, color: 'var(--text-secondary)' }}>
+          ℹ️ <strong>Store compliance note:</strong> Mobile digital goods (coin packs, remove ads, subscriptions) require App Store / Play Store In-App Purchase integration. Web payments via Razorpay/Stripe remain available for web users.
+        </div>
+
+        {/* Existing packs list */}
+        {coinPacks.length > 0 && (
+          <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+            {coinPacks.map((pack) => (
+              <div key={pack.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--bg)', borderRadius: 10, border: '1px solid var(--border)', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 20 }}>⚡</span>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>{pack.label}</span>
+                  <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                    {pack.coins.toLocaleString()} coins · ₹{pack.priceInr} / ${pack.priceUsd} USD
+                    {pack.popular ? <span style={{ marginLeft: 6, background: '#FF9F4322', color: '#FF9F43', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>Popular</span> : null}
+                    {!pack.enabled ? <span style={{ marginLeft: 6, background: 'var(--bg)', color: 'var(--text-secondary)', fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>Disabled</span> : null}
+                  </span>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
+                  <input
+                    type="checkbox"
+                    checked={pack.enabled}
+                    onChange={() => setCoinPacks((prev) => prev.map((p) => p.id === pack.id ? { ...p, enabled: !p.enabled } : p))}
+                  />
+                  Enabled
+                </label>
+                {pendingDeletePackId === pack.id ? (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}
+                      onClick={() => {
+                        setCoinPacks((prev) => prev.filter((p) => p.id !== pack.id));
+                        setPendingDeletePackId(null);
+                      }}
+                    >Confirm delete</button>
+                    <button
+                      style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}
+                      onClick={() => setPendingDeletePackId(null)}
+                    >Cancel</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setPendingDeletePackId(pack.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: '#FF4C51', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add pack form */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10, marginBottom: 12 }}>
+          {([
+            { key: 'label'   as const, label: 'Label',       type: 'text',   value: newPackForm.label },
+            { key: 'coins'   as const, label: 'Coins',       type: 'number', value: String(newPackForm.coins) },
+            { key: 'priceInr'as const, label: 'Price INR',   type: 'number', value: String(newPackForm.priceInr) },
+            { key: 'priceUsd'as const, label: 'Price USD',   type: 'number', value: String(newPackForm.priceUsd) },
+          ]).map(({ key, label, type, value }) => (
+            <label key={key}>
+              <div style={{ marginBottom: 5, color: 'var(--text-secondary)', fontSize: 12 }}>{label}</div>
+              <input
+                type={type}
+                className="admin-field-input"
+                value={value}
+                onChange={(e) => setNewPackForm((prev) => ({
+                  ...prev,
+                  [key]: type === 'number' ? Number(e.target.value) : e.target.value,
+                }))}
+              />
+            </label>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
+            <input type="checkbox" checked={newPackForm.popular ?? false} onChange={(e) => setNewPackForm((prev) => ({ ...prev, popular: e.target.checked }))} />
+            Popular
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)' }}>
+            <input type="checkbox" checked={newPackForm.enabled} onChange={(e) => setNewPackForm((prev) => ({ ...prev, enabled: e.target.checked }))} />
+            Enabled
+          </label>
+          <button
+            className="settings-btn-ghost"
+            onClick={() => {
+              if (!newPackForm.label.trim() || newPackForm.coins <= 0) return;
+              const id = newPackForm.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || `pack-${Date.now()}`;
+              const uniqueId = coinPacks.some((p) => p.id === id) ? `${id}-${Date.now()}` : id;
+              setCoinPacks((prev) => [...prev, { ...newPackForm, id: uniqueId }]);
+              setNewPackForm({ label: '', coins: 100, priceInr: 99, priceUsd: 1.19, popular: false, enabled: true });
+            }}
+          >
+            + Add Pack
+          </button>
+        </div>
+
+        <button
+          className="btn-primary"
+          onClick={async () => {
+            try {
+              const res = await fetch('/api/admin/coin-packs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+                body: JSON.stringify({ packs: coinPacks }),
+              });
+              const body = await res.json() as { ok?: boolean };
+              if (body.ok) { setCoinPacksSaved(true); setTimeout(() => setCoinPacksSaved(false), 2000); }
+            } catch { /* non-fatal */ }
+          }}
+        >
+          Save Coin Packs
+        </button>
       </section>
     </div>
   );

@@ -95,6 +95,9 @@ export default function QuizPage() {
   const { id }          = useParams<{ id: string }>();
   const searchParams    = useSearchParams();
   const isBookmarkReview = searchParams.get('review') === 'bookmarks';
+  // Self Challenge: ?challenge=<previousBestPct> shows comparison banner in results
+  const challengeParam = searchParams.get('challenge');
+  const challengePreviousBest = challengeParam !== null ? Math.max(0, Math.min(100, parseInt(challengeParam, 10) || 0)) : null;
   const router          = useRouter();
   const quiz            = quizzes.find((q) => q.id === id);
   const questions       = quizQuestions[id ?? ''] ?? [];
@@ -131,6 +134,8 @@ export default function QuizPage() {
   const [upsellCfg,       setUpsellCfg]       = useState<UpsellConfig>(DEFAULT_UPSELL);
   const [studentCount,    setStudentCount]    = useState<number | null>(null);
   const [systemFeatures,  setSystemFeatures]  = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  // Self Challenge: prior best score from localStorage (loaded before quiz starts)
+  const [priorBestPct, setPriorBestPct] = useState<number | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const quizStartTs = useRef<number>(0); // unix ms when quiz started
   const { isPro, unlockedCourses, canAccess, upgradeToPremium, unlockCourse } = useSubscription();
@@ -204,8 +209,22 @@ export default function QuizPage() {
       .catch(() => { /* best-effort */ });
   }, [id]);
 
-  // Resolve auth userId + load prior result from Supabase
+  // Resolve auth userId + load prior result from Supabase + compute prior best for Self Challenge
   useEffect(() => {
+    // Load prior best from localStorage immediately (before Supabase async)
+    if (id) {
+      try {
+        const stored: QuizResult[] = JSON.parse(localStorage.getItem('quiz-results') || '[]');
+        const prior = stored.find((r) => r.quizId === id);
+        if (prior) {
+          const correctPts = quiz?.correctScore ?? 1;
+          const maxPts     = Math.max(1, prior.totalQuestions * Math.max(1, correctPts));
+          const storedPct  = Math.max(0, Math.round((prior.score / maxPts) * 100));
+          setPriorBestPct(storedPct);
+        }
+      } catch { /* best-effort */ }
+    }
+
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
       setAuthUserId(user.id);
@@ -219,6 +238,16 @@ export default function QuizPage() {
             ...supabaseResults,
           ];
           localStorage.setItem('quiz-results', JSON.stringify(merged));
+          // Re-compute prior best after Supabase merge
+          if (id) {
+            const supabasePrior = supabaseResults.find((r) => r.quizId === id);
+            if (supabasePrior) {
+              const correctPts = quiz?.correctScore ?? 1;
+              const maxPts     = Math.max(1, supabasePrior.totalQuestions * Math.max(1, correctPts));
+              const sbPct      = Math.max(0, Math.round((supabasePrior.score / maxPts) * 100));
+              setPriorBestPct((prev) => prev !== null ? Math.max(prev, sbPct) : sbPct);
+            }
+          }
         } catch { /* best-effort */ }
       }
     });
@@ -876,6 +905,29 @@ export default function QuizPage() {
             </div>
           </div>
         ) : null}
+        {(() => {
+          // Self Challenge: prefer URL param; fall back to prior localStorage/Supabase best
+          const compBest = challengePreviousBest ?? priorBestPct;
+          if (compBest === null) return null;
+          const improved    = pct > compBest;
+          const tied        = pct === compBest;
+          const bannerColor = improved ? '#28C76F' : tied ? '#FF9F43' : '#FF4C51';
+          const bannerBg    = improved ? 'rgba(40,199,111,0.08)' : tied ? 'rgba(255,159,67,0.08)' : 'rgba(255,76,81,0.08)';
+          return (
+            <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: `1px solid ${bannerColor}40`, background: bannerBg }}>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: bannerColor }}>
+                Self Challenge
+              </div>
+              <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <span>Your best: <strong style={{ color: 'var(--text)' }}>{compBest}%</strong></span>
+                <span>→ This attempt: <strong style={{ color: bannerColor }}>{pct}%</strong></span>
+                <span style={{ fontWeight: 700, color: bannerColor }}>
+                  {improved ? `🏆 New personal best! (+${pct - compBest}%)` : tied ? 'Matched your best' : `${pct - compBest}% — Keep trying!`}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
         <h1 style={{ textAlign: 'center', marginBottom: 8 }}>{quizMode === 'fun_and_learn' ? 'Learning Complete!' : 'Scoreboard'}</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0' }}>
           <div style={{ width: 140, height: 140, borderRadius: 70, background: (passed ? '#28C76F' : '#FF4C51') + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -81,53 +81,36 @@
 - ~~Bookmark/review parity.~~ **DONE (2026-03-16)** — Web: bookmark toggle (☆/★) per question in quiz player, persisted to localStorage; /dashboard/bookmarks page with list + Remove + Start Review; sidebar Bookmarks link; quiz player supports ?review=bookmarks param. Mobile: Start Review button on bookmarks tab → /quiz/bookmarks-review screen with full quiz flow.
 
 ### P5: Competitive Modes
-- Contest lifecycle.
-  Implementation notes:
-  Add admin CRUD for contests, publication windows, entry rules, and results surfaces on both website and Expo.
-- One vs One Battle, Group Battle, Random Battle, Self Challenge.
-  Implementation notes:
-  Define battle/session models, invitation or matchmaking flows, question synchronization, score updates, timeout handling, and end-state reconciliation.
-- Realtime state sync.
-  Implementation notes:
-  Choose backend transport and state model for multiplayer events, then build leaderboard/battle updates without relying on static or local-only state.
+- ~~Contest lifecycle.~~ **DONE (2026-03-16)** — `/api/contests` (public GET) + `/api/admin/contests` (GET/POST/DELETE). `/dashboard/contests` with live/upcoming/past tabs and enter CTA. Contest CRUD section in admin settings. `Contest` type extended with `rules`, `maxAttempts`, `resultsPublishedAt`.
+- ~~One vs One / Group / Random Battle shell.~~ **DONE (2026-03-16)** — `/api/battle` session create/join/answer with invite codes. `BattleSession`/`BattlePlayer`/`BattleStatus` types. `/dashboard/battles` mode selector, `/dashboard/battles/battle` lobby + waiting room. `mobile/app/battle.tsx` + `mobile/app/battle-lobby.tsx`.
+- ~~Self Challenge.~~ **DONE (2026-03-16)** — `/dashboard/self-challenge` personal-best comparison surface. Web + mobile quiz results show personal best delta.
+- Realtime state sync. **PENDING** — Supabase Realtime channel wiring for live battle score updates not yet built; current battle API is REST-only polling foundation.
 
 ### P6: Economy and Monetization
-- Coins earn/spend ledger.
-  Implementation notes:
-  Replace local-only reward assumptions with backend ledgering, reason codes, anti-duplication checks, and visible transaction history.
-- Referrals and reward crediting.
-  Implementation notes:
-  Add referral codes, redemption rules, abuse prevention, and admin visibility into referral conversion/reward issuance.
-- Coin store.
-  Implementation notes:
-  Build admin-managed packs, storefront UI, purchase verification, and balance updates from a single backend source of truth.
-- Store-compliant subscriptions and IAP.
-  Implementation notes:
-  Remove non-compliant mobile digital purchase flows, move mobile digital goods/subscriptions to App Store / Play billing where required, and keep website payment flows segmented appropriately.
-- Remove-ads purchase and ad controls.
-  Implementation notes:
-  Build entitlement-aware ad rendering with admin toggles for banner/interstitial/rewarded placements and safe fallback behavior when ads are disabled.
+- ~~Coins earn/spend ledger.~~ **DONE (2026-03-16)** — `/api/coins` returns balance + transaction history. `CoinTransaction`/`CoinReasonCode`/`CoinPack` types. `/dashboard/coins` balance + history page. DB migration comments embedded in route.
+- ~~Referrals and reward crediting.~~ **DONE (2026-03-16)** — `/api/referral` GET (fetch/create code) + POST (redeem). `ReferralInfo` type. Referral share card in web profile page (navigator.share + clipboard copy).
+- ~~Coin store.~~ **DONE (2026-03-16)** — `/api/coin-packs` (public enabled packs) + `/api/admin/coin-packs` (CRUD). `/dashboard/store` and `/dashboard/coin-store` storefront pages. Admin coin packs section in settings.
+- Store-compliant subscriptions and IAP. **PARTIAL** — Web coin purchase UI shell exists (Razorpay). Mobile store shows IAP compliance notice; no expo-iap dependency added yet. Full store-billing integration pending.
+- ~~Remove-ads purchase and ad controls.~~ **DONE (2026-03-16)** — `/api/ads` returns per-user `adsRemoved` entitlement. `User.adsRemoved` field. `SystemFeaturesConfig` ad kill-switches (`adsEnabled`, `bannerAdsEnabled`, `interstitialAdsEnabled`, `rewardedAdsEnabled`).
 
 ### P7: Platform, Compliance, and Release Readiness
-- Maintenance mode and force-update flows.
-  Implementation notes:
-  Add shared remote config support, blocking and non-blocking update messaging, and environment-safe rollout controls.
-- Privacy/account deletion evidence.
-  Implementation notes:
-  Provide visible in-app deletion path, privacy disclosures, and support/contact routing required for store review.
-- ATT / privacy manifest / data safety completion.
-  Implementation notes:
-  Audit tracking usage, SDK manifests, consent flows, and store-declared data collection against actual runtime behavior.
-- Production policy audit.
-  Implementation notes:
-  Re-check App Store and Play Store rules after monetization changes, especially around digital goods, ads, user-generated content, and account management.
+- ~~Maintenance mode and force-update flows.~~ **DONE (2026-03-16)** — `maintenanceMode`/`maintenanceMessage`/`forceUpdateEnabled`/`minimumAppVersion`/`currentAppVersion`/`appStoreUrl`/`playStoreUrl` in `SystemFeaturesConfig`. `MaintenanceBanner.tsx` full-screen overlay wired into `PlatformExperienceProvider`. Mobile `MaintenanceScreen.tsx` + `ForceUpdateScreen.tsx`. `semverLessThan` comparison in `_layout.tsx`. Admin toggles in settings.
+- ~~Privacy/account deletion.~~ **DONE (2026-03-16)** — `/api/account/delete` route (POST, rate-limit 5/min, service-role deletion cascade). Web profile Danger Zone with inline confirmation (type "DELETE"). Login page `?deleted=1` banner. Mobile profile Danger Zone with TextInput confirmation. No `window.confirm` used anywhere.
+- ~~ATT / privacy manifest / data safety (code).~~ **DONE (2026-03-16)** — `NSUserTrackingUsageDescription` in `ios/lms/Info.plist`. `ios/lms/PrivacyInfo.xcprivacy` created. `android.permissions` minimal set in `app.json`. ATT TODO comment in `_layout.tsx` with exact install command. Full Play Console Data Safety form = manual step, not done yet.
+- ~~Production policy audit document.~~ **DONE (2026-03-16)** — `STORE_READINESS_AUDIT.md` with full checklist, hard blockers, and implementation notes.
+
+**P7 Remaining Hard Blockers (not code — require external action or new native deps):**
+- Install `expo-tracking-transparency` and uncomment ATT block in `mobile/app/_layout.tsx` before App Store submission.
+- Implement Apple StoreKit / Google Play Billing (react-native-purchases) before any paid feature goes live on mobile.
+- Fill in Play Console Data Safety form and App Store Connect Privacy Nutrition Label (manual console steps).
+- Add Restore Purchases flow once IAP is live.
 
 ## Recommended Next Implementation Order
-1. Finish category/subcategory CRUD and remaining managed-content selectors.
-2. Add explicit quiz mode metadata, then complete true/false mode end to end.
-3. Build exam mode on top of the same mode metadata.
-4. Move to remaining single-player modes before multiplayer/battle systems.
-5. Replace mobile digital purchases with store-compliant IAP/subscription flows before calling the app store-ready.
+1. Add `/api/account/delete` route and wire it to the delete-account buttons in web + mobile profiles (required for App Store review).
+2. Add Supabase Realtime channel to battle sessions for live score sync.
+3. Replace mobile digital purchases with expo-iap / expo-in-app-purchases for store-compliant IAP.
+4. Complete ATT consent flow and submit Android data-safety declaration.
+5. Run production policy audit against current App Store/Play Store submission rules.
 
 ## Current Verification Standard
 - `npm run type-check`

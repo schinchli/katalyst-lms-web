@@ -1,5 +1,83 @@
 # Feature Implementation Log
 
+## 2026-03-16 (P7 — Platform, Compliance, and Release Readiness)
+
+### Maintenance Mode + Force Update (P7-1)
+
+**SystemFeaturesConfig (web + mobile)**
+- Added `maintenanceMode`, `maintenanceMessage`, `forceUpdateEnabled`, `minimumAppVersion`, `currentAppVersion`, `appStoreUrl`, `playStoreUrl` to `SystemFeaturesConfig` in `apps/web/src/lib/systemFeatures.ts` and `mobile/config/systemFeatures.ts`.
+- Added defaults and `normalizeSystemFeatures` handlers for all new fields.
+- Both files now match exactly (web/mobile schema parity maintained).
+
+**Web maintenance gate (`apps/web/src/components/PlatformExperienceProvider.tsx`)**
+- Provider now also fetches `/api/system-features` on load.
+- Context value now exposes `systemFeatures: SystemFeaturesConfig`.
+- Renders `<MaintenanceBanner>` full-screen overlay when `maintenanceMode === true`, blocking all dashboard access.
+
+**`apps/web/src/components/MaintenanceBanner.tsx`** — new file
+- Full-screen fixed overlay with wrench emoji, configurable message, and "Check Status" mailto link to support@katalyst.app.
+
+**Admin controls (`apps/web/src/app/dashboard/settings/page.tsx`)**
+- Added Maintenance Mode section: enable toggle + message textarea.
+- Added Force Update section: enable toggle, minimum/current version inputs, App Store URL, Play Store URL.
+- Both sections persist on the next `saveConfig()` call via `/api/admin/system-features`.
+
+**Mobile maintenance gate (`mobile/app/_layout.tsx`)**
+- Added `parseSemver` and `semverLessThan` utility functions.
+- `ThemedApp` now checks `systemFeatureStore.config.maintenanceMode` before rendering navigation.
+- If maintenance: renders `<MaintenanceScreen message={...} />` (full-screen, non-dismissible).
+- If force update triggered (version < minimumAppVersion): renders `<ForceUpdateScreen>` (full-screen, non-dismissible, platform-aware URL).
+- ATT TODO comment added in RootLayout with exact install command and uncomment instructions.
+
+**`mobile/components/MaintenanceScreen.tsx`** — new file
+- Full-screen centered layout, wrench icon, configurable message, "Check Back Later" support email button.
+
+**`mobile/components/ForceUpdateScreen.tsx`** — new file
+- Full-screen, non-dismissible, "Update Now" button opens App Store or Play Store URL based on `Platform.OS`.
+
+### Account Deletion (P7-2)
+
+**`apps/web/src/app/api/account/delete/route.ts`** — new file
+- POST, auth required (Bearer token), rate limit 5 req/min.
+- Deletes: `quiz_results` → `coin_transactions` (best-effort) → `referral_redemptions` (best-effort) → `user_profiles` → `auth.users` via service role.
+- Returns `{ ok: true, message }` or 500 with error; never silently partial-deletes.
+
+**Web profile page (`apps/web/src/app/dashboard/profile/page.tsx`)**
+- Added "Danger Zone" section at bottom with inline confirmation modal (no `window.confirm`).
+- User must type "DELETE" to enable the confirm button.
+- On success: clears localStorage, calls `supabase.auth.signOut()`, redirects to `/login?deleted=1`.
+
+**Login page (`apps/web/src/app/login/page.tsx`)**
+- Added `useSearchParams` check for `?deleted=1`.
+- Shows dismissible green banner: "Your account has been deleted. All data has been permanently removed."
+
+**Mobile profile screen (`mobile/app/(tabs)/profile.tsx`)**
+- Added "Danger Zone" section with inline TextInput confirmation state (type "DELETE").
+- On success: calls `signOut()` → AuthGuard navigates to login.
+- No `window.confirm` — pure React state machine.
+
+### ATT / Privacy Manifest / Data Safety (P7-3)
+
+**`ios/lms/Info.plist`**
+- Added `NSUserTrackingUsageDescription` key.
+
+**`ios/lms/PrivacyInfo.xcprivacy`** — new file
+- Declares email address + other user content collection for app functionality.
+- `NSPrivacyTracking = false` (no cross-app tracking).
+- Empty `NSPrivacyAccessedAPITypes` array.
+
+**`mobile/app.json`**
+- Added `android.permissions: ["INTERNET", "ACCESS_NETWORK_STATE"]` (minimal, explicit).
+
+### Production Policy Audit (P7-4)
+
+**`STORE_READINESS_AUDIT.md`** — new file
+- Full checklist for Apple App Store and Google Play Store.
+- Clearly documents hard blockers (IAP, ATT SDK), done items, and verification tasks.
+- Covers account deletion paths, privacy manifest, data safety, version management.
+
+---
+
 ## 2026-03-16
 
 ### Quiz Mode Metadata, True/False & Exam Mode, Category CRUD, Admin UX Hardening
