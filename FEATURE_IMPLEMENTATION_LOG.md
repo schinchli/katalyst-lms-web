@@ -186,3 +186,32 @@
 - Added `quizMode = quiz?.mode ?? (isTrueFalseQuiz ? 'true_false' : 'quiz_zone')` detection.
 - Added `isExamMode = quizMode === 'exam'` derived constant.
 - Timer `useEffect` now skips starting the per-question countdown when `isExamMode` is true, matching the web quiz player behavior.
+
+---
+
+## 2026-03-16 (session 2)
+
+### Slices 1–5 — P0/P1/P2/P3/Mobile cleanup
+**Web commit:** `8b1c27d` | **Mobile commit:** `9a731d7`
+**Validation:** type-check clean · 262/262 mobile tests · security gate 18/18
+
+#### Slice 1 — P0 Finish
+- **1a** Category save-to-API verified complete (GET on mount + POST on save already wired).
+- **1b** Category field in managed quiz editor changed from free-text to `<select>` populated from `managedCategories`; falls back to plain input when no categories exist; shows custom free-text input when current category doesn't match any managed ID.
+- **1c** Added `useManagedQuizContentVersion()` to `progress/page.tsx` and `leaderboard/page.tsx` (was missing); `dashboard/page.tsx` and `quizzes/page.tsx` already had it.
+
+#### Slice 2 — P1 Daily Quiz Polish
+- Created `apps/web/src/components/DailyQuizBadge.tsx` — props: `label`, `completed`, `compact?`; compact = pill tag, non-compact = wider banner with CTA.
+- `quizzes/page.tsx`: replaced inline daily-quiz chip spans with `<DailyQuizBadge>`.
+- Admin settings system-features section: added read-only "Analytics: coming soon" card — no fake data.
+
+#### Slice 3 — P2 True/False History
+- `api/quiz-submit/route.ts`: added `mode: quiz.mode ?? null` to `quiz_results` upsert; migration comment included (`ALTER TABLE quiz_results ADD COLUMN IF NOT EXISTS mode text`).
+- `progress/page.tsx`: each result row shows a "T/F" pill for `true_false` mode or "EXAM" pill for `exam` mode.
+
+#### Slice 4 — P3 Exam Compliance
+- `examReviewAllowed` checkbox already existed in settings, gated on `mode === 'exam'` — no change needed.
+- `quiz/[id]/page.tsx`: added JSX comment documenting screen-recording protection is web-unavailable (mobile-only).
+
+#### Slice 5 — Mobile Mode Detection
+- `mobile/app/quiz/[id].tsx`: added `quizMode`/`isExamMode` constants; timer `useEffect` skips countdown in exam mode; intro screen shows exam no-answers warning when `quiz.mode === 'exam' && quiz.examReviewAllowed === false`.
