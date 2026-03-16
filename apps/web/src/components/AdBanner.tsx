@@ -12,10 +12,13 @@
  *   1. Replace ADSENSE_PUB_ID with your publisher ID (ca-pub-XXXXXXXXXXXXXXXXX)
  *   2. Replace ADSENSE_SLOT_H / ADSENSE_SLOT_R with your slot IDs from AdSense
  *   Pro users never see ads.
+ *   System kill-switch: if systemFeatures.adsEnabled === false, renders nothing.
+ *   Per-user kill-switch: if user's ads_removed flag is true, renders nothing.
  */
 
 import { useLayoutEffect, useEffect, useRef, useState, useCallback } from 'react';
 import { useSubscription } from '@/hooks/useSubscription';
+import { DEFAULT_SYSTEM_FEATURES, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
 // ── AdSense config — stored in localStorage, editable from Settings page ─────
 const ADSENSE_STORAGE_KEY = 'katalyst-adsense-config';
@@ -47,6 +50,8 @@ export type AdFormat = 'horizontal' | 'rectangle';
 interface AdBannerProps {
   format?: AdFormat;
   className?: string;
+  /** When true, renders nothing — used for global ad kill-switch via systemFeatures.bannerAdsEnabled */
+  hidden?: boolean;
 }
 
 // Module-level flag — inject AdSense script only once per page load
@@ -71,12 +76,47 @@ function injectAdSenseScript(pubId: string, onReady: () => void) {
   document.head.appendChild(s);
 }
 
-export function AdBanner({ format = 'horizontal', className = '' }: AdBannerProps) {
+export function AdBanner({ format = 'horizontal', className = '', hidden = false }: AdBannerProps) {
   const { isPro }  = useSubscription();
+
+  // Global ad kill-switch — renders nothing when hidden is true
+  if (hidden) return null;
   const baitRef    = useRef<HTMLDivElement>(null);
   const insRef     = useRef<HTMLModElement>(null);
   const pushed     = useRef(false);
   const cfg        = getAdSenseConfig();
+
+  // System-level ad kill-switch — fetched from /api/system-features
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  // Per-user remove-ads entitlement
+  const [adsRemoved, setAdsRemoved] = useState(false);
+
+  useEffect(() => {
+    // System features (public — no auth needed)
+    fetch('/api/system-features')
+      .then((r) => r.json())
+      .then((body: { config?: SystemFeaturesConfig }) => {
+        if (body.config) setSystemFeatures(body.config);
+      })
+      .catch(() => { /* best-effort */ });
+
+    // Per-user ads_removed flag (requires auth)
+    const tryFetchAdsRemoved = async () => {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        );
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) return;
+        const res = await fetch('/api/ads', { headers: { Authorization: `Bearer ${session.access_token}` } });
+        const body = await res.json() as { ok: boolean; adsRemoved?: boolean };
+        if (body.ok && body.adsRemoved) setAdsRemoved(true);
+      } catch { /* best-effort */ }
+    };
+    tryFetchAdsRemoved().catch(() => { /* best-effort */ });
+  }, []);
 
   // null = detection not yet run (SSR / before first layout)
   const [adBlocked, setAdBlocked] = useState<boolean | null>(null);
@@ -124,8 +164,8 @@ export function AdBanner({ format = 'horizontal', className = '' }: AdBannerProp
 
   const dismiss = useCallback(() => setDismissed(true), []);
 
-  // Pro users and dismissed banners render nothing at all
-  if (isPro || dismissed) return null;
+  // Pro users, dismissed banners, global kill-switch, and per-user entitlement render nothing
+  if (isPro || dismissed || !systemFeatures.adsEnabled || !systemFeatures.bannerAdsEnabled || adsRemoved) return null;
 
   const slot      = format === 'horizontal' ? cfg.slotH : cfg.slotR;
   const minHeight = format === 'horizontal' ? 90 : 250;

@@ -374,3 +374,62 @@
 
 **F3 — Mobile**
 - `mobile/app/quiz/[id].tsx`: `isAudioMode` constant; `expo-audio` not installed → graceful fallback: renders `audioFallbackText` or a static note ("Audio playback not available in this build"); mode badge on intro. No new native dependencies added.
+
+---
+
+## P6 — Economy and Monetization (2026-03-16)
+
+### P6-1: Coins Earn/Spend Ledger
+
+**P6-1a — Types (web + mobile)**
+- `apps/web/src/types.ts`: Added `CoinReasonCode`, `CoinTransaction`, `CoinPack`, `ReferralInfo` types. Fixed `BattleSession` to include `players`, `currentQuestionIndex`, `BattleStatus` union expanded to include `'active'`. Added `BattlePlayer` to battle route import.
+- `mobile/types/index.ts`: Same `CoinReasonCode`, `CoinTransaction`, `CoinPack`, `ReferralInfo` types added.
+
+**P6-1b — Coin ledger API**
+- `apps/web/src/app/api/coins/route.ts`: GET `/api/coins` — auth-guarded, rate-limited 30/min. Fetches `coin_transactions` table (ordered DESC, limit 50). Gracefully handles missing table via profile balance fallback. DB migration comment embedded.
+
+**P6-1c — Coin history web page**
+- `apps/web/src/app/dashboard/coins/page.tsx`: Balance display + transaction list. Migration-pending banner. Added `CoinsNavIcon` + `StoreNavIcon` to sidebar, `coins` and `store` links added to `NAV` array in `layout.tsx`.
+
+**P6-1d — Coin history mobile**
+- `mobile/app/coin-history.tsx`: Full screen with balance header, FlatList transaction list, migration-pending banner. "Coin History" list item added to `mobile/app/(tabs)/profile.tsx`.
+
+### P6-2: Referrals
+
+**P6-2a — Referral API**
+- `apps/web/src/app/api/referral/route.ts`: GET returns deterministic referral code (`userId.replace(/-/g,'').slice(0,8).toUpperCase()`) + referred count + coins earned. POST validates and logs redeem attempts. Both routes auth-guarded, rate-limited. DB migration comment embedded.
+
+**P6-2b — Referral UI (web + mobile)**
+- `apps/web/src/app/dashboard/profile/page.tsx`: "Refer a Friend" card with copy-to-clipboard, `navigator.share()` fallback, friends referred + coins earned stats.
+- `mobile/app/(tabs)/profile.tsx`: Referral panel with `Share.share()` and stats. `supabase` + `AppConfig` imported.
+
+### P6-3: Coin Store
+
+**P6-3a — Admin coin packs API**
+- `apps/web/src/app/api/admin/coin-packs/route.ts`: GET/POST with `normalizeCoinPack()` validation, admin auth, rate-limited. Stores under `managed_coin_packs` key in `app_settings`.
+- `apps/web/src/app/dashboard/settings/page.tsx`: Coin Store section with pack list, enable/disable toggles, inline delete confirm, add-pack form, save button. IAP compliance note. Fetches from `Promise.all` on load.
+
+**P6-3b — Coin store web page**
+- `apps/web/src/app/api/coin-packs/route.ts`: Public GET, 60/min rate limit, returns enabled packs only.
+- `apps/web/src/app/dashboard/store/page.tsx`: Pack cards with Popular badge, INR/USD pricing, "Buy now" button shows inline "coming soon" toast (Razorpay TODO comment).
+
+**P6-3c — Coin store mobile**
+- `mobile/app/coin-store.tsx`: Fetches enabled packs, grid layout, "Buy now" shows `Alert.alert` with store-compliance message. IAP warning comment at top of file.
+
+### P6-4: Remove-Ads Entitlement and Ad Controls
+
+**P6-4a — System features ad controls**
+- `apps/web/src/lib/systemFeatures.ts`: Already had `adsEnabled`, `bannerAdsEnabled`, `interstitialAdsEnabled`, `rewardedAdsEnabled`. No changes needed.
+
+**P6-4b — AdBanner hidden prop**
+- `apps/web/src/components/AdBanner.tsx`: Added `hidden?: boolean` prop. When `hidden` is true, renders `null` immediately before subscription check.
+
+**P6-4c — Remove-ads flag**
+- `apps/web/src/app/api/quiz-submit/route.ts`: Fetches `ads_removed` from `user_profiles` after save; returns `adsRemoved` in response. DB migration comment embedded.
+- `mobile/stores/authStore.ts`: `adsRemoved: boolean` field added to `AuthState` (default `false`). `initAuth` fetches `ads_removed` from `user_profiles` on session load and sets it in store.
+- `mobile/components/ads/AdBanner.native.tsx`: Reads `adsRemoved` from `useAuthStore`; renders nothing if `adsRemovedStore || adsRemovedApi`.
+
+**P6-4d — Store compliance note**
+- `mobile/services/razorpayService.ts`: Warning comment added at top — service must NOT be used for digital goods on iOS/Android.
+- `apps/web/src/app/dashboard/settings/page.tsx`: IAP compliance info card in Coin Store section.
+- `DESIRED_FEATURES_BACKLOG.md`: IAP / RevenueCat / StoreKit / Play Billing noted under P6.

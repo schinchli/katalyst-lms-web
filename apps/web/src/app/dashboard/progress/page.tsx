@@ -4,12 +4,26 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { quizzes } from '@/data/quizzes';
-import type { QuizResult } from '@/types';
+import type { CoinTransaction, QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+
+const COIN_REASON_LABELS: Record<string, string> = {
+  quiz_complete:       'Quiz completed',
+  perfect_score:       'Perfect score bonus',
+  daily_quiz:          'Daily quiz bonus',
+  streak_bonus:        'Streak bonus',
+  referral_reward:     'Referral reward',
+  referral_signup:     'Referral signup',
+  coin_purchase:       'Coin purchase',
+  contest_prize:       'Contest prize',
+  admin_grant:         'Admin grant',
+  spend_contest_entry: 'Contest entry',
+  spend_course_unlock: 'Course unlock',
+};
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -33,13 +47,28 @@ export default function ProgressPage() {
   const { config } = usePlatformExperience();
   const [results, setResults] = useState<QuizResult[]>([]);
   const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  const [coinBalance, setCoinBalance] = useState<number | null>(null);
+  const [recentTx, setRecentTx] = useState<CoinTransaction[]>([]);
 
   useEffect(() => {
     setResults(getLocalResults());
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session?.user) return;
+      const user = session.user;
       const remote = await getQuizResults(user.id);
       if (remote.length > 0) setResults(remote);
+
+      // Fetch coin balance + recent transactions
+      try {
+        const res = await fetch('/api/coins', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const body = await res.json() as { ok: boolean; balance?: number; transactions?: CoinTransaction[] };
+        if (body.ok) {
+          setCoinBalance(body.balance ?? 0);
+          setRecentTx((body.transactions ?? []).slice(0, 5));
+        }
+      } catch { /* best-effort */ }
     });
     fetch('/api/system-features')
       .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
@@ -79,8 +108,50 @@ export default function ProgressPage() {
               <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: item.tone }}>{item.value}</div>
             </div>
           ))}
+          {coinBalance !== null && (
+            <div className="dc-card" style={{ padding: 20 }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Coin Balance</div>
+              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: '#ffd84d' }}>
+                ⚡ {coinBalance.toLocaleString()}
+              </div>
+            </div>
+          )}
         </div>
       </section>
+
+      {recentTx.length > 0 && (
+        <section className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 14 }}>
+            Recent Coin Activity
+            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>
+              <a href="/dashboard/coins" style={{ color: 'var(--primary-text)', textDecoration: 'none', fontWeight: 600 }}>View all →</a>
+            </span>
+          </h2>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {recentTx.map((tx) => {
+              const isEarn = tx.amount >= 0;
+              return (
+                <div key={tx.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: isEarn ? 'rgba(40,199,111,0.12)' : 'rgba(234,84,85,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 16 }}>{isEarn ? '⚡' : '💸'}</span>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)' }}>
+                      {COIN_REASON_LABELS[tx.reason] ?? tx.reason}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: isEarn ? '#28C76F' : '#EA5455' }}>
+                    {isEarn ? '+' : ''}{tx.amount.toLocaleString()} ⚡
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="dc-grid" style={{ gridTemplateColumns: '0.9fr 1.1fr' }}>
         <div className="dc-card" style={{ padding: 24 }}>

@@ -203,6 +203,19 @@ export async function POST(req: NextRequest) {
     logger.warn(ROUTE, 'coin_award_failed', { userId: user.id, quizId, reason: String(coinErr) });
   }
 
+  // Check ads_removed entitlement on user profile
+  // DB migration required:
+  // ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ads_removed boolean DEFAULT false;
+  let adsRemoved = false;
+  try {
+    const { data: profileRow } = await db
+      .from('user_profiles')
+      .select('ads_removed')
+      .eq('id', user.id)
+      .maybeSingle();
+    adsRemoved = (profileRow as { ads_removed?: boolean } | null)?.ads_removed ?? false;
+  } catch { /* non-fatal — column may not exist yet */ }
+
   return NextResponse.json({
     ok: true,
     score:          finalScore,
@@ -210,5 +223,6 @@ export async function POST(req: NextRequest) {
     totalQuestions,
     timeTaken,
     completedAt,
+    adsRemoved,
   });
 }
