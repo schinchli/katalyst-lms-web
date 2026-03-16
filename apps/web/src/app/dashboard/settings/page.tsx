@@ -15,7 +15,8 @@ import {
   normalizeManagedCategories,
   type ManagedQuizContent,
 } from '@/lib/managedQuizContent';
-import type { ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
+import type { Contest, ContestStatus, ManagedCategory, ManagedSubcategory, MatchPair, Question, Quiz, QuizMode } from '@/types';
+import { normalizeContest } from '@/app/api/admin/contests/route';
 import {
   applyPlatformExperience,
   DEFAULT_PLATFORM_EXPERIENCE,
@@ -168,6 +169,16 @@ export default function SettingsPage() {
   const [newSubcategoryInputs, setNewSubcategoryInputs] = useState<Record<string, { name: string; description: string }>>({});
   const [pendingDeleteQuizId, setPendingDeleteQuizId] = useState<string | null>(null);
   const [pendingDeleteCategoryId, setPendingDeleteCategoryId] = useState<string | null>(null);
+  // ── Contests ────────────────────────────────────────────────────────────────
+  const [contests, setContests] = useState<Contest[]>([]);
+  const [contestsSaved, setContestsSaved] = useState(false);
+  const [pendingDeleteContestId, setPendingDeleteContestId] = useState<string | null>(null);
+  const [contestForm, setContestForm] = useState<Partial<Contest> & { id: string }>({
+    id: '', title: '', description: '', status: 'upcoming', quizId: '', quizTitle: '',
+    category: 'general', icon: 'award', entryFee: 0, prizeCoins: 0,
+    startTime: '', endTime: '', participants: 0, maxParticipants: 100,
+  });
+  const [editingContestId, setEditingContestId] = useState<string | null>(null);
   const [categoriesSaved, setCategoriesSaved] = useState(false);
   const managedContentFields: Array<{ label: string; key: keyof AppContentConfig; multiline: boolean }> = [
     { label: 'App name', key: 'appName', multiline: false },
@@ -197,7 +208,7 @@ export default function SettingsPage() {
         }
         setAuthorized(true);
 
-        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes] = await Promise.all([
+        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes] = await Promise.all([
           fetch('/api/admin/mobile-config', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
@@ -216,6 +227,9 @@ export default function SettingsPage() {
           fetch('/api/admin/categories', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
+          fetch('/api/admin/contests', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
         ]);
         const configBody = await configRes.json() as { config?: unknown };
         const quizCatalogBody = await quizCatalogRes.json() as { overrides?: unknown };
@@ -223,6 +237,7 @@ export default function SettingsPage() {
         const systemFeaturesBody = await systemFeaturesRes.json() as { config?: unknown };
         const quizContentBody = await quizContentRes.json() as { content?: unknown };
         const categoriesBody = await categoriesRes.json() as { categories?: unknown };
+        const contestsBody = await contestsRes.json() as { contests?: unknown };
         setConfig(normalizePlatformExperience(configBody.config));
         const nextOverrides = normalizeQuizCatalogOverrides(quizCatalogBody.overrides);
         setQuizOverrides(nextOverrides);
@@ -234,6 +249,8 @@ export default function SettingsPage() {
         applyManagedQuizContent(nextManagedContent);
         applyQuizCatalogOverrides(nextOverrides);
         setManagedCategories(normalizeManagedCategories(categoriesBody.categories));
+        const rawContests = Array.isArray(contestsBody.contests) ? contestsBody.contests : [];
+        setContests(rawContests.map(normalizeContest).filter((c): c is Contest => c !== null));
       } catch {
         router.replace('/dashboard');
       }
@@ -735,10 +752,76 @@ export default function SettingsPage() {
     }
   };
 
+  // ── Contest helpers ─────────────────────────────────────────────────────────
+  const saveContests = async (updated: Contest[]) => {
+    if (!accessToken) return;
+    const res = await fetch('/api/admin/contests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ contests: updated }),
+    });
+    if (!res.ok) return;
+    setContests(updated);
+    setContestsSaved(true);
+    setTimeout(() => setContestsSaved(false), 1800);
+  };
+
+  const handleContestFormSubmit = () => {
+    const normalized = normalizeContest(contestForm);
+    if (!normalized) return;
+    if (editingContestId) {
+      const updated = contests.map((c) => (c.id === editingContestId ? normalized : c));
+      void saveContests(updated);
+    } else {
+      // Check for duplicate id
+      if (contests.some((c) => c.id === normalized.id)) return;
+      void saveContests([...contests, normalized]);
+    }
+    setEditingContestId(null);
+    setContestForm({
+      id: '', title: '', description: '', status: 'upcoming', quizId: '', quizTitle: '',
+      category: 'general', icon: 'award', entryFee: 0, prizeCoins: 0,
+      startTime: '', endTime: '', participants: 0, maxParticipants: 100,
+    });
+  };
+
+  const startEditContest = (contest: Contest) => {
+    setEditingContestId(contest.id);
+    setContestForm({ ...contest });
+  };
+
+  const confirmDeleteContest = () => {
+    if (!pendingDeleteContestId) return;
+    const updated = contests.filter((c) => c.id !== pendingDeleteContestId);
+    void saveContests(updated);
+    setPendingDeleteContestId(null);
+  };
+
+  const STATUS_BADGE_COLORS: Record<ContestStatus, { bg: string; color: string }> = {
+    live:     { bg: '#EA545518', color: '#EA5455' },
+    upcoming: { bg: '#7367F018', color: '#7367F0' },
+    past:     { bg: 'var(--bg)', color: 'var(--text-secondary)' },
+  };
+
   if (!authorized) return null;
 
   return (
     <div className="page-content dc-shell">
+      {/* Inline delete-contest confirmation */}
+      {pendingDeleteContestId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Contest</h3>
+            <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
+              Delete &quot;{contests.find((c) => c.id === pendingDeleteContestId)?.title ?? pendingDeleteContestId}&quot;? This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setPendingDeleteContestId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={confirmDeleteContest} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Inline delete-quiz confirmation */}
       {pendingDeleteQuizId && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1727,6 +1810,117 @@ export default function SettingsPage() {
           <button className="btn-primary" onClick={saveConfig}>{saved ? 'Saved' : 'Save platform config'}</button>
           <button className="settings-btn-ghost" onClick={() => setConfig(DEFAULT_PLATFORM_EXPERIENCE)}>Reset defaults</button>
           <span style={{ color: 'var(--text-secondary)' }}>These settings feed the shared platform config used by web and mobile.</span>
+        </div>
+      </section>
+
+      {/* ── Contests ──────────────────────────────────────────────────────── */}
+      <section className="dc-card" style={{ padding: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div>
+            <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 4 }}>Contests</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0 }}>Manage live, upcoming, and past contests shown to users.</p>
+          </div>
+          {contestsSaved && <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>Saved</span>}
+        </div>
+
+        {/* Existing contests list */}
+        {contests.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+            {contests.map((contest) => {
+              const badge = STATUS_BADGE_COLORS[contest.status];
+              return (
+                <div key={contest.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'var(--bg)', borderRadius: 10, border: '1px solid var(--border)', flexWrap: 'wrap' }}>
+                  <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, background: badge.bg, color: badge.color, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    {contest.status}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contest.title}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                      {new Date(contest.startTime).toLocaleDateString()} – {new Date(contest.endTime).toLocaleDateString()} · Fee: {contest.entryFee} coins · Prize: {contest.prizeCoins} coins · {contest.participants}/{contest.maxParticipants} participants
+                    </div>
+                  </div>
+                  <button onClick={() => startEditContest(contest)} style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>Edit</button>
+                  <button onClick={() => setPendingDeleteContestId(contest.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: '#FF4C51', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Add / Edit form */}
+        <div style={{ background: 'var(--bg)', borderRadius: 12, padding: 18, border: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>
+            {editingContestId ? 'Edit Contest' : 'Add Contest'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+            {[
+              { label: 'ID (slug)', key: 'id', type: 'text' },
+              { label: 'Title', key: 'title', type: 'text' },
+              { label: 'Description', key: 'description', type: 'text' },
+              { label: 'Entry Fee (coins)', key: 'entryFee', type: 'number' },
+              { label: 'Prize Coins', key: 'prizeCoins', type: 'number' },
+              { label: 'Max Participants', key: 'maxParticipants', type: 'number' },
+              { label: 'Icon (Feather name)', key: 'icon', type: 'text' },
+              { label: 'Category', key: 'category', type: 'text' },
+              { label: 'Quiz Title', key: 'quizTitle', type: 'text' },
+              { label: 'Start Time', key: 'startTime', type: 'datetime-local' },
+              { label: 'End Time', key: 'endTime', type: 'datetime-local' },
+            ].map(({ label, key, type }) => (
+              <label key={key}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>{label}</div>
+                <input
+                  className="admin-field-input"
+                  type={type}
+                  value={String(contestForm[key as keyof typeof contestForm] ?? '')}
+                  disabled={key === 'id' && !!editingContestId}
+                  onChange={(e) => setContestForm((prev) => ({ ...prev, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))}
+                />
+              </label>
+            ))}
+            <label>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>Status</div>
+              <select
+                className="admin-field-input"
+                value={contestForm.status ?? 'upcoming'}
+                onChange={(e) => setContestForm((prev) => ({ ...prev, status: e.target.value as ContestStatus }))}
+              >
+                <option value="live">Live</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past</option>
+              </select>
+            </label>
+            <label>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5 }}>Quiz ID</div>
+              <select
+                className="admin-field-input"
+                value={contestForm.quizId ?? ''}
+                onChange={(e) => {
+                  const q = managedQuizList.find((mq) => mq.id === e.target.value) ?? quizzes.find((mq) => mq.id === e.target.value);
+                  setContestForm((prev) => ({ ...prev, quizId: e.target.value, quizTitle: q?.title ?? prev.quizTitle ?? '' }));
+                }}
+              >
+                <option value="">— select quiz —</option>
+                {[...quizzes, ...managedQuizList.filter((mq) => !quizzes.some((q) => q.id === mq.id))].map((q) => (
+                  <option key={q.id} value={q.id}>{q.title}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            <button className="btn-primary" onClick={handleContestFormSubmit}>
+              {editingContestId ? 'Update Contest' : 'Add Contest'}
+            </button>
+            {editingContestId && (
+              <button className="settings-btn-ghost" onClick={() => {
+                setEditingContestId(null);
+                setContestForm({
+                  id: '', title: '', description: '', status: 'upcoming', quizId: '', quizTitle: '',
+                  category: 'general', icon: 'award', entryFee: 0, prizeCoins: 0,
+                  startTime: '', endTime: '', participants: 0, maxParticipants: 100,
+                });
+              }}>Cancel</button>
+            )}
+          </div>
         </div>
       </section>
     </div>

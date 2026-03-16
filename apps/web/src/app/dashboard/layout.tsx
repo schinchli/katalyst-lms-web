@@ -23,13 +23,18 @@ import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvi
 import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 const NAV = [
-  { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
-  { href: '/dashboard/quizzes',      label: 'Quizzes',     icon: BookIcon },
-  { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
-  { href: '/dashboard/progress',     label: 'Progress',    icon: TrendIcon },
-  { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
-  { href: '/dashboard/bookmarks',    label: 'Bookmarks',   icon: BookmarkNavIcon },
-  { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
+  { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
+  { href: '/dashboard/quizzes',        label: 'Quizzes',        icon: BookIcon },
+  { href: '/dashboard/learn',          label: 'Learn',          icon: PlayNavIcon },
+  { href: '/dashboard/progress',       label: 'Progress',       icon: TrendIcon },
+  { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
+  { href: '/dashboard/contests',       label: 'Contests',       icon: ContestIcon },
+  { href: '/dashboard/battles',        label: 'Battles',        icon: BattleIcon },
+  { href: '/dashboard/self-challenge', label: 'Self Challenge', icon: SelfChallengeIcon },
+  { href: '/dashboard/coins',          label: 'Coins',          icon: CoinsNavIcon },
+  { href: '/dashboard/store',          label: 'Store',          icon: StoreNavIcon },
+  { href: '/dashboard/bookmarks',      label: 'Bookmarks',      icon: BookmarkNavIcon },
+  { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
 ];
 
 const ADMIN_NAV  = { href: '/dashboard/admin',    label: 'Admin',    icon: AdminIcon };
@@ -132,6 +137,54 @@ function SettingsIcon({ active }: { active: boolean }) {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
+
+function CoinsNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v2m0 8v2M9 9h4a2 2 0 0 1 0 4H9" />
+    </svg>
+  );
+}
+function StoreNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}
+
+function ContestIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="6" />
+      <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+    </svg>
+  );
+}
+function BattleIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z" />
+      <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+      <path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z" />
+      <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z" />
+      <path d="M14 14.5V13h-4v1.5" />
+      <path d="M10 9.5V11h4V9.5" />
+      <path d="M12 13v-2" />
+    </svg>
+  );
+}
+function SelfChallengeIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10" />
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
     </svg>
   );
 }

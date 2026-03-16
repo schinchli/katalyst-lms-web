@@ -165,6 +165,44 @@ export async function POST(req: NextRequest) {
 
   logger.info(ROUTE, 'submit_ok', { userId: user.id, quizId, score: finalScore, pointScore, totalQuestions, timeTaken });
 
+  // ── Coin awards (best-effort — never block the response) ─────────────────
+  try {
+    const isPerfect    = totalQuestions > 0 && finalScore === totalQuestions;
+    const baseCoins    = finalScore * (quiz.correctScore ?? 1);
+
+    // Check if this is the daily quiz (read from app_settings)
+    const sfRow = await db
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'system_feature_flags')
+      .maybeSingle();
+    const sf = sfRow.data?.value as { dailyQuizEnabled?: boolean; dailyQuizQuizId?: string } | null;
+    const isDailyQuiz  = Boolean(sf?.dailyQuizEnabled && sf?.dailyQuizQuizId === quizId);
+
+    const txRows: Array<{ user_id: string; amount: number; reason: string; reference_id: string }> = [];
+
+    if (baseCoins > 0) {
+      txRows.push({ user_id: user.id, amount: baseCoins, reason: 'quiz_complete', reference_id: quizId });
+    }
+    if (isPerfect) {
+      txRows.push({ user_id: user.id, amount: 10, reason: 'perfect_score', reference_id: quizId });
+    }
+    if (isDailyQuiz) {
+      txRows.push({ user_id: user.id, amount: 5, reason: 'daily_quiz', reference_id: quizId });
+    }
+
+    if (txRows.length > 0) {
+      const totalCoins = txRows.reduce((sum, row) => sum + row.amount, 0);
+      // Insert transactions
+      await db.from('coin_transactions').insert(txRows);
+      // Increment coins on user_profiles (upsert in case column was just added)
+      await db.rpc('increment_user_coins', { p_user_id: user.id, p_amount: totalCoins });
+    }
+  } catch (coinErr) {
+    // Never let coin award failure break quiz submission
+    logger.warn(ROUTE, 'coin_award_failed', { userId: user.id, quizId, reason: String(coinErr) });
+  }
+
   return NextResponse.json({
     ok: true,
     score:          finalScore,

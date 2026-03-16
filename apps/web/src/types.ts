@@ -6,6 +6,7 @@ export interface User {
   subscription: 'free' | 'premium';
   unlockedCourses?: string[];
   createdAt: string;
+  adsRemoved?: boolean;
 }
 
 export type CertLevel = 'foundational' | 'associate' | 'professional' | 'specialty';
@@ -143,6 +144,33 @@ export interface Contest {
   maxParticipants: number;
   topScore?: number;
   winner?: string;
+  rules?: string;                // admin-set rules text
+  maxAttempts?: number;          // default 1
+  resultsPublishedAt?: string;   // ISO when results were posted
+}
+
+export type BattleStatus = 'waiting' | 'active' | 'finished' | 'abandoned';
+
+export interface BattlePlayer {
+  userId: string;
+  name: string;
+  score: number;
+  answeredCount: number;
+  isHost: boolean;
+  isReady: boolean;
+}
+
+export interface BattleSession {
+  id: string;
+  mode: 'one_vs_one' | 'group' | 'random';
+  status: BattleStatus;
+  quizId: string;
+  hostUserId: string;
+  players: BattlePlayer[];
+  currentQuestionIndex: number;
+  startedAt?: string;
+  finishedAt?: string;
+  inviteCode?: string;
 }
 
 export type BadgeId =
@@ -160,6 +188,44 @@ export interface Badge {
   description: string;
   icon: string;
   earnedAt: string;
+}
+
+export type CoinReasonCode =
+  | 'quiz_complete'
+  | 'perfect_score'
+  | 'daily_quiz'
+  | 'streak_bonus'
+  | 'referral_reward'
+  | 'referral_signup'
+  | 'coin_purchase'
+  | 'contest_prize'
+  | 'admin_grant'
+  | 'spend_contest_entry'
+  | 'spend_course_unlock';
+
+export interface CoinTransaction {
+  id: string;
+  userId: string;
+  amount: number;          // positive = earn, negative = spend
+  reason: CoinReasonCode;
+  referenceId?: string;    // quizId, contestId, etc.
+  createdAt: string;
+}
+
+export interface CoinPack {
+  id: string;
+  label: string;
+  coins: number;
+  priceInr: number;
+  priceUsd: number;
+  popular?: boolean;
+  enabled: boolean;
+}
+
+export interface ReferralInfo {
+  code: string;
+  referredCount: number;
+  coinsEarned: number;
 }
 
 export type QuizCategory =

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
-import type { QuizResult } from '@/types';
+import type { QuizResult, ReferralInfo } from '@/types';
 import { deleteAllQuizResults, getQuizResults, getUserProfile, saveUserProfile } from '@/lib/db';
 import { PLATFORM_THEME_PRESETS, normalizePlatformTheme } from '@/lib/platformTheme';
 import {
@@ -45,6 +45,8 @@ export default function ProfilePage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
+  const [referral, setReferral] = useState<ReferralInfo | null>(null);
+  const [referralCopied, setReferralCopied] = useState(false);
   const [platformThemeName, setPlatformThemeName] = useState('Deep Navy');
 
   useEffect(() => {
@@ -70,6 +72,20 @@ export default function ProfilePage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
       setAuthUserId(user.id);
+
+      // Fetch referral info
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
+        if (!session?.access_token) return;
+        try {
+          const res = await fetch('/api/referral', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          const body = await res.json() as { ok: boolean; code?: string; referredCount?: number; coinsEarned?: number };
+          if (body.ok && body.code) {
+            setReferral({ code: body.code, referredCount: body.referredCount ?? 0, coinsEarned: body.coinsEarned ?? 0 });
+          }
+        } catch { /* non-fatal */ }
+      });
       setEmail(user.email || '');
       const profile = await getUserProfile(user.id);
       setName(profile?.name || (user.user_metadata?.name as string | undefined) || localStorage.getItem('profile-name') || 'Learner');
@@ -108,6 +124,26 @@ export default function ProfilePage() {
 
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
+  };
+
+  const handleShareReferral = async () => {
+    if (!referral) return;
+    const link = `${typeof window !== 'undefined' ? window.location.origin : ''}/signup?ref=${referral.code}`;
+    const text = `Join me on Katalyst for AWS & GenAI certification prep! Use my referral code ${referral.code} to get started: ${link}`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      await navigator.share({ text, url: link }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(link).catch(() => {});
+      setReferralCopied(true);
+      setTimeout(() => setReferralCopied(false), 2000);
+    }
+  };
+
+  const handleCopyReferralCode = async () => {
+    if (!referral) return;
+    await navigator.clipboard.writeText(referral.code).catch(() => {});
+    setReferralCopied(true);
+    setTimeout(() => setReferralCopied(false), 2000);
   };
 
   const handleResetHistory = async () => {
@@ -164,6 +200,41 @@ export default function ProfilePage() {
               <p className="dc-section-subtitle" style={{ color: 'var(--platform-profile-offer-accent)', fontWeight: 700 }}>{config.copy.profileOfferSubtitle}</p>
             </div>
             <button className="btn-primary">{isPro ? 'Manage plan' : 'Upgrade now'}</button>
+          </div>
+        </section>
+      )}
+
+      {referral && (
+        <section className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 22, marginBottom: 4 }}>Refer a Friend</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 16 }}>
+            Share your code and earn coins when friends sign up.
+          </p>
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+            <input
+              readOnly
+              value={referral.code}
+              className="admin-field-input"
+              style={{ fontFamily: 'monospace', letterSpacing: '0.12em', fontWeight: 700, maxWidth: 180, cursor: 'text' }}
+            />
+            <button className="settings-btn-ghost" onClick={handleCopyReferralCode}>
+              {referralCopied ? 'Copied!' : 'Copy code'}
+            </button>
+            <button className="btn-primary" onClick={handleShareReferral}>
+              Share link
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="dc-card" style={{ padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 26, fontWeight: 700 }}>{referral.referredCount}</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Friends referred</div>
+            </div>
+            <div className="dc-card" style={{ padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 26, fontWeight: 700, color: '#ffd84d' }}>{referral.coinsEarned} ⚡</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Coins earned</div>
+            </div>
           </div>
         </section>
       )}

@@ -6,6 +6,20 @@ export interface SystemFeaturesConfig {
   dailyQuizLabel: string;
   answerReviewEnabled: boolean;
   optionEEnabled: boolean;
+  // Maintenance mode
+  maintenanceMode: boolean;
+  maintenanceMessage: string;
+  // Force update
+  forceUpdateEnabled: boolean;
+  minimumAppVersion: string;
+  currentAppVersion: string;
+  appStoreUrl: string;
+  playStoreUrl: string;
+  // Ad controls — global kill-switches (individual adsRemoved flag lives in user_profiles)
+  adsEnabled: boolean;
+  bannerAdsEnabled: boolean;
+  interstitialAdsEnabled: boolean;
+  rewardedAdsEnabled: boolean;
 }
 
 export const DEFAULT_SYSTEM_FEATURES: SystemFeaturesConfig = {
@@ -14,6 +28,17 @@ export const DEFAULT_SYSTEM_FEATURES: SystemFeaturesConfig = {
   dailyQuizLabel: 'Daily Quiz',
   answerReviewEnabled: true,
   optionEEnabled: false,
+  maintenanceMode: false,
+  maintenanceMessage: 'We are performing scheduled maintenance. Please check back soon.',
+  forceUpdateEnabled: false,
+  minimumAppVersion: '1.0.0',
+  currentAppVersion: '1.0.0',
+  appStoreUrl: '',
+  playStoreUrl: '',
+  adsEnabled: true,
+  bannerAdsEnabled: true,
+  interstitialAdsEnabled: true,
+  rewardedAdsEnabled: true,
 };
 
 export function normalizeSystemFeatures(value: unknown): SystemFeaturesConfig {
@@ -25,6 +50,17 @@ export function normalizeSystemFeatures(value: unknown): SystemFeaturesConfig {
     dailyQuizLabel: typeof raw.dailyQuizLabel === 'string' && raw.dailyQuizLabel.trim() ? raw.dailyQuizLabel : DEFAULT_SYSTEM_FEATURES.dailyQuizLabel,
     answerReviewEnabled: typeof raw.answerReviewEnabled === 'boolean' ? raw.answerReviewEnabled : DEFAULT_SYSTEM_FEATURES.answerReviewEnabled,
     optionEEnabled: typeof raw.optionEEnabled === 'boolean' ? raw.optionEEnabled : DEFAULT_SYSTEM_FEATURES.optionEEnabled,
+    maintenanceMode: typeof raw.maintenanceMode === 'boolean' ? raw.maintenanceMode : DEFAULT_SYSTEM_FEATURES.maintenanceMode,
+    maintenanceMessage: typeof raw.maintenanceMessage === 'string' && raw.maintenanceMessage.trim() ? raw.maintenanceMessage : DEFAULT_SYSTEM_FEATURES.maintenanceMessage,
+    forceUpdateEnabled: typeof raw.forceUpdateEnabled === 'boolean' ? raw.forceUpdateEnabled : DEFAULT_SYSTEM_FEATURES.forceUpdateEnabled,
+    minimumAppVersion: typeof raw.minimumAppVersion === 'string' && raw.minimumAppVersion.trim() ? raw.minimumAppVersion : DEFAULT_SYSTEM_FEATURES.minimumAppVersion,
+    currentAppVersion: typeof raw.currentAppVersion === 'string' && raw.currentAppVersion.trim() ? raw.currentAppVersion : DEFAULT_SYSTEM_FEATURES.currentAppVersion,
+    appStoreUrl: typeof raw.appStoreUrl === 'string' ? raw.appStoreUrl : DEFAULT_SYSTEM_FEATURES.appStoreUrl,
+    playStoreUrl: typeof raw.playStoreUrl === 'string' ? raw.playStoreUrl : DEFAULT_SYSTEM_FEATURES.playStoreUrl,
+    adsEnabled: typeof raw.adsEnabled === 'boolean' ? raw.adsEnabled : DEFAULT_SYSTEM_FEATURES.adsEnabled,
+    bannerAdsEnabled: typeof raw.bannerAdsEnabled === 'boolean' ? raw.bannerAdsEnabled : DEFAULT_SYSTEM_FEATURES.bannerAdsEnabled,
+    interstitialAdsEnabled: typeof raw.interstitialAdsEnabled === 'boolean' ? raw.interstitialAdsEnabled : DEFAULT_SYSTEM_FEATURES.interstitialAdsEnabled,
+    rewardedAdsEnabled: typeof raw.rewardedAdsEnabled === 'boolean' ? raw.rewardedAdsEnabled : DEFAULT_SYSTEM_FEATURES.rewardedAdsEnabled,
   };
 }
 
