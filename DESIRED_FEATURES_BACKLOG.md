@@ -60,7 +60,7 @@
 - Daily quiz filtering behavior consistency.
   Implementation notes:
   Keep the featured quiz visible across any future filter/search entry points, not only the current discovery tabs, and centralize that logic into shared selectors.
-- Daily quiz analytics/admin observability. **PARTIAL** — Admin settings section shows a "coming soon" placeholder. Backend attempt-count tracking not yet built.
+- ~~Daily quiz analytics/admin observability.~~ **DONE (2026-03-17)** — `/api/admin/daily-quiz-analytics` endpoint tracks attempts + completions + completion rate from `app_settings.daily_quiz_stats`. quiz-submit route increments counters on every daily quiz submission (best-effort, never blocks submit). Admin settings section now shows live Attempts / Completions / Completion Rate stat cards.
 
 ### P2: True/False Mode
 - ~~True/False gameplay mode end to end.~~ **DONE (2026-03-16)** — Mode badge on intro, auto-detected from `quiz.mode === 'true_false'` or all-2-option questions, large TRUE/FALSE buttons in quiz runtime.
@@ -84,7 +84,7 @@
 - ~~Contest lifecycle.~~ **DONE (2026-03-16)** — `/api/contests` (public GET) + `/api/admin/contests` (GET/POST/DELETE). `/dashboard/contests` with live/upcoming/past tabs and enter CTA. Contest CRUD section in admin settings. `Contest` type extended with `rules`, `maxAttempts`, `resultsPublishedAt`.
 - ~~One vs One / Group / Random Battle shell.~~ **DONE (2026-03-16)** — `/api/battle` session create/join/answer with invite codes. `BattleSession`/`BattlePlayer`/`BattleStatus` types. `/dashboard/battles` mode selector, `/dashboard/battles/battle` lobby + waiting room. `mobile/app/battle.tsx` + `mobile/app/battle-lobby.tsx`.
 - ~~Self Challenge.~~ **DONE (2026-03-16)** — `/dashboard/self-challenge` personal-best comparison surface. Web + mobile quiz results show personal best delta.
-- Realtime state sync. **PENDING** — Supabase Realtime channel wiring for live battle score updates not yet built; current battle API is REST-only polling foundation.
+- ~~Realtime state sync.~~ **DONE (2026-03-17)** — Supabase Realtime broadcast channel extended with `score_update`, `progress_update`, and `finish` events. `broadcastScore` helper fires after every answer POST and pushes live scores to all participants. Battle overlay receives updates instantly and renders a live score table sorted by rank. `window.__katalystBroadcastScore` bridge wires the quiz player to the battle channel without prop drilling. REST polling kept as fallback.
 
 ### P6: Economy and Monetization
 - ~~Coins earn/spend ledger.~~ **DONE (2026-03-16)** — `/api/coins` returns balance + transaction history. `CoinTransaction`/`CoinReasonCode`/`CoinPack` types. `/dashboard/coins` balance + history page. DB migration comments embedded in route.
@@ -96,21 +96,20 @@
 ### P7: Platform, Compliance, and Release Readiness
 - ~~Maintenance mode and force-update flows.~~ **DONE (2026-03-16)** — `maintenanceMode`/`maintenanceMessage`/`forceUpdateEnabled`/`minimumAppVersion`/`currentAppVersion`/`appStoreUrl`/`playStoreUrl` in `SystemFeaturesConfig`. `MaintenanceBanner.tsx` full-screen overlay wired into `PlatformExperienceProvider`. Mobile `MaintenanceScreen.tsx` + `ForceUpdateScreen.tsx`. `semverLessThan` comparison in `_layout.tsx`. Admin toggles in settings.
 - ~~Privacy/account deletion.~~ **DONE (2026-03-16)** — `/api/account/delete` route (POST, rate-limit 5/min, service-role deletion cascade). Web profile Danger Zone with inline confirmation (type "DELETE"). Login page `?deleted=1` banner. Mobile profile Danger Zone with TextInput confirmation. No `window.confirm` used anywhere.
-- ~~ATT / privacy manifest / data safety (code).~~ **DONE (2026-03-16)** — `NSUserTrackingUsageDescription` in `ios/lms/Info.plist`. `ios/lms/PrivacyInfo.xcprivacy` created. `android.permissions` minimal set in `app.json`. ATT TODO comment in `_layout.tsx` with exact install command. Full Play Console Data Safety form = manual step, not done yet.
+- ~~ATT / privacy manifest / data safety (code).~~ **DONE (2026-03-17)** — `expo-tracking-transparency` added to `mobile/package.json`. `requestTrackingPermissionsAsync` uncommented in `_layout.tsx` (iOS-guarded, fires before ad SDK init). Plugin + `NSUserTrackingUsageDescription` wired in `app.json`. `PrivacyInfo.xcprivacy` in place. Full Play Console Data Safety form = manual step, not done yet.
 - ~~Production policy audit document.~~ **DONE (2026-03-16)** — `STORE_READINESS_AUDIT.md` with full checklist, hard blockers, and implementation notes.
 
 **P7 Remaining Hard Blockers (not code — require external action or new native deps):**
-- Install `expo-tracking-transparency` and uncomment ATT block in `mobile/app/_layout.tsx` before App Store submission.
-- Implement Apple StoreKit / Google Play Billing (react-native-purchases) before any paid feature goes live on mobile.
+- Implement Apple StoreKit / Google Play Billing (`react-native-purchases` or `expo-iap`) before any paid feature goes live on mobile.
 - Fill in Play Console Data Safety form and App Store Connect Privacy Nutrition Label (manual console steps).
 - Add Restore Purchases flow once IAP is live.
+- Run `npm install` + EAS native rebuild after adding `expo-tracking-transparency`.
 
 ## Recommended Next Implementation Order
-1. Add `/api/account/delete` route and wire it to the delete-account buttons in web + mobile profiles (required for App Store review).
-2. Add Supabase Realtime channel to battle sessions for live score sync.
-3. Replace mobile digital purchases with expo-iap / expo-in-app-purchases for store-compliant IAP.
-4. Complete ATT consent flow and submit Android data-safety declaration.
-5. Run production policy audit against current App Store/Play Store submission rules.
+1. Implement `react-native-purchases` (RevenueCat) for store-compliant IAP on iOS + Android.
+2. Add Restore Purchases flow once IAP is wired.
+3. Fill App Store Connect Privacy Nutrition Label + Play Console Data Safety form (manual steps).
+4. Submit EAS build using Xcode 26 image (required from April 28, 2026).
 
 ## Current Verification Standard
 - `npm run type-check`

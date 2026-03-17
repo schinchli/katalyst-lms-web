@@ -203,6 +203,35 @@ export async function POST(req: NextRequest) {
     logger.warn(ROUTE, 'coin_award_failed', { userId: user.id, quizId, reason: String(coinErr) });
   }
 
+  // ── Daily quiz analytics (best-effort — never block the response) ────────
+  try {
+    const sfRow2 = await db
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'system_feature_flags')
+      .maybeSingle();
+    const sf2 = sfRow2.data?.value as { dailyQuizEnabled?: boolean; dailyQuizQuizId?: string } | null;
+    if (sf2?.dailyQuizEnabled && sf2?.dailyQuizQuizId === quizId) {
+      const statsRow = await db
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'daily_quiz_stats')
+        .maybeSingle();
+      const existing = (statsRow.data?.value ?? {}) as { attempts?: number; completions?: number; lastUpdated?: string };
+      const nextStats = {
+        attempts:    (existing.attempts    ?? 0) + 1,
+        completions: (existing.completions ?? 0) + 1,
+        lastUpdated: completedAt,
+      };
+      await db.from('app_settings').upsert(
+        { key: 'daily_quiz_stats', value: nextStats },
+        { onConflict: 'key' },
+      );
+    }
+  } catch (analyticsErr) {
+    logger.warn(ROUTE, 'daily_analytics_failed', { userId: user.id, quizId, reason: String(analyticsErr) });
+  }
+
   // Check ads_removed entitlement on user profile
   // DB migration required:
   // ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ads_removed boolean DEFAULT false;

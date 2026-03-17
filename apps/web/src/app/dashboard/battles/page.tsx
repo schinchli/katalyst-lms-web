@@ -7,11 +7,32 @@ export const dynamic = 'force-dynamic';
  * TODO: persist battle sessions to Supabase battles table once migration is applied.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { BattleSession, BattleStatus, BattleParticipant } from '@/types';
 import { quizzes } from '@/data/quizzes';
+
+// ── Realtime broadcast event payloads ────────────────────────────────────────
+
+interface ScoreUpdatePayload {
+  participants: BattleParticipant[];
+}
+
+interface ProgressUpdatePayload {
+  currentQuestionIdx: number;
+}
+
+interface FinishPayload {
+  participants: BattleParticipant[];
+}
+
+type BattleBroadcast =
+  | { event: 'join';             payload: { userId: string } }
+  | { event: 'start';            payload: { quizId: string } }
+  | { event: 'score_update';     payload: ScoreUpdatePayload }
+  | { event: 'progress_update';  payload: ProgressUpdatePayload }
+  | { event: 'finish';           payload: FinishPayload };
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -90,17 +111,51 @@ function BattleLobbyOverlay({
 }) {
   const [opponentJoined, setOpponentJoined] = useState(false);
   const [waitTimeout, setWaitTimeout] = useState(false);
+
+  // Live score state — updated by score_update broadcasts during active gameplay
+  const [liveParticipants, setLiveParticipants] = useState<BattleParticipant[]>(session.participants);
+  // Progress state — updated by progress_update broadcasts
+  const [liveQuestionIdx, setLiveQuestionIdx] = useState(session.currentQuestionIdx);
+  // Whether the battle has finished (via finish broadcast)
+  const [battleFinished, setBattleFinished] = useState(false);
+
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  // Keep liveParticipants in sync if the parent session prop changes (e.g. after polling)
+  useEffect(() => {
+    setLiveParticipants(session.participants);
+  }, [session.participants]);
 
   useEffect(() => {
     const channelName = `battle-${session.id}`;
     const ch = supabase.channel(channelName, { config: { broadcast: { self: false } } });
 
-    ch.on('broadcast', { event: 'join' }, (payload: { payload?: { userId?: string } }) => {
-      if (payload.payload?.userId && payload.payload.userId !== session.hostUserId) {
+    // Existing: opponent joins the waiting room
+    ch.on('broadcast', { event: 'join' }, (msg: { payload?: { userId?: string } }) => {
+      if (msg.payload?.userId && msg.payload.userId !== session.hostUserId) {
         setOpponentJoined(true);
       }
-    }).subscribe();
+    });
+    // Live score update — any participant just answered a question
+    ch.on('broadcast', { event: 'score_update' }, (msg: { payload?: { participants?: BattleParticipant[] } }) => {
+      if (Array.isArray(msg.payload?.participants)) {
+        setLiveParticipants(msg.payload.participants as BattleParticipant[]);
+      }
+    });
+    // Question index advanced — all participants should be on the same question
+    ch.on('broadcast', { event: 'progress_update' }, (msg: { payload?: { currentQuestionIdx?: number } }) => {
+      if (typeof msg.payload?.currentQuestionIdx === 'number') {
+        setLiveQuestionIdx(msg.payload.currentQuestionIdx);
+      }
+    });
+    // Battle finished — show final scores to all participants simultaneously
+    ch.on('broadcast', { event: 'finish' }, (msg: { payload?: { participants?: BattleParticipant[] } }) => {
+      if (Array.isArray(msg.payload?.participants)) {
+        setLiveParticipants(msg.payload.participants as BattleParticipant[]);
+      }
+      setBattleFinished(true);
+    });
+    ch.subscribe();
 
     channelRef.current = ch;
 
@@ -114,6 +169,37 @@ function BattleLobbyOverlay({
       void supabase.removeChannel(ch);
     };
   }, [session.id, session.type, session.hostUserId]);
+
+  /**
+   * broadcastScore — call this after a successful answer API response.
+   * Sends score_update and (when the question index advances) progress_update
+   * to all participants on the channel.
+   */
+  const broadcastScore = useCallback((updatedSession: BattleSession) => {
+    const ch = channelRef.current;
+    if (!ch) return;
+    void ch.send({
+      type: 'broadcast',
+      event: 'score_update',
+      payload: { participants: updatedSession.participants } satisfies ScoreUpdatePayload,
+    });
+    // If the question index changed, broadcast that too
+    if (updatedSession.currentQuestionIdx !== liveQuestionIdx) {
+      void ch.send({
+        type: 'broadcast',
+        event: 'progress_update',
+        payload: { currentQuestionIdx: updatedSession.currentQuestionIdx } satisfies ProgressUpdatePayload,
+      });
+    }
+    // If session is now finished, broadcast final results
+    if (updatedSession.status === 'finished') {
+      void ch.send({
+        type: 'broadcast',
+        event: 'finish',
+        payload: { participants: updatedSession.participants } satisfies FinishPayload,
+      });
+    }
+  }, [liveQuestionIdx]);
 
   const canStart = opponentJoined || (session.type === 'random' && waitTimeout) || session.type === 'group';
 
@@ -137,7 +223,7 @@ function BattleLobbyOverlay({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>
-            Battle Lobby
+            {battleFinished ? 'Battle Results' : 'Battle Lobby'}
           </h2>
           <button
             onClick={onClose}
@@ -148,8 +234,8 @@ function BattleLobbyOverlay({
           </button>
         </div>
 
-        {/* Invite code (1v1 + group) */}
-        {session.inviteCode && (
+        {/* Invite code (1v1 + group) — only shown while waiting */}
+        {session.inviteCode && !battleFinished && (
           <div style={{ marginBottom: 20, padding: 16, background: 'var(--bg)', borderRadius: 12, textAlign: 'center', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 8 }}>Invite Code</div>
             <div style={{ fontSize: 32, fontWeight: 700, letterSpacing: 8, color: '#7367F0', fontFamily: 'monospace' }}>{session.inviteCode}</div>
@@ -163,44 +249,131 @@ function BattleLobbyOverlay({
           <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{quizTitle}</div>
         </div>
 
-        {/* Status */}
-        <div style={{
-          marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
-          background: opponentJoined ? '#28C76F12' : '#FF9F4312', borderRadius: 10,
-          border: `1px solid ${opponentJoined ? '#28C76F40' : '#FF9F4340'}`,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: opponentJoined ? '#28C76F' : '#FF9F43' }}>
-            {opponentJoined
-              ? 'Opponent joined! Ready to battle.'
-              : waitTimeout
-              ? 'No opponent found. You can play solo instead.'
-              : session.type === 'random'
-              ? 'Looking for an opponent…'
-              : session.type === 'group'
-              ? `Waiting for players to join with code ${session.inviteCode ?? ''}…`
-              : `Waiting for opponent to join with code ${session.inviteCode ?? ''}…`}
-          </span>
-        </div>
+        {/* Live score table — visible once there are participants (during and after battle) */}
+        {liveParticipants.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 8 }}>
+              {battleFinished ? 'Final Scores' : 'Live Scores'}
+              {!battleFinished && liveQuestionIdx > 0 && (
+                <span style={{ marginLeft: 8, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+                  — Q{liveQuestionIdx + 1}
+                </span>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[...liveParticipants]
+                .sort((a, b) => b.score - a.score)
+                .map((p, rank) => (
+                  <div
+                    key={p.userId}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '8px 12px', borderRadius: 8,
+                      background: rank === 0 ? '#7367F012' : 'var(--bg)',
+                      border: `1px solid ${rank === 0 ? '#7367F030' : 'var(--border)'}`,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: rank === 0 ? '#7367F0' : 'var(--text-secondary)', minWidth: 16 }}>
+                        #{rank + 1}
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{p.name}</span>
+                      {battleFinished && p.finishedAt && (
+                        <span style={{ fontSize: 10, color: '#28C76F', fontWeight: 600 }}>✓ Done</span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: rank === 0 ? '#7367F0' : 'var(--text)' }}>
+                      {p.score}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
 
+        {/* Status — hidden once battle is finished */}
+        {!battleFinished && (
+          <div style={{
+            marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+            background: opponentJoined ? '#28C76F12' : '#FF9F4312', borderRadius: 10,
+            border: `1px solid ${opponentJoined ? '#28C76F40' : '#FF9F4340'}`,
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: opponentJoined ? '#28C76F' : '#FF9F43' }}>
+              {opponentJoined
+                ? 'Opponent joined! Ready to battle.'
+                : waitTimeout
+                ? 'No opponent found. You can play solo instead.'
+                : session.type === 'random'
+                ? 'Looking for an opponent…'
+                : session.type === 'group'
+                ? `Waiting for players to join with code ${session.inviteCode ?? ''}…`
+                : `Waiting for opponent to join with code ${session.inviteCode ?? ''}…`}
+            </span>
+          </div>
+        )}
+
+        {/* Action buttons */}
         <div style={{ display: 'flex', gap: 10 }}>
-          {canStart && (
+          {battleFinished ? (
             <button
-              onClick={handleStart}
+              onClick={onClose}
               style={{ flex: 1, height: 44, borderRadius: 10, border: 'none', background: '#7367F0', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
             >
-              {waitTimeout && !opponentJoined ? 'Play Solo Instead' : 'Start Battle!'}
+              Close
             </button>
+          ) : (
+            <>
+              {canStart && (
+                <button
+                  onClick={handleStart}
+                  style={{ flex: 1, height: 44, borderRadius: 10, border: 'none', background: '#7367F0', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  {waitTimeout && !opponentJoined ? 'Play Solo Instead' : 'Start Battle!'}
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                style={{ padding: '0 16px', height: 44, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Cancel
+              </button>
+            </>
           )}
-          <button
-            onClick={onClose}
-            style={{ padding: '0 16px', height: 44, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}
-          >
-            Cancel
-          </button>
         </div>
+
+        {/*
+          broadcastScore is passed down via context / prop drilling when the quiz
+          player submits an answer. For this foundation layer the function is defined
+          here and exposed on the window so the quiz page can call it if it detects a
+          battle session in progress. This avoids any new files or architectural changes.
+          Safe to ignore in non-battle quiz sessions.
+        */}
+        <BroadcastScoreRegistrar broadcastScore={broadcastScore} />
       </div>
     </div>
   );
+}
+
+/**
+ * Registers the broadcastScore helper on the window so the quiz page can call
+ * it after a successful answer submission without requiring prop-drilling through
+ * the router or a new shared context file.
+ *
+ * The window property is cleaned up when the overlay unmounts.
+ */
+function BroadcastScoreRegistrar({
+  broadcastScore,
+}: {
+  broadcastScore: (updatedSession: BattleSession) => void;
+}) {
+  useEffect(() => {
+    // Attach under a namespaced key to avoid collisions
+    (window as Window & { __katalystBroadcastScore?: (s: BattleSession) => void }).__katalystBroadcastScore = broadcastScore;
+    return () => {
+      delete (window as Window & { __katalystBroadcastScore?: (s: BattleSession) => void }).__katalystBroadcastScore;
+    };
+  }, [broadcastScore]);
+  return null;
 }
 
 // ── Join dialog ───────────────────────────────────────────────────────────────

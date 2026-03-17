@@ -184,6 +184,15 @@ export default function SettingsPage() {
   const [coinPacks, setCoinPacks] = useState<CoinPack[]>([]);
   const [coinPacksSaved, setCoinPacksSaved] = useState(false);
   const [pendingDeletePackId, setPendingDeletePackId] = useState<string | null>(null);
+  // ── Daily quiz analytics ─────────────────────────────────────────────────
+  const [dailyAnalytics, setDailyAnalytics] = useState<{
+    quizId: string;
+    dailyEnabled: boolean;
+    attempts: number;
+    completions: number;
+    completionRate: number;
+    lastUpdated: string;
+  } | null>(null);
   const [newPackForm, setNewPackForm] = useState<Omit<CoinPack, 'id'>>({
     label: '', coins: 100, priceInr: 99, priceUsd: 1.19, popular: false, enabled: true,
   });
@@ -215,7 +224,7 @@ export default function SettingsPage() {
         }
         setAuthorized(true);
 
-        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes, coinPacksRes] = await Promise.all([
+        const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes, coinPacksRes, dailyAnalyticsRes] = await Promise.all([
           fetch('/api/admin/mobile-config', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
@@ -240,6 +249,9 @@ export default function SettingsPage() {
           fetch('/api/admin/coin-packs', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }),
+          fetch('/api/admin/daily-quiz-analytics', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }),
         ]);
         const configBody = await configRes.json() as { config?: unknown };
         const quizCatalogBody = await quizCatalogRes.json() as { overrides?: unknown };
@@ -249,6 +261,15 @@ export default function SettingsPage() {
         const categoriesBody = await categoriesRes.json() as { categories?: unknown };
         const contestsBody = await contestsRes.json() as { contests?: unknown };
         const coinPacksBody = await coinPacksRes.json() as { ok?: boolean; packs?: unknown };
+        const dailyAnalyticsBody = await dailyAnalyticsRes.json() as {
+          ok?: boolean;
+          quizId?: string;
+          dailyEnabled?: boolean;
+          attempts?: number;
+          completions?: number;
+          completionRate?: number;
+          lastUpdated?: string;
+        };
         setConfig(normalizePlatformExperience(configBody.config));
         const nextOverrides = normalizeQuizCatalogOverrides(quizCatalogBody.overrides);
         setQuizOverrides(nextOverrides);
@@ -263,6 +284,16 @@ export default function SettingsPage() {
         const rawContests = Array.isArray(contestsBody.contests) ? contestsBody.contests : [];
         setContests(rawContests.map(normalizeContest).filter((c): c is Contest => c !== null));
         setCoinPacks(Array.isArray(coinPacksBody.packs) ? coinPacksBody.packs as CoinPack[] : []);
+        if (dailyAnalyticsBody.ok) {
+          setDailyAnalytics({
+            quizId:        dailyAnalyticsBody.quizId        ?? '',
+            dailyEnabled:  dailyAnalyticsBody.dailyEnabled  ?? false,
+            attempts:      dailyAnalyticsBody.attempts      ?? 0,
+            completions:   dailyAnalyticsBody.completions   ?? 0,
+            completionRate: dailyAnalyticsBody.completionRate ?? 0,
+            lastUpdated:   dailyAnalyticsBody.lastUpdated   ?? '',
+          });
+        }
       } catch {
         router.replace('/dashboard');
       }
@@ -1628,9 +1659,41 @@ export default function SettingsPage() {
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
                 Daily quiz analytics
               </div>
-              <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 13 }}>
-                Analytics: coming soon — attempt count and completion rate will appear here once the backend supports daily quiz tracking.
-              </div>
+              {dailyAnalytics === null ? (
+                <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 13 }}>
+                  Loading analytics…
+                </div>
+              ) : !dailyAnalytics.dailyEnabled || !dailyAnalytics.quizId ? (
+                <div style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 13 }}>
+                  Daily quiz is disabled — enable it above to start tracking attempts.
+                </div>
+              ) : (
+                <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Attempts</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{dailyAnalytics.attempts}</div>
+                  </div>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Completions</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{dailyAnalytics.completions}</div>
+                  </div>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Completion rate</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{Math.round(dailyAnalytics.completionRate * 100)}%</div>
+                  </div>
+                  {dailyAnalytics.lastUpdated ? (
+                    <div style={{ gridColumn: '1 / -1', marginTop: 2, color: 'var(--text-secondary)', fontSize: 12 }}>
+                      Quiz: <span style={{ fontWeight: 600, color: 'var(--text)' }}>{dailyAnalytics.quizId}</span>
+                      {' · '}Last submission: {new Date(dailyAnalytics.lastUpdated).toLocaleString()}
+                    </div>
+                  ) : (
+                    <div style={{ gridColumn: '1 / -1', marginTop: 2, color: 'var(--text-secondary)', fontSize: 12 }}>
+                      Quiz: <span style={{ fontWeight: 600, color: 'var(--text)' }}>{dailyAnalytics.quizId}</span>
+                      {' · '}No submissions yet
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
               <input
