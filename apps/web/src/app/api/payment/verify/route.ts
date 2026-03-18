@@ -134,6 +134,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Payment provider verification failed' }, { status: 502 });
   }
 
+  // Reject orders that haven't been paid yet (status must be 'paid')
+  if (order.status && order.status !== 'paid') {
+    logger.error(ROUTE, 'order_not_paid', { userId: user.id, ip, reason: `status=${order.status}` });
+    return NextResponse.json({ error: 'Payment not completed' }, { status: 402 });
+  }
+
   const notes = order.notes ?? {};
   if (notes.user_id !== user.id || notes.purchase_type !== purchaseType) {
     logger.error(ROUTE, 'order_ownership_mismatch', { userId: user.id, ip, reason: razorpay_order_id });

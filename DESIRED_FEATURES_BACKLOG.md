@@ -48,6 +48,18 @@
 - `npm run build --workspace=apps/web`
 - `npm test --workspace=mobile`
 
+### Security Hardening Done (2026-03-18)
+- Removed hardcoded dev backdoor from `authStore.ts` (a@a.in / test)
+- Restored `rateLimitStore.checkAndConsume` rate limiting (was bypassed)
+- Added password complexity checks to mobile signup (uppercase + digit)
+- Removed dangerous Android permissions (`SYSTEM_ALERT_WINDOW`, `READ/WRITE_EXTERNAL_STORAGE`)
+- Wrapped debug logs in `__DEV__` guard in `apiService.ts`
+- Added Razorpay `order.status === 'paid'` guard to payment verify route
+- Added `upgradeToPremium` DB write failure rollback in `authStore.ts`
+- Tightened admin write-route rate limits from 30 → 10 req/min
+- Fixed Fabric `addViewAt` crash on Android with `authIsLoading` guard
+- Made Resources tab videos tappable via `Linking.openURL`
+
 ## Pending Work
 
 ### P0: Finish Shared CRUD Foundation
@@ -100,16 +112,32 @@
 - ~~Production policy audit document.~~ **DONE (2026-03-16)** — `STORE_READINESS_AUDIT.md` with full checklist, hard blockers, and implementation notes.
 
 **P7 Remaining Hard Blockers (not code — require external action or new native deps):**
+- Fill `eas.json`: `appleId`, `ascAppId`, `appleTeamId` (requires Apple Developer enrollment + ASC app record)
+- Run `eas init` to get and set `app.json extra.eas.projectId`
+- Place `google-play-service-account.json` and update `eas.json serviceAccountKeyPath`
 - Implement Apple StoreKit / Google Play Billing (`react-native-purchases` or `expo-iap`) before any paid feature goes live on mobile.
 - Fill in Play Console Data Safety form and App Store Connect Privacy Nutrition Label (manual console steps).
 - Add Restore Purchases flow once IAP is live.
+- Create `/privacy` and `/terms` pages in `apps/web/src/app/` (required by both stores).
 - Run `npm install` + EAS native rebuild after adding `expo-tracking-transparency`.
 
+## Launch Readiness Documents (2026-03-18)
+- `SECURITY_AUDIT_AND_HARDENING.md` — all findings, fixes, clean items
+- `PERFORMANCE_SIZE_AND_PERMISSION_AUDIT.md` — permissions, size, 16KB compliance
+- `PLAYSTORE_LAUNCH_READINESS.md` — Google Play checklist with data safety table
+- `APP_STORE_LAUNCH_READINESS.md` — App Store checklist with IAP compliance note
+- `STORE_LISTING_CONTENT.md` — full store copy, keywords, feature graphic spec
+- `SCREENSHOT_CAPTURE_PLAN.md` — simulator commands, 8-shot list, automation script
+
 ## Recommended Next Implementation Order
-1. Implement `react-native-purchases` (RevenueCat) for store-compliant IAP on iOS + Android.
-2. Add Restore Purchases flow once IAP is wired.
-3. Fill App Store Connect Privacy Nutrition Label + Play Console Data Safety form (manual steps).
-4. Submit EAS build using Xcode 26 image (required from April 28, 2026).
+1. Enrol in Apple Developer Program ($99) + create App Store Connect record.
+2. Run `eas init` → fill `app.json extra.eas.projectId`.
+3. Download Google Play service account JSON → update `eas.json`.
+4. Create `/privacy` and `/terms` pages in web app.
+5. Run `eas build --platform all --profile production` → first store builds.
+6. Implement `react-native-purchases` (RevenueCat) for store-compliant IAP.
+7. Add Restore Purchases flow.
+8. Submit to Internal Testing on both stores, then promote through the ladder.
 
 ## Current Verification Standard
 - `npm run type-check`

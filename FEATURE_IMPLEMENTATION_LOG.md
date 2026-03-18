@@ -1,5 +1,57 @@
 # Feature Implementation Log
 
+## 2026-03-18 (Security Hardening & Production Launch Prep)
+
+### Critical Security Fixes
+
+**`mobile/stores/authStore.ts`** — modified
+- Removed hardcoded dev backdoor: `a@a.in / test` block that bypassed Supabase auth and granted admin+premium — commit `91b7c67`
+- `upgradeToPremium`: added rollback on `saveSubscription` DB failure — previous subscription state restored and SecureStore entry cleared if DB write throws
+
+**`mobile/stores/rateLimitStore.ts`** — modified
+- Removed `return { ok: true }` bypass that made rate limiting a no-op; real day/hour limits now enforced — commit `91b7c67`
+
+**`mobile/app/(auth)/signup.tsx`** — modified
+- Password validation: added uppercase letter check and digit check (previously only length was checked) — commit `91b7c67`
+- Placeholder and hint text updated to reflect requirements
+
+**`mobile/services/apiService.ts`** — modified
+- Wrapped `console.warn` in `__DEV__` guard to prevent debug output in production builds — commit `91b7c67`
+
+**`mobile/android/app/src/main/AndroidManifest.xml`** — modified
+- Removed `SYSTEM_ALERT_WINDOW` (overlay — dangerous, not needed) — commit `d4cabb7`
+- Removed `READ_EXTERNAL_STORAGE` (deprecated Android 13+, not needed) — commit `d4cabb7`
+- Removed `WRITE_EXTERNAL_STORAGE` (deprecated Android 13+, not needed) — commit `d4cabb7`
+- Final permission set: 4 minimal permissions only
+
+**`apps/web/src/app/api/payment/verify/route.ts`** — modified
+- Added `order.status !== 'paid'` guard after Razorpay order fetch — returns 402 if order not in paid state; prevents double-processing of unpaid/pending orders
+
+**5 admin write-route API files** — modified
+- `admin/quiz-catalog`, `admin/theme`, `admin/system-features`, `admin/app-content`, `admin/mobile-config`
+- Rate limits on POST (write) handlers tightened from 30 req/min → 10 req/min
+
+**`mobile/app/_layout.tsx`** — modified
+- Added `authIsLoading` selector and `if (authIsLoading) return null` guard in `ThemedApp` — prevents Fabric "addViewAt: child already has a parent" crash — commit `7e7d0ac`
+
+**`mobile/app/(tabs)/learn.tsx`** — modified
+- Video/resource cards: wrapped in `Pressable` with `Linking.openURL` — previously tapping did nothing — commit `7e7d0ac`
+- Chapter rows: wrapped in `Pressable` with timestamp `?t=${seconds}` deep link
+
+### Launch Readiness Documents Created
+- `SECURITY_AUDIT_AND_HARDENING.md` — full audit findings, remediation log, clean items
+- `PERFORMANCE_SIZE_AND_PERMISSION_AUDIT.md` — permissions, bundle size, 16KB compliance
+- `PLAYSTORE_LAUNCH_READINESS.md` — Play Store checklist, data safety, release ladder
+- `APP_STORE_LAUNCH_READINESS.md` — App Store checklist, IAP compliance, privacy nutrition label
+- `STORE_LISTING_CONTENT.md` — app name, descriptions, keywords, screenshot subjects
+- `SCREENSHOT_CAPTURE_PLAN.md` — simulator commands, shot list, automation script
+
+### Validation
+- `npx tsc --noEmit` (web): 0 errors ✅
+- `npm test` (mobile): all suites passing ✅
+
+---
+
 ## 2026-03-16 (P5 — Competitive Modes)
 
 ### Contest Lifecycle (P5-1)

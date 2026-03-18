@@ -37,7 +37,7 @@ async function verifyAdminFromAuthHeader(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  if (!(await checkRateLimit(`admin-mobile-config:${ip}`, 30, 60_000))) {
+  if (!(await checkRateLimit(`admin-mobile-config:${ip}`, 10, 60_000))) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
