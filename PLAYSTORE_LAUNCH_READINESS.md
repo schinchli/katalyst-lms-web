@@ -1,5 +1,5 @@
 # Google Play Store Launch Readiness — Katalyst LMS
-> **Date:** 2026-03-18 | **Target Track:** Internal Testing → Closed Alpha → Production
+> **Date:** 2026-03-18 | **Current Status:** Not yet ready to submit | **Target Track:** Internal Testing → Closed Alpha → Production
 
 ---
 
@@ -8,10 +8,10 @@
 | # | Blocker | Action Required |
 |---|---------|----------------|
 | 1 | EAS `projectId` is empty in `app.json` | Run `eas init` and paste the returned ID |
-| 2 | `google-play-service-account.json` missing | Create service account in Play Console → download JSON → place in `mobile/` (gitignored) |
-| 3 | `serviceAccountKeyPath` in `eas.json` is a placeholder | Update to correct path after step 2 |
+| 2 | Google Play service account key missing | Create service account in Play Console → download JSON → place at `mobile/credentials/google-play-service-account.json` |
+| 3 | First production AAB has not been built and smoke-tested | Run the production build, install on a physical Android device, and verify auth, payments, ads, deletion, and update flows |
 | 4 | Android keystore not yet generated | EAS generates on first build; back up immediately to 1Password |
-| 5 | `versionCode` not managed | Set `autoIncrement: true` in `eas.json` production profile ← **already done** |
+| 5 | Play Console metadata/assets not yet uploaded | Upload screenshots, icon, feature graphic, content rating answers, and Data Safety disclosure |
 
 ---
 
@@ -21,12 +21,16 @@
 
 - [x] `android.buildType: "app-bundle"` in `eas.json` production profile
 - [x] Target SDK 34+ (React Native 0.81 targets API 35)
-- [x] Minimal permissions (4 only — no dangerous permissions)
+- [x] Minimal permissions (2 explicit Android permissions in Expo config; no dangerous permissions requested)
 - [x] 16KB page size compliant (RN 0.81 + all native modules)
 - [x] No hardcoded secrets in code
 - [x] Hermes engine enabled
+- [x] Submit path points to `./credentials/google-play-service-account.json`
+- [x] Local mobile repo ignores Play credentials and signing artifacts
+- [x] `npm run doctor --workspace=mobile` is available as part of release checks
 - [ ] `eas init` — fill `app.json extra.eas.projectId`
-- [ ] `google-play-service-account.json` placed and path updated in `eas.json`
+- [ ] `mobile/credentials/google-play-service-account.json` created from Play Console service account
+- [ ] Run: `npm run doctor --workspace=mobile` (current environment is offline, so this must be re-run on a machine with npm registry access)
 - [ ] Run: `eas build --platform android --profile production`
 - [ ] Test production build on physical Android device (API 35)
 - [ ] Test on low-end device (2 GB RAM, older CPU)
@@ -57,7 +61,7 @@ The following must be declared in Play Console → Data Safety:
 | Precise location | No | — | — |
 | Financial info | Yes (purchase history) | No | Subscription management |
 
-Data is encrypted in transit (HTTPS). User can delete account via Settings → Delete Account (to be implemented).
+Data is encrypted in transit (HTTPS). User can delete account via Settings → Delete Account.
 
 ---
 
@@ -87,6 +91,9 @@ Production (10% → 50% → 100% over 7 days)
 ## Commands
 
 ```bash
+# Expo health check
+cd mobile && npm run doctor
+
 # Build production AAB
 cd mobile && eas build --platform android --profile production
 
@@ -105,3 +112,24 @@ eas update --branch production --message "Fix: <description>"
 - For digital subscriptions on Android, Google Play Billing API is required (guideline 9.4)
 - Current plan: Android users subscribe via web browser → deeplink back to app
 - This is compliant for now but limits conversion rate; native IAP is P0 post-launch
+
+---
+
+## Repo-Side Ready vs External Blockers
+
+### Ready in repo
+- Android package name is set in `mobile/app.json`
+- Production AAB build type is set in `mobile/eas.json`
+- `autoIncrement` is enabled in `mobile/eas.json`
+- Minimal Android permissions are declared in `mobile/app.json`
+- Launch/readiness docs exist:
+  - `PLAYSTORE_LAUNCH_READINESS.md`
+  - `STORE_LISTING_CONTENT.md`
+  - `SCREENSHOT_CAPTURE_PLAN.md`
+  - `SECURITY_AUDIT_AND_HARDENING.md`
+
+### Still blocked outside repo
+- EAS project must be initialized so `app.json` gets a real `extra.eas.projectId`
+- Play Console service account JSON must be created and added locally
+- First production AAB must be built and tested on a real Android device
+- Play Console listing assets and disclosures must be uploaded
