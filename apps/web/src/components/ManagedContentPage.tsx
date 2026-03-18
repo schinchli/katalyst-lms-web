@@ -13,6 +13,98 @@ const TITLES: Record<ContentKey, string> = {
   instructions: 'How To Play',
 };
 
+const FALLBACK: Partial<Record<ContentKey, string>> = {
+  privacyPolicy: `Last updated: March 2026
+
+Katalyst ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use the Katalyst app and website (collectively, "the Service").
+
+1. INFORMATION WE COLLECT
+We collect the following information when you create an account or use the Service:
+• Email address and display name (for account creation and personalisation)
+• Quiz answers, scores, and progress history (to track your learning)
+• App usage data such as session duration and features used (to improve the Service)
+• Device advertising ID (for optional personalised advertising via Google AdMob)
+
+2. HOW WE USE YOUR INFORMATION
+• To provide and operate the Service
+• To personalise your learning experience and show relevant content
+• To display your progress and position on the leaderboard
+• To send important account-related notifications (no marketing without consent)
+• To show advertisements (you can opt out of personalised ads via device settings)
+
+3. DATA SHARING
+We do not sell your personal data. We share data only with:
+• Supabase (database and authentication infrastructure)
+• Google AdMob (advertising — subject to Google's privacy policy)
+• Razorpay (payment processing — subject to Razorpay's privacy policy)
+
+4. DATA RETENTION
+Your account data is retained as long as your account is active. You may request deletion of your account and all associated data at any time via Settings → Delete Account.
+
+5. SECURITY
+All data is transmitted over HTTPS. Authentication tokens are stored in the device's secure enclave (iOS Keychain / Android Keystore). We do not store passwords in plain text.
+
+6. CHILDREN'S PRIVACY
+The Service is not directed at children under 13. We do not knowingly collect data from children under 13.
+
+7. YOUR RIGHTS
+You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at support@katalysthq.app or use the in-app account deletion feature.
+
+8. CHANGES TO THIS POLICY
+We may update this policy. We will notify you of material changes via the app or email. Continued use after changes constitutes acceptance.
+
+9. CONTACT
+Katalyst LMS | support@katalysthq.app`,
+
+  termsAndConditions: `Last updated: March 2026
+
+Please read these Terms and Conditions ("Terms") carefully before using Katalyst.
+
+1. ACCEPTANCE OF TERMS
+By accessing or using Katalyst, you agree to be bound by these Terms. If you do not agree, do not use the Service.
+
+2. DESCRIPTION OF SERVICE
+Katalyst provides cloud and AI certification exam preparation content including practice quizzes, flashcards, and learning resources. The Service is provided "as is" for educational purposes.
+
+3. ACCOUNTS
+You are responsible for maintaining the confidentiality of your account credentials. You must be at least 13 years old to create an account. You agree to provide accurate information and keep it up to date.
+
+4. SUBSCRIPTIONS AND PAYMENTS
+• Free tier: access to a limited set of questions and features
+• Premium tier: full access to all content, available as monthly or annual subscription
+• Payments are processed securely by Razorpay
+• Subscriptions auto-renew unless cancelled before the renewal date
+• Refunds are handled in accordance with applicable law and store policies
+
+5. INTELLECTUAL PROPERTY
+All content on Katalyst — including questions, explanations, course materials, and software — is owned by or licensed to Katalyst. You may not copy, distribute, or create derivative works without written permission.
+
+6. PROHIBITED CONDUCT
+You agree not to:
+• Attempt to circumvent access controls or share account credentials
+• Scrape, reverse-engineer, or reproduce the quiz content
+• Use the Service for any unlawful purpose
+• Misrepresent your identity or affiliation
+
+7. DISCLAIMERS
+Katalyst is an independent prep resource and is not affiliated with or endorsed by Amazon Web Services, Google, Microsoft, or any certification body. Passing scores on practice quizzes do not guarantee passing scores on official exams.
+
+8. LIMITATION OF LIABILITY
+To the maximum extent permitted by law, Katalyst shall not be liable for indirect, incidental, or consequential damages arising from your use of the Service.
+
+9. TERMINATION
+We may suspend or terminate your account if you violate these Terms. You may delete your account at any time via Settings → Delete Account.
+
+10. CHANGES TO TERMS
+We may modify these Terms at any time. Continued use after changes constitutes acceptance of the updated Terms.
+
+11. GOVERNING LAW
+These Terms are governed by the laws of India. Any disputes shall be resolved in the courts of Bangalore, Karnataka.
+
+12. CONTACT
+Katalyst LMS | support@katalysthq.app`,
+};
+
 export function ManagedContentPage({ contentKey }: { contentKey: ContentKey }) {
   const [content, setContent] = useState<AppContentConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +117,10 @@ export function ManagedContentPage({ contentKey }: { contentKey: ContentKey }) {
   }, []);
 
   const title = TITLES[contentKey];
-  const body = useMemo(() => content?.[contentKey] ?? '', [content, contentKey]);
+  const body = useMemo(
+    () => content?.[contentKey] || FALLBACK[contentKey] || '',
+    [content, contentKey],
+  );
 
   return (
     <div className="page-content dc-shell">
