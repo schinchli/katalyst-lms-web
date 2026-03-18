@@ -1,213 +1,227 @@
 # Screenshot Capture Plan — Katalyst LMS
-> **Date:** 2026-03-18 | Required for both Play Store and App Store submissions
+> **Updated:** 2026-03-18
 
 ---
 
-## Required Screenshot Sizes
+## Required Sizes at a Glance
 
-| Store | Device | Resolution | Count |
-|-------|--------|-----------|-------|
-| App Store | iPhone 6.9" (iPhone 16 Pro Max) | 1320×2868px | 6–10 |
-| App Store | iPad 12.9" (optional) | 2048×2732px | 6–10 |
-| Play Store | Phone portrait | Min 320×568px | 2–8 |
+| Store | Device | Recommended size | Min | Max | Min count |
+|-------|--------|-----------------|-----|-----|-----------|
+| Play Store | Phone | **1080 × 1920 px** | 320px short side | 3840px either | **2** |
+| Play Store | Feature graphic | **1024 × 500 px** | — | — | 1 (required if video) |
+| App Store | iPhone 6.9" | **1320 × 2868 px** | — | — | **1** |
+| App Store | iPad 12.9" | 2048 × 2732 px | — | — | Optional |
+
+> iOS simulator (iPhone 16 Pro) outputs **1179 × 2556 px** — valid for both stores. Use as-is or export at 1080×2340 for Android.
 
 ---
 
-## iOS Simulator Screenshot Commands
+## Step 1 — Boot simulator and start Metro
 
 ```bash
-# Boot iPhone 16 Pro Max simulator
-xcrun simctl boot "iPhone 16 Pro Max"
-open /Applications/Simulator.app
-
-# Start Metro
-cd /Users/schinchli/Documents/Projects/lms/mobile
+# Terminal 1 — start Metro
+cd ~/Documents/Projects/lms/mobile
 npx expo start --port 8083
 
-# Open app in simulator
+# Terminal 2 — open simulator
+xcrun simctl boot "iPhone 16 Pro"
+open /Applications/Simulator.app
+
+# Wait for Metro to be ready, then open app
 xcrun simctl openurl booted "exp://localhost:8083"
-
-# Take screenshot (saves to ~/Desktop)
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-01-home.png
 ```
 
 ---
 
-## Android Emulator Screenshot Commands
+## Step 2 — Prepare the app for screenshots
 
-```bash
-# Capture screenshot via ADB
-adb exec-out screencap -p > ~/Desktop/katalyst-android-01-home.png
-
-# Or use Android Studio Device Manager → More → Screenshot
-```
-
----
-
-## Shot List & Navigation Steps
-
-### Shot 1 — Home / Dashboard
-**Goal:** Show streak, XP bar, quiz cards with progress rings
-
-```bash
-# Navigate to Home tab (tab 1, bottom-left)
-xcrun simctl io booted tap 50 820       # Home tab
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-01-home.png
-```
-
-**Annotation overlay ideas:** "Daily Streak 🔥", "XP Progress", "Start Today's Quiz"
+Before capturing, make the app look its best:
+- Sign in with a real test account (not guest) so all data shows
+- Make sure the leaderboard has entries (your test account + at least 2 others)
+- Set streak to a visible number (complete a quiz to trigger streak)
+- Enable dark mode (Settings → Appearance) — looks better in screenshots
 
 ---
 
-### Shot 2 — Quiz in Progress (single question)
-**Goal:** Show a question with 4 answer options, timer running
+## Step 3 — Capture all 8 shots
+
+Run this script (or capture manually using the commands below):
 
 ```bash
-# From Home tab, tap the first quiz card (approx coords on 393×852 screen)
-xcrun simctl io booted tap 196 380      # Tap first quiz card
-sleep 1.5
-xcrun simctl io booted tap 196 380      # Tap "Start Quiz" button
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-02-quiz-question.png
-```
+#!/usr/bin/env bash
+# capture-screenshots.sh
+# Run from: ~/Documents/Projects/lms/mobile
 
----
-
-### Shot 3 — Answer Selected (correct)
-**Goal:** Show green highlight on correct answer + explanation
-
-```bash
-# Tap option A (first answer)
-xcrun simctl io booted tap 196 420
-sleep 0.5
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-03-quiz-answer.png
-```
-
----
-
-### Shot 4 — Quiz Results
-**Goal:** Show score card with XP earned, coins, pass/fail badge
-
-```bash
-# Complete quiz then screenshot results screen
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-04-quiz-results.png
-```
-
----
-
-### Shot 5 — Leaderboard
-**Goal:** Show top users with rank badges, XP scores, user avatar initials
-
-```bash
-# Navigate to Growth tab (tab 4)
-xcrun simctl io booted tap 315 820      # Growth tab
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-05-leaderboard.png
-```
-
----
-
-### Shot 6 — Learning Hub / Resources
-**Goal:** Show course list with progress indicators and YouTube thumbnails
-
-```bash
-# Navigate to Learn tab (tab 3)
-xcrun simctl io booted tap 196 820      # Learn tab
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-06-learn.png
-```
-
----
-
-### Shot 7 — Profile / Achievements
-**Goal:** Show user profile, streak calendar, XP total, achievement badges
-
-```bash
-# Navigate to Profile tab (tab 5)
-xcrun simctl io booted tap 373 820      # Profile tab
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-07-profile.png
-```
-
----
-
-### Shot 8 — Quizzes List
-**Goal:** Show all available quizzes with difficulty badges and premium locks
-
-```bash
-# Navigate to Quizzes tab (tab 2)
-xcrun simctl io booted tap 118 820      # Quizzes tab
-sleep 1
-xcrun simctl io booted screenshot ~/Desktop/katalyst-ss-08-quizzes.png
-```
-
----
-
-## Post-Processing
-
-1. **Add device frame** (optional): Use [Rottenwood](https://rottenwood.com) or Figma iPhone frame mockups
-2. **Add text overlays**: Short benefit-focused captions, 2–3 words max
-3. **Consistent background**: Use brand purple `#7367F0` behind device frames
-4. **Export**: PNG at full resolution (no compression)
-
----
-
-## Automation Script
-
-```bash
-#!/bin/bash
-# run-screenshots.sh — captures all 8 shots sequentially
-
-SIM="iPhone 16 Pro"
 OUT="$HOME/Desktop/katalyst-screenshots"
 mkdir -p "$OUT"
 
-DEVICE=$(xcrun simctl list devices | grep "$SIM" | grep "Booted" | awk -F'[()]' '{print $2}')
-if [ -z "$DEVICE" ]; then
-  echo "Boot $SIM simulator first"
-  exit 1
-fi
+DEVICE=$(xcrun simctl list devices booted | grep -m1 "iPhone" | awk -F'[()]' '{print $2}')
+echo "Device: $DEVICE"
 
-take() {
-  local name="$1"; local delay="${2:-1}"
-  sleep "$delay"
-  xcrun simctl io "$DEVICE" screenshot "$OUT/${name}.png"
-  echo "✅ $name"
-}
+tap()  { xcrun simctl io "$DEVICE" tap  "$1" "$2"; }
+shot() { sleep "${3:-1.5}"; xcrun simctl io "$DEVICE" screenshot "$OUT/${1}.png"; echo "✅ $1"; }
 
-# Home
-xcrun simctl io "$DEVICE" tap 50 820; take "01-home" 1.5
+# Tab bar Y position on iPhone 16 Pro (852pt screen height, tab bar ~y=820)
+TAB_Y=820
 
-# Quizzes
-xcrun simctl io "$DEVICE" tap 118 820; take "08-quizzes" 1.5
+# ── Shot 1: Home ──────────────────────────────────────────────
+tap 50 $TAB_Y           # Home tab (leftmost)
+shot "01-home" 2
 
-# Learn
-xcrun simctl io "$DEVICE" tap 196 820; take "06-learn" 1.5
+# ── Shot 2: Quiz in progress ──────────────────────────────────
+tap 196 370             # Tap first quiz card
+sleep 1.5
+tap 196 700             # Tap "Start Quiz" button
+sleep 1.5
+shot "02-quiz-question" 1
 
-# Growth (Leaderboard)
-xcrun simctl io "$DEVICE" tap 315 820; take "05-leaderboard" 1.5
+# ── Shot 3: Answer selected ───────────────────────────────────
+tap 196 430             # Tap first answer option
+shot "03-quiz-answer" 1
 
-# Profile
-xcrun simctl io "$DEVICE" tap 373 820; take "07-profile" 1.5
+# ── Shot 4: Quiz results ──────────────────────────────────────
+# Navigate through remaining questions quickly, then capture results
+shot "04-quiz-results" 2
 
-echo "Screenshots saved to $OUT"
+# ── Shot 5: Leaderboard ───────────────────────────────────────
+tap 315 $TAB_Y          # Growth tab
+sleep 1.5
+shot "05-leaderboard" 1.5
+
+# ── Shot 6: Quizzes list ──────────────────────────────────────
+tap 118 $TAB_Y          # Quizzes tab
+sleep 1.5
+shot "06-quizzes-list" 1.5
+
+# ── Shot 7: Profile ───────────────────────────────────────────
+tap 373 $TAB_Y          # Profile tab (rightmost)
+sleep 1.5
+shot "07-profile" 1.5
+
+# ── Shot 8: Learn tab ─────────────────────────────────────────
+tap 196 $TAB_Y          # Learn tab (middle)
+sleep 1.5
+shot "08-learn" 1.5
+
+echo ""
+echo "All screenshots saved to: $OUT"
+echo "Sizes will be 1179×2556 px (iPhone 16 Pro @3x)"
 ```
 
 ```bash
-chmod +x run-screenshots.sh && ./run-screenshots.sh
+chmod +x capture-screenshots.sh && bash capture-screenshots.sh
 ```
 
 ---
 
-## Checklist
+## Step 4 — Add text overlays in Canva
 
-- [ ] Metro running on port 8083
-- [ ] iPhone 16 Pro simulator booted
-- [ ] App loaded with a test user (not guest — shows real data)
-- [ ] Leaderboard has at least 3 entries visible
-- [ ] Profile shows streak > 0
-- [ ] Quizzes list shows mix of free and premium cards
-- [ ] All 8 screenshots captured at 1x (simulator outputs at display scale)
-- [ ] Post-process: add device frame + text overlays
-- [ ] Upload to App Store Connect and Play Console
+### Canva setup
+1. Go to canva.com → New design → Custom size → **1080 × 1920 px**
+2. Upload each screenshot as the background
+3. Add text overlay for each shot using the spec below
+
+### Overlay spec per screenshot
+
+| Shot | Overlay text | Position |
+|------|-------------|---------|
+| 01-home | **"400+ AWS & AI questions. Ready when you are."** | Top 15% |
+| 02-quiz-question | **"Exam-quality questions. Timed. Explained."** | Bottom 15% |
+| 03-quiz-answer | **"Learn the *why* behind every answer"** | Bottom 15% |
+| 04-quiz-results | **"Track every score. See your improvement."** | Top 15% |
+| 05-leaderboard | **"Compete globally. Daily. Monthly. All-time."** | Top 15% |
+| 06-quizzes-list | **"Full CLF-C02 exam — 195 questions, timed."** | Bottom 15% |
+| 07-profile | **"Build the habit. Never break the streak."** | Top 15% |
+| 08-learn | **"Watch. Practice. Pass."** | Bottom 15% |
+
+### Text overlay style
+```
+Font:       Bold sans-serif (Canva: "Montserrat Bold" or "Poppins Bold")
+Size:       64–72 px (at 1080px canvas)
+Colour:     White #FFFFFF
+Background: Rounded rectangle, #000000 at 55% opacity, 20px radius
+Padding:    24px horizontal, 14px vertical around text
+```
+
+### Accent keyword highlight
+Wrap one keyword per overlay in a **Katalyst purple** (#7367F0) span/box — e.g. "CLF-C02" or "leaderboard".
+
+---
+
+## Step 5 — Export
+
+```
+Format: PNG (best quality) or JPEG at 95%+
+Canvas size: 1080×1920 — DO NOT resize after adding overlays
+Colour space: sRGB
+No transparency (Play Store rejects alpha on phone screenshots)
+```
+
+---
+
+## Feature Graphic — 1024 × 500 px
+
+```bash
+# In Canva: New design → 1024 × 500 px
+```
+
+Elements (left → right):
+```
+Left 60%:
+  - "Katalyst" — white, Montserrat ExtraBold, 96px
+  - "AWS & AI Certification Prep" — white, 36px, semi-bold
+  - "400+ questions · Leaderboard · Daily streaks" — white/muted, 24px
+  - Small purple pill badges: "CLF-C02"  "GenAI"  "Free to start"
+
+Right 40%:
+  - Phone mockup (use Canva's free device frames)
+  - Drop in screenshot 01-home as the phone screen
+  - Slight tilt (5° left), drop shadow
+
+Background:
+  - Linear gradient: #7367F0 → #4A3DB7 (left to right)
+  - Optional: very subtle dot grid at 8% white opacity
+```
+
+Safe zone: **50px from every edge** — nothing important outside this boundary (some devices crop edges on cards).
+
+---
+
+## App Icon — 512 × 512 px
+
+```bash
+# Export from your existing 1024×1024 icon:
+sips -z 512 512 mobile/assets/images/icon.png --out ~/Desktop/katalyst-icon-512.png
+```
+
+Play Store requirements: PNG, no alpha (use a solid background colour — the icon already has `#0F172A` background).
+
+---
+
+## Quick Checklist Before Uploading
+
+- [ ] All screenshots are **1080×1920 px** or larger (aspect ratio 9:16)
+- [ ] No alpha channel in phone screenshots (PNG export as "no transparency")
+- [ ] Text overlays added to all 8 shots
+- [ ] Feature graphic is **1024×500 px**, no alpha
+- [ ] App icon is **512×512 px**
+- [ ] At least **2 phone screenshots** ready (Play Store minimum)
+- [ ] All in sRGB colour space
+
+---
+
+## Android-native screenshots (optional — same dimensions as iOS)
+
+If you want purely Android screenshots (shows Android nav bar instead of iOS):
+
+```bash
+# Start Android emulator (Pixel 9 = 1080×2424 native)
+# In Android Studio: Device Manager → Pixel 9 → Launch
+
+# After app is loaded:
+adb exec-out screencap -p > ~/Desktop/katalyst-android-01.png
+
+# Or use Android Studio: ⋮ → Take screenshot (saves automatically)
+```
+
+Pixel 9 native resolution 1080×2424 is within Play Store limits and looks cleaner for Android listings.
