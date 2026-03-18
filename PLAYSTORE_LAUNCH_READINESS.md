@@ -19,6 +19,9 @@
 
 ### Technical
 
+- [x] `npm run type-check`
+- [x] `npm run build --workspace=apps/web`
+- [x] `npm test --workspace=mobile`
 - [x] `android.buildType: "app-bundle"` in `eas.json` production profile
 - [x] Target SDK 34+ (React Native 0.81 targets API 35)
 - [x] Minimal permissions (2 explicit Android permissions in Expo config; no dangerous permissions requested)
@@ -133,3 +136,7 @@ eas update --branch production --message "Fix: <description>"
 - Play Console service account JSON must be created and added locally
 - First production AAB must be built and tested on a real Android device
 - Play Console listing assets and disclosures must be uploaded
+
+### Release Verdict
+- Repo/code state: ready for external deployment steps
+- Play Console submission: blocked only by account-linked external steps above

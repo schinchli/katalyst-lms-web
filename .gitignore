@@ -18,6 +18,8 @@ web-build/
 build/
 ios/Pods/
 android/
+.turbo/
+*-qr.png
 
 # Environment & secrets
 .env
