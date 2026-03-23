@@ -45,9 +45,10 @@
 - [ ] **Feature graphic** (1024×500px): Create with Figma / Canva
 - [ ] **App icon** (512×512px): Use `assets/icon.png` (already 1024×1024 — export at 512)
 - [ ] **Screenshots** (phone, minimum 2): See `SCREENSHOT_CAPTURE_PLAN.md`
-- [ ] Content rating questionnaire completed (Educational → no violence/sex/ads to minors)
+- [ ] Content rating questionnaire completed (Educational / quiz app, no violence, no sexual content, no gambling)
 - [ ] **Data Safety section** filled out (see below)
 - [ ] Privacy policy URL live: `https://lms-amber-two.vercel.app/privacy`
+- [ ] Account deletion URL live: `https://lms-amber-two.vercel.app/delete-account`
 
 ### Data Safety Declaration
 
@@ -59,12 +60,12 @@ The following must be declared in Play Console → Data Safety:
 | Name | Yes | No | Profile display |
 | User-generated content (quiz answers) | Yes | No | Progress tracking |
 | App interactions (quiz history, scores) | Yes | No | Progress/leaderboard |
-| Advertising ID | Yes | Third-party (AdMob) | Ad personalisation |
+| Advertising ID | No | — | Not collected |
 | Approximate location | No | — | — |
 | Precise location | No | — | — |
 | Financial info | Yes (purchase history) | No | Subscription management |
 
-Data is encrypted in transit (HTTPS). User can delete account via Settings → Delete Account.
+Data is encrypted in transit (HTTPS). User can delete account via Settings → Delete Account or https://lms-amber-two.vercel.app/delete-account.
 
 ---
 

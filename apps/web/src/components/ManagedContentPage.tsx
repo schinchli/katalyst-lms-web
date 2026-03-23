@@ -23,7 +23,7 @@ We collect the following information when you create an account or use the Servi
 • Email address and display name (for account creation and personalisation)
 • Quiz answers, scores, and progress history (to track your learning)
 • App usage data such as session duration and features used (to improve the Service)
-• Device advertising ID (for optional personalised advertising via Google AdMob)
+• Purchase and entitlement records where applicable (to manage premium access)
 
 2. HOW WE USE YOUR INFORMATION
 • To provide and operate the Service
@@ -35,11 +35,10 @@ We collect the following information when you create an account or use the Servi
 3. DATA SHARING
 We do not sell your personal data. We share data only with:
 • Supabase (database and authentication infrastructure)
-• Google AdMob (advertising — subject to Google's privacy policy)
 • Razorpay (payment processing — subject to Razorpay's privacy policy)
 
 4. DATA RETENTION
-Your account data is retained as long as your account is active. You may request deletion of your account and all associated data at any time via Settings → Delete Account.
+Your account data is retained as long as your account is active. You may request deletion of your account and all associated data at any time via Settings → Delete Account or the public deletion instructions page at https://lms-amber-two.vercel.app/delete-account.
 
 5. SECURITY
 All data is transmitted over HTTPS. Authentication tokens are stored in the device's secure enclave (iOS Keychain / Android Keystore). We do not store passwords in plain text.
@@ -48,7 +47,7 @@ All data is transmitted over HTTPS. Authentication tokens are stored in the devi
 The Service is not directed at children under 13. We do not knowingly collect data from children under 13.
 
 7. YOUR RIGHTS
-You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at support@katalysthq.app or use the in-app account deletion feature.
+You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at support@katalysthq.app, use the in-app account deletion feature, or follow the web instructions at https://lms-amber-two.vercel.app/delete-account.
 
 8. CHANGES TO THIS POLICY
 We may update this policy. We will notify you of material changes via the app or email. Continued use after changes constitutes acceptance.
@@ -93,7 +92,7 @@ Katalyst is an independent prep resource and is not affiliated with or endorsed 
 To the maximum extent permitted by law, Katalyst shall not be liable for indirect, incidental, or consequential damages arising from your use of the Service.
 
 9. TERMINATION
-We may suspend or terminate your account if you violate these Terms. You may delete your account at any time via Settings → Delete Account.
+We may suspend or terminate your account if you violate these Terms. You may delete your account at any time via Settings → Delete Account or via the public instructions at https://lms-amber-two.vercel.app/delete-account.
 
 10. CHANGES TO TERMS
 We may modify these Terms at any time. Continued use after changes constitutes acceptance of the updated Terms.
@@ -147,6 +146,7 @@ export function ManagedContentPage({ contentKey }: { contentKey: ContentKey }) {
             <Link href="/terms" className="btn-primary" style={{ textDecoration: 'none' }}>Terms</Link>
             <Link href="/about" className="btn-primary" style={{ textDecoration: 'none' }}>About</Link>
             <Link href="/instructions" className="btn-primary" style={{ textDecoration: 'none' }}>Instructions</Link>
+            <Link href="/delete-account" className="btn-primary" style={{ textDecoration: 'none' }}>Delete Account</Link>
           </div>
         </div>
       </section>

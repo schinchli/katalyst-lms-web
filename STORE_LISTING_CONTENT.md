@@ -293,13 +293,13 @@ Safe zone: keep all text 50px from any edge
 | Name | ✅ | ❌ | Profile display |
 | User-generated content (quiz answers) | ✅ | ❌ | Progress tracking |
 | App interactions (scores, history) | ✅ | ❌ | Progress + leaderboard |
-| Advertising ID | ✅ | ✅ Google AdMob | Ad personalisation |
+| Advertising ID | ❌ | — | Not collected |
 | Financial info (purchase history) | ✅ | ❌ | Subscription management |
 | Location | ❌ | — | Not collected |
 
 **Security practices to declare:**
 - Data encrypted in transit ✅
-- Users can request deletion ✅ (Settings → Delete Account)
+- Users can request deletion ✅ (Settings → Delete Account and `https://lms-amber-two.vercel.app/delete-account`)
 - Data not sold to third parties ✅
 
 ---
@@ -309,6 +309,7 @@ Safe zone: keep all text 50px from any edge
 | URL | Status | Notes |
 |-----|--------|-------|
 | Privacy policy | `https://lms-amber-two.vercel.app/privacy` | ✅ Page exists with content |
+| Account deletion | `https://lms-amber-two.vercel.app/delete-account` | ✅ Public instructions page exists |
 | Terms of service | `https://lms-amber-two.vercel.app/terms` | ✅ Page exists with content |
 | Support email | `support@katalysthq.app` | ⚠️ Set up email forwarding |
 | App website | `https://lms-amber-two.vercel.app` | ✅ Live |
@@ -317,13 +318,14 @@ Safe zone: keep all text 50px from any edge
 
 ## Play Console — Section Checklist
 
-- [ ] **App content** → Age rating questionnaire (Questionnaire → Education → no violence/sex → Everyone)
+- [ ] **App content** → Age rating questionnaire (Education / quizzes, no violence, no sexual content, no gambling)
 - [ ] **App content** → Target audience (18+, or 13+ if you allow minors)
-- [ ] **App content** → Ads declaration (Yes — contains ads via AdMob)
+- [ ] **App content** → Ads declaration (Choose based on final production build; current repo does not include Android Advertising ID)
 - [ ] **Store listing** → App name, short description, full description pasted in
 - [ ] **Store listing** → Icon 512×512 uploaded
 - [ ] **Store listing** → Feature graphic 1024×500 uploaded
 - [ ] **Store listing** → Min 2 phone screenshots uploaded
 - [ ] **Data Safety** → Form completed (use table above)
+- [ ] **App content** → Account deletion URL entered: `https://lms-amber-two.vercel.app/delete-account`
 - [ ] **Pricing** → Free
 - [ ] **Distribution** → Available in all countries (or restrict to India + US + UK to start)
