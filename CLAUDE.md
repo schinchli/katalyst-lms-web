@@ -39,6 +39,19 @@
 | `EXECUTION_TRACKER.md` | Detailed task progress |
 | `mobile/config/quizCatalog.ts` | Mobile-side merge layer for admin quiz access overrides |
 | `mobile/services/quizCatalogService.ts` | Fetches quiz overrides from Supabase and applies them at startup |
+| `docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md` | Claude handoff for the separate attendance multi-tenant build |
+
+## Separate Attendance Workstream
+
+This repo is the Katalyst LMS workspace. It is not the target implementation repo for the attendance multi-tenant migration.
+
+If you are asked to implement the attendance platform's multi-tenant build:
+
+- treat this repo as planning and handoff context only
+- start from the verified single-tenant CLE attendance baseline at commit `81d15a4`
+- create or use a separate repo/folder such as `attendanceapp-multitenant`
+- follow [docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md](/Users/schinchli/Documents/Projects/lms/docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md)
+- never add multi-tenant attendance code back into the CLE single-tenant repo
 
 ---
 

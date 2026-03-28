@@ -168,7 +168,6 @@ export const quizQuestions: Record<string, Question[]> = {
   'clf-c02-technology':     clf02TechnologyQuestions,
   'clf-c02-billing':        clf02BillingQuestions,
   'clf-c02-full-exam':      clf02FullPracticeQuestions,
-
   // Legacy key kept for backward-compat with stored localStorage results
   'clf-c02': [
     {
