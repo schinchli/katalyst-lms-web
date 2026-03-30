@@ -1792,6 +1792,48 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .profile-stats-row { grid-template-columns: 1fr; }
 }
 
+/* ===== Responsive Grid Overrides ===== */
+/* Dashboard inline-style grids need CSS fallbacks since they can't use @media */
+@media (max-width: 900px) {
+  /* Hero / two-column layouts */
+  .dc-hero > div[style*="gridTemplateColumns"],
+  .dc-shell > div[style*="gridTemplateColumns"],
+  .dc-card > div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* Admin stats row */
+  div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Progress / two-col split */
+  div[style*="0.9fr 1.1fr"],
+  div[style*="1.2fr 0.9fr"],
+  div[style*="1.15fr 0.85fr"],
+  div[style*="1.4fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 640px) {
+  /* Admin stats → single column */
+  div[style*="repeat(2, 1fr)"] { grid-template-columns: 1fr !important; }
+  /* Leaderboard podium — tighter spacing */
+  .leaderboard-podium { gap: 6px !important; padding: 0 4px !important; }
+  /* Page padding */
+  .page-content { padding-left: 12px !important; padding-right: 12px !important; }
+  /* Referral card row → stack */
+  div[style*="auto 1fr auto"] { grid-template-columns: 1fr !important; }
+  /* Hero padding reduction */
+  .dc-hero { padding: 18px 16px !important; }
+}
+
+@media (max-width: 480px) {
+  /* 7-column week grid → 4 columns */
+  div[style*="repeat(7, 1fr)"] { grid-template-columns: repeat(4, 1fr) !important; }
+  /* Period tabs — allow scroll */
+  div[style*="borderBottom: '2px solid"] { overflow-x: auto; }
+  /* Leaderboard row flex → stack on tiny */
+  .leaderboard-row { flex-wrap: wrap; }
+  /* Stat cards padding */
+  .dc-card[style*="padding: '12px 20px'"] { padding: 10px 12px !important; }
+}
+
 /* ===== Accessibility ===== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

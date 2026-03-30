@@ -507,7 +507,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
               >
                 <LogoutIcon />
               </button>
-              <span style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2F2B3D', color: '#fff', fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 5, whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s' }} className="logout-tip">
+              <span style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 5, whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s' }} className="logout-tip">
                 Logout
               </span>
             </div>

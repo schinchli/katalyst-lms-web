@@ -89,7 +89,7 @@ export default function LeaderboardPage() {
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as LeaderboardEntry[];
 
   return (
-    <div style={{ padding: '24px 28px', maxWidth: 800, fontFamily: "'Public Sans', sans-serif" }}>
+    <div style={{ padding: '24px 28px', maxWidth: 800 }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
@@ -140,8 +140,8 @@ export default function LeaderboardPage() {
             style={{
               padding: '10px 24px', border: 'none', background: 'transparent',
               cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
-              color: period === p.key ? '#7367F0' : 'var(--text-secondary)',
-              borderBottom: `2px solid ${period === p.key ? '#7367F0' : 'transparent'}`,
+              color: period === p.key ? 'var(--primary)' : 'var(--text-secondary)',
+              borderBottom: `2px solid ${period === p.key ? 'var(--primary)' : 'transparent'}`,
               marginBottom: -2, transition: 'color 0.15s',
             }}
           >
@@ -170,7 +170,7 @@ export default function LeaderboardPage() {
           gap: 12, marginBottom: 28, padding: '0 12px',
         }}>
           {podiumOrder.map((entry) => {
-            const medal = MEDAL_COLOR[entry.rank - 1] ?? '#7367F0';
+            const medal = MEDAL_COLOR[entry.rank - 1] ?? 'var(--primary)';
             const emoji = MEDAL_EMOJI[entry.rank - 1] ?? '🏅';
             const ph    = PODIUM_H[entry.rank - 1] ?? 66;
             const big   = entry.rank === 1;
@@ -188,7 +188,7 @@ export default function LeaderboardPage() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', textAlign: 'center', lineHeight: 1.2 }}>
                   {entry.name}{entry.isCurrentUser ? ' (You)' : ''}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#7367F0' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>
                   {entry.score.toLocaleString()} pts
                 </div>
                 {/* Podium block */}
@@ -213,15 +213,15 @@ export default function LeaderboardPage() {
             key={entry.userId}
             style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-              background: entry.isCurrentUser ? '#7367F018' : 'var(--surface)',
-              border: `1px solid ${entry.isCurrentUser ? '#7367F040' : 'var(--border)'}`,
+              background: entry.isCurrentUser ? 'var(--primary-light)' : 'var(--surface)',
+              border: `1px solid ${entry.isCurrentUser ? 'var(--primary)' : 'var(--border)'}`,
               borderRadius: 12, transition: 'background 0.1s',
             }}
           >
             {/* Rank number */}
             <span style={{
               width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700,
-              color: entry.isCurrentUser ? '#7367F0' : 'var(--text-secondary)', flexShrink: 0,
+              color: entry.isCurrentUser ? 'var(--primary)' : 'var(--text-secondary)', flexShrink: 0,
             }}>
               #{entry.rank}
             </span>
@@ -229,10 +229,10 @@ export default function LeaderboardPage() {
             {/* Avatar circle */}
             <div style={{
               width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
-              background: entry.isCurrentUser ? '#7367F0' : '#7367F018',
+              background: entry.isCurrentUser ? 'var(--primary)' : 'var(--primary-light)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 15, fontWeight: 700,
-              color: entry.isCurrentUser ? '#fff' : '#7367F0',
+              color: entry.isCurrentUser ? '#fff' : 'var(--primary)',
             }}>
               {entry.avatarInitial}
             </div>
@@ -249,7 +249,7 @@ export default function LeaderboardPage() {
 
             {/* Score + coins */}
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: entry.isCurrentUser ? '#7367F0' : 'var(--text)' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: entry.isCurrentUser ? 'var(--primary)' : 'var(--text)' }}>
                 {entry.score.toLocaleString()}
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>

@@ -256,10 +256,10 @@ export default function ProfilePage() {
               className="admin-field-input"
               style={{ fontFamily: 'monospace', letterSpacing: '0.12em', fontWeight: 700, maxWidth: 180, cursor: 'text' }}
             />
-            <button className="settings-btn-ghost" onClick={handleCopyReferralCode}>
+            <button className="settings-btn-ghost" aria-label="Copy referral code" onClick={handleCopyReferralCode}>
               {referralCopied ? 'Copied!' : 'Copy code'}
             </button>
-            <button className="btn-primary" onClick={handleShareReferral}>
+            <button className="btn-primary" aria-label="Share referral link" onClick={handleShareReferral}>
               Share link
             </button>
           </div>

@@ -31,12 +31,12 @@ export default function LearnPage() {
       <section className="dc-card" style={{ padding: 22, background: 'var(--platform-resources-background)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
           <div>
-            <h2 className="dc-section-title" style={{ fontSize: 30, color: '#081b33' }}>{config.copy.resourcesTitle}</h2>
-            <p className="dc-section-subtitle" style={{ color: '#5c6c84' }}>
+            <h2 className="dc-section-title" style={{ fontSize: 30, color: 'var(--text)' }}>{config.copy.resourcesTitle}</h2>
+            <p className="dc-section-subtitle" style={{ color: 'var(--text-secondary)' }}>
               Responsive editorial cards with adjustable volume, tag labels, and a calmer reading surface.
             </p>
           </div>
-          <div className="dc-chip" style={{ background: 'rgba(0, 237, 100, 0.12)', color: '#081b33', borderColor: 'rgba(0, 237, 100, 0.18)' }}>
+          <div className="dc-chip" style={{ background: 'rgba(0, 237, 100, 0.12)', color: 'var(--text)', borderColor: 'rgba(0, 237, 100, 0.18)' }}>
             {config.copy.resourcesFilter}
           </div>
         </div>
