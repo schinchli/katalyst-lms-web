@@ -192,6 +192,21 @@ function SelfChallengeIcon({ active }: { active: boolean }) {
 const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
 const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0' };
 
+function HamburgerIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+function CloseIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   useManagedQuizContentVersion();
   const pathname = usePathname();
@@ -200,6 +215,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isAdmin,     setIsAdmin]     = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const { isPro } = useSubscription();
 
@@ -343,13 +359,35 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => { setSidebarOpen(false); }, [pathname]);
+
   return (
     <PlatformExperienceProvider>
       {/* Razorpay checkout — loaded lazily once for all dashboard pages */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="page-wrapper">
+      {/* Main content first (sidebar is right-side via flex-direction:row-reverse) */}
+        <main className="main-content">{children}</main>
+
+      {/* Mobile sidebar overlay */}
+      <div
+        className={`sidebar-overlay${sidebarOpen ? ' open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile hamburger FAB */}
+      <button
+        className="mobile-nav-btn"
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+      >
+        {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
+      </button>
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar${sidebarOpen ? ' mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="sidebar-logo-icon">K</div>
@@ -450,14 +488,18 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
               {isPro ? '⭐ Pro' : 'Free Plan'}
             </Link>
             <button
+              type="button"
               onClick={toggleDark}
               title={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)' }}
             >
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
             <div style={{ position: 'relative', display: 'inline-flex' }} className="logout-wrap">
               <button
+                type="button"
+                aria-label="Sign out"
                 onClick={handleLogout}
                 style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.15s' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = '#FF4C51'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
@@ -473,9 +515,6 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
           <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Katalyst v1.0</span>
         </div>
       </aside>
-
-      {/* Main */}
-        <main className="main-content">{children}</main>
       </div>
     </PlatformExperienceProvider>
   );

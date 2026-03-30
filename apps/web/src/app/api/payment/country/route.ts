@@ -13,7 +13,7 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   if (!(await checkRateLimit(`payment-country:${ip}`, 60, 60_000))) {
-    return NextResponse.json({ country: 'IN' }, { status: 429 });
+    return NextResponse.json({ country: 'IN' }, { status: 429, headers: { 'Retry-After': '60' } });
   }
 
   // Vercel sets this header automatically on every edge request.

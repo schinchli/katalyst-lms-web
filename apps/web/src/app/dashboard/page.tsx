@@ -145,10 +145,10 @@ export default function DashboardPage() {
                   width: 146,
                   height: 146,
                   borderRadius: '50%',
-                  background: '#0b1730',
+                  background: 'rgba(8, 18, 38, 0.92)',
                   display: 'grid',
                   placeItems: 'center',
-                  color: 'var(--text)',
+                  color: '#fff',
                   fontSize: 42,
                   fontWeight: 700,
                 }}>

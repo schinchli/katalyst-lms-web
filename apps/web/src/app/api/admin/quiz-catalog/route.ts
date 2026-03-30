@@ -35,6 +35,11 @@ async function verifyAdminFromAuthHeader(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!(await checkRateLimit(`admin-quiz-catalog-get:${ip}`, 30, 60_000))) {
+    return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': '60' } });
+  }
+
   const auth = await verifyAdminFromAuthHeader(req);
   if (!auth.ok) return NextResponse.json({ ok: false, error: auth.error }, { status: auth.status });
 

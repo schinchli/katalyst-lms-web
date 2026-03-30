@@ -77,7 +77,7 @@ function normalizeCoinPacks(value: unknown): CoinPack[] {
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   if (!(await checkRateLimit(`admin-coin-packs-get:${ip}`, 30, 60_000))) {
-    return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
+    return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': '60' } });
   }
 
   const auth = await verifyAdmin(req);
