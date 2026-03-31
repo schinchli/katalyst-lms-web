@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { BattleSession, BattleStatus, BattleParticipant } from '@/types';
 import { quizzes } from '@/data/quizzes';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 // ── Realtime broadcast event payloads ────────────────────────────────────────
 
@@ -429,6 +430,7 @@ function JoinByCodeDialog({ onJoin, onClose }: { onJoin: (code: string) => void;
 
 export default function BattlesPage() {
   const router = useRouter();
+  useManagedQuizContentVersion();
   const [activeLobby, setActiveLobby] = useState<BattleSession | null>(null);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   const userIdRef = useRef<string>('guest');

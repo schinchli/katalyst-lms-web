@@ -42,6 +42,34 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
   return new Date(isoDate).toDateString() === reference.toDateString();
 }
 
+const DAY_ABBREV = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+function computeStreakData(results: QuizResult[]): { streak: number; activeDays: { label: string; active: boolean }[] } {
+  const today = new Date();
+  const doneDates = new Set(results.map((r) => new Date(r.completedAt).toDateString()));
+
+  let streak = 0;
+  for (let i = 0; i < 366; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    if (doneDates.has(d.toDateString())) {
+      streak++;
+    } else if (i === 0) {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  const activeDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return { label: DAY_ABBREV[d.getDay()], active: doneDates.has(d.toDateString()) };
+  });
+
+  return { streak, activeDays };
+}
+
 export default function ProgressPage() {
   useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
@@ -81,7 +109,7 @@ export default function ProgressPage() {
   const average = results.length ? Math.round(results.reduce((sum, item) => sum + percentage(item), 0) / results.length) : 0;
   const best = results.length ? Math.max(...results.map(percentage)) : 0;
   const xp = results.reduce((sum, item) => sum + percentage(item), 0);
-  const streak = Math.min(30, results.length);
+  const { streak, activeDays } = useMemo(() => computeStreakData(results), [results]);
   const dailyQuiz = useMemo(() => resolveDailyQuiz(systemFeatures, quizzes), [systemFeatures]);
   const dailyQuizResult = useMemo(
     () => (dailyQuiz ? results.find((result) => result.quizId === dailyQuiz.id && isSameLocalDay(result.completedAt)) ?? null : null),
@@ -163,10 +191,10 @@ export default function ProgressPage() {
             <span className="dc-chip">{streak} days</span>
           </div>
           <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10 }}>
-            {Array.from({ length: 7 }, (_, index) => (
-              <div key={index} style={{ padding: '16px 0', borderRadius: 18, border: index < Math.min(streak, 7) ? '1px solid rgba(255,216,77,0.45)' : '1px solid var(--border)', background: index < Math.min(streak, 7) ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)', textAlign: 'center' }}>
-                <div style={{ color: 'var(--text-secondary)', marginBottom: 10 }}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}</div>
-                <div style={{ fontSize: 24 }}>{index < Math.min(streak, 7) ? '⚡' : '·'}</div>
+            {activeDays.map((day, index) => (
+              <div key={index} style={{ padding: '16px 0', borderRadius: 18, border: day.active ? '1px solid rgba(255,216,77,0.45)' : '1px solid var(--border)', background: day.active ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)', textAlign: 'center' }}>
+                <div style={{ color: 'var(--text-secondary)', marginBottom: 10 }}>{day.label}</div>
+                <div style={{ fontSize: 24 }}>{day.active ? '⚡' : '·'}</div>
               </div>
             ))}
           </div>

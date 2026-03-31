@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { useRouter }           from 'next/navigation';
 import { quizzes }             from '@/data/quizzes';
 import { supabase }            from '@/lib/supabase';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import type { PurchaseRecord } from '@/lib/db';
 
 // ── Upsell config (mirrors quiz page) ────────────────────────────────────────
@@ -45,6 +46,7 @@ type AdminStatus = 'loading' | 'authorized' | 'unauthorized' | 'error';
 
 export default function AdminPage() {
   const router = useRouter();
+  useManagedQuizContentVersion();
   const [status,      setStatus]      = useState<AdminStatus>('loading');
   const [purchases,   setPurchases]   = useState<PurchaseRecord[]>([]);
   const [userId,      setUserId]      = useState<string | null>(null);

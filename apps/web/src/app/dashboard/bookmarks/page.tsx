@@ -1,10 +1,11 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizQuestions, quizzes } from '@/data/quizzes';
 import type { Question, Quiz } from '@/types';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 interface BookmarkEntry {
   question: Question;
@@ -20,10 +21,10 @@ function buildQuestionIndex(): Map<string, BookmarkEntry> {
   return index;
 }
 
-const QUESTION_INDEX = buildQuestionIndex();
-
 export default function BookmarksPage() {
   const router = useRouter();
+  const quizContentVersion = useManagedQuizContentVersion();
+  const questionIndex = useMemo(() => buildQuestionIndex(), [quizContentVersion]);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -43,7 +44,7 @@ export default function BookmarksPage() {
   };
 
   const entries: BookmarkEntry[] = bookmarkedIds
-    .map((id) => QUESTION_INDEX.get(id))
+    .map((id) => questionIndex.get(id))
     .filter((entry): entry is BookmarkEntry => Boolean(entry));
 
   const handleStartReview = () => {

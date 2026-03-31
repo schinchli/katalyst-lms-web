@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizzes } from '@/data/quizzes';
 import type { QuizResult } from '@/types';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 interface QuizSummary {
   quizId: string;
@@ -64,11 +65,12 @@ function ScoreRing({ pct }: { pct: number }) {
 
 export default function SelfChallengePage() {
   const router = useRouter();
+  const quizContentVersion = useManagedQuizContentVersion();
   const [summaries, setSummaries] = useState<QuizSummary[]>([]);
 
   useEffect(() => {
     setSummaries(buildSummaries(getLocalResults()));
-  }, []);
+  }, [quizContentVersion]);
 
   const handleBeatBest = (summary: QuizSummary) => {
     router.push(`/dashboard/quiz/${summary.quizId}?challenge=${summary.bestScore}`);

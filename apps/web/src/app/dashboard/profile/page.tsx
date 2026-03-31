@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import type { QuizResult, ReferralInfo } from '@/types';
 import { deleteAllQuizResults, getQuizResults, getUserProfile, saveUserProfile } from '@/lib/db';
 import { PLATFORM_THEME_PRESETS, normalizePlatformTheme } from '@/lib/platformTheme';
@@ -39,6 +40,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { config } = usePlatformExperience();
   const { isPro } = useSubscription();
+  useManagedQuizContentVersion();
   const [results, setResults] = useState<QuizResult[]>([]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

@@ -29,6 +29,34 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
   return new Date(isoDate).toDateString() === reference.toDateString();
 }
 
+const DAY_ABBREV = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // Sun=0 … Sat=6
+
+function computeStreakData(results: QuizResult[]): { streak: number; activeDays: { label: string; active: boolean }[] } {
+  const today = new Date();
+  const doneDates = new Set(results.map((r) => new Date(r.completedAt).toDateString()));
+
+  let streak = 0;
+  for (let i = 0; i < 366; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    if (doneDates.has(d.toDateString())) {
+      streak++;
+    } else if (i === 0) {
+      continue; // today not done yet — look back further before breaking
+    } else {
+      break;
+    }
+  }
+
+  const activeDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return { label: DAY_ABBREV[d.getDay()], active: doneDates.has(d.toDateString()) };
+  });
+
+  return { streak, activeDays };
+}
+
 export default function DashboardPage() {
   const quizContentVersion = useManagedQuizContentVersion();
   const { config } = usePlatformExperience();
@@ -69,7 +97,7 @@ export default function DashboardPage() {
   const completion = visibleQuizzes.length ? Math.round((completedIds.size / visibleQuizzes.length) * 100) : 0;
   const average = results.length ? Math.round(results.reduce((sum, item) => sum + pct(item), 0) / results.length) : 0;
   const todayXp = results.slice(-3).reduce((sum, item) => sum + pct(item), 0);
-  const currentStreak = Math.min(7, Math.max(0, results.length));
+  const { streak: currentStreak, activeDays } = useMemo(() => computeStreakData(results), [results]);
   const actionClass = config.layout.homeActionsStyle === 'stack' ? 'dc-actions-stack' : 'dc-actions-grid';
   const dailyQuiz = useMemo(
     () => resolveDailyQuiz(systemFeatures, visibleQuizzes),
@@ -339,21 +367,21 @@ export default function DashboardPage() {
               <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Streak and activity</div>
               <div style={{ marginTop: 10, fontSize: 42, fontWeight: 700, color: 'var(--text)' }}>{currentStreak} days</div>
               <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-                {Array.from({ length: 7 }, (_, index) => (
+                {activeDays.map((day, index) => (
                   <div
                     key={index}
                     style={{
                       height: 56,
                       borderRadius: 18,
-                      border: index < currentStreak ? '1px solid rgba(255,216,77,0.5)' : '1px solid var(--border)',
-                      background: index < currentStreak ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)',
+                      border: day.active ? '1px solid rgba(255,216,77,0.5)' : '1px solid var(--border)',
+                      background: day.active ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: index < currentStreak ? '#ffd84d' : 'var(--text-secondary)',
+                      color: day.active ? '#ffd84d' : 'var(--text-secondary)',
                       fontWeight: 700,
                     }}
                   >
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}
+                    {day.label}
                   </div>
                 ))}
               </div>
