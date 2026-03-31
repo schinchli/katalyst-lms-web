@@ -79,12 +79,14 @@ export default function ProgressPage() {
   const [recentTx, setRecentTx] = useState<CoinTransaction[]>([]);
 
   useEffect(() => {
+    let active = true;
+
     setResults(getLocalResults());
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session?.user) return;
+      if (!active || !session?.user) return;
       const user = session.user;
       const remote = await getQuizResults(user.id);
-      if (remote.length > 0) setResults(remote);
+      if (active && remote.length > 0) setResults(remote);
 
       // Fetch coin balance + recent transactions
       try {
@@ -92,7 +94,7 @@ export default function ProgressPage() {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
         const body = await res.json() as { ok: boolean; balance?: number; transactions?: CoinTransaction[] };
-        if (body.ok) {
+        if (active && body.ok) {
           setCoinBalance(body.balance ?? 0);
           setRecentTx((body.transactions ?? []).slice(0, 5));
         }
@@ -100,8 +102,10 @@ export default function ProgressPage() {
     });
     fetch('/api/system-features')
       .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
-      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
-      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
+      .then((body) => { if (active) setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES); })
+      .catch(() => { if (active) setSystemFeatures(DEFAULT_SYSTEM_FEATURES); });
+
+    return () => { active = false; };
   }, []);
 
   const completed = useMemo(() => new Set(results.map((item) => item.quizId)), [results]);

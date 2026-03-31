@@ -193,10 +193,18 @@ export async function POST(req: NextRequest) {
 
     if (txRows.length > 0) {
       const totalCoins = txRows.reduce((sum, row) => sum + row.amount, 0);
-      // Insert transactions
-      await db.from('coin_transactions').insert(txRows);
-      // Increment coins on user_profiles (upsert in case column was just added)
-      await db.rpc('increment_user_coins', { p_user_id: user.id, p_amount: totalCoins });
+      // Insert transactions — check error individually so a failed insert doesn't
+      // silently skip the balance increment (which would leave history/balance out of sync)
+      const { error: insertErr } = await db.from('coin_transactions').insert(txRows);
+      if (insertErr) {
+        logger.warn(ROUTE, 'coin_insert_failed', { userId: user.id, quizId, reason: insertErr.message });
+      } else {
+        // Only increment balance if the transactions were recorded successfully
+        const { error: rpcErr } = await db.rpc('increment_user_coins', { p_user_id: user.id, p_amount: totalCoins });
+        if (rpcErr) {
+          logger.warn(ROUTE, 'coin_increment_failed', { userId: user.id, quizId, reason: rpcErr.message });
+        }
+      }
     }
   } catch (coinErr) {
     // Never let coin award failure break quiz submission

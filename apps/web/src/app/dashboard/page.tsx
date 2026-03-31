@@ -65,13 +65,15 @@ export default function DashboardPage() {
   const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
 
   useEffect(() => {
+    let active = true;
+
     setResults(getLocalResults());
 
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
+      if (!active || !user) return;
       setName((user.user_metadata?.name as string | undefined) || localStorage.getItem('profile-name') || user.email?.split('@')[0] || 'Learner');
       const remoteResults = await getQuizResults(user.id);
-      if (remoteResults.length > 0) {
+      if (active && remoteResults.length > 0) {
         setResults(remoteResults);
         try {
           localStorage.setItem('quiz-results', JSON.stringify(remoteResults));
@@ -83,8 +85,10 @@ export default function DashboardPage() {
 
     fetch('/api/system-features')
       .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
-      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
-      .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
+      .then((body) => { if (active) setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES); })
+      .catch(() => { if (active) setSystemFeatures(DEFAULT_SYSTEM_FEATURES); });
+
+    return () => { active = false; };
   }, []);
 
   const visibleQuizzes = useMemo(() => quizzes.filter((quiz) => quiz.enabled !== false), [quizContentVersion]);
