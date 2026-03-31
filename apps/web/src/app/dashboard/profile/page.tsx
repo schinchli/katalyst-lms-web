@@ -186,7 +186,7 @@ export default function ProfilePage() {
         return;
       }
       // Clear local data and sign out before redirect
-      localStorage.clear();
+      try { localStorage.clear(); } catch { /* quota or private-mode edge case */ }
       await supabase.auth.signOut();
       router.push('/login?deleted=1');
     } catch {
