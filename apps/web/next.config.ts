@@ -32,6 +32,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,          // Remove X-Powered-By: Next.js from responses
+  compress: true,                  // Enable gzip/brotli compression
+  images: {
+    formats: ['image/avif', 'image/webp'],  // Modern image formats
+    minimumCacheTTL: 86400,        // Cache images for 1 day
+  },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }];
   },
