@@ -143,10 +143,10 @@ export default function AdminPage() {
   const recent   = [...purchases].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
 
   const statCards = [
-    { label: 'Total Revenue',   value: `₹${totalRev.toLocaleString()}`, color: '#28C76F' },
-    { label: 'Pro Subscribers', value: String(subs.length),              color: '#FF9F43' },
+    { label: 'Total Revenue',   value: `₹${totalRev.toLocaleString()}`, color: 'var(--success)' },
+    { label: 'Pro Subscribers', value: String(subs.length),              color: 'var(--warning)' },
     { label: 'Course Unlocks',  value: String(unlocks.length),           color: 'var(--primary)' },
-    { label: 'Total Sales',     value: String(purchases.length),         color: '#00BAD1' },
+    { label: 'Total Sales',     value: String(purchases.length),         color: 'var(--info)' },
   ];
 
   return (
@@ -174,7 +174,7 @@ export default function AdminPage() {
       </div>
 
       {/* Security notice */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 8, background: '#28C76F14', border: '1px solid #28C76F30', marginBottom: 24, fontSize: 13, color: '#1A6B3C' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 8, background: '#28C76F14', border: '1px solid #28C76F30', marginBottom: 24, fontSize: 13, color: 'var(--success-on-tint)' }}>
         <span>🔒</span>
         <span>Admin access verified via server-side JWT authentication. Showing your account data.</span>
       </div>
@@ -197,7 +197,7 @@ export default function AdminPage() {
           <div className="info-card-header">Purchase Type Breakdown</div>
           <div className="info-card-body">
             {[
-              { label: 'Pro Subscriptions', count: subs.length,    color: '#FF9F43', pct: purchases.length ? Math.round((subs.length    / purchases.length) * 100) : 0 },
+              { label: 'Pro Subscriptions', count: subs.length,    color: 'var(--warning)', pct: purchases.length ? Math.round((subs.length    / purchases.length) * 100) : 0 },
               { label: 'Course Unlocks',    count: unlocks.length, color: 'var(--primary)', pct: purchases.length ? Math.round((unlocks.length / purchases.length) * 100) : 0 },
             ].map((tier) => (
               <div key={tier.label} style={{ marginBottom: 16 }}>
@@ -348,7 +348,7 @@ export default function AdminPage() {
               Reset to defaults
             </button>
             {msgsSaved && (
-              <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>✓ Saved — live for all users</span>
+              <span style={{ fontSize: 13, color: 'var(--success)', fontWeight: 600 }}>✓ Saved — live for all users</span>
             )}
           </div>
         </div>
@@ -394,12 +394,12 @@ export default function AdminPage() {
                           display: 'inline-flex', alignItems: 'center', gap: 4,
                           padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
                           background: p.purchaseType === 'subscription' ? '#FF9F4318' : 'var(--primary-light)',
-                          color:      p.purchaseType === 'subscription' ? '#FF9F43'   : 'var(--primary-text)',
+                          color:      p.purchaseType === 'subscription' ? 'var(--warning)'   : 'var(--primary-text)',
                         }}>
                           {p.purchaseType === 'subscription' ? 'Pro' : 'Course'}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 16px', fontWeight: 700, color: '#28C76F' }}>₹{p.amount.toLocaleString()}</td>
+                      <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--success)' }}>₹{p.amount.toLocaleString()}</td>
                       <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
                         {new Date(p.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>

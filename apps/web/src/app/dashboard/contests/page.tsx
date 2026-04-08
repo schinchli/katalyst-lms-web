@@ -31,7 +31,7 @@ function useCountdown(endTime: string) {
 }
 
 const STATUS_COLORS: Record<ContestStatus, { accent: string; bg: string; label: string }> = {
-  live:     { accent: '#EA5455', bg: '#EA545512', label: 'LIVE' },
+  live:     { accent: 'var(--error)', bg: '#EA545512', label: 'LIVE' },
   upcoming: { accent: '#7367F0', bg: '#7367F012', label: 'UPCOMING' },
   past:     { accent: 'var(--text-secondary)', bg: 'var(--bg)', label: 'ENDED' },
 };
@@ -81,8 +81,8 @@ function ContestCard({ contest, onEnter }: { contest: Contest; onEnter: (quizId:
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
           {[
-            { label: 'Entry Fee', value: `${contest.entryFee} coins`, color: '#FF9F43' },
-            { label: 'Prize', value: `${contest.prizeCoins.toLocaleString()} coins`, color: '#28C76F' },
+            { label: 'Entry Fee', value: `${contest.entryFee} coins`, color: 'var(--warning)' },
+            { label: 'Prize', value: `${contest.prizeCoins.toLocaleString()} coins`, color: 'var(--success)' },
             { label: 'Players', value: `${contest.participants}/${contest.maxParticipants}`, color: '#7367F0' },
           ].map((stat) => (
             <div key={stat.label} style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 10px', textAlign: 'center' }}>
@@ -173,9 +173,9 @@ export default function ContestsPage() {
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '3px 9px', borderRadius: 6,
-            background: '#EA545518', color: '#EA5455', fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+            background: '#EA545518', color: 'var(--error)', fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: 3, background: '#EA5455', display: 'inline-block' }} />
+            <span style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--error)', display: 'inline-block' }} />
             {live.length} LIVE
           </span>
         )}
@@ -194,8 +194,8 @@ export default function ContestsPage() {
         <>
           {/* Live */}
           <section style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#EA5455', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 4, background: '#EA5455', display: 'inline-block' }} />
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--error)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--error)', display: 'inline-block' }} />
               Live Contests
             </h2>
             {live.length === 0

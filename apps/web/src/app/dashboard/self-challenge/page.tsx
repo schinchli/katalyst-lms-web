@@ -50,7 +50,7 @@ function buildSummaries(results: QuizResult[]): QuizSummary[] {
 }
 
 function ScoreRing({ pct }: { pct: number }) {
-  const color = pct >= 70 ? '#28C76F' : pct >= 50 ? '#FF9F43' : '#FF4C51';
+  const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--warning)' : 'var(--error)';
   return (
     <div style={{
       width: 52, height: 52, borderRadius: '50%', flexShrink: 0,

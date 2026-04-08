@@ -11,7 +11,7 @@ export function DailyQuizBadge({ label, completed, compact = true }: Props) {
         className="dc-chip"
         style={{
           background: completed ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)',
-          color: completed ? 'var(--platform-success-accent)' : '#ffd84d',
+          color: completed ? 'var(--platform-success-accent)' : 'var(--color-xp)',
         }}
       >
         {completed ? `✓ ${label} Complete` : label}
@@ -28,7 +28,7 @@ export function DailyQuizBadge({ label, completed, compact = true }: Props) {
         padding: '6px 14px',
         borderRadius: 999,
         background: completed ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)',
-        color: completed ? 'var(--platform-success-accent)' : '#ffd84d',
+        color: completed ? 'var(--platform-success-accent)' : 'var(--color-xp)',
         fontSize: 13,
         fontWeight: 700,
       }}

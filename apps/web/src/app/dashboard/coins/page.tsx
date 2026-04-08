@@ -75,7 +75,7 @@ export default function CoinsPage() {
         <div className="dc-card" style={{ display: 'inline-flex', alignItems: 'center', gap: 16, padding: '18px 28px' }}>
           <div style={{ fontSize: 36 }}>⚡</div>
           <div>
-            <div style={{ fontSize: 42, fontWeight: 700, color: '#ffd84d', lineHeight: 1 }}>{balance.toLocaleString()}</div>
+            <div style={{ fontSize: 42, fontWeight: 700, color: 'var(--color-xp)', lineHeight: 1 }}>{balance.toLocaleString()}</div>
             <div style={{ color: 'var(--text-secondary)', fontSize: 13, marginTop: 4 }}>Total coins</div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function CoinsPage() {
                   </div>
                   <div style={{
                     fontWeight: 700, fontSize: 16,
-                    color: isEarn ? '#28C76F' : '#EA5455',
+                    color: isEarn ? 'var(--success)' : 'var(--error)',
                   }}>
                     {isEarn ? '+' : ''}{tx.amount.toLocaleString()} ⚡
                   </div>

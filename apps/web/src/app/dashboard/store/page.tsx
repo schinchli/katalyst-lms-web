@@ -57,7 +57,7 @@ export default function StorePage() {
               {pack.popular && (
                 <div style={{
                   position: 'absolute', top: -10, right: 14,
-                  background: '#FF9F43', color: '#fff',
+                  background: 'var(--warning)', color: '#fff',
                   fontWeight: 700, fontSize: 11, padding: '3px 10px', borderRadius: 20,
                 }}>
                   Popular
@@ -65,7 +65,7 @@ export default function StorePage() {
               )}
               <div style={{ fontSize: 32, textAlign: 'center' }}>⚡</div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 28, fontWeight: 700, color: '#ffd84d' }}>{pack.coins.toLocaleString()}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-xp)' }}>{pack.coins.toLocaleString()}</div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 2 }}>coins</div>
               </div>
               <div style={{ fontWeight: 600, fontSize: 15, textAlign: 'center', color: 'var(--text)' }}>{pack.label}</div>

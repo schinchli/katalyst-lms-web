@@ -109,7 +109,7 @@ export default function QuizzesPage() {
               minHeight: 52,
               borderRadius: 18,
               border: '1px solid var(--border)',
-              background: 'rgba(255,255,255,0.04)',
+              background: 'var(--overlay-sm)',
               color: 'var(--text)',
               padding: '0 16px',
               font: 'inherit',
@@ -118,14 +118,14 @@ export default function QuizzesPage() {
           <select
             value={difficulty}
             onChange={(event) => setDifficulty(event.target.value as (typeof DIFFICULTIES)[number])}
-            style={{ minHeight: 52, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.04)', color: 'var(--text)', padding: '0 16px', font: 'inherit' }}
+            style={{ minHeight: 52, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-sm)', color: 'var(--text)', padding: '0 16px', font: 'inherit' }}
           >
             {DIFFICULTIES.map((item) => <option key={item} value={item}>{item === 'all' ? 'All levels' : item}</option>)}
           </select>
           <select
             value={premiumOnly}
             onChange={(event) => setPremiumOnly(event.target.value as 'all' | 'free' | 'premium')}
-            style={{ minHeight: 52, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.04)', color: 'var(--text)', padding: '0 16px', font: 'inherit' }}
+            style={{ minHeight: 52, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-sm)', color: 'var(--text)', padding: '0 16px', font: 'inherit' }}
           >
             <option value="all">All access types</option>
             <option value="free">Free only</option>
@@ -139,7 +139,7 @@ export default function QuizzesPage() {
           <div className="dc-card" style={{ padding: 22, display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
             <div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span>
+                <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: 'var(--color-xp)' }}>{systemFeatures.dailyQuizLabel}</span>
                 <span className="dc-chip">{dailyQuizCompleted ? 'Review available' : 'Pinned above filters'}</span>
               </div>
               <div style={{ marginTop: 12, fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
@@ -211,7 +211,7 @@ export default function QuizzesPage() {
                       <span>{quiz.questionCount} questions</span>
                       <span>{unlocked ? (progress ? `${progress}% complete` : 'Open now') : `₹${quiz.price ?? 0}`}</span>
                     </div>
-                    <div style={{ height: 12, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                    <div style={{ height: 12, borderRadius: 999, background: 'var(--overlay-md)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-2))' }} />
                     </div>
                     <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>

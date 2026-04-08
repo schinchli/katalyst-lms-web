@@ -190,8 +190,8 @@ function SelfChallengeIcon({ active }: { active: boolean }) {
   );
 }
 
-const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
-const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0' };
+const DIFF_COLOR: Record<string, string> = { beginner: 'var(--success)', intermediate: 'var(--warning)', advanced: 'var(--error)' };
+const CERT_COLOR: Record<string, string> = { foundational: 'var(--success)', associate: 'var(--info)', professional: 'var(--warning)', specialty: '#7367F0' };
 
 function HamburgerIcon() {
   return (
@@ -484,7 +484,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
                 background: isPro ? '#FF9F4318' : 'var(--bg)',
-                color:      isPro ? '#FF9F43'  : 'var(--text-secondary)',
+                color:      isPro ? 'var(--warning)'  : 'var(--text-secondary)',
                 border:     isPro ? '1px solid #FF9F4340' : '1px solid var(--border)',
               }}
             >
@@ -505,7 +505,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
                 aria-label="Sign out"
                 onClick={handleLogout}
                 style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.15s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = '#FF4C51'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
                 <LogoutIcon />

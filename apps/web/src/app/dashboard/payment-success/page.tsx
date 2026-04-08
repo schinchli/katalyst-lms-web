@@ -70,7 +70,7 @@ export default function PaymentSuccessPage() {
   }, [sessionId]);
 
   const icon = state === 'loading' ? '⏳' : state === 'success' ? '🎉' : '⚠️';
-  const color = state === 'error' ? '#FF4C51' : '#28C76F';
+  const color = state === 'error' ? 'var(--error)' : 'var(--success)';
 
   return (
     <div style={{

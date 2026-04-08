@@ -841,7 +841,7 @@ export default function SettingsPage() {
   };
 
   const STATUS_BADGE_COLORS: Record<ContestStatus, { bg: string; color: string }> = {
-    live:     { bg: '#EA545518', color: '#EA5455' },
+    live:     { bg: '#EA545518', color: 'var(--error)' },
     upcoming: { bg: '#7367F018', color: '#7367F0' },
     past:     { bg: 'var(--bg)', color: 'var(--text-secondary)' },
   };
@@ -852,45 +852,45 @@ export default function SettingsPage() {
     <div className="page-content dc-shell">
       {/* Inline delete-contest confirmation */}
       {pendingDeleteContestId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--modal-scrim)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
-            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Contest</h3>
+            <h3 style={{ margin: '0 0 10px', color: 'var(--error)' }}>Delete Contest</h3>
             <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
               Delete &quot;{contests.find((c) => c.id === pendingDeleteContestId)?.title ?? pendingDeleteContestId}&quot;? This cannot be undone.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setPendingDeleteContestId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-              <button onClick={confirmDeleteContest} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+              <button onClick={confirmDeleteContest} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--error)', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
             </div>
           </div>
         </div>
       )}
       {/* Inline delete-quiz confirmation */}
       {pendingDeleteQuizId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--modal-scrim)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
-            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Quiz</h3>
+            <h3 style={{ margin: '0 0 10px', color: 'var(--error)' }}>Delete Quiz</h3>
             <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
               Delete &quot;{managedQuizList.find((q) => q.id === pendingDeleteQuizId)?.title ?? pendingDeleteQuizId}&quot;? This cannot be undone.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setPendingDeleteQuizId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-              <button onClick={confirmDeleteQuiz} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+              <button onClick={confirmDeleteQuiz} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--error)', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
             </div>
           </div>
         </div>
       )}
       {/* Inline delete-category confirmation */}
       {pendingDeleteCategoryId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--modal-scrim)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'var(--surface)', borderRadius: 14, padding: 28, maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
-            <h3 style={{ margin: '0 0 10px', color: '#FF4C51' }}>Delete Category</h3>
+            <h3 style={{ margin: '0 0 10px', color: 'var(--error)' }}>Delete Category</h3>
             <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>
               Delete &quot;{managedCategories.find((c) => c.id === pendingDeleteCategoryId)?.name ?? pendingDeleteCategoryId}&quot;? All subcategories will also be removed.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setPendingDeleteCategoryId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-              <button onClick={confirmDeleteCategory} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+              <button onClick={confirmDeleteCategory} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--error)', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
             </div>
           </div>
         </div>
@@ -917,7 +917,7 @@ export default function SettingsPage() {
                   padding: 14,
                   borderRadius: 18,
                   border: `1px solid ${config.theme.platformPreset === preset.id ? 'var(--primary)' : 'var(--border)'}`,
-                  background: config.theme.platformPreset === preset.id ? 'var(--primary-light)' : 'rgba(255,255,255,0.02)',
+                  background: config.theme.platformPreset === preset.id ? 'var(--primary-light)' : 'var(--overlay-xs)',
                   color: 'var(--text)',
                 }}
               >
@@ -984,7 +984,7 @@ export default function SettingsPage() {
               };
 
               return (
-                <div key={quiz.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+                <div key={quiz.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'var(--overlay-xs)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: 240 }}>
                       <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
@@ -1128,7 +1128,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div style={{ marginTop: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+          <div style={{ marginTop: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
               <div>
                 <div style={{ fontWeight: 700, color: 'var(--text)' }}>Bulk import JSON</div>
@@ -1151,7 +1151,7 @@ export default function SettingsPage() {
               style={{ minHeight: 220, marginTop: 14, fontFamily: 'monospace' }}
             />
             {bulkImportError ? (
-              <div style={{ marginTop: 10, color: '#ff8e8e', fontSize: 13 }}>{bulkImportError}</div>
+              <div style={{ marginTop: 10, color: 'var(--error)', fontSize: 13 }}>{bulkImportError}</div>
             ) : null}
           </div>
 
@@ -1171,7 +1171,7 @@ export default function SettingsPage() {
                       padding: 14,
                       borderRadius: 18,
                       border: `1px solid ${selectedManagedQuiz?.id === quiz.id ? 'var(--primary)' : 'var(--border)'}`,
-                      background: selectedManagedQuiz?.id === quiz.id ? 'var(--primary-light)' : 'rgba(255,255,255,0.02)',
+                      background: selectedManagedQuiz?.id === quiz.id ? 'var(--primary-light)' : 'var(--overlay-xs)',
                       color: 'var(--text)',
                     }}
                   >
@@ -1182,7 +1182,7 @@ export default function SettingsPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteManagedQuizWithConfirm(quiz.id); }}
                     title="Delete quiz"
-                    style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24, borderRadius: 6, border: 'none', background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit', padding: 0 }}
+                    style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24, borderRadius: 6, border: 'none', background: 'rgba(255,76,81,0.12)', color: 'var(--error)', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit', padding: 0 }}
                   >
                     ✕
                   </button>
@@ -1338,7 +1338,7 @@ export default function SettingsPage() {
 
                 <div style={{ display: 'grid', gap: 14 }}>
                   {selectedManagedQuestions.map((question, questionIndex) => (
-                    <div key={question.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+                    <div key={question.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'var(--overlay-xs)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                         <strong style={{ color: 'var(--text)' }}>Question {questionIndex + 1}</strong>
                         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -1449,7 +1449,7 @@ export default function SettingsPage() {
                         {/* ── Mode-specific fields ── */}
                         {(selectedManagedQuiz.mode === 'guess_the_word') && (
                           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: '#00BAD1', textTransform: 'uppercase', letterSpacing: 0.5 }}>✏️ Guess the Word</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--info)', textTransform: 'uppercase', letterSpacing: 0.5 }}>✏️ Guess the Word</div>
                             <label>
                               <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Word Answer (correct text, case-insensitive)</div>
                               <input className="admin-field-input" value={question.wordAnswer ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { wordAnswer: event.target.value || undefined })} placeholder="e.g. Elastic" />
@@ -1463,7 +1463,7 @@ export default function SettingsPage() {
 
                         {(selectedManagedQuiz.mode === 'maths_quiz') && (
                           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: '#28C76F', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔢 Maths Quiz</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--success)', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔢 Maths Quiz</div>
                             <label>
                               <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Numeric Answer (±0.01 tolerance)</div>
                               <input
@@ -1482,7 +1482,7 @@ export default function SettingsPage() {
 
                         {(selectedManagedQuiz.mode === 'audio') && (
                           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: '#FF4C51', textTransform: 'uppercase', letterSpacing: 0.5 }}>🎧 Audio Quiz</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--error)', textTransform: 'uppercase', letterSpacing: 0.5 }}>🎧 Audio Quiz</div>
                             <label>
                               <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Audio URL</div>
                               <input className="admin-field-input" value={question.audioUrl ?? ''} onChange={(event) => updateManagedQuestion(selectedManagedQuiz.id, question.id, { audioUrl: event.target.value || undefined })} placeholder="https://…/audio.mp3" />
@@ -1497,7 +1497,7 @@ export default function SettingsPage() {
                         {(selectedManagedQuiz.mode === 'multi_match') && (
                           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <div style={{ fontSize: 12, fontWeight: 700, color: '#FF9F43', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔗 Match Pairs</div>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: 0.5 }}>🔗 Match Pairs</div>
                               <button
                                 className="settings-btn-ghost"
                                 onClick={() => {
@@ -1605,7 +1605,7 @@ export default function SettingsPage() {
                 ))}
               </select>
             </label>
-            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>
@@ -1620,13 +1620,13 @@ export default function SettingsPage() {
                     className="dc-chip"
                     style={{
                       background: dailyQuizFallsBack ? 'rgba(255, 216, 77, 0.16)' : 'rgba(81, 207, 102, 0.16)',
-                      color: dailyQuizFallsBack ? '#ffd84d' : 'var(--platform-success-accent)',
+                      color: dailyQuizFallsBack ? 'var(--color-xp)' : 'var(--platform-success-accent)',
                     }}
                   >
                     {dailyQuizFallsBack ? 'Fallback rotation active' : 'Selection valid'}
                   </span>
                   {dailyQuizIsPremium ? (
-                    <span className="dc-chip" style={{ background: 'rgba(255, 216, 77, 0.16)', color: '#ffd84d' }}>
+                    <span className="dc-chip" style={{ background: 'rgba(255, 216, 77, 0.16)', color: 'var(--color-xp)' }}>
                       Premium daily quiz
                     </span>
                   ) : null}
@@ -1644,7 +1644,7 @@ export default function SettingsPage() {
                       : 'No specific quiz selected. The app will rotate across visible non-premium quizzes by date.'}
               </div>
               {resolvedDailyQuiz ? (
-                <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
+                <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 12, background: 'var(--overlay-xs)', border: '1px solid var(--border)' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
                     Resolved daily target
                   </div>
@@ -1655,7 +1655,7 @@ export default function SettingsPage() {
                 </div>
               ) : null}
             </div>
-            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ padding: 14, borderRadius: 16, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
                 Daily quiz analytics
               </div>
@@ -1669,15 +1669,15 @@ export default function SettingsPage() {
                 </div>
               ) : (
                 <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--overlay-sm)', border: '1px solid var(--border)' }}>
                     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Attempts</div>
                     <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{dailyAnalytics.attempts}</div>
                   </div>
-                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--overlay-sm)', border: '1px solid var(--border)' }}>
                     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Completions</div>
                     <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{dailyAnalytics.completions}</div>
                   </div>
-                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}>
+                  <div style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--overlay-sm)', border: '1px solid var(--border)' }}>
                     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Completion rate</div>
                     <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{Math.round(dailyAnalytics.completionRate * 100)}%</div>
                   </div>
@@ -1830,7 +1830,7 @@ export default function SettingsPage() {
 
           <div className="dc-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 20 }}>
             {/* Add category form */}
-            <div style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'var(--overlay-xs)' }}>
               <div style={{ fontWeight: 700, marginBottom: 12, color: 'var(--text)' }}>Add category</div>
               <div className="dc-grid" style={{ gap: 10 }}>
                 <label>
@@ -1854,7 +1854,7 @@ export default function SettingsPage() {
                   No categories yet. Add one on the left.
                 </div>
               ) : managedCategories.map((cat) => (
-                <div key={cat.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.02)' }}>
+                <div key={cat.id} style={{ border: '1px solid var(--border)', borderRadius: 18, padding: 16, background: 'var(--overlay-xs)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                     <div>
                       <div style={{ fontWeight: 700, color: 'var(--text)' }}>{cat.name}</div>
@@ -1863,7 +1863,7 @@ export default function SettingsPage() {
                     </div>
                     <button
                       onClick={() => deleteCategory(cat.id)}
-                      style={{ height: 30, padding: '0 10px', borderRadius: 8, border: 'none', background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
+                      style={{ height: 30, padding: '0 10px', borderRadius: 8, border: 'none', background: 'rgba(255,76,81,0.12)', color: 'var(--error)', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
                     >
                       Delete
                     </button>
@@ -1968,7 +1968,7 @@ export default function SettingsPage() {
             <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 4 }}>Contests</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0 }}>Manage live, upcoming, and past contests shown to users.</p>
           </div>
-          {contestsSaved && <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>Saved</span>}
+          {contestsSaved && <span style={{ fontSize: 13, color: 'var(--success)', fontWeight: 600 }}>Saved</span>}
         </div>
 
         {/* Existing contests list */}
@@ -1988,7 +1988,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <button onClick={() => startEditContest(contest)} style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>Edit</button>
-                  <button onClick={() => setPendingDeleteContestId(contest.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: '#FF4C51', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+                  <button onClick={() => setPendingDeleteContestId(contest.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: 'var(--error)', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
                 </div>
               );
             })}
@@ -2090,7 +2090,7 @@ export default function SettingsPage() {
             <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 4 }}>Coin Store</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0 }}>Manage coin packs available for purchase in the store.</p>
           </div>
-          {coinPacksSaved && <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>Saved</span>}
+          {coinPacksSaved && <span style={{ fontSize: 13, color: 'var(--success)', fontWeight: 600 }}>Saved</span>}
         </div>
 
         {/* IAP compliance note */}
@@ -2108,7 +2108,7 @@ export default function SettingsPage() {
                   <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>{pack.label}</span>
                   <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
                     {pack.coins.toLocaleString()} coins · ₹{pack.priceInr} / ${pack.priceUsd} USD
-                    {pack.popular ? <span style={{ marginLeft: 6, background: '#FF9F4322', color: '#FF9F43', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>Popular</span> : null}
+                    {pack.popular ? <span style={{ marginLeft: 6, background: '#FF9F4322', color: 'var(--warning)', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>Popular</span> : null}
                     {!pack.enabled ? <span style={{ marginLeft: 6, background: 'var(--bg)', color: 'var(--text-secondary)', fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>Disabled</span> : null}
                   </span>
                 </div>
@@ -2123,7 +2123,7 @@ export default function SettingsPage() {
                 {pendingDeletePackId === pack.id ? (
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C51', color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}
+                      style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: 'var(--error)', color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}
                       onClick={() => {
                         setCoinPacks((prev) => prev.filter((p) => p.id !== pack.id));
                         setPendingDeletePackId(null);
@@ -2135,7 +2135,7 @@ export default function SettingsPage() {
                     >Cancel</button>
                   </div>
                 ) : (
-                  <button onClick={() => setPendingDeletePackId(pack.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: '#FF4C51', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
+                  <button onClick={() => setPendingDeletePackId(pack.id)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: '#FF4C5114', color: 'var(--error)', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>Delete</button>
                 )}
               </div>
             ))}

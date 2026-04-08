@@ -38,7 +38,7 @@ export default function DashboardError({ error, reset }: Props) {
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, maxWidth: 420, lineHeight: 1.6, margin: '0 0 28px' }}>
         An unexpected error occurred. Your data is safe — please try again.
         {process.env.NODE_ENV === 'development' && (
-          <span style={{ display: 'block', marginTop: 10, fontFamily: 'monospace', fontSize: 12, color: '#FF4C51' }}>
+          <span style={{ display: 'block', marginTop: 10, fontFamily: 'monospace', fontSize: 12, color: 'var(--error)' }}>
             {error.message}
           </span>
         )}

@@ -106,7 +106,7 @@ export default function BookmarksPage() {
                   <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', padding: '2px 8px', borderRadius: 6, background: 'var(--bg)', border: '1px solid var(--border)' }}>
                     {quiz.title}
                   </span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: quiz.difficulty === 'beginner' ? '#28C76F' : quiz.difficulty === 'intermediate' ? '#FF9F43' : '#FF4C51' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: quiz.difficulty === 'beginner' ? 'var(--success)' : quiz.difficulty === 'intermediate' ? 'var(--warning)' : 'var(--error)' }}>
                     {quiz.difficulty}
                   </span>
                 </div>
@@ -118,7 +118,7 @@ export default function BookmarksPage() {
                 onClick={() => removeBookmark(question.id)}
                 title="Remove bookmark"
                 aria-label="Remove bookmark"
-                style={{ flexShrink: 0, background: 'rgba(255,76,81,0.07)', border: '1px solid rgba(255,76,81,0.2)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#FF4C51', fontFamily: 'inherit' }}
+                style={{ flexShrink: 0, background: 'rgba(255,76,81,0.07)', border: '1px solid rgba(255,76,81,0.2)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--error)', fontFamily: 'inherit' }}
               >
                 Remove
               </button>

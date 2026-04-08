@@ -131,7 +131,7 @@ export default function ProgressPage() {
         <div className="dc-kpi-grid" style={{ marginTop: 24 }}>
           {[
             { label: 'Completion', value: `${completion}%`, tone: 'var(--primary)' },
-            { label: 'Average score', value: `${average}%`, tone: '#ffd84d' },
+            { label: 'Average score', value: `${average}%`, tone: 'var(--color-xp)' },
             { label: 'Best score', value: `${best}%`, tone: 'var(--platform-success-accent)' },
             { label: 'XP earned', value: `${xp}`, tone: 'var(--platform-premium-accent)' },
           ].map((item) => (
@@ -143,7 +143,7 @@ export default function ProgressPage() {
           {coinBalance !== null && (
             <div className="dc-card" style={{ padding: 20 }}>
               <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Coin Balance</div>
-              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: '#ffd84d' }}>
+              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: 'var(--color-xp)' }}>
                 ⚡ {coinBalance.toLocaleString()}
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function ProgressPage() {
                       {new Date(tx.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: isEarn ? '#28C76F' : '#EA5455' }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: isEarn ? 'var(--success)' : 'var(--error)' }}>
                     {isEarn ? '+' : ''}{tx.amount.toLocaleString()} ⚡
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function ProgressPage() {
           </div>
           <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10 }}>
             {activeDays.map((day, index) => (
-              <div key={index} style={{ padding: '16px 0', borderRadius: 18, border: day.active ? '1px solid rgba(255,216,77,0.45)' : '1px solid var(--border)', background: day.active ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)', textAlign: 'center' }}>
+              <div key={index} style={{ padding: '16px 0', borderRadius: 18, border: day.active ? '1px solid rgba(255,216,77,0.45)' : '1px solid var(--border)', background: day.active ? 'rgba(255,216,77,0.12)' : 'var(--overlay-xs)', textAlign: 'center' }}>
                 <div style={{ color: 'var(--text-secondary)', marginBottom: 10 }}>{day.label}</div>
                 <div style={{ fontSize: 24 }}>{day.active ? '⚡' : '·'}</div>
               </div>
@@ -206,7 +206,7 @@ export default function ProgressPage() {
 
         <div className="dc-card" style={{ padding: 24 }}>
           {dailyQuiz ? (
-            <div style={{ marginBottom: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ marginBottom: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
@@ -214,7 +214,7 @@ export default function ProgressPage() {
                   </div>
                   <div style={{ marginTop: 8, fontWeight: 700, color: 'var(--text)' }}>{dailyQuiz.title}</div>
                 </div>
-                <span className="dc-chip" style={{ background: dailyQuizResult ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizResult ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+                <span className="dc-chip" style={{ background: dailyQuizResult ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizResult ? 'var(--platform-success-accent)' : 'var(--color-xp)' }}>
                   {dailyQuizResult ? `${percentage(dailyQuizResult)}% today` : 'Pending today'}
                 </span>
               </div>
@@ -243,12 +243,12 @@ export default function ProgressPage() {
               const isDailyQuizAttempt = dailyQuiz?.id === result.quizId && isSameLocalDay(result.completedAt);
               const quizMode = quiz?.mode;
               return (
-                <div key={`${result.quizId}-${result.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                <div key={`${result.quizId}-${result.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quiz?.title ?? result.quizId}</div>
                       {isDailyQuizAttempt ? (
-                        <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>
+                        <span className="dc-chip" style={{ background: 'rgba(255,216,77,0.16)', color: 'var(--color-xp)' }}>
                           {systemFeatures.dailyQuizLabel}
                         </span>
                       ) : null}
@@ -257,7 +257,7 @@ export default function ProgressPage() {
                           T/F
                         </span>
                       ) : quizMode === 'exam' ? (
-                        <span className="dc-chip" style={{ background: 'rgba(255,76,81,0.12)', color: '#FF4C51', fontSize: 11 }}>
+                        <span className="dc-chip" style={{ background: 'rgba(255,76,81,0.12)', color: 'var(--error)', fontSize: 11 }}>
                           EXAM
                         </span>
                       ) : null}

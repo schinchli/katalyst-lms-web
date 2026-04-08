@@ -221,7 +221,7 @@ export default function ProfilePage() {
           {[
             { label: 'Courses completed', value: String(completedCount), tone: 'var(--text)' },
             { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
-            { label: 'Study hours', value: `${studyHours}`, tone: '#ffd84d' },
+            { label: 'Study hours', value: `${studyHours}`, tone: 'var(--color-xp)' },
             { label: 'Course library', value: String(quizzes.length), tone: 'var(--platform-premium-accent)' },
           ].map((item) => (
             <div key={item.label} className="dc-card" style={{ padding: 20 }}>
@@ -272,7 +272,7 @@ export default function ProfilePage() {
               <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Friends referred</div>
             </div>
             <div className="dc-card" style={{ padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 26, fontWeight: 700, color: '#ffd84d' }}>{referral.coinsEarned} ⚡</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-xp)' }}>{referral.coinsEarned} ⚡</div>
               <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Coins earned</div>
             </div>
           </div>
@@ -369,21 +369,21 @@ export default function ProfilePage() {
 
       {/* ── Danger Zone ────────────────────────────────────────────────────── */}
       <section className="dc-card" style={{ padding: 24, border: '1px solid rgba(239,68,68,0.3)', borderRadius: 18 }}>
-        <h2 className="dc-section-title" style={{ fontSize: 22, color: '#EF4444' }}>Danger Zone</h2>
+        <h2 className="dc-section-title" style={{ fontSize: 22, color: 'var(--error)' }}>Danger Zone</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
           Deleting your account is permanent and cannot be undone. All your quiz history, progress, and profile data will be erased immediately.
         </p>
         {!showDeleteModal ? (
           <button
             className="settings-btn-ghost"
-            style={{ borderColor: '#EF4444', color: '#EF4444' }}
+            style={{ borderColor: 'var(--error)', color: 'var(--error)' }}
             onClick={() => { setShowDeleteModal(true); setDeleteConfirmText(''); setDeleteError(''); }}
           >
             Delete Account
           </button>
         ) : (
           <div style={{ display: 'grid', gap: 14, maxWidth: 460 }}>
-            <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', fontSize: 14, lineHeight: 1.6 }}>
+            <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--error)', fontSize: 14, lineHeight: 1.6 }}>
               This action is irreversible. Type <strong>DELETE</strong> below to confirm you want to permanently delete your account.
             </div>
             <input
@@ -391,15 +391,15 @@ export default function ProfilePage() {
               placeholder="Type DELETE to confirm"
               value={deleteConfirmText}
               onChange={(event) => setDeleteConfirmText(event.target.value)}
-              style={{ borderColor: deleteConfirmText === 'DELETE' ? '#EF4444' : undefined }}
+              style={{ borderColor: deleteConfirmText === 'DELETE' ? 'var(--error)' : undefined }}
             />
             {deleteError && (
-              <div style={{ color: '#EF4444', fontSize: 13 }}>{deleteError}</div>
+              <div style={{ color: 'var(--error)', fontSize: 13 }}>{deleteError}</div>
             )}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
                 className="btn-primary"
-                style={{ background: '#EF4444', borderColor: '#EF4444' }}
+                style={{ background: 'var(--error)', borderColor: 'var(--error)' }}
                 disabled={deleteConfirmText !== 'DELETE' || deleteLoading}
                 onClick={handleDeleteAccount}
               >

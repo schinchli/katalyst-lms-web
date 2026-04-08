@@ -15,9 +15,9 @@ import type { PaymentSuccessResult, Gateway } from '@/hooks/usePayment';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 
-const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
+const DIFF_COLOR: Record<string, string> = { beginner: 'var(--success)', intermediate: 'var(--warning)', advanced: 'var(--error)' };
 const CERT_COLOR: Record<string, string> = {
-  foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0',
+  foundational: 'var(--success)', associate: 'var(--info)', professional: 'var(--warning)', specialty: '#7367F0',
 };
 const Q_TIME = 30;
 
@@ -55,7 +55,7 @@ function saveResultLocally(result: QuizResult) {
 }
 
 // SVGs
-const CheckSvg = ({ color = '#28C76F' }: { color?: string }) => (
+const CheckSvg = ({ color = 'var(--success)' }: { color?: string }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
   </svg>
@@ -71,7 +71,7 @@ const ClockSvg = () => (
   </svg>
 );
 const StarSvg = ({ filled }: { filled: boolean }) => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? '#FF9F43' : 'none'} stroke="#FF9F43" strokeWidth="2">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? 'var(--warning)' : 'none'} stroke="#FF9F43" strokeWidth="2">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
@@ -549,15 +549,15 @@ export default function QuizPage() {
                 <span className="course-cert-tag" style={{ background: accent }}>{quiz.certLevel}</span>
               )}
               <span className="course-tag" style={{ background: 'var(--primary-light)', color: 'var(--primary-text)' }}>{catLabel}</span>
-              {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: '#ffd84d' }}>{systemFeatures.dailyQuizLabel}</span> : null}
+              {isDailyQuiz ? <span className="course-tag" style={{ background: 'rgba(255,216,77,0.16)', color: 'var(--color-xp)' }}>{systemFeatures.dailyQuizLabel}</span> : null}
               {quizMode === 'true_false' ? <span className="course-tag" style={{ background: accent + '18', color: accent }}>TRUE / FALSE</span> : null}
               {/* Screen recording/screenshot protection is not available on web. Platform-safe enforcement is mobile-only. */}
-              {quizMode === 'exam' ? <span className="course-tag" style={{ background: 'rgba(255, 76, 81, 0.12)', color: '#FF4C51' }}>EXAM</span> : null}
+              {quizMode === 'exam' ? <span className="course-tag" style={{ background: 'rgba(255, 76, 81, 0.12)', color: 'var(--error)' }}>EXAM</span> : null}
               {quizMode === 'fun_and_learn' ? <span className="course-tag" style={{ background: 'rgba(115,103,240,0.14)', color: '#7367F0' }}>📖 Fun and Learn</span> : null}
-              {quizMode === 'guess_the_word' ? <span className="course-tag" style={{ background: 'rgba(0,186,209,0.14)', color: '#00BAD1' }}>✏️ Guess the Word</span> : null}
-              {quizMode === 'maths_quiz' ? <span className="course-tag" style={{ background: 'rgba(40,199,111,0.14)', color: '#28C76F' }}>🔢 Maths Quiz</span> : null}
-              {quizMode === 'multi_match' ? <span className="course-tag" style={{ background: 'rgba(255,159,67,0.14)', color: '#FF9F43' }}>🔗 Multi Match</span> : null}
-              {quizMode === 'audio' ? <span className="course-tag" style={{ background: 'rgba(255,76,81,0.12)', color: '#FF4C51' }}>🎧 Audio Quiz</span> : null}
+              {quizMode === 'guess_the_word' ? <span className="course-tag" style={{ background: 'rgba(0,186,209,0.14)', color: 'var(--info)' }}>✏️ Guess the Word</span> : null}
+              {quizMode === 'maths_quiz' ? <span className="course-tag" style={{ background: 'rgba(40,199,111,0.14)', color: 'var(--success)' }}>🔢 Maths Quiz</span> : null}
+              {quizMode === 'multi_match' ? <span className="course-tag" style={{ background: 'rgba(255,159,67,0.14)', color: 'var(--warning)' }}>🔗 Multi Match</span> : null}
+              {quizMode === 'audio' ? <span className="course-tag" style={{ background: 'rgba(255,76,81,0.12)', color: 'var(--error)' }}>🎧 Audio Quiz</span> : null}
             </div>
             <h1 className="course-hero-title">{quiz.title}</h1>
             <p className="course-hero-desc">{quiz.description}</p>
@@ -565,7 +565,7 @@ export default function QuizPage() {
               <span className="course-rating-stars">
                 {[1,2,3,4,5].map((n) => <StarSvg key={n} filled={n <= 4} />)}
               </span>
-              <span style={{ fontWeight: 700, color: '#FF9F43' }}>4.8</span>
+              <span style={{ fontWeight: 700, color: 'var(--warning)' }}>4.8</span>
               {studentCount !== null && (
                 <span style={{ color: 'var(--text-secondary)' }}>({studentCount.toLocaleString()} students)</span>
               )}
@@ -674,7 +674,7 @@ export default function QuizPage() {
               {isPremiumLocked ? (
                 <button
                   className="btn-enroll"
-                  style={{ background: '#FF9F43', boxShadow: '0 4px 16px #FF9F4344', marginBottom: 8 }}
+                  style={{ background: 'var(--warning)', boxShadow: '0 4px 16px #FF9F4344', marginBottom: 8 }}
                   onClick={() => { setPaywallTab('course'); setShowPaywall(true); }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -696,7 +696,7 @@ export default function QuizPage() {
               {/* Pro shortcut */}
               {isPremiumLocked && !isPro && (
                 <button
-                  style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: '#FF9F43', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 16, fontFamily: 'inherit' }}
+                  style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: 'var(--warning)', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 16, fontFamily: 'inherit' }}
                   onClick={() => { setPaywallTab('pro'); setShowPaywall(true); }}
                 >
                   ⭐ Go Pro — All Access {countryCode === 'IN' ? '₹999/yr' : '$9.99/yr'}
@@ -721,7 +721,7 @@ export default function QuizPage() {
 
                     {/* Error */}
                     {paymentError && (
-                      <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: '#FF4C51', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
+                      <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: 'var(--error)', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
                         {paymentError}
                       </div>
                     )}
@@ -769,7 +769,7 @@ export default function QuizPage() {
                         </div>
                         {[`${questionPool.length} practice questions for ${quiz.title}`, 'Instant feedback with detailed explanations', 'Unlimited retries', 'Score history saved to your profile'].map((f) => (
                           <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                            <span style={{ color: '#28C76F', fontWeight: 700 }}>✓</span>
+                            <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
                             <span style={{ fontSize: 13, color: 'var(--text)' }}>{f}</span>
                           </div>
                         ))}
@@ -783,7 +783,7 @@ export default function QuizPage() {
                             : (gatewayTab === 'razorpay' ? `Unlock via Razorpay ₹${quiz.price}` : `Unlock via Stripe $${((quiz.price ?? 499) / 80).toFixed(2)}`)}
                         </button>
                         <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, marginBottom: 0 }}>
-                          Or <button style={{ background: 'none', border: 'none', color: '#FF9F43', fontWeight: 700, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', padding: 0 }} onClick={() => setPaywallTab('pro')}>Go Pro for all quizzes →</button>
+                          Or <button style={{ background: 'none', border: 'none', color: 'var(--warning)', fontWeight: 700, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', padding: 0 }} onClick={() => setPaywallTab('pro')}>Go Pro for all quizzes →</button>
                         </p>
                       </>
                     )}
@@ -796,12 +796,12 @@ export default function QuizPage() {
                         </p>
                         <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
                           <div style={{ flex: 1, border: '2px solid #FF9F43', borderRadius: 12, padding: 16, textAlign: 'center', background: '#FF9F4310' }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: '#FF9F43', textTransform: 'uppercase', letterSpacing: 1 }}>Annual</div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: 1 }}>Annual</div>
                             <div style={{ fontSize: 22, fontWeight: 800, margin: '4px 0' }}>
                               {gatewayTab === 'razorpay' ? '₹999' : '$9.99'}
                               <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-secondary)' }}>/yr</span>
                             </div>
-                            <div style={{ background: '#FF9F43', color: '#fff', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 700, display: 'inline-block' }}>Save 44%</div>
+                            <div style={{ background: 'var(--warning)', color: '#fff', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 700, display: 'inline-block' }}>Save 44%</div>
                           </div>
                           <div style={{ flex: 1, border: '1.5px solid var(--border)', borderRadius: 12, padding: 16, textAlign: 'center' }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 1 }}>Monthly</div>
@@ -813,20 +813,20 @@ export default function QuizPage() {
                         </div>
                         {['All 5 CLF-C02 quizzes (195 questions)', 'Security & Technology domains', 'Upcoming certification content', 'Advanced analytics & insights'].map((f) => (
                           <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                            <span style={{ color: '#28C76F', fontWeight: 700 }}>✓</span>
+                            <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
                             <span style={{ fontSize: 13, color: 'var(--text)' }}>{f}</span>
                           </div>
                         ))}
                         <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
                           <button
-                            style={{ flex: 1, height: 52, borderRadius: 12, background: gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43', color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
+                            style={{ flex: 1, height: 52, borderRadius: 12, background: gatewayTab === 'stripe' ? '#635BFF' : 'var(--warning)', color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
                             onClick={() => handleSubscription('annual', gatewayTab)}
                             disabled={paymentLoading}
                           >
                             {paymentLoading ? '…' : `⭐ ${gatewayTab === 'razorpay' ? '₹999/yr' : '$9.99/yr'}`}
                           </button>
                           <button
-                            style={{ flex: 1, height: 52, borderRadius: 12, background: 'transparent', color: gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43', fontSize: 14, fontWeight: 700, border: `1.5px solid ${gatewayTab === 'stripe' ? '#635BFF' : '#FF9F43'}`, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
+                            style={{ flex: 1, height: 52, borderRadius: 12, background: 'transparent', color: gatewayTab === 'stripe' ? '#635BFF' : 'var(--warning)', fontSize: 14, fontWeight: 700, border: `1.5px solid ${gatewayTab === 'stripe' ? '#635BFF' : 'var(--warning)'}`, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: paymentLoading ? 0.7 : 1 }}
                             onClick={() => handleSubscription('monthly', gatewayTab)}
                             disabled={paymentLoading}
                           >
@@ -885,7 +885,7 @@ export default function QuizPage() {
       <div style={{ padding: '40px 32px', maxWidth: 700, margin: '0 auto' }}>
         {isExamMode && (
           <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(255,76,81,0.24)', background: 'rgba(255,76,81,0.06)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#FF4C51' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--error)' }}>
               Exam Result
             </div>
             <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -897,7 +897,7 @@ export default function QuizPage() {
         )}
         {isDailyQuiz ? (
           <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: `1px solid ${passed ? 'rgba(81,207,102,0.28)' : 'rgba(255,216,77,0.24)'}`, background: passed ? 'rgba(81,207,102,0.08)' : 'rgba(255,216,77,0.08)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: passed ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: passed ? 'var(--platform-success-accent)' : 'var(--color-xp)' }}>
               {systemFeatures.dailyQuizLabel}
             </div>
             <div style={{ marginTop: 6, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -911,7 +911,7 @@ export default function QuizPage() {
           if (compBest === null) return null;
           const improved    = pct > compBest;
           const tied        = pct === compBest;
-          const bannerColor = improved ? '#28C76F' : tied ? '#FF9F43' : '#FF4C51';
+          const bannerColor = improved ? 'var(--success)' : tied ? 'var(--warning)' : 'var(--error)';
           const bannerBg    = improved ? 'rgba(40,199,111,0.08)' : tied ? 'rgba(255,159,67,0.08)' : 'rgba(255,76,81,0.08)';
           return (
             <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 12, border: `1px solid ${bannerColor}40`, background: bannerBg }}>
@@ -930,10 +930,10 @@ export default function QuizPage() {
         })()}
         <h1 style={{ textAlign: 'center', marginBottom: 8 }}>{quizMode === 'fun_and_learn' ? 'Learning Complete!' : 'Scoreboard'}</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0' }}>
-          <div style={{ width: 140, height: 140, borderRadius: 70, background: (passed ? '#28C76F' : '#FF4C51') + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 110, height: 110, borderRadius: 55, background: passed ? '#D1F7E2' : '#FFE5E6', border: `4px solid ${passed ? '#28C76F' : '#FF4C51'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ fontSize: 34, fontWeight: 700, color: passed ? '#28C76F' : '#FF4C51', lineHeight: 1 }}>{pct}%</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: passed ? '#28C76F' : '#FF4C51', letterSpacing: 1 }}>{passed ? 'PASS' : 'FAIL'}</div>
+          <div style={{ width: 140, height: 140, borderRadius: 70, background: (passed ? 'var(--success)' : 'var(--error)') + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 110, height: 110, borderRadius: 55, background: passed ? 'var(--success-tint)' : 'var(--error-tint)', border: `4px solid ${passed ? 'var(--success)' : 'var(--error)'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontSize: 34, fontWeight: 700, color: passed ? 'var(--success)' : 'var(--error)', lineHeight: 1 }}>{pct}%</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: passed ? 'var(--success)' : 'var(--error)', letterSpacing: 1 }}>{passed ? 'PASS' : 'FAIL'}</div>
             </div>
           </div>
           <h2 style={{ margin: '16px 0 4px' }}>{quizMode === 'fun_and_learn' ? 'Well done! 📖' : passed ? 'Great job! 🎉' : 'Keep Practicing'}</h2>
@@ -942,8 +942,8 @@ export default function QuizPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'Correct', val: score,                                                color: '#28C76F' },
-            { label: 'Wrong',   val: Object.keys(answers).length - score,                  color: '#FF4C51' },
+            { label: 'Correct', val: score,                                                color: 'var(--success)' },
+            { label: 'Wrong',   val: Object.keys(answers).length - score,                  color: 'var(--error)' },
             { label: 'Points',  val: pointScore,                                            color: accent },
             { label: 'Skipped', val: activeQuestions.length - Object.keys(answers).length,  color: 'var(--text-secondary)' },
           ].map((s) => (
@@ -984,9 +984,9 @@ export default function QuizPage() {
             ← Quizzes
           </button>
           <div style={{ flex: 1, background: 'var(--border)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: '#FF9F43', width: `${(activeQuestions.length / questionPool.length) * 100}%`, borderRadius: 4 }} />
+            <div style={{ height: '100%', background: 'var(--warning)', width: `${(activeQuestions.length / questionPool.length) * 100}%`, borderRadius: 4 }} />
           </div>
-          <span style={{ fontSize: 12, color: '#FF9F43', fontWeight: 700, minWidth: 72, textAlign: 'right' }}>
+          <span style={{ fontSize: 12, color: 'var(--warning)', fontWeight: 700, minWidth: 72, textAlign: 'right' }}>
             {activeQuestions.length} / {questionPool.length} Q
           </span>
         </div>
@@ -997,8 +997,8 @@ export default function QuizPage() {
 
             {/* Score ring + checkpoint badge */}
             <div className="upsell-top-row">
-              <div className="upsell-score-ring" style={{ borderColor: passed ? '#28C76F' : '#FF9F43' }}>
-                <div className="upsell-score-pct" style={{ color: passed ? '#28C76F' : '#FF9F43' }}>{pct}%</div>
+              <div className="upsell-score-ring" style={{ borderColor: passed ? 'var(--success)' : 'var(--warning)' }}>
+                <div className="upsell-score-pct" style={{ color: passed ? 'var(--success)' : 'var(--warning)' }}>{pct}%</div>
                 <div className="upsell-score-sub">free zone</div>
               </div>
               <div className="upsell-checkpoint">
@@ -1053,7 +1053,7 @@ export default function QuizPage() {
 
             {/* Monthly option */}
             <button
-              style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: '#FF9F43', fontSize: 13, fontWeight: 700, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', marginTop: 8, opacity: paymentLoading ? 0.7 : 1 }}
+              style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: 'var(--warning)', fontSize: 13, fontWeight: 700, cursor: paymentLoading ? 'wait' : 'pointer', fontFamily: 'inherit', marginTop: 8, opacity: paymentLoading ? 0.7 : 1 }}
               onClick={() => handleSubscription('monthly', gatewayTab)}
               disabled={paymentLoading}
             >
@@ -1077,7 +1077,7 @@ export default function QuizPage() {
 
             {/* Payment error notice */}
             {paymentError && (
-              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: '#FF4C51', fontSize: 13, margin: '12px 0', lineHeight: 1.5, textAlign: 'left' }}>
+              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.25)', color: 'var(--error)', fontSize: 13, margin: '12px 0', lineHeight: 1.5, textAlign: 'left' }}>
                 {paymentError}
               </div>
             )}
@@ -1101,7 +1101,7 @@ export default function QuizPage() {
   }
 
   // ── QUIZ ───────────────────────────────────────────────────────────────────
-  const timerColor = timeLeft <= 10 ? '#FF4C51' : timeLeft <= 20 ? '#FF9F43' : '#28C76F';
+  const timerColor = timeLeft <= 10 ? 'var(--error)' : timeLeft <= 20 ? 'var(--warning)' : 'var(--success)';
   const userAnswer = answers[currentQ.id];
   const isCorrect  = userAnswer === currentQ.correctOptionId;
   const isTrueFalseMode = quizMode === 'true_false';
@@ -1133,7 +1133,7 @@ export default function QuizPage() {
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
         <button onClick={() => router.push('/dashboard/quizzes')} style={{ color: 'var(--text-secondary)', fontSize: 20 }}>✕</button>
         {isExamMode && (
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,76,81,0.12)', color: '#FF4C51', whiteSpace: 'nowrap' }}>EXAM</span>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,76,81,0.12)', color: 'var(--error)', whiteSpace: 'nowrap' }}>EXAM</span>
         )}
         <div style={{ flex: 1, background: 'var(--border)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
           <div style={{ height: '100%', background: accent, width: `${((idx + 1) / activeQuestions.length) * 100}%`, borderRadius: 4, transition: 'width 0.3s' }} />
@@ -1150,7 +1150,7 @@ export default function QuizPage() {
             <div style={{ height: '100%', background: timerColor, width: `${(timeLeft / Q_TIME) * 100}%`, borderRadius: 3, transition: 'width 1s linear, background 0.3s' }} />
           </div>
           <span style={{ fontSize: 13, fontWeight: 700, color: timerColor, minWidth: 36, textAlign: 'right' }}>{timeLeft}s</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#28C76F', marginLeft: 8 }}>Pts {pointScore}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--success)', marginLeft: 8 }}>Pts {pointScore}</span>
         </div>
       )}
 
@@ -1185,7 +1185,7 @@ export default function QuizPage() {
               aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark this question'}
               style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 4, marginTop: 2 }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill={isBookmarked ? '#FF9F43' : 'none'} stroke="#FF9F43" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={isBookmarked ? 'var(--warning)' : 'none'} stroke="#FF9F43" strokeWidth="2">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
             </button>
@@ -1215,7 +1215,7 @@ export default function QuizPage() {
                       Show Hint 💡
                     </button>
                   ) : (
-                    <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,159,67,0.1)', border: '1px solid rgba(255,159,67,0.3)', fontSize: 13, color: '#FF9F43' }}>
+                    <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,159,67,0.1)', border: '1px solid rgba(255,159,67,0.3)', fontSize: 13, color: 'var(--warning)' }}>
                       💡 {currentQ.hint}
                     </div>
                   )}
@@ -1240,7 +1240,7 @@ export default function QuizPage() {
                   </button>
                 </div>
               ) : (
-                <div style={{ padding: 16, borderRadius: 10, background: wordFeedbackCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${wordFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: wordFeedbackCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                <div style={{ padding: 16, borderRadius: 10, background: wordFeedbackCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${wordFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: wordFeedbackCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{wordFeedbackCorrect ? '✓ Correct!' : `✗ Incorrect. The answer is: "${currentQ.wordAnswer}"`}</strong>
                   {currentQ.explanation && <div style={{ marginTop: 8 }}>{currentQ.explanation}</div>}
                 </div>
@@ -1270,7 +1270,7 @@ export default function QuizPage() {
                   </button>
                 </div>
               ) : (
-                <div style={{ padding: 16, borderRadius: 10, background: numericFeedbackCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${numericFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: numericFeedbackCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                <div style={{ padding: 16, borderRadius: 10, background: numericFeedbackCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${numericFeedbackCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 14, color: numericFeedbackCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{numericFeedbackCorrect ? '✓ Correct!' : `✗ Incorrect. The correct answer is: ${currentQ.numericAnswer}`}</strong>
                   {currentQ.explanation && <div style={{ marginTop: 8 }}>{currentQ.explanation}</div>}
                 </div>
@@ -1293,7 +1293,7 @@ export default function QuizPage() {
                         key={pair.id}
                         onClick={() => !isMatched && handleMatchLeft(pair.id)}
                         disabled={isMatched || allMatchesDone}
-                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? '#D1F7E2' : isSelected ? 'var(--primary-light)' : 'var(--surface)', border: `1.5px solid ${isMatched ? '#28C76F' : isSelected ? 'var(--primary)' : 'var(--border)'}`, color: isMatched ? '#0F6B35' : isSelected ? 'var(--primary-text)' : 'var(--text)', fontWeight: isSelected ? 600 : 400 }}
+                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? 'var(--success-tint)' : isSelected ? 'var(--primary-light)' : 'var(--surface)', border: `1.5px solid ${isMatched ? 'var(--success)' : isSelected ? 'var(--primary)' : 'var(--border)'}`, color: isMatched ? 'var(--success-on-tint)' : isSelected ? 'var(--primary-text)' : 'var(--text)', fontWeight: isSelected ? 600 : 400 }}
                       >
                         {pair.left}
                       </button>
@@ -1311,7 +1311,7 @@ export default function QuizPage() {
                         key={pair.id}
                         onClick={() => !isMatched && handleMatchRight(pair.id)}
                         disabled={isMatched || allMatchesDone || !matchSelectedLeft}
-                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched || !matchSelectedLeft ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? '#D1F7E2' : isWrong ? '#FFE5E6' : 'var(--surface)', border: `1.5px solid ${isMatched ? '#28C76F' : isWrong ? '#FF4C51' : 'var(--border)'}`, color: isMatched ? '#0F6B35' : isWrong ? '#B52D2E' : 'var(--text)', opacity: !matchSelectedLeft && !isMatched ? 0.6 : 1 }}
+                        style={{ padding: '12px 14px', borderRadius: 10, textAlign: 'left', fontSize: 14, fontFamily: 'inherit', cursor: isMatched || !matchSelectedLeft ? 'default' : 'pointer', transition: 'all 0.15s', background: isMatched ? 'var(--success-tint)' : isWrong ? 'var(--error-tint)' : 'var(--surface)', border: `1.5px solid ${isMatched ? 'var(--success)' : isWrong ? 'var(--error)' : 'var(--border)'}`, color: isMatched ? 'var(--success-on-tint)' : isWrong ? 'var(--error-on-tint)' : 'var(--text)', opacity: !matchSelectedLeft && !isMatched ? 0.6 : 1 }}
                       >
                         {pair.right}
                       </button>
@@ -1320,7 +1320,7 @@ export default function QuizPage() {
                 </div>
               </div>
               {allMatchesDone && (
-                <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: '#D1F7E2', border: '1px solid #28C76F44', fontSize: 14, color: '#0F6B35', fontWeight: 600 }}>
+                <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: 'var(--success-tint)', border: '1px solid #28C76F44', fontSize: 14, color: 'var(--success-on-tint)', fontWeight: 600 }}>
                   ✓ All pairs matched correctly!
                   {currentQ.explanation && <div style={{ fontWeight: 400, marginTop: 6 }}>{currentQ.explanation}</div>}
                 </div>
@@ -1338,11 +1338,11 @@ export default function QuizPage() {
                     const isRight    = opt.id === currentQ.correctOptionId;
                     const isTrue     = opt.text.toLowerCase() === 'true';
                     let bg = isTrue ? 'rgba(40,199,111,0.08)' : 'rgba(255,76,81,0.08)';
-                    let border = isTrue ? '#28C76F' : '#FF4C51';
-                    let color  = isTrue ? '#28C76F' : '#FF4C51';
+                    let border = isTrue ? 'var(--success)' : 'var(--error)';
+                    let color  = isTrue ? 'var(--success)' : 'var(--error)';
                     if (feedback) {
-                      if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
-                      else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                      if (isRight)         { bg = 'var(--success-tint)'; border = 'var(--success)'; color = 'var(--success-on-tint)'; }
+                      else if (isSelected) { bg = 'var(--error-tint)'; border = 'var(--error)'; color = 'var(--error-on-tint)'; }
                     } else if (isSelected) {
                       bg = isTrue ? 'rgba(40,199,111,0.22)' : 'rgba(255,76,81,0.22)';
                     }
@@ -1378,8 +1378,8 @@ export default function QuizPage() {
                     const isRight    = opt.id === currentQ.correctOptionId;
                     let bg = 'var(--surface)', border = 'var(--border)', color = 'var(--text)';
                     if (feedback) {
-                      if (isRight)         { bg = '#D1F7E2'; border = '#28C76F'; color = '#0F6B35'; }
-                      else if (isSelected) { bg = '#FFE5E6'; border = '#FF4C51'; color = '#B52D2E'; }
+                      if (isRight)         { bg = 'var(--success-tint)'; border = 'var(--success)'; color = 'var(--success-on-tint)'; }
+                      else if (isSelected) { bg = 'var(--error-tint)'; border = 'var(--error)'; color = 'var(--error-on-tint)'; }
                     } else if (isSelected) {
                       bg = 'var(--primary-light)'; border = 'var(--primary)'; color = 'var(--primary-text)';
                     }
@@ -1394,13 +1394,13 @@ export default function QuizPage() {
 
               {/* Explanation — hidden in exam mode when examReviewAllowed is false */}
               {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && !isFunAndLearnMode && (
-                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
                 </div>
               )}
               {/* Fun and Learn: explanation already shown before options; on feedback show correct/incorrect only */}
               {isFunAndLearnMode && feedback && (
-                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? '#D1F7E2' : '#FFE5E6', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? '#0F6B35' : '#B52D2E', lineHeight: 1.6 }}>
+                <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong>
                 </div>
               )}

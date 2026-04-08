@@ -142,7 +142,7 @@ export default function DashboardPage() {
                   color: 'var(--text)',
                   fontWeight: 700,
                   textDecoration: 'none',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'var(--overlay-xs)',
                 }}
               >
                 {config.copy.homeSecondaryCta}
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 </div>
                 <div style={{ marginTop: 8, fontSize: 34, fontWeight: 700, color: 'var(--text)' }}>{continueCourse.title}</div>
               </div>
-              <span className="dc-chip" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text)' }}>
+              <span className="dc-chip" style={{ background: 'var(--overlay-md)', color: 'var(--text)' }}>
                 {completion}%
               </span>
             </div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                 <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
                   {systemFeatures.dailyQuizLabel}
                 </div>
-                <span className="dc-chip" style={{ background: dailyQuizCompleted ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizCompleted ? 'var(--platform-success-accent)' : '#ffd84d' }}>
+                <span className="dc-chip" style={{ background: dailyQuizCompleted ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)', color: dailyQuizCompleted ? 'var(--platform-success-accent)' : 'var(--color-xp)' }}>
                   {dailyQuizCompleted ? 'Completed today' : 'Ready today'}
                 </span>
               </div>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                   <div style={{ marginTop: 18, fontSize: 48 }}>{quiz.icon}</div>
                   <div style={{ marginTop: 14, fontSize: 28, fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
                   <p style={{ margin: '12px 0 18px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{quiz.description}</p>
-                  <div style={{ height: 12, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: 12, borderRadius: 999, background: 'var(--overlay-md)', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${score}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-2))' }} />
                   </div>
                   <div style={{ marginTop: 10, fontSize: 13, color: 'var(--text-secondary)' }}>{score ? `${score}% complete` : 'Not started yet'}</div>
@@ -378,10 +378,10 @@ export default function DashboardPage() {
                       height: 56,
                       borderRadius: 18,
                       border: day.active ? '1px solid rgba(255,216,77,0.5)' : '1px solid var(--border)',
-                      background: day.active ? 'rgba(255,216,77,0.12)' : 'rgba(255,255,255,0.02)',
+                      background: day.active ? 'rgba(255,216,77,0.12)' : 'var(--overlay-xs)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: day.active ? '#ffd84d' : 'var(--text-secondary)',
+                      color: day.active ? 'var(--color-xp)' : 'var(--text-secondary)',
                       fontWeight: 700,
                     }}
                   >
@@ -418,7 +418,7 @@ export default function DashboardPage() {
               <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{config.copy.testimonialsSubtitle}</div>
               <div style={{ marginTop: 18, display: 'grid', gap: 12 }}>
                 {PLATFORM_TESTIMONIALS.map((item) => (
-                  <div key={item.company} style={{ padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+                  <div key={item.company} style={{ padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
                     <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>{item.company}</div>
                     <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.quote}</div>
                   </div>

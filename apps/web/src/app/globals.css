@@ -1845,6 +1845,38 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Success/danger accent aliases */
   --color-pass:    var(--success);
   --color-fail:    var(--error);
+  /* Surface overlays — used for subtle card tints (light-mode safe) */
+  --overlay-xs:    rgba(0, 0, 0, 0.02);
+  --overlay-sm:    rgba(0, 0, 0, 0.04);
+  --overlay-md:    rgba(0, 0, 0, 0.06);
+  --overlay-lg:    rgba(0, 0, 0, 0.12);
+  --modal-scrim:   rgba(0, 0, 0, 0.5);
+  /* Third-party brand colours */
+  --stripe-accent: #635BFF;
+  --razorpay-accent: #FF9F43;
+}
+
+  /* Quiz feedback tints — light mode uses pastel fills */
+  --success-tint:  #D1F7E2;
+  --error-tint:    #FFE5E6;
+  --success-on-tint: #0F6B35;
+  --error-on-tint:   #B52D2E;
+  /* Text on colored backgrounds */
+  --text-inverse:  #fff;
+}
+
+/* Dark mode inverts overlay direction (white glows, not black shadows) */
+[data-theme="dark"] {
+  --overlay-xs:    rgba(255, 255, 255, 0.02);
+  --overlay-sm:    rgba(255, 255, 255, 0.04);
+  --overlay-md:    rgba(255, 255, 255, 0.06);
+  --overlay-lg:    rgba(255, 255, 255, 0.09);
+  --modal-scrim:   rgba(0, 0, 0, 0.65);
+  /* Quiz feedback — transparent tints on dark bg */
+  --success-tint:  rgba(16, 185, 129, 0.12);
+  --error-tint:    rgba(239, 68, 68, 0.12);
+  --success-on-tint: var(--success);
+  --error-on-tint:   var(--error);
 }
 
 /* ===== Loading Spinner ===== */

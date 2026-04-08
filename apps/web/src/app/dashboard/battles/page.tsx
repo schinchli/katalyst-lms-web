@@ -78,7 +78,7 @@ const MODE_CARDS: Array<{
     title: '1v1 Random Battle',
     description: 'Get matched with a random opponent instantly. A free quiz is selected automatically.',
     icon: '⚡',
-    color: '#FF9F43',
+    color: 'var(--warning)',
     maxPlayers: '2 players',
   },
   {
@@ -86,7 +86,7 @@ const MODE_CARDS: Array<{
     title: '1v1 Challenge',
     description: 'Challenge a friend directly. Share your invite code and start when they join.',
     icon: '⚔️',
-    color: '#EA5455',
+    color: 'var(--error)',
     maxPlayers: '2 players',
   },
   {
@@ -280,7 +280,7 @@ function BattleLobbyOverlay({
                       </span>
                       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{p.name}</span>
                       {battleFinished && p.finishedAt && (
-                        <span style={{ fontSize: 10, color: '#28C76F', fontWeight: 600 }}>✓ Done</span>
+                        <span style={{ fontSize: 10, color: 'var(--success)', fontWeight: 600 }}>✓ Done</span>
                       )}
                     </div>
                     <span style={{ fontSize: 15, fontWeight: 700, color: rank === 0 ? '#7367F0' : 'var(--text)' }}>
@@ -299,7 +299,7 @@ function BattleLobbyOverlay({
             background: opponentJoined ? '#28C76F12' : '#FF9F4312', borderRadius: 10,
             border: `1px solid ${opponentJoined ? '#28C76F40' : '#FF9F4340'}`,
           }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: opponentJoined ? '#28C76F' : '#FF9F43' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: opponentJoined ? 'var(--success)' : 'var(--warning)' }}>
               {opponentJoined
                 ? 'Opponent joined! Ready to battle.'
                 : waitTimeout

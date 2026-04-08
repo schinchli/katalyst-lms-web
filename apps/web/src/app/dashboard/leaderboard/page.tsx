@@ -97,9 +97,9 @@ export default function LeaderboardPage() {
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
           padding: '3px 9px', borderRadius: 6,
-          background: '#EA545518', color: '#EA5455', fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+          background: '#EA545518', color: 'var(--error)', fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: 3, background: '#EA5455', display: 'inline-block' }} />
+          <span style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--error)', display: 'inline-block' }} />
           LIVE
         </span>
       </div>
@@ -110,7 +110,7 @@ export default function LeaderboardPage() {
       {dailyQuiz ? (
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap',
-          padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', marginBottom: 20,
+          padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--overlay-xs)', marginBottom: 20,
         }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
@@ -121,7 +121,7 @@ export default function LeaderboardPage() {
           <span style={{
             padding: '6px 10px', borderRadius: 999, fontSize: 12, fontWeight: 700,
             background: dailyQuizResult ? 'rgba(81, 207, 102, 0.16)' : 'rgba(255, 216, 77, 0.16)',
-            color: dailyQuizResult ? 'var(--platform-success-accent)' : '#ffd84d',
+            color: dailyQuizResult ? 'var(--platform-success-accent)' : 'var(--color-xp)',
           }}>
             {dailyQuizResult ? `Your score: ${Math.round((dailyQuizResult.score / Math.max(1, dailyQuizResult.totalQuestions)) * 100)}%` : 'Complete it to boost your stats'}
           </span>
