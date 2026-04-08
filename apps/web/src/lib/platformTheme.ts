@@ -1,4 +1,4 @@
-export type PlatformThemePresetId = 'deep-navy' | 'aurora' | 'sandstone' | 'midnight';
+export type PlatformThemePresetId = 'deep-navy' | 'aurora' | 'sandstone' | 'midnight' | null;
 
 export interface PlatformThemeConfig {
   presetId: PlatformThemePresetId;
@@ -56,7 +56,8 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
   },
 ];
 
-export const DEFAULT_PLATFORM_THEME: PlatformThemeConfig = { presetId: 'deep-navy' };
+// null = no platform theme override; base Vuexy purple tokens apply
+export const DEFAULT_PLATFORM_THEME: PlatformThemeConfig = { presetId: null };
 
 export function normalizePlatformTheme(raw: unknown): PlatformThemeConfig {
   if (!raw || typeof raw !== 'object') return DEFAULT_PLATFORM_THEME;
@@ -69,7 +70,11 @@ export function normalizePlatformTheme(raw: unknown): PlatformThemeConfig {
 
 export function applyPlatformThemePreset(presetId: PlatformThemePresetId) {
   if (typeof document === 'undefined') return;
-  document.documentElement.setAttribute('data-platform-theme', presetId);
+  if (presetId) {
+    document.documentElement.setAttribute('data-platform-theme', presetId);
+  } else {
+    document.documentElement.removeAttribute('data-platform-theme');
+  }
   try {
     localStorage.setItem(PLATFORM_THEME_CACHE_KEY, JSON.stringify({ presetId }));
   } catch {

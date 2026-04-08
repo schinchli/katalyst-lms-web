@@ -101,17 +101,17 @@ export const DEFAULT_PLATFORM_EXPERIENCE: PlatformExperienceConfig = {
     paywallSkipCta: 'Browse other quizzes',
   },
   colors: {
-    homeHeroCourseBg: '#101a31',
-    premiumAccent: '#8b5cf6',
-    resourcesBackground: '#eef2f7',
-    profileOfferAccent: '#00ed64',
-    heroGradientFrom: '#00ed64',
-    heroGradientTo: '#6f44ff',
-    heroGradientAccent: '#4da9ff',
-    railCardOverlay: 'rgba(17, 28, 54, 0.92)',
-    editorialCardBackground: '#f2f4f7',
-    successAccent: '#00ed64',
-    dangerAccent: '#8b5cf6',
+    homeHeroCourseBg: '#2F3349',
+    premiumAccent: '#7367F0',
+    resourcesBackground: '#2F3349',
+    profileOfferAccent: '#7367F0',
+    heroGradientFrom: '#7367F0',
+    heroGradientTo: '#9289FF',
+    heroGradientAccent: '#00CFE8',
+    railCardOverlay: 'rgba(47, 51, 73, 0.92)',
+    editorialCardBackground: '#2F3349',
+    successAccent: '#28C76F',
+    dangerAccent: '#EA5455',
   },
   layout: {
     homeActionsStyle: 'grid',
@@ -135,7 +135,7 @@ export const DEFAULT_PLATFORM_EXPERIENCE: PlatformExperienceConfig = {
     showLearnPlaylist: true,
   },
   theme: {
-    platformPreset: 'deep-navy',
+    platformPreset: null,
   },
 };
 
@@ -179,7 +179,7 @@ export function normalizePlatformExperience(value: unknown): PlatformExperienceC
       ...(raw.theme ?? {}),
       platformPreset: raw.theme?.platformPreset === 'sandstone' || raw.theme?.platformPreset === 'midnight' || raw.theme?.platformPreset === 'aurora' || raw.theme?.platformPreset === 'deep-navy'
         ? raw.theme.platformPreset
-        : DEFAULT_PLATFORM_EXPERIENCE.theme.platformPreset,
+        : null,
     },
   };
 }

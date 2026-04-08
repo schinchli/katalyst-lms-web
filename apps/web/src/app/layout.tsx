@@ -25,10 +25,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" data-platform-theme="deep-navy">
+    <html lang="en" data-theme="dark">
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
-          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&typeof o.presetId==='string'){document.documentElement.setAttribute('data-platform-theme',o.presetId);}}}catch(e){}`}
+          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&o.presetId&&typeof o.presetId==='string'&&o.presetId!==null){document.documentElement.setAttribute('data-platform-theme',o.presetId);}else{document.documentElement.removeAttribute('data-platform-theme');}}var e=localStorage.getItem('katalyst-platform-experience-cache');if(e){var c=JSON.parse(e);if(c&&c.theme&&(c.theme.platformPreset===null||!c.theme.platformPreset)){document.documentElement.removeAttribute('data-platform-theme');}}}catch(ex){}`}
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
