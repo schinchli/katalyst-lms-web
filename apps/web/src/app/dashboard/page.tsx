@@ -115,36 +115,16 @@ export default function DashboardPage() {
   return (
     <div className="page-content dc-shell">
       <section className="dc-hero">
-        <div className="dc-grid" style={{ gridTemplateColumns: '1.2fr 0.9fr', gap: 24, alignItems: 'stretch' }}>
+        <div className="dc-hero-grid">
           <div>
             <span className="dc-chip">{config.copy.homeEyebrow}</span>
-            <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(36px, 5vw, 58px)', lineHeight: 1.03, color: 'var(--text)' }}>
-              {config.copy.homeHeroTitle}
-            </h1>
-            <p style={{ margin: 0, maxWidth: 680, fontSize: 17, lineHeight: 1.8, color: 'var(--text-secondary)' }}>
-              {config.copy.homeHeroSubtitle}
-            </p>
-
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 28 }}>
-              <Link href={`/dashboard/quiz/${continueCourse.id}`} className="btn-primary" style={{ textDecoration: 'none' }}>
+            <h1 className="dc-hero-title">{config.copy.homeHeroTitle}</h1>
+            <p className="dc-hero-sub">{config.copy.homeHeroSubtitle}</p>
+            <div className="dc-cta-row">
+              <Link href={`/dashboard/quiz/${continueCourse.id}`} className="btn-primary">
                 {config.copy.homePrimaryCta}
               </Link>
-              <Link
-                href="/dashboard/quizzes"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: 46,
-                  padding: '0 22px',
-                  borderRadius: 'var(--button-radius)',
-                  border: '1px solid color-mix(in srgb, var(--primary) 36%, var(--border))',
-                  color: 'var(--text)',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  background: 'var(--overlay-xs)',
-                }}
-              >
+              <Link href="/dashboard/quizzes" className="dc-secondary-cta">
                 {config.copy.homeSecondaryCta}
               </Link>
             </div>
