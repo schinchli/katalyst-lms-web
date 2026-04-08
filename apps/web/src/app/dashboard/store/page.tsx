@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
 import type { CoinPack } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function StorePage() {
   const [packs, setPacks]     = useState<CoinPack[]>([]);
@@ -44,7 +45,7 @@ export default function StorePage() {
       )}
 
       {loading ? (
-        <div style={{ color: 'var(--text-secondary)', padding: '32px 0', textAlign: 'center' }}>Loading packs…</div>
+        <LoadingSpinner label="Loading packs…" />
       ) : packs.length === 0 ? (
         <div className="dc-card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
           <div style={{ fontSize: 32, marginBottom: 10 }}>🏪</div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import type { LeaderboardEntry } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import type { QuizResult } from '@/types';
 import { quizzes } from '@/data/quizzes';
 import { getQuizResults } from '@/lib/db';
@@ -151,11 +152,7 @@ export default function LeaderboardPage() {
       </div>
 
       {/* ── Loading / empty state ──────────────────────────────────────────── */}
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 14 }}>
-          Loading leaderboard…
-        </div>
-      )}
+      {loading && <LoadingSpinner label="Loading leaderboard…" />}
 
       {!loading && taggedEntries.length === 0 && (
         <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 14 }}>

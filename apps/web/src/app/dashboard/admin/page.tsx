@@ -15,6 +15,7 @@ import { quizzes }             from '@/data/quizzes';
 import { supabase }            from '@/lib/supabase';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import type { PurchaseRecord } from '@/lib/db';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // ── Upsell config (mirrors quiz page) ────────────────────────────────────────
 const ADMIN_MSGS_KEY = 'katalyst-admin-msgs';
@@ -98,35 +99,29 @@ export default function AdminPage() {
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (status === 'loading') {
-    return (
-      <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, border: '3px solid var(--border)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Verifying admin access…</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner label="Verifying admin access…" />;
   }
 
   // ── Unauthorized ─────────────────────────────────────────────────────────
   if (status === 'unauthorized' || status === 'error') {
     return (
-      <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ textAlign: 'center', maxWidth: 380 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🔐</div>
-          <h2 style={{ marginBottom: 8, color: 'var(--text)' }}>Access Denied</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 24, lineHeight: 1.6 }}>
-            {status === 'error'
-              ? 'An error occurred while verifying your access. Please try again.'
-              : 'You do not have permission to view this page. Admin access is granted by a server-side administrator.'}
-          </p>
-          <button className="btn-primary" onClick={() => router.push('/dashboard')}>
+      <div className="page-error" role="alert">
+        <div className="page-error-icon">🔐</div>
+        <p style={{ margin: 0, fontWeight: 700 }}>Access Denied</p>
+        <p style={{ margin: '4px 0 16px', color: 'var(--text-secondary)', fontSize: 13 }}>
+          {status === 'error'
+            ? 'An error occurred while verifying your access. Please try again.'
+            : 'You do not have permission to view this page.'}
+        </p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button className="btn-primary" style={{ minHeight: 40 }} onClick={() => router.push('/dashboard')}>
             ← Back to Dashboard
           </button>
           {status === 'error' && (
             <button
-              onClick={() => { setStatus('loading'); }}
-              style={{ display: 'block', margin: '12px auto 0', background: 'none', border: 'none', color: 'var(--primary-text)', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}
+              className="btn-ghost"
+              style={{ minHeight: 40 }}
+              onClick={() => setStatus('loading')}
             >
               Retry
             </button>

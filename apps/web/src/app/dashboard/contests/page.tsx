@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Contest, ContestStatus } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 function formatDateTime(iso: string) {
   try {
@@ -184,11 +185,7 @@ export default function ContestsPage() {
         Compete with other learners and win coins
       </p>
 
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-secondary)', fontSize: 14 }}>
-          Loading contests…
-        </div>
-      )}
+      {loading && <LoadingSpinner label="Loading contests…" />}
 
       {!loading && (
         <>

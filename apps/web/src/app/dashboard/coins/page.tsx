@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { CoinTransaction } from '@/types';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const COIN_REASON_LABELS: Record<string, string> = {
   quiz_complete:       'Quiz completed',
@@ -97,7 +98,7 @@ export default function CoinsPage() {
         <h2 className="dc-section-title" style={{ fontSize: 22, marginBottom: 18 }}>Transaction History</h2>
 
         {loading ? (
-          <div style={{ color: 'var(--text-secondary)', padding: '24px 0', textAlign: 'center' }}>Loading…</div>
+          <LoadingSpinner label="Loading transactions…" />
         ) : transactions.length === 0 ? (
           <div style={{ color: 'var(--text-secondary)', padding: '32px 0', textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>⚡</div>
