@@ -591,7 +591,7 @@ export default function QuizPage() {
               width: 120, height: 120, borderRadius: '50%',
               background: accent + '20', display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 64, boxShadow: `0 8px 32px ${accent}30`,
-            }}>📖</div>
+            }}>{quiz.icon || '📖'}</div>
           </div>
         </div>
 
@@ -667,7 +667,7 @@ export default function QuizPage() {
             <div className="course-enroll-card">
               {/* Preview */}
               <div className="course-enroll-preview" style={{ background: accent + '15' }}>
-                <div style={{ fontSize: 60 }}>📖</div>
+                <div style={{ fontSize: 60 }}>{quiz.icon || '📖'}</div>
               </div>
 
               {/* Start / Unlock button */}
