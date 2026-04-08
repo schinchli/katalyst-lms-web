@@ -141,7 +141,7 @@ function LoginPageContent() {
 
             {error && <div style={{ padding: '12px 14px', borderRadius: 14, background: 'rgba(139,92,246,0.16)', border: '1px solid rgba(139,92,246,0.24)', color: '#e9ddff' }}>{error}</div>}
 
-            <button type="submit" className="btn-primary" disabled={loading} style={{ minHeight: 52 }}>
+            <button type="submit" className="btn-primary" disabled={loading} style={{ minHeight: 52 }} aria-label="Sign in">
               {loading ? 'Verifying…' : 'Get back in'}
             </button>
           </form>

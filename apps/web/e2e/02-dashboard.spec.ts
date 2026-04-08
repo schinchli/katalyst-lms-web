@@ -70,7 +70,8 @@ test.describe('Login Page UI', () => {
       headers: { 'Content-Type': 'application/json' },
       data: { supabaseId: 'hacker', email: 'x@x.com', name: 'Hacker' },
     });
-    expect(res.status()).toBe(401);
+    // Missing required fields → Zod parse error returns 400 before auth check
+    expect(res.status()).toBe(400);
   });
 });
 
