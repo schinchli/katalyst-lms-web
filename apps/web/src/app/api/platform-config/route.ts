@@ -1,3 +1,8 @@
+/**
+ * Security note: GET-only route with no request body or query params.
+ * Intentionally public — returns platform theme config for unauthenticated clients.
+ * No Zod schema required (no client-supplied inputs).
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from '@/lib/rateLimiter';

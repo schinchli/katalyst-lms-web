@@ -7,6 +7,10 @@
  *   ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ads_removed boolean DEFAULT false;
  */
 
+/**
+ * Security note: GET-only route with no request body or query params.
+ * Auth is validated via Bearer token (lines below). No Zod schema required.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient }             from '@supabase/supabase-js';
 import { checkRateLimit }           from '@/lib/rateLimiter';
