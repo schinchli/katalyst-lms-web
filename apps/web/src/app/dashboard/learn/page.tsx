@@ -11,7 +11,7 @@ export default function LearnPage() {
 
   return (
     <div className="page-content dc-shell" style={{ maxWidth: 1240 }}>
-      <section className="dc-hero" style={{ padding: 30 }}>
+      <section className="dc-hero">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 22, alignItems: 'start', flexWrap: 'wrap' }}>
           <div>
             <span className="dc-chip">{config.copy.resourcesFilter}</span>

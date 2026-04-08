@@ -1533,6 +1533,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .dc-hero {
+  padding: 30px;
   position: relative;
   overflow: hidden;
   border-radius: 28px;

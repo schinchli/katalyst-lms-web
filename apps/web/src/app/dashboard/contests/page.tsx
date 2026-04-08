@@ -166,7 +166,7 @@ export default function ContestsPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', maxWidth: 900, fontFamily: "'Public Sans', sans-serif" }}>
+    <div className="page-content">
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
         <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Contests</h1>

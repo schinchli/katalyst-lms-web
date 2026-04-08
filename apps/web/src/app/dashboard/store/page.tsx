@@ -28,7 +28,7 @@ export default function StorePage() {
 
   return (
     <div className="page-content dc-shell">
-      <section className="dc-hero" style={{ padding: 28 }}>
+      <section className="dc-hero">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
           <div style={{ fontSize: 38 }}>🏪</div>
           <div>

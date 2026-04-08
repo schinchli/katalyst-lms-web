@@ -199,7 +199,7 @@ export default function ProfilePage() {
 
   return (
     <div className="page-content dc-shell">
-      <section className="dc-hero" style={{ padding: 30 }}>
+      <section className="dc-hero">
         <div className="dc-grid" style={{ gridTemplateColumns: 'auto 1fr auto', gap: 22, alignItems: 'center' }}>
           <div style={{ width: 132, height: 132, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))', display: 'grid', placeItems: 'center', fontSize: 46, fontWeight: 700 }}>
             {(name || email || 'L').charAt(0).toUpperCase()}

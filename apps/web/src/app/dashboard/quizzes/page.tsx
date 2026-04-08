@@ -82,7 +82,7 @@ export default function QuizzesPage() {
 
   return (
     <div className="page-content dc-shell">
-      <section className="dc-hero" style={{ padding: 30 }}>
+      <section className="dc-hero">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 22, flexWrap: 'wrap' }}>
           <div>
             <span className="dc-chip">{config.copy.quizzesTitle}</span>

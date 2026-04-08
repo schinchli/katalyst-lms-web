@@ -90,7 +90,7 @@ export default function LeaderboardPage() {
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as LeaderboardEntry[];
 
   return (
-    <div style={{ padding: '24px 28px', maxWidth: 800 }}>
+    <div className="page-content">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>

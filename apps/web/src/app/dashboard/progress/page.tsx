@@ -122,7 +122,7 @@ export default function ProgressPage() {
 
   return (
     <div className="page-content dc-shell">
-      <section className="dc-hero" style={{ padding: 30 }}>
+      <section className="dc-hero">
         <span className="dc-chip">Growth</span>
         <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>{config.copy.progressTitle}</h1>
         <p style={{ margin: 0, maxWidth: 760, color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.8 }}>

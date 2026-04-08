@@ -114,7 +114,7 @@ export default function DashboardPage() {
 
   return (
     <div className="page-content dc-shell">
-      <section className="dc-hero" style={{ padding: '34px 34px 30px' }}>
+      <section className="dc-hero">
         <div className="dc-grid" style={{ gridTemplateColumns: '1.2fr 0.9fr', gap: 24, alignItems: 'stretch' }}>
           <div>
             <span className="dc-chip">{config.copy.homeEyebrow}</span>

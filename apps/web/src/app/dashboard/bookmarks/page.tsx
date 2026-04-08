@@ -59,7 +59,7 @@ export default function BookmarksPage() {
   }
 
   return (
-    <div style={{ padding: '32px 24px', maxWidth: 760, margin: '0 auto' }}>
+    <div className="page-content">
       {/* Page header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
         <div>
