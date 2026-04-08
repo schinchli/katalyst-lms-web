@@ -18,7 +18,7 @@ const PERIODS: { key: Period; label: string }[] = [
   { key: 'alltime', label: 'All Time' },
 ];
 
-const MEDAL_COLOR = ['#FFD700', '#C0C0C0', '#CD7F32'];
+const MEDAL_COLOR = ['var(--color-gold)', 'var(--color-silver)', 'var(--color-bronze)'];
 const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 const PODIUM_H    = [100, 80, 66];
 

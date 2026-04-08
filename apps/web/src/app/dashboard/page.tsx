@@ -177,10 +177,10 @@ export default function DashboardPage() {
                   width: 146,
                   height: 146,
                   borderRadius: '50%',
-                  background: 'rgba(8, 18, 38, 0.92)',
+                  background: 'var(--bg)',
                   display: 'grid',
                   placeItems: 'center',
-                  color: '#fff',
+                  color: 'var(--text)',
                   fontSize: 42,
                   fontWeight: 700,
                 }}>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
             {[
               { label: 'Courses started', value: String(completedIds.size || 0), tone: 'var(--text)' },
               { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
-              { label: 'Today XP', value: `${todayXp}`, tone: '#ffd84d' },
+              { label: 'Today XP', value: `${todayXp}`, tone: 'var(--color-xp)' },
               { label: 'Current streak', value: `${currentStreak} days`, tone: 'var(--platform-premium-accent)' },
             ].map((stat) => (
               <div key={stat.label} className="dc-card" style={{ padding: 20 }}>

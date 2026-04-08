@@ -21,6 +21,7 @@ import {
 } from '@/lib/themePacks';
 import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvider';
 import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const NAV = [
   { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
@@ -368,7 +369,9 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="page-wrapper">
       {/* Main content first (sidebar is right-side via flex-direction:row-reverse) */}
-        <main className="main-content">{children}</main>
+        <main className="main-content">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </main>
 
       {/* Mobile sidebar overlay */}
       <div
