@@ -1855,15 +1855,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Third-party brand colours */
   --stripe-accent: #635BFF;
   --razorpay-accent: #FF9F43;
-}
-
   /* Quiz feedback tints — light mode uses pastel fills */
-  --success-tint:  #D1F7E2;
-  --error-tint:    #FFE5E6;
+  --success-tint: #D1F7E2;
+  --error-tint: #FFE5E6;
   --success-on-tint: #0F6B35;
-  --error-on-tint:   #B52D2E;
+  --error-on-tint: #B52D2E;
   /* Text on colored backgrounds */
-  --text-inverse:  #fff;
+  --text-inverse: #fff;
 }
 
 /* Dark mode inverts overlay direction (white glows, not black shadows) */

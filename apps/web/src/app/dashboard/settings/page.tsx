@@ -208,7 +208,7 @@ export default function SettingsPage() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session?.access_token) {
-        router.replace('/dashboard');
+        router.replace('/login');
         return;
       }
 

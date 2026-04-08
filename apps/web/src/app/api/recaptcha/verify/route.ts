@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z }                          from 'zod';
 import { verifyRecaptcha }            from '@/lib/recaptcha';
-import { checkRateLimit }             from '@/lib/rateLimiter';
+import { checkRateLimitWithReset }    from '@/lib/rateLimiter';
 import { logger }                     from '@/lib/logger';
 
 const ROUTE = '/api/recaptcha/verify';
@@ -23,9 +23,13 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
 
   // 10 verifications / 60 s per IP
-  if (!(await checkRateLimit(`recaptcha:${ip}`, 10, 60_000))) {
+  const { allowed, resetAfterSec } = await checkRateLimitWithReset(`recaptcha:${ip}`, 10, 60_000);
+  if (!allowed) {
     logger.rateLimited(ROUTE, ip);
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    return NextResponse.json({ error: 'Too many requests' }, {
+      status: 429,
+      headers: { 'Retry-After': String(resetAfterSec) },
+    });
   }
 
   // Rule 157-158: Reject oversized payloads (token + action should be < 4KB)
