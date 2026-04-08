@@ -270,6 +270,16 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  // Real-time session monitoring — redirects to /login when session expires
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') router.replace('/login');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [router]);
+
   // Dark mode
   useEffect(() => {
     const saved = localStorage.getItem('theme');
