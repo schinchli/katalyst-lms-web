@@ -206,50 +206,62 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
 /* ===== Layout ===== */
-.page-wrapper   { display: flex; flex-direction: row-reverse; min-height: 100vh; background: var(--bg); }
+.page-wrapper   { display: flex; flex-direction: row; min-height: 100vh; background: var(--bg); }
 .main-content   { flex: 1; overflow: auto; min-width: 0; }
-.page-content   { padding: 32px 32px 48px; max-width: 1100px; }
+.page-content   { padding: 24px 28px 48px; max-width: 1200px; }
 
-/* ===== Sidebar (right-side) ===== */
+/* ===== Sidebar (left-side, Vuexy vertical menu) ===== */
 .sidebar {
-  width: 240px; flex-shrink: 0;
-  background: var(--surface); border-left: 1px solid var(--border);
-  padding: 24px 0; display: flex; flex-direction: column;
-  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  width: 260px; flex-shrink: 0;
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 0; display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; overflow-x: hidden;
+  box-shadow: 4px 0 24px rgba(47,43,61,0.06);
 }
+/* Vuexy sidebar header (app-brand) */
 .sidebar-header {
-  padding: 0 24px 24px;
+  height: 64px; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 .sidebar-logo { display: flex; align-items: center; gap: 10px; }
 .sidebar-logo-icon {
-  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
   display: flex; align-items: center; justify-content: center;
-  color: #fff; font-weight: 800; font-size: 17px;
-  box-shadow: 0 8px 20px rgba(115,103,240,0.35);
+  color: #fff; font-weight: 800; font-size: 16px;
+  box-shadow: 0 4px 12px rgba(115,103,240,0.35);
 }
-.sidebar-brand-name {
-  font-weight: 700; font-size: 15px; color: var(--text); line-height: 1.2;
-}
-.sidebar-brand-sub  { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.sidebar-brand-name { font-weight: 700; font-size: 15px; color: var(--text); line-height: 1.2; }
+.sidebar-brand-sub  { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
 
-.sidebar-nav { flex: 1; padding: 0 12px; }
+/* Vuexy menu-inner — the nav list container */
+.sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
 .sidebar-footer {
-  padding: 16px 24px; border-top: 1px solid var(--border);
-  font-size: 12px; color: var(--text-secondary);
+  padding: 12px 20px 16px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-secondary); flex-shrink: 0;
 }
 
+/* Vuexy menu-item / menu-link pattern */
 .nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: var(--radius); margin-bottom: 4px;
-  font-size: 14px; font-weight: 400; color: var(--text-secondary);
-  transition: background 0.15s, color 0.15s;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px; margin: 2px 12px; border-radius: 6px;
+  font-size: 13.5px; font-weight: 400; color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s; white-space: nowrap;
 }
-.nav-item:hover { background: var(--primary-light); color: var(--primary-text); }
-.nav-item.active { background: var(--primary-light); color: var(--primary-text); font-weight: 700; }
+.nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.nav-item.active {
+  background: var(--primary-light); color: var(--primary); font-weight: 600;
+  box-shadow: 0 2px 6px rgba(115,103,240,0.16);
+}
 .nav-icon { font-size: 16px; }
+
+/* Vuexy menu section header */
+.nav-section-header {
+  padding: 16px 20px 6px; font-size: 11px; font-weight: 700;
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px;
+}
 
 /* ===== Page Header ===== */
 .page-header {
@@ -414,10 +426,105 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 100px; font-size: 12px; font-weight: 600; line-height: 1.6;
 }
 .badge-primary { background: var(--primary-light); color: var(--primary); }
-.badge-success { background: var(--success-tint); color: var(--success-on-tint); }
-.badge-warning { background: color-mix(in srgb, var(--warning) 15%, transparent); color: var(--warning); }
-.badge-error   { background: var(--error-tint); color: var(--error-on-tint); }
-.badge-info    { background: color-mix(in srgb, var(--info) 15%, transparent); color: var(--info); }
+.badge-success { background: rgba(40,199,111,0.16); color: #28C76F; }
+.badge-warning { background: rgba(255,159,67,0.16); color: #FF9F43; }
+.badge-error   { background: rgba(234,84,85,0.16); color: #EA5455; }
+.badge-info    { background: rgba(0,207,232,0.16); color: #00CFE8; }
+.badge-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
+
+/* ===== Vuexy bg-label-* utility classes ===== */
+.bg-label-primary   { background: var(--primary-light) !important; color: var(--primary) !important; }
+.bg-label-success   { background: rgba(40,199,111,0.16) !important; color: #28C76F !important; }
+.bg-label-warning   { background: rgba(255,159,67,0.16) !important; color: #FF9F43 !important; }
+.bg-label-danger    { background: rgba(234,84,85,0.16) !important; color: #EA5455 !important; }
+.bg-label-info      { background: rgba(0,207,232,0.16) !important; color: #00CFE8 !important; }
+.bg-label-secondary { background: rgba(134,139,143,0.16) !important; color: var(--text-secondary) !important; }
+
+/* ===== Vuexy Avatar system ===== */
+.avatar {
+  width: 38px; height: 38px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.avatar-lg { width: 48px; height: 48px; }
+.avatar-sm { width: 28px; height: 28px; border-radius: 4px; }
+.avatar-initial {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+.rounded-circle { border-radius: 50% !important; }
+.rounded        { border-radius: 6px !important; }
+
+/* ===== Vuexy card system ===== */
+.vx-card {
+  background: var(--surface); border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 25px 0 rgba(34,41,47,0.10);
+}
+.vx-card-header {
+  padding: 18px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.vx-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin: 0; }
+.vx-card-body  { padding: 20px 22px; }
+.vx-card-link  { font-size: 13px; color: var(--primary); font-weight: 600; }
+.vx-card-link:hover { text-decoration: underline; }
+
+/* Vuexy KPI widget */
+.vx-kpi { display: flex; align-items: center; gap: 14px; }
+.vx-kpi-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-bottom: 3px; }
+.vx-kpi-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
+
+/* Vuexy list items */
+.vx-list { }
+.vx-list-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 22px; border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.vx-list-item:last-child { border-bottom: none; }
+.vx-list-item:hover { background: var(--bg); }
+.vx-list-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.vx-list-sub   { font-size: 12px; color: var(--text-secondary); }
+
+/* Vuexy colored avatar squares */
+.vx-avatar { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+.vx-avatar-sm { width: 34px; height: 34px; border-radius: 6px; font-size: 16px; }
+.vx-avatar-primary { background: var(--primary-light); color: var(--primary); }
+.vx-avatar-success { background: rgba(40,199,111,0.16); color: #28C76F; }
+.vx-avatar-warning { background: rgba(255,159,67,0.16); color: #FF9F43; }
+.vx-avatar-info    { background: rgba(0,207,232,0.16); color: #00CFE8; }
+.vx-avatar-error   { background: rgba(234,84,85,0.16); color: #EA5455; }
+.vx-avatar-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
+
+/* Vuexy badge pills */
+.vx-badge { display: inline-flex; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.vx-badge-primary   { background: var(--primary-light); color: var(--primary); }
+.vx-badge-success   { background: rgba(40,199,111,0.16); color: #28C76F; }
+.vx-badge-warning   { background: rgba(255,159,67,0.16); color: #FF9F43; }
+.vx-badge-error     { background: rgba(234,84,85,0.16); color: #EA5455; }
+.vx-badge-info      { background: rgba(0,207,232,0.16); color: #00CFE8; }
+.vx-badge-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
+.vx-badge-muted     { background: var(--primary-light); color: var(--text-secondary); }
+
+/* Vuexy action cards */
+.vx-action-card { display: flex; align-items: center; gap: 16px; padding: 18px 22px; text-decoration: none; transition: background 0.12s; }
+.vx-action-card:hover { background: var(--bg); }
+.vx-action-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.vx-action-sub   { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+.vx-action-info  { flex: 1; min-width: 0; }
+
+/* Vuexy streak day grid */
+.vx-day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.vx-day { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 700; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); }
+.vx-day.active { border-color: rgba(255,159,67,0.4); background: rgba(255,159,67,0.12); color: #FF9F43; }
+
+/* Vuexy assignment progress circles */
+.chart-progress-ring { display: inline-flex; align-items: center; justify-content: center; }
+
+/* Vuexy separator */
+.card-separator-right { border-right: 1px solid var(--border); }
 .dash-stat-value { font-size: 22px; font-weight: 700; line-height: 1.1; }
 .dash-stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 3px; font-weight: 500; }
 .dash-stat-sub   { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
@@ -1826,6 +1933,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .course-lp-body  { grid-template-columns: 1fr; }
   .course-hero     { grid-template-columns: 1fr; }
   .course-hero-icon { display: none; }
+  /* Dashboard two-col collapses to single col */
+  .dash-academy-grid { grid-template-columns: 1fr !important; }
+  /* Page content wider on tablet (sidebar gone on mobile) */
+}
+
+/* Sidebar hidden below 1024px for tablet — desktop sidebar stays */
+@media (max-width: 1100px) {
+  .sidebar { width: 220px; }
+  .page-content { padding: 20px 22px 48px; }
 }
 
 /* Mobile */
@@ -1833,18 +1949,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Show hamburger, hide desktop sidebar */
   .mobile-nav-btn { display: flex; }
 
-  /* Sidebar becomes a right-side drawer */
+  /* Sidebar becomes a left-side drawer on mobile */
   .sidebar {
     position: fixed;
     top: 0;
-    right: -260px;
+    left: -260px;
     width: 260px;
     height: 100vh;
     z-index: 200;
-    transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -8px 0 32px rgba(0,0,0,0.18);
+    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 8px 0 32px rgba(0,0,0,0.18);
   }
-  .sidebar.mobile-open { right: 0; }
+  .sidebar.mobile-open { left: 0; }
 
   /* Full-width main on mobile */
   .page-wrapper { flex-direction: column; }

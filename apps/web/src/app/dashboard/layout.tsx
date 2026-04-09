@@ -24,18 +24,13 @@ import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/comp
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 const NAV = [
-  { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
-  { href: '/dashboard/quizzes',        label: 'Quizzes',        icon: BookIcon },
-  { href: '/dashboard/learn',          label: 'Learn',          icon: PlayNavIcon },
-  { href: '/dashboard/progress',       label: 'Progress',       icon: TrendIcon },
-  { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
-  { href: '/dashboard/contests',       label: 'Contests',       icon: ContestIcon },
-  { href: '/dashboard/battles',        label: 'Battles',        icon: BattleIcon },
-  { href: '/dashboard/self-challenge', label: 'Self Challenge', icon: SelfChallengeIcon },
-  { href: '/dashboard/coins',          label: 'Coins',          icon: CoinsNavIcon },
-  { href: '/dashboard/store',          label: 'Store',          icon: StoreNavIcon },
-  { href: '/dashboard/bookmarks',      label: 'Bookmarks',      icon: BookmarkNavIcon },
-  { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
+  { href: '/dashboard',             label: 'Home',        icon: HomeIcon },
+  { href: '/dashboard/quizzes',     label: 'Courses',     icon: BookIcon },
+  { href: '/dashboard/learn',       label: 'Learn',       icon: PlayNavIcon },
+  { href: '/dashboard/progress',    label: 'Progress',    icon: TrendIcon },
+  { href: '/dashboard/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
+  { href: '/dashboard/bookmarks',   label: 'Bookmarks',   icon: BookmarkNavIcon },
+  { href: '/dashboard/profile',     label: 'Profile',     icon: UserIcon },
 ];
 
 const ADMIN_NAV  = { href: '/dashboard/admin',    label: 'Admin',    icon: AdminIcon };
@@ -412,7 +407,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Search */}
-        <div ref={searchRef} style={{ padding: '0 16px 16px', position: 'relative' }}>
+        <div ref={searchRef} style={{ padding: '12px 16px 8px', position: 'relative', borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
             <SearchIcon />
             <input
@@ -457,6 +452,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* Nav */}
         <nav className="sidebar-nav">
+          <div className="nav-section-header">Main Menu</div>
           {NAV.map((item) => {
             const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
             const Icon   = item.icon;
@@ -472,6 +468,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
             const activeSettings = pathname === SETTINGS_NAV.href;
             return (
               <>
+                <div className="nav-section-header" style={{ marginTop: 8 }}>Admin</div>
                 <Link href={ADMIN_NAV.href} className={`nav-item${activeAdmin ? ' active' : ''}`}>
                   <AdminIcon active={activeAdmin} />
                   {ADMIN_NAV.label}
