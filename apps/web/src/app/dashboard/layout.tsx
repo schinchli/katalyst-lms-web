@@ -373,28 +373,8 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       {/* Razorpay checkout — loaded lazily once for all dashboard pages */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="page-wrapper">
-      {/* Main content first (sidebar is right-side via flex-direction:row-reverse) */}
-        <main className="main-content">
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </main>
 
-      {/* Mobile sidebar overlay */}
-      <div
-        className={`sidebar-overlay${sidebarOpen ? ' open' : ''}`}
-        onClick={() => setSidebarOpen(false)}
-        aria-hidden="true"
-      />
-
-      {/* Mobile hamburger FAB */}
-      <button
-        className="mobile-nav-btn"
-        onClick={() => setSidebarOpen((o) => !o)}
-        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
-      >
-        {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
-      </button>
-
-      {/* Sidebar */}
+      {/* Sidebar — LEFT side (Vuexy vertical menu pattern, first in DOM) */}
       <aside className={`sidebar${sidebarOpen ? ' mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
@@ -525,6 +505,28 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
           <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Katalyst v1.0</span>
         </div>
       </aside>
+
+      {/* Main content — RIGHT of sidebar */}
+      <main className="main-content">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
+
+      {/* Mobile sidebar overlay */}
+      <div
+        className={`sidebar-overlay${sidebarOpen ? ' open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile hamburger FAB */}
+      <button
+        className="mobile-nav-btn"
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+      >
+        {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
+      </button>
+
       </div>
     </PlatformExperienceProvider>
   );
