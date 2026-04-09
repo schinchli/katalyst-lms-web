@@ -135,6 +135,12 @@ export default function QuizPage() {
   const [studentCount,    setStudentCount]    = useState<number | null>(null);
   const [systemFeatures,  setSystemFeatures]  = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const [reviewStats,     setReviewStats]     = useState<{ rating: number; count: number; distribution: Record<string, number> } | null>(null);
+  const [publishedReviews, setPublishedReviews] = useState<{ id: string; userId: string }[]>([]);
+  const [reviewRating,    setReviewRating]    = useState(0);
+  const [reviewComment,   setReviewComment]   = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSubmitted,  setReviewSubmitted]  = useState(false);
+  const [reviewMsg,       setReviewMsg]       = useState('');
   // Self Challenge: prior best score from localStorage (loaded before quiz starts)
   const [priorBestPct, setPriorBestPct] = useState<number | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -210,13 +216,14 @@ export default function QuizPage() {
       .catch(() => { /* best-effort */ });
   }, [id]);
 
-  // Fetch review stats for this quiz
+  // Fetch review stats + published reviews for this quiz
   useEffect(() => {
     if (!id) return;
     fetch(`/api/quiz-reviews/${id}`)
       .then((r) => r.json())
-      .then((d: { ok: boolean; stats?: { rating: number; count: number; distribution: Record<string, number> } | null }) => {
+      .then((d: { ok: boolean; stats?: { rating: number; count: number; distribution: Record<string, number> } | null; reviews?: { id: string; userId: string }[] }) => {
         if (d.ok && d.stats) setReviewStats(d.stats);
+        if (d.ok && d.reviews) setPublishedReviews(d.reviews);
       })
       .catch(() => { /* best-effort */ });
   }, [id]);
@@ -1052,6 +1059,113 @@ export default function QuizPage() {
           <AdBanner format="square" />
           <AdBanner format="square" />
         </div>
+
+        {/* ── Leave a Review ──────────────────────────────────────── */}
+        {(() => {
+          const alreadyReviewed = authUserId
+            ? publishedReviews.some((r) => r.userId === authUserId) || reviewSubmitted
+            : reviewSubmitted;
+          return (
+            <div className="vx-card" style={{ padding: 20, marginBottom: 20, marginTop: 16 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Rate this quiz</div>
+              <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--text-secondary)' }}>
+                Share your experience to help other learners.
+              </p>
+
+              {alreadyReviewed ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--success)', fontWeight: 600, fontSize: 14 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {reviewMsg || 'Your review has been submitted.'}
+                </div>
+              ) : !authUserId ? (
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
+                  <a href="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</a> to leave a review.
+                </p>
+              ) : (
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (reviewRating === 0) return;
+                  setReviewSubmitting(true);
+                  setReviewMsg('');
+                  try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const token = session?.access_token;
+                    if (!token) { setReviewMsg('Sign in to leave a review.'); setReviewSubmitting(false); return; }
+                    const res = await fetch(`/api/quiz-reviews/${id}`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                      body: JSON.stringify({ rating: reviewRating, comment: reviewComment }),
+                    });
+                    const body = await res.json() as { ok: boolean; message?: string; error?: string };
+                    if (body.ok) {
+                      setReviewSubmitted(true);
+                      setReviewMsg(body.message ?? 'Review submitted!');
+                    } else {
+                      setReviewMsg(typeof body.error === 'string' ? body.error : 'Failed to submit review.');
+                    }
+                  } catch {
+                    setReviewMsg('Network error. Please try again.');
+                  } finally {
+                    setReviewSubmitting(false);
+                  }
+                }}>
+                  {/* Star picker */}
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+                    {[1,2,3,4,5].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setReviewRating(n)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1 }}
+                        aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
+                      >
+                        <svg width="28" height="28" viewBox="0 0 24 24"
+                          fill={n <= reviewRating ? '#FF9F43' : 'none'}
+                          stroke="#FF9F43" strokeWidth="1.5">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      </button>
+                    ))}
+                    {reviewRating > 0 && (
+                      <span style={{ fontSize: 13, color: 'var(--text-secondary)', alignSelf: 'center', marginLeft: 4 }}>
+                        {['','Poor','Fair','Good','Great','Excellent'][reviewRating]}
+                      </span>
+                    )}
+                  </div>
+
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Share what you liked or how it could be improved… (min 10 characters)"
+                    rows={3}
+                    maxLength={1000}
+                    required
+                    minLength={10}
+                    style={{
+                      width: '100%', boxSizing: 'border-box', resize: 'vertical',
+                      background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8,
+                      padding: '10px 12px', fontSize: 13, color: 'var(--text)', fontFamily: 'inherit',
+                      marginBottom: 12,
+                    }}
+                  />
+
+                  {reviewMsg && !reviewSubmitted && (
+                    <p style={{ margin: '0 0 10px', fontSize: 13, color: 'var(--error)', fontWeight: 600 }}>{reviewMsg}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitting || reviewRating === 0 || reviewComment.trim().length < 10}
+                    className="btn-primary"
+                    style={{ height: 36, padding: '0 20px', fontSize: 13 }}
+                  >
+                    {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
+                  </button>
+                </form>
+              )}
+            </div>
+          );
+        })()}
 
         <div style={{ display: 'flex', gap: 12 }}>
           <button onClick={() => startQuiz()} style={{ flex: 1, height: 48, borderRadius: 10, background: 'var(--primary-light)', color: 'var(--primary-text)', fontSize: 15, fontWeight: 700, cursor: 'pointer', border: 'none' }}>Retry Quiz</button>

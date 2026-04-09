@@ -34,6 +34,16 @@ interface QuizReviewRow {
   feedback: string;
 }
 
+interface PendingReview {
+  id: string;
+  quiz_id: string;
+  user_id: string;
+  rating: number;
+  comment: string;
+  flag_reason: string | null;
+  created_at: string;
+}
+
 type PageStatus = 'loading' | 'authorized' | 'unauthorized' | 'error';
 
 const EMPTY_DIST: ReviewDistribution = { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 };
@@ -50,6 +60,8 @@ export default function ReviewsPage() {
   const [pageStatus, setPageStatus] = useState<PageStatus>('loading');
   const [token, setToken]           = useState('');
   const [rows, setRows]             = useState<QuizReviewRow[]>([]);
+  const [pending, setPending]       = useState<PendingReview[]>([]);
+  const [moderating, setModerating] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     (async () => {
@@ -89,11 +101,34 @@ export default function ReviewsPage() {
           };
         });
         setRows(quizRows);
+
+        // Fetch pending reviews from moderation queue
+        const pendingRes = await fetch('/api/admin/pending-reviews', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (pendingRes.ok) {
+          const pb = await pendingRes.json() as { ok: boolean; reviews: PendingReview[] };
+          if (pb.ok) setPending(pb.reviews);
+        }
       } catch {
         setPageStatus('error');
       }
     })();
   }, []);
+
+  async function moderateReview(reviewId: string, action: 'approve' | 'reject') {
+    setModerating((prev) => ({ ...prev, [reviewId]: true }));
+    try {
+      await fetch('/api/admin/moderate-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reviewId, action }),
+      });
+      setPending((prev) => prev.filter((r) => r.id !== reviewId));
+    } finally {
+      setModerating((prev) => { const n = { ...prev }; delete n[reviewId]; return n; });
+    }
+  }
 
   function updateRow(quizId: string, patch: Partial<QuizReviewRow>) {
     setRows((prev) => prev.map((r) => r.quizId === quizId ? { ...r, ...patch } : r));
@@ -174,6 +209,60 @@ export default function ReviewsPage() {
         </button>
       </div>
 
+      {/* ── Moderation Queue ──────────────────────────────────────────────── */}
+      {pending.length > 0 && (
+        <div className="vx-card" style={{ padding: 20, marginBottom: 24, border: '1px solid rgba(255,159,67,0.4)', background: 'rgba(255,159,67,0.04)' }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--warning)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+            🚨 Moderation Queue
+            <span style={{ background: 'var(--warning)', color: '#fff', borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 700 }}>{pending.length}</span>
+          </div>
+          <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
+            These reviews were flagged by the content filter and are not visible to users until approved.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {pending.map((r) => (
+              <div key={r.id} style={{ padding: '14px 16px', background: 'var(--surface)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, gap: 12, flexWrap: 'wrap' }}>
+                  <div>
+                    <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{r.quiz_id}</span>
+                    <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+                      {[1,2,3,4,5].map((n) => (
+                        <span key={n} style={{ color: n <= r.rating ? 'var(--warning)' : 'var(--border)', fontSize: 14 }}>★</span>
+                      ))}
+                    </div>
+                  </div>
+                  {r.flag_reason && (
+                    <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 6, background: 'rgba(255,76,81,0.1)', color: 'var(--error)', fontWeight: 600 }}>
+                      {r.flag_reason}
+                    </span>
+                  )}
+                </div>
+                <p style={{ margin: '0 0 12px', fontSize: 14, color: 'var(--text)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                  &ldquo;{r.comment}&rdquo;
+                </p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    disabled={moderating[r.id]}
+                    onClick={() => moderateReview(r.id, 'approve')}
+                    style={{ height: 32, padding: '0 16px', borderRadius: 8, background: 'rgba(40,199,111,0.12)', border: '1px solid var(--success)', color: 'var(--success)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    ✓ Approve
+                  </button>
+                  <button
+                    disabled={moderating[r.id]}
+                    onClick={() => moderateReview(r.id, 'reject')}
+                    style={{ height: 32, padding: '0 16px', borderRadius: 8, background: 'rgba(255,76,81,0.08)', border: '1px solid rgba(255,76,81,0.4)', color: 'var(--error)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    ✕ Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Aggregate Stats Editor ─────────────────────────────────────────── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {rows.map((row) => (
           <div key={row.quizId} className="vx-card" style={{ padding: 20 }}>

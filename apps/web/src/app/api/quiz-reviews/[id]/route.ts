@@ -1,23 +1,28 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 import { checkRateLimit } from '@/lib/rateLimiter';
+import { checkContent } from '@/lib/profanityFilter';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
 export interface QuizReviewStats {
-  rating: number;       // e.g. 4.89
-  count: number;        // total reviews
-  distribution: {       // count per star level
-    '5': number;
-    '4': number;
-    '3': number;
-    '2': number;
-    '1': number;
-  };
+  rating: number;
+  count: number;
+  distribution: { '5': number; '4': number; '3': number; '2': number; '1': number };
 }
 
-// Default stats used when no admin override is stored in app_settings.
-// Admin can override these per quiz via Supabase app_settings key: quiz_review_stats
+export interface UserReview {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+// Default aggregate stats per quiz (admin can override via app_settings)
 const DEFAULT_REVIEW_STATS: Record<string, QuizReviewStats> = {
   'aws-quick-start': {
     rating: 4.89, count: 187,
@@ -45,8 +50,16 @@ const DEFAULT_REVIEW_STATS: Record<string, QuizReviewStats> = {
   },
 };
 
+const ROUTE = '/api/quiz-reviews/[id]';
+
+const SubmitSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().min(10).max(1000),
+});
+
+// ── GET: aggregate stats + published user reviews ──────────────────────────────
 export async function GET(
-  _req: Request,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
@@ -60,15 +73,124 @@ export async function GET(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 
-  // Try to load admin-configured overrides from app_settings
-  const { data } = await client
+  // Load admin-configured aggregate stats
+  const { data: settingsRow } = await client
     .from('app_settings')
     .select('value')
     .eq('key', 'quiz_review_stats')
     .maybeSingle();
 
-  const stored = (data?.value ?? {}) as Record<string, QuizReviewStats>;
+  const stored = (settingsRow?.value ?? {}) as Record<string, QuizReviewStats>;
   const stats: QuizReviewStats | null = stored[id] ?? DEFAULT_REVIEW_STATS[id] ?? null;
 
-  return NextResponse.json({ ok: true, stats });
+  // Load published user reviews (max 20 most recent)
+  const { data: reviewRows } = await client
+    .from('quiz_reviews')
+    .select('id, user_id, rating, comment, created_at, user_profiles(name)')
+    .eq('quiz_id', id)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  const reviews: UserReview[] = (reviewRows ?? []).map((r) => {
+    const profile = Array.isArray(r.user_profiles) ? r.user_profiles[0] : r.user_profiles;
+    return {
+      id: r.id as string,
+      userId: r.user_id as string,
+      userName: (profile as { name?: string } | null)?.name ?? 'Learner',
+      rating: r.rating as number,
+      comment: r.comment as string,
+      createdAt: r.created_at as string,
+    };
+  });
+
+  return NextResponse.json({ ok: true, stats, reviews });
+}
+
+// ── POST: submit a user review ─────────────────────────────────────────────────
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id: quizId } = await params;
+
+  // Payload size guard
+  const contentLength = Number(req.headers.get('content-length') ?? 0);
+  if (contentLength > 4096) {
+    return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
+  }
+
+  // Auth check
+  const authHeader = req.headers.get('authorization') ?? '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) {
+    return NextResponse.json({ ok: false, error: 'Sign in to leave a review' }, { status: 401 });
+  }
+
+  const anonClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+  const { data: { user } } = await anonClient.auth.getUser(token);
+  if (!user) {
+    return NextResponse.json({ ok: false, error: 'Invalid session' }, { status: 401 });
+  }
+
+  // Rate limit per user (3 review submits per hour across all quizzes)
+  if (!(await checkRateLimit(`review-submit:${user.id}`, 3, 3_600_000))) {
+    logger.rateLimited(ROUTE, user.id);
+    return NextResponse.json({ ok: false, error: 'Too many requests. Try again later.' }, { status: 429 });
+  }
+
+  // Parse + validate body
+  let body: unknown;
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ ok: false, error: 'Invalid JSON' }, { status: 400 });
+  }
+  const parsed = SubmitSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, error: parsed.error.flatten() }, { status: 400 });
+  }
+  const { rating, comment } = parsed.data;
+
+  // Content moderation
+  const filter = checkContent(comment);
+  const status = filter.flagged ? 'pending' : 'published';
+
+  // Service role for insert (bypasses RLS insert policy to allow upsert)
+  const serviceClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  const { error } = await serviceClient
+    .from('quiz_reviews')
+    .upsert(
+      {
+        user_id: user.id,
+        quiz_id: quizId,
+        rating,
+        comment,
+        status,
+        flagged: filter.flagged,
+        flag_reason: filter.reason ?? null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,quiz_id' },
+    );
+
+  if (error) {
+    logger.error(ROUTE, 'insert_failed', { userId: user.id, reason: error.message });
+    return NextResponse.json({ ok: false, error: 'Failed to save review' }, { status: 500 });
+  }
+
+  logger.info(ROUTE, 'review_submitted', { userId: user.id, quizId, status });
+
+  return NextResponse.json({
+    ok: true,
+    status,
+    message: status === 'pending'
+      ? 'Your review has been submitted for moderation and will appear after approval.'
+      : 'Review published! Thank you for your feedback.',
+  });
 }
