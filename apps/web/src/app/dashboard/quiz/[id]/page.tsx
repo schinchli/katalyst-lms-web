@@ -134,6 +134,7 @@ export default function QuizPage() {
   const [upsellCfg,       setUpsellCfg]       = useState<UpsellConfig>(DEFAULT_UPSELL);
   const [studentCount,    setStudentCount]    = useState<number | null>(null);
   const [systemFeatures,  setSystemFeatures]  = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  const [reviewStats,     setReviewStats]     = useState<{ rating: number; count: number; distribution: Record<string, number> } | null>(null);
   // Self Challenge: prior best score from localStorage (loaded before quiz starts)
   const [priorBestPct, setPriorBestPct] = useState<number | null>(null);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -205,6 +206,17 @@ export default function QuizPage() {
       .then((r) => r.json())
       .then((d: { ok: boolean; studentCount?: number }) => {
         if (d.ok && typeof d.studentCount === 'number') setStudentCount(d.studentCount);
+      })
+      .catch(() => { /* best-effort */ });
+  }, [id]);
+
+  // Fetch review stats for this quiz
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/quiz-reviews/${id}`)
+      .then((r) => r.json())
+      .then((d: { ok: boolean; stats?: { rating: number; count: number; distribution: Record<string, number> } | null }) => {
+        if (d.ok && d.stats) setReviewStats(d.stats);
       })
       .catch(() => { /* best-effort */ });
   }, [id]);
@@ -653,6 +665,74 @@ export default function QuizPage() {
                 </p>
               </div>
             </div>
+
+            {/* ── Student Reviews ──────────────────────────────────────────── */}
+            {reviewStats && (
+              <div className="course-section">
+                <div className="course-section-hd">Student Reviews</div>
+                <div style={{ padding: '20px 24px' }}>
+                  {/* Summary row */}
+                  <div style={{ display: 'flex', gap: 24, alignItems: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
+                    {/* Big rating */}
+                    <div style={{ textAlign: 'center', minWidth: 100 }}>
+                      <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1, color: 'var(--warning)' }}>
+                        {reviewStats.rating.toFixed(1)}
+                      </div>
+                      <div style={{ display: 'flex', gap: 2, justifyContent: 'center', margin: '6px 0 4px' }}>
+                        {[1,2,3,4,5].map((n) => {
+                          const filled = n <= Math.floor(reviewStats.rating);
+                          const half   = !filled && n - 0.5 <= reviewStats.rating;
+                          return (
+                            <svg key={n} width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'var(--warning)' : half ? 'url(#half)' : 'none'} stroke="var(--warning)" strokeWidth="1.5">
+                              {half && (
+                                <defs>
+                                  <linearGradient id="half">
+                                    <stop offset="50%" stopColor="var(--warning)"/>
+                                    <stop offset="50%" stopColor="transparent"/>
+                                  </linearGradient>
+                                </defs>
+                              )}
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                          );
+                        })}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        {reviewStats.count.toLocaleString()} reviews
+                      </div>
+                    </div>
+
+                    {/* Distribution bars */}
+                    <div style={{ flex: 1, minWidth: 200, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {(['5','4','3','2','1'] as const).map((star) => {
+                        const cnt = reviewStats.distribution[star] ?? 0;
+                        const pct = reviewStats.count > 0 ? Math.round((cnt / reviewStats.count) * 100) : 0;
+                        return (
+                          <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 12, color: 'var(--text-secondary)', width: 8, textAlign: 'right', flexShrink: 0 }}>{star}</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--warning)" stroke="var(--warning)" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <div style={{ flex: 1, height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', width: `${pct}%`, background: 'var(--warning)', borderRadius: 4, transition: 'width 0.6s ease' }} />
+                            </div>
+                            <span style={{ fontSize: 12, color: 'var(--text-secondary)', width: 28, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Total line */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', borderTop: '1px solid var(--border)' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                      Based on <strong style={{ color: 'var(--text)' }}>{reviewStats.count.toLocaleString()}</strong> verified learner reviews · Overall rating <strong style={{ color: 'var(--warning)' }}>{reviewStats.rating.toFixed(2)} / 5</strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
