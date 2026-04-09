@@ -2321,3 +2321,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* ===== Safe modal max-width (respects small screens) ===== */
 .modal-safe { max-width: min(90vw, 480px); }
 .modal-sm   { max-width: min(90vw, 380px); }
+
+/* ===== Vuexy Auth Cover Layout ===== */
+/* Left panel visible on ≥1024px (d-none d-xl-flex equivalent) */
+@media (min-width: 1024px) {
+  .auth-cover-panel { display: flex !important; flex-direction: column; }
+  .auth-mobile-logo { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .auth-cover-panel { display: none !important; }
+  .auth-form-panel  { max-width: 100% !important; }
+}

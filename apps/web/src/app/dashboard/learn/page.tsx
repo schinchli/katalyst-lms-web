@@ -3,67 +3,86 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { FEATURED_ARTICLES } from '@/lib/experienceFixtures';
-import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
+
+const TAG_COLORS: Record<string, string> = {
+  'Hugging Face': 'vx-badge-primary',
+  'SQL': 'vx-badge-info',
+  'AI Agents': 'vx-badge-success',
+  'Bedrock': 'vx-badge-warning',
+  'Prompting': 'vx-badge-error',
+  'Observability': 'vx-badge-secondary',
+};
+
+const TAG_AVATAR: Record<string, string> = {
+  'Hugging Face': 'vx-avatar-primary',
+  'SQL': 'vx-avatar-info',
+  'AI Agents': 'vx-avatar-success',
+  'Bedrock': 'vx-avatar-warning',
+  'Prompting': 'vx-avatar-error',
+  'Observability': 'vx-avatar-secondary',
+};
 
 export default function LearnPage() {
-  const { config } = usePlatformExperience();
-  const visibleArticles = FEATURED_ARTICLES.slice(0, config.layout.resourcesArticleCount);
-
   return (
-    <div className="page-content dc-shell" style={{ maxWidth: 1240 }}>
-      <section className="dc-hero">
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 22, alignItems: 'start', flexWrap: 'wrap' }}>
-          <div>
-            <span className="dc-chip">{config.copy.resourcesFilter}</span>
-            <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>{config.copy.learnTitle}</h1>
-            <p style={{ margin: 0, maxWidth: 780, color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.8 }}>
-              {config.copy.learnSubtitle}
-            </p>
-          </div>
-          <div className="dc-card" style={{ padding: 18, minWidth: 260 }}>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Article count</div>
-            <div style={{ marginTop: 10, fontSize: 38, fontWeight: 700 }}>{visibleArticles.length}</div>
-            <div style={{ marginTop: 8, color: 'var(--text-secondary)' }}>Controlled from admin settings</div>
-          </div>
-        </div>
-      </section>
+    <div className="page-content">
+      {/* Page header */}
+      <div style={{ marginBottom: 24 }}>
+        <h4 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Resources</h4>
+        <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
+          Editorial-style articles, cheat sheets, and guided notes for deep study sessions.
+        </p>
+      </div>
 
-      <section className="dc-card" style={{ padding: 22, background: 'var(--platform-resources-background)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div>
-            <h2 className="dc-section-title" style={{ fontSize: 30, color: 'var(--text)' }}>{config.copy.resourcesTitle}</h2>
-            <p className="dc-section-subtitle" style={{ color: 'var(--text-secondary)' }}>
-              Responsive editorial cards with adjustable volume, tag labels, and a calmer reading surface.
-            </p>
-          </div>
-          <div className="dc-chip" style={{ background: 'rgba(0, 237, 100, 0.12)', color: 'var(--text)', borderColor: 'rgba(0, 237, 100, 0.18)' }}>
-            {config.copy.resourcesFilter}
-          </div>
-        </div>
-      </section>
-
-      <section className="dc-resource-list">
-        {visibleArticles.map((article, index) => (
-          <article key={article.slug} className="dc-resource-card" style={{ background: config.layout.resourcesCardStyle === 'compact' ? 'var(--surface)' : undefined }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'start', flexWrap: 'wrap' }}>
-              <span className="dc-chip" style={{ background: index % 3 === 0 ? 'rgba(0,237,100,0.14)' : index % 3 === 1 ? 'rgba(61,123,255,0.14)' : 'rgba(111,68,255,0.14)', color: 'inherit' }}>
-                {article.tag}
-              </span>
-              <div style={{ color: 'inherit', opacity: 0.7 }}>{article.author} · {article.date}</div>
-            </div>
-            <h2 style={{ margin: '20px 0 14px', fontSize: config.layout.resourcesCardStyle === 'compact' ? 34 : 46, lineHeight: 1.05 }}>{article.title}</h2>
-            <p style={{ margin: 0, fontSize: config.layout.resourcesCardStyle === 'compact' ? 17 : 20, lineHeight: 1.75, opacity: 0.78 }}>{article.description}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', marginTop: 24, flexWrap: 'wrap' }}>
-              <div style={{ color: 'inherit', opacity: 0.68 }}>
-                Learn the concept, then jump into the matching quiz rail to reinforce it immediately.
+      {/* Article grid — Vuexy blog card pattern */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+        {FEATURED_ARTICLES.map((article) => (
+          <Link
+            key={article.slug}
+            href={`/dashboard/learn/${article.slug}`}
+            style={{ textDecoration: 'none', display: 'block' }}
+          >
+            <article className="vx-card" style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', transition: 'box-shadow 0.15s, transform 0.15s' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(115,103,240,0.18)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = ''; (e.currentTarget as HTMLElement).style.transform = ''; }}
+            >
+              {/* Tag + date */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <span className={`vx-badge ${TAG_COLORS[article.tag] ?? 'vx-badge-secondary'}`}>{article.tag}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{article.date}</span>
               </div>
-              <Link href="/dashboard/quizzes" className="btn-primary" style={{ textDecoration: 'none' }}>
-                Open practice
-              </Link>
-            </div>
-          </article>
+
+              {/* Avatar + title */}
+              <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
+                <div className={`vx-avatar ${TAG_AVATAR[article.tag] ?? 'vx-avatar-secondary'}`} style={{ flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </div>
+                <h5 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.4 }}>{article.title}</h5>
+              </div>
+
+              {/* Description */}
+              <p style={{ margin: '0 0 20px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, flex: 1 }}>
+                {article.description}
+              </p>
+
+              {/* Footer */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--primary-light)', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 700, color: 'var(--primary)' }}>K</div>
+                  <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{article.author}</span>
+                </div>
+                {article.readTime && (
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {article.readTime}
+                  </span>
+                )}
+              </div>
+            </article>
+          </Link>
         ))}
-      </section>
+      </div>
     </div>
   );
 }

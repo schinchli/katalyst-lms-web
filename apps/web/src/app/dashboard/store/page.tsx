@@ -1,9 +1,7 @@
 'use client';
-export const dynamic = 'force-dynamic';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-export default function RedirectPage() {
+export default function StorePage() {
   const router = useRouter();
   useEffect(() => { router.replace('/dashboard/quizzes'); }, [router]);
   return null;

@@ -27,7 +27,6 @@ const NAV = [
   { href: '/dashboard',             label: 'Home',        icon: HomeIcon },
   { href: '/dashboard/quizzes',     label: 'Courses',     icon: BookIcon },
   { href: '/dashboard/learn',       label: 'Learn',       icon: PlayNavIcon },
-  { href: '/dashboard/progress',    label: 'Progress',    icon: TrendIcon },
   { href: '/dashboard/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
   { href: '/dashboard/bookmarks',   label: 'Bookmarks',   icon: BookmarkNavIcon },
   { href: '/dashboard/profile',     label: 'Profile',     icon: UserIcon },

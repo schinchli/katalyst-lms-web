@@ -19,7 +19,7 @@ export const quizzes: Quiz[] = [
     duration: 3,
     isPremium: false,
     price: 0,
-    icon: '⚡',
+    icon: '🚀',
     certLevel: 'foundational',
     examCode: 'CLF-C02',
   },

@@ -250,7 +250,7 @@ export default function LeaderboardPage() {
                 {entry.score.toLocaleString()}
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-                ⚡ {entry.coins.toLocaleString()}
+                {entry.coins.toLocaleString()} pts
               </div>
             </div>
           </div>
