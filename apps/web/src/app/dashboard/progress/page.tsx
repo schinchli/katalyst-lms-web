@@ -121,44 +121,53 @@ export default function ProgressPage() {
   );
 
   return (
-    <div className="page-content dc-shell">
-      <section className="dc-hero">
-        <span className="dc-chip">Growth</span>
-        <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>{config.copy.progressTitle}</h1>
-        <p style={{ margin: 0, maxWidth: 760, color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.8 }}>
-          {config.copy.progressSubtitle}
-        </p>
-        <div className="dc-kpi-grid" style={{ marginTop: 24 }}>
-          {[
-            { label: 'Completion', value: `${completion}%`, tone: 'var(--primary)' },
-            { label: 'Average score', value: `${average}%`, tone: 'var(--color-xp)' },
-            { label: 'Best score', value: `${best}%`, tone: 'var(--platform-success-accent)' },
-            { label: 'XP earned', value: `${xp}`, tone: 'var(--platform-premium-accent)' },
-          ].map((item) => (
-            <div key={item.label} className="dc-card" style={{ padding: 20 }}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{item.label}</div>
-              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: item.tone }}>{item.value}</div>
+    <div className="page-content">
+      {/* Page header */}
+      <div style={{ marginBottom: 24 }}>
+        <h4 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{config.copy.progressTitle}</h4>
+        <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>{config.copy.progressSubtitle}</p>
+      </div>
+
+      {/* KPI stats — Vuexy avatar+icon pattern */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20, marginBottom: 24 }}>
+        {[
+          {
+            label: 'Completion', value: `${completion}%`, avatarClass: 'vx-avatar-primary',
+            icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+          },
+          {
+            label: 'Average score', value: `${average}%`, avatarClass: 'vx-avatar-info',
+            icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+          },
+          {
+            label: 'Best score', value: `${best}%`, avatarClass: 'vx-avatar-success',
+            icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+          },
+          {
+            label: 'XP earned', value: `${xp}`, avatarClass: 'vx-avatar-warning',
+            icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>,
+          },
+          ...(coinBalance !== null ? [{
+            label: 'Coin balance', value: coinBalance.toLocaleString(), avatarClass: 'vx-avatar-warning',
+            icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+          }] : []),
+        ].map((item) => (
+          <div key={item.label} className="vx-card" style={{ padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div className={`vx-avatar ${item.avatarClass}`}>{item.icon}</div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{item.value}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>{item.label}</div>
             </div>
-          ))}
-          {coinBalance !== null && (
-            <div className="dc-card" style={{ padding: 20 }}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Coin Balance</div>
-              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: 'var(--color-xp)' }}>
-                ⚡ {coinBalance.toLocaleString()}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+          </div>
+        ))}
+      </div>
 
       {recentTx.length > 0 && (
-        <section className="dc-card" style={{ padding: 24 }}>
-          <h2 className="dc-section-title" style={{ fontSize: 20, marginBottom: 14 }}>
-            Recent Coin Activity
-            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>
-              <a href="/dashboard/coins" style={{ color: 'var(--primary-text)', textDecoration: 'none', fontWeight: 600 }}>View all →</a>
-            </span>
-          </h2>
+        <section className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
+          <div className="vx-card-header" style={{ marginBottom: 14 }}>
+            <span className="vx-card-title" style={{ fontSize: 16 }}>Recent Coin Activity</span>
+            <a href="/dashboard/coins" className="vx-card-link">View all</a>
+          </div>
           <div style={{ display: 'grid', gap: 8 }}>
             {recentTx.map((tx) => {
               const isEarn = tx.amount >= 0;
@@ -185,14 +194,11 @@ export default function ProgressPage() {
         </section>
       )}
 
-      <section className="dc-grid" style={{ gridTemplateColumns: '0.9fr 1.1fr' }}>
-        <div className="dc-card" style={{ padding: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start' }}>
-            <div>
-              <h2 className="dc-section-title" style={{ fontSize: 30 }}>Streaks</h2>
-              <p className="dc-section-subtitle">Build habit loops with a clearer weekly view inspired by the mobile growth screens.</p>
-            </div>
-            <span className="dc-chip">{streak} days</span>
+      <section style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 20 }}>
+        <div className="vx-card" style={{ padding: 24 }}>
+          <div className="vx-card-header" style={{ marginBottom: 16 }}>
+            <span className="vx-card-title" style={{ fontSize: 16 }}>Streaks</span>
+            <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>{streak} days</span>
           </div>
           <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10 }}>
             {activeDays.map((day, index) => (
@@ -204,7 +210,7 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="dc-card" style={{ padding: 24 }}>
+        <div className="vx-card" style={{ padding: 24 }}>
           {dailyQuiz ? (
             <div style={{ marginBottom: 18, padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -229,8 +235,8 @@ export default function ProgressPage() {
               </div>
             </div>
           ) : null}
-          <h2 className="dc-section-title" style={{ fontSize: 30 }}>Recent results</h2>
-          <p className="dc-section-subtitle">A more polished history panel with pass/fail tones and immediate context.</p>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 4px' }}>Recent results</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 16px' }}>A polished history panel with pass/fail tones.</p>
           <div style={{ marginTop: 20, display: 'grid', gap: 12 }}>
             {results.length === 0 && (
               <div style={{ color: 'var(--text-secondary)' }}>

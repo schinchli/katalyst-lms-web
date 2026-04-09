@@ -198,46 +198,66 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="page-content dc-shell">
-      <section className="dc-hero">
-        <div className="dc-grid" style={{ gridTemplateColumns: 'auto 1fr auto', gap: 22, alignItems: 'center' }}>
-          <div style={{ width: 132, height: 132, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))', display: 'grid', placeItems: 'center', fontSize: 46, fontWeight: 700 }}>
+    <div className="page-content">
+      {/* User card — Vuexy pattern */}
+      <div className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+          {/* Avatar */}
+          <div style={{ width: 80, height: 80, borderRadius: 12, background: 'var(--primary-light)', display: 'grid', placeItems: 'center', fontSize: 32, fontWeight: 700, color: 'var(--primary)', flexShrink: 0 }}>
             {(name || email || 'L').charAt(0).toUpperCase()}
           </div>
-          <div>
-            <div className="dc-chip">{isPro ? 'Premium member' : 'Free learner'}</div>
-            <h1 style={{ margin: '16px 0 10px', fontSize: 'clamp(32px, 4.2vw, 50px)', lineHeight: 1.03 }}>{name || 'Learner'}</h1>
-            <div style={{ color: 'var(--text-secondary)', fontSize: 18 }}>{email || 'No email set'}</div>
-            <div style={{ marginTop: 8, color: 'var(--text-secondary)' }}>{role}</div>
+          {/* Name + role */}
+          <div style={{ flex: 1 }}>
+            <h5 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>{name || 'Learner'}</h5>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>{email || 'No email set'}</div>
+            <span style={{ background: isPro ? 'rgba(40,199,111,0.16)' : 'var(--primary-light)', color: isPro ? 'var(--success)' : 'var(--primary)', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>
+              {isPro ? 'Premium' : 'Free plan'}
+            </span>
           </div>
-          <div className="dc-card" style={{ padding: 20, minWidth: 240 }}>
-            <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Current platform theme</div>
-            <div style={{ marginTop: 10, fontSize: 28, fontWeight: 700 }}>{platformThemeName}</div>
-            <div style={{ marginTop: 10, color: 'var(--text-secondary)' }}>End users can override this with their own theme pack below.</div>
+          {/* Theme chip */}
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>Platform theme</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{platformThemeName}</div>
           </div>
         </div>
 
-        <div className="dc-kpi-grid" style={{ marginTop: 24 }}>
+        {/* Stats row — Vuexy avatar+icon pattern */}
+        <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 20, marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
           {[
-            { label: 'Courses completed', value: String(completedCount), tone: 'var(--text)' },
-            { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
-            { label: 'Study hours', value: `${studyHours}`, tone: 'var(--color-xp)' },
-            { label: 'Course library', value: String(quizzes.length), tone: 'var(--platform-premium-accent)' },
+            {
+              label: 'Courses completed', value: String(completedCount), avatarClass: 'vx-avatar-primary',
+              icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            },
+            {
+              label: 'Average score', value: `${average}%`, avatarClass: 'vx-avatar-info',
+              icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+            },
+            {
+              label: 'Study hours', value: `${studyHours}h`, avatarClass: 'vx-avatar-warning',
+              icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+            },
+            {
+              label: 'Course library', value: String(quizzes.length), avatarClass: 'vx-avatar-success',
+              icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+            },
           ].map((item) => (
-            <div key={item.label} className="dc-card" style={{ padding: 20 }}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{item.label}</div>
-              <div style={{ marginTop: 10, fontSize: 34, fontWeight: 700, color: item.tone }}>{item.value}</div>
+            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div className={`vx-avatar ${item.avatarClass}`}>{item.icon}</div>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{item.value}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{item.label}</div>
+              </div>
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
       {config.widgets.showProfileOffer && (
-        <section className="dc-card" style={{ padding: 26 }}>
-          <div className="dc-grid" style={{ gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'center' }}>
+        <section className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
             <div>
-              <h2 className="dc-section-title" style={{ fontSize: 34 }}>{config.copy.profileOfferTitle}</h2>
-              <p className="dc-section-subtitle" style={{ color: 'var(--platform-profile-offer-accent)', fontWeight: 700 }}>{config.copy.profileOfferSubtitle}</p>
+              <h5 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{config.copy.profileOfferTitle}</h5>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--primary)', fontWeight: 600 }}>{config.copy.profileOfferSubtitle}</p>
             </div>
             <button className="btn-primary">{isPro ? 'Manage plan' : 'Upgrade now'}</button>
           </div>
@@ -245,8 +265,8 @@ export default function ProfilePage() {
       )}
 
       {referral && (
-        <section className="dc-card" style={{ padding: 24 }}>
-          <h2 className="dc-section-title" style={{ fontSize: 22, marginBottom: 4 }}>Refer a Friend</h2>
+        <section className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 4px' }}>Refer a Friend</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 16 }}>
             Share your code and earn coins when friends sign up.
           </p>
@@ -267,22 +287,22 @@ export default function ProfilePage() {
           </div>
 
           <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-            <div className="dc-card" style={{ padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 26, fontWeight: 700 }}>{referral.referredCount}</div>
+            <div style={{ background: 'var(--primary-light)', borderRadius: 10, padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)' }}>{referral.referredCount}</div>
               <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Friends referred</div>
             </div>
-            <div className="dc-card" style={{ padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-xp)' }}>{referral.coinsEarned} ⚡</div>
+            <div style={{ background: 'rgba(255,159,67,0.12)', borderRadius: 10, padding: '12px 20px', display: 'inline-flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--warning)' }}>{referral.coinsEarned} ⚡</div>
               <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Coins earned</div>
             </div>
           </div>
         </section>
       )}
 
-      <section className="dc-settings-grid">
-        <div className="dc-card" style={{ padding: 24 }}>
-          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Profile details</h2>
-          <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>
+      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+        <div className="vx-card" style={{ padding: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 18px' }}>Profile details</h2>
+          <div style={{ display: 'grid', gap: 14 }}>
             <label>
               <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Full name</div>
               <input value={name} onChange={(event) => setName(event.target.value)} className="admin-field-input" />
@@ -302,9 +322,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="dc-card" style={{ padding: 24 }}>
-          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Appearance</h2>
-          <div className="dc-grid" style={{ gap: 14, marginTop: 20 }}>
+        <div className="vx-card" style={{ padding: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 18px' }}>Appearance</h2>
+          <div style={{ display: 'grid', gap: 14 }}>
             <label>
               <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Theme pack</div>
               <select value={theme.themeId} onChange={(event) => setTheme((prev) => ({ ...prev, themeId: event.target.value, usePlatform: false }))} className="admin-field-input">
@@ -367,9 +387,9 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* ── Danger Zone ────────────────────────────────────────────────────── */}
-      <section className="dc-card" style={{ padding: 24, border: '1px solid rgba(239,68,68,0.3)', borderRadius: 18 }}>
-        <h2 className="dc-section-title" style={{ fontSize: 22, color: 'var(--error)' }}>Danger Zone</h2>
+      {/* Danger Zone */}
+      <section className="vx-card" style={{ padding: 24, border: '1px solid rgba(239,68,68,0.3)' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--error)', margin: '0 0 8px' }}>Danger Zone</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
           Deleting your account is permanent and cannot be undone. All your quiz history, progress, and profile data will be erased immediately.
         </p>
