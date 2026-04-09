@@ -658,22 +658,43 @@ export default function QuizPage() {
           {/* Sidebar */}
           <div className="course-sidebar">
             <div className="course-enroll-card">
-              {/* Preview */}
-              <div className="course-enroll-preview" style={{ background: accent + '15' }}>
-                <div style={{ fontSize: 60 }}>{quiz.icon || '📖'}</div>
+              {/* Preview — with lock overlay when premium */}
+              <div className="course-enroll-preview" style={{ background: isPremiumLocked ? 'rgba(255,159,67,0.1)' : accent + '15', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ fontSize: 60, filter: isPremiumLocked ? 'blur(2px) opacity(0.4)' : undefined }}>{quiz.icon || '📖'}</div>
+                {isPremiumLocked && (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,159,67,0.2)', border: '2px solid #FF9F43', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF9F43" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#FF9F43', letterSpacing: 0.5 }}>PREMIUM</span>
+                  </div>
+                )}
               </div>
 
               {/* Start / Unlock button */}
               {isPremiumLocked ? (
-                <button
-                  className="btn-enroll"
-                  style={{ background: 'var(--warning)', boxShadow: '0 4px 16px #FF9F4344', marginBottom: 8 }}
-                  onClick={() => { setPaywallTab('course'); setShowPaywall(true); }}
-                >
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                    🔒 Unlock — ₹{quiz.price}
-                  </span>
-                </button>
+                <>
+                  <button
+                    className="btn-enroll"
+                    style={{ background: 'linear-gradient(135deg, #FF9F43 0%, #FF8C00 100%)', boxShadow: '0 4px 20px rgba(255,159,67,0.4)', marginBottom: 10 }}
+                    onClick={() => { setPaywallTab('course'); setShowPaywall(true); }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      Unlock This Quiz — {countryCode === 'IN' ? `₹${quiz.price}` : `$${((quiz.price ?? 499) / 80).toFixed(2)}`}
+                    </span>
+                  </button>
+                  {!isPro && (
+                    <button
+                      style={{ width: '100%', height: 44, borderRadius: 12, background: 'var(--primary-light)', border: '1.5px solid var(--primary)', color: 'var(--primary-text)', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 16, fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                      onClick={() => { setPaywallTab('pro'); setShowPaywall(true); }}
+                    >
+                      ⭐ Go Pro — All Access {countryCode === 'IN' ? '₹999/yr' : '$9.99/yr'}
+                    </button>
+                  )}
+                </>
               ) : (
                 <button
                   className="btn-enroll"
@@ -686,30 +707,23 @@ export default function QuizPage() {
                 </button>
               )}
 
-              {/* Pro shortcut */}
-              {isPremiumLocked && !isPro && (
-                <button
-                  style={{ width: '100%', height: 40, borderRadius: 10, background: 'transparent', border: '1.5px solid #FF9F43', color: 'var(--warning)', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 16, fontFamily: 'inherit' }}
-                  onClick={() => { setPaywallTab('pro'); setShowPaywall(true); }}
-                >
-                  ⭐ Go Pro — All Access {countryCode === 'IN' ? '₹999/yr' : '$9.99/yr'}
-                </button>
-              )}
-
-              {/* Paywall modal */}
+              {/* Paywall modal — centred Vuexy dialog */}
               {showPaywall && (
                 <div
-                  style={{ position: 'fixed', inset: 0, background: 'rgba(47,43,61,0.6)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                  style={{ position: 'fixed', inset: 0, background: 'rgba(47,43,61,0.72)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
                   onClick={() => setShowPaywall(false)}
                 >
                   <div
-                    style={{ background: 'var(--surface)', borderRadius: '24px 24px 0 0', padding: 32, maxWidth: 500, width: '100%', paddingBottom: 48, maxHeight: '90vh', overflowY: 'auto' }}
+                    style={{ background: 'var(--surface)', borderRadius: 20, padding: '28px 28px 32px', maxWidth: 500, width: '100%', maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 80px rgba(47,43,61,0.28)', border: '1px solid var(--border)' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Header */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                      <div style={{ fontSize: 20, fontWeight: 700 }}>Unlock Access</div>
-                      <button onClick={() => { setShowPaywall(false); setPaymentError(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--text-secondary)' }}>✕</button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                      <div>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>Unlock Access 🔓</div>
+                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 3 }}>{quiz.title}</div>
+                      </div>
+                      <button onClick={() => { setShowPaywall(false); setPaymentError(''); }} style={{ background: 'var(--bg)', border: '1px solid var(--border)', cursor: 'pointer', width: 32, height: 32, borderRadius: 8, fontSize: 16, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>✕</button>
                     </div>
 
                     {/* Error */}

@@ -43,80 +43,123 @@ export default function ResetPasswordPage() {
     setSuccess(true);
   };
 
-  const cardStyle: React.CSSProperties = {
-    background: 'var(--surface)', borderRadius: 16, padding: '40px 36px',
-    width: '100%', maxWidth: 400, boxShadow: '0 4px 24px rgba(47,43,61,0.12)',
-    border: '1px solid var(--border)',
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', borderRadius: 8,
-    border: '1px solid var(--border)', background: 'var(--bg)',
-    color: 'var(--text)', fontSize: 14, fontFamily: 'inherit',
-    outline: 'none', boxSizing: 'border-box',
-  };
-
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', fontFamily: "'Public Sans', sans-serif" }}>
-      <div style={cardStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #7367F0 0%, #9e95f5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 20 }}>K</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>Katalyst</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Supercharge Your Career. Learn Skills Faster.</div>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)' }}>
+      {/* Left panel — decorative brand area (hidden on mobile) */}
+      <div
+        style={{ flex: 1, display: 'none', background: 'linear-gradient(135deg, #2F3349 0%, #25293C 100%)', position: 'relative', overflow: 'hidden' }}
+        className="auth-cover-panel"
+      >
+        {/* Background shapes */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 70% 40%, rgba(115,103,240,0.22) 0%, transparent 60%)' }} />
+        <div style={{ position: 'absolute', top: '20%', right: '10%', width: 260, height: 260, borderRadius: '50%', background: 'rgba(115,103,240,0.08)', border: '1px solid rgba(115,103,240,0.15)' }} />
+        <div style={{ position: 'absolute', bottom: '18%', left: '8%', width: 160, height: 160, borderRadius: '50%', background: 'rgba(0,207,232,0.06)', border: '1px solid rgba(0,207,232,0.12)' }} />
+        <div style={{ position: 'absolute', top: '60%', right: '25%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(115,103,240,0.05)', border: '1px solid rgba(115,103,240,0.10)' }} />
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 1, padding: '48px 52px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 64 }}>
+            <div style={{ width: 42, height: 42, borderRadius: 10, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 18, fontWeight: 800, color: '#fff' }}>K</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>Katalyst</div>
+          </div>
+
+          <h1 style={{ margin: '0 0 18px', fontSize: 42, fontWeight: 700, lineHeight: 1.15, color: '#fff' }}>
+            Forgot your password? 🔒
+          </h1>
+          <p style={{ margin: '0 0 48px', fontSize: 18, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)' }}>
+            No worries — enter your email and we&apos;ll send a secure reset link.
+          </p>
+
+          {/* Feature points */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              'Secure link sent to your inbox',
+              'Link expires in 24 hours for safety',
+              'reCAPTCHA protected',
+            ].map((item) => (
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(115,103,240,0.3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9289FF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 15 }}>{item}</span>
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {success ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>📧</div>
-            <h1 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>Check your email</h1>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 24px' }}>
-              We sent a password reset link to <strong>{email}</strong>
-            </p>
-            <Link href="/login" style={{ color: '#7367F0', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
-              Back to sign in
-            </Link>
+      {/* Right panel — form */}
+      <div
+        style={{ width: '100%', maxWidth: 480, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', background: 'var(--surface)' }}
+        className="auth-form-panel"
+      >
+        <div style={{ width: '100%', maxWidth: 400 }}>
+          {/* Logo (mobile only) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 }} className="auth-mobile-logo">
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 800, color: '#fff' }}>K</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Katalyst</div>
           </div>
-        ) : (
-          <>
-            <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Forgot password?</h1>
-            <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)' }}>Enter your email and we&apos;ll send a reset link.</p>
 
-            <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Email</label>
-                <input
-                  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  required placeholder="you@example.com" style={inputStyle}
-                />
+          {success ? (
+            /* ── Success state ── */
+            <div style={{ textAlign: 'center', paddingTop: 20 }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(115,103,240,0.12)', border: '2px solid rgba(115,103,240,0.3)', display: 'grid', placeItems: 'center', margin: '0 auto 24px' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <polyline points="2,4 12,13 22,4"/>
+                </svg>
               </div>
+              <h4 style={{ margin: '0 0 10px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Check your inbox</h4>
+              <p style={{ margin: '0 0 8px', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: 14 }}>
+                We sent a password reset link to
+              </p>
+              <p style={{ margin: '0 0 28px', fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{email}</p>
+              <Link href="/login" className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', minWidth: 160 }}>
+                Back to sign in
+              </Link>
+            </div>
+          ) : (
+            /* ── Form state ── */
+            <>
+              <h4 style={{ margin: '0 0 6px', fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>Forgot Password? 🔒</h4>
+              <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Enter your email and we&apos;ll send you a reset link.
+              </p>
 
-              {error && (
-                <div style={{ padding: '10px 14px', borderRadius: 8, background: '#FF4C5114', border: '1px solid #FF4C5140', color: '#FF4C51', fontSize: 13 }}>
-                  {error}
-                </div>
-              )}
+              <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <label>
+                  <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Email</div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="admin-field-input"
+                    required
+                    placeholder="you@example.com"
+                    autoFocus
+                  />
+                </label>
 
-              <button
-                type="submit" disabled={loading}
-                style={{ padding: '11px', borderRadius: 8, marginTop: 4, background: loading ? 'var(--primary-light)' : '#7367F0', color: loading ? 'var(--primary-text)' : '#fff', fontSize: 14, fontWeight: 600, border: 'none', cursor: loading ? 'not-allowed' : 'pointer' }}
-              >
-                {loading ? 'Verifying…' : 'Send reset link'}
-              </button>
-            </form>
+                {error && (
+                  <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(234,84,85,0.1)', border: '1px solid rgba(234,84,85,0.25)', color: 'var(--error)', fontSize: 13 }}>
+                    {error}
+                  </div>
+                )}
 
-            <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: 'var(--text-secondary)' }}>
-              <Link href="/login" style={{ color: '#7367F0', fontWeight: 600, textDecoration: 'none' }}>Back to sign in</Link>
-            </p>
-            <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text-secondary)' }}>
-              Protected by reCAPTCHA —{' '}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Privacy</a>
-              {' & '}
-              <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer" style={{ color: 'var(--text-secondary)' }}>Terms</a>
-            </p>
-          </>
-        )}
+                <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: 4, minHeight: 48, fontSize: 15 }}>
+                  {loading ? 'Sending…' : 'Send reset link'}
+                </button>
+              </form>
+
+              <p style={{ marginTop: 24, textAlign: 'center', fontSize: 14, color: 'var(--text-secondary)' }}>
+                <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+                  Back to sign in
+                </Link>
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
