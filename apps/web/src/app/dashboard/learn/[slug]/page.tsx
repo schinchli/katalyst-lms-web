@@ -37,7 +37,7 @@ function Section({ section }: { section: ArticleSection }) {
     case 'list':
       return (
         <ul style={{ margin: '0 0 20px', padding: '0 0 0 0', listStyle: 'none', display: 'grid', gap: 8 }}>
-          {section.items?.map((item, i) => (
+          {section.items.map((item, i) => (
             <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: 15, lineHeight: 1.7, color: 'var(--text)' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, marginTop: 9 }} />
               {item}
@@ -70,6 +70,36 @@ function Section({ section }: { section: ArticleSection }) {
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'var(--text)' }}>{section.text}</p>
         </div>
       );
+    case 'image':
+      return (
+        <figure style={{ margin: '0 0 28px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={section.src}
+            alt={section.alt ?? ''}
+            style={{ width: '100%', borderRadius: 10, border: '1px solid var(--border)', display: 'block' }}
+          />
+          {section.caption && (
+            <figcaption style={{ marginTop: 8, fontSize: 13, color: 'var(--text-secondary)', textAlign: 'center', fontStyle: 'italic' }}>
+              {section.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    case 'youtube': {
+      const src = `https://www.youtube.com/embed/${section.videoId}?rel=0&modestbranding=1`;
+      return (
+        <div style={{ marginBottom: 28, borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+          <iframe
+            src={src}
+            title={section.title ?? 'YouTube video'}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          />
+        </div>
+      );
+    }
     default:
       return null;
   }

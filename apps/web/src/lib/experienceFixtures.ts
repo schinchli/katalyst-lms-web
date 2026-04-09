@@ -10,12 +10,15 @@ export type Article = {
   relatedQuizId?: string;
 };
 
-export type ArticleSection = {
-  type: 'intro' | 'heading' | 'paragraph' | 'list' | 'code' | 'callout';
-  text?: string;
-  items?: string[];
-  language?: string;
-};
+export type ArticleSection =
+  | { type: 'intro';      text: string }
+  | { type: 'heading';    text: string }
+  | { type: 'paragraph';  text: string }
+  | { type: 'list';       items: string[] }
+  | { type: 'code';       text: string; language?: string }
+  | { type: 'callout';    text: string }
+  | { type: 'image';      src: string; alt?: string; caption?: string }
+  | { type: 'youtube';    videoId: string; title?: string };
 
 export const FEATURED_ARTICLES: Article[] = [
   {
