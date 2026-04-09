@@ -173,15 +173,24 @@ export default function DashboardPage() {
 
         {config.widgets.showHomeStats && (
           <div className="dc-kpi-grid" style={{ marginTop: 22 }}>
-            {[
-              { label: 'Courses started', value: String(completedIds.size || 0), tone: 'var(--text)' },
-              { label: 'Average score', value: `${average}%`, tone: 'var(--primary)' },
-              { label: 'Today XP', value: `${todayXp}`, tone: 'var(--color-xp)' },
-              { label: 'Current streak', value: `${currentStreak} days`, tone: 'var(--platform-premium-accent)' },
-            ].map((stat) => (
-              <div key={stat.label} className="dc-card" style={{ padding: 20 }}>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{stat.label}</div>
-                <div style={{ marginTop: 10, fontSize: 30, fontWeight: 700, color: stat.tone }}>{stat.value}</div>
+            {([
+              { label: 'Courses started', value: String(completedIds.size || 0), avatarCls: 'vx-avatar-primary',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> },
+              { label: 'Average score',   value: `${average}%`,            avatarCls: 'vx-avatar-info',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> },
+              { label: 'Today XP',        value: String(todayXp),           avatarCls: 'vx-avatar-warning',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
+              { label: 'Current streak',  value: `${currentStreak} days`,   avatarCls: 'vx-avatar-success',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> },
+            ] as { label: string; value: string; avatarCls: string; icon: React.ReactNode }[]).map((stat) => (
+              <div key={stat.label} className="dc-card" style={{ padding: 18 }}>
+                <div className="vx-kpi">
+                  <div className={`vx-avatar ${stat.avatarCls}`}>{stat.icon}</div>
+                  <div>
+                    <div className="vx-kpi-label">{stat.label}</div>
+                    <div className="vx-kpi-value">{stat.value}</div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -215,16 +224,23 @@ export default function DashboardPage() {
       {config.widgets.showHomeActions && (
         <section>
           <div className={actionClass}>
-            {[
-              { title: 'Flashcards', subtitle: 'Review concepts with fast recall loops.', href: '/dashboard/quizzes', emoji: '🗂' },
-              { title: 'Practice', subtitle: 'Jump into hands-on question sets and drills.', href: '/dashboard/quizzes', emoji: '🏋️' },
-              { title: 'Resources', subtitle: 'Read cheat sheets, guides, and editorials.', href: '/dashboard/learn', emoji: '📚' },
-              { title: 'Growth', subtitle: 'Track streaks, results, and learning momentum.', href: '/dashboard/progress', emoji: '📈' },
-            ].map((item) => (
-              <Link key={item.title} href={item.href} className="dc-card" style={{ padding: 22, textDecoration: 'none' }}>
-                <div style={{ fontSize: 32 }}>{item.emoji}</div>
-                <div style={{ marginTop: 18, fontSize: 28, fontWeight: 700, color: 'var(--text)' }}>{item.title}</div>
-                <div style={{ marginTop: 10, lineHeight: 1.7, color: 'var(--text-secondary)' }}>{item.subtitle}</div>
+            {([
+              { title: 'Flashcards', subtitle: 'Review concepts with fast recall loops.',         href: '/dashboard/quizzes', avatarCls: 'vx-avatar-primary',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> },
+              { title: 'Practice',   subtitle: 'Jump into hands-on question sets and drills.',    href: '/dashboard/quizzes', avatarCls: 'vx-avatar-info',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> },
+              { title: 'Resources',  subtitle: 'Read cheat sheets, guides, and editorials.',      href: '/dashboard/learn',   avatarCls: 'vx-avatar-success',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> },
+              { title: 'Growth',     subtitle: 'Track streaks, results, and learning momentum.',  href: '/dashboard/progress', avatarCls: 'vx-avatar-warning',
+                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
+            ] as { title: string; subtitle: string; href: string; avatarCls: string; icon: React.ReactNode }[]).map((item) => (
+              <Link key={item.title} href={item.href} className="dc-card vx-action-card">
+                <div className={`vx-avatar ${item.avatarCls}`}>{item.icon}</div>
+                <div className="vx-action-info">
+                  <div className="vx-action-title">{item.title}</div>
+                  <div className="vx-action-sub">{item.subtitle}</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-secondary)', flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
               </Link>
             ))}
           </div>
@@ -271,33 +287,31 @@ export default function DashboardPage() {
 
       {config.widgets.showPopularCourses && (
         <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', marginBottom: 18 }}>
-            <div>
-              <h2 className="dc-section-title">Popular courses</h2>
-              <p className="dc-section-subtitle">A cleaner course carousel for scrolling through tracks, levels, and cert prep quickly.</p>
+          <div className="dc-card">
+            <div className="vx-card-header">
+              <h5 className="vx-card-title">Popular courses</h5>
+              <Link href="/dashboard/quizzes" className="vx-card-link">View all</Link>
             </div>
-            <Link href="/dashboard/quizzes" style={{ color: 'var(--text)', fontWeight: 700 }}>See all</Link>
-          </div>
-          <div className="dc-rail">
-            {popular.map((quiz) => {
-              const existing = results.find((item) => item.quizId === quiz.id);
-              const score = existing ? pct(existing) : 0;
-              return (
-                <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="dc-card" style={{ padding: 18, textDecoration: 'none' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                    <span className="dc-chip">{quiz.isPremium ? 'Premium' : 'Track'}</span>
-                    <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{quiz.duration} min</span>
-                  </div>
-                  <div style={{ marginTop: 18, fontSize: 48 }}>{quiz.icon}</div>
-                  <div style={{ marginTop: 14, fontSize: 28, fontWeight: 700, color: 'var(--text)' }}>{quiz.title}</div>
-                  <p style={{ margin: '12px 0 18px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{quiz.description}</p>
-                  <div style={{ height: 12, borderRadius: 999, background: 'var(--overlay-md)', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${score}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-2))' }} />
-                  </div>
-                  <div style={{ marginTop: 10, fontSize: 13, color: 'var(--text-secondary)' }}>{score ? `${score}% complete` : 'Not started yet'}</div>
-                </Link>
-              );
-            })}
+            <div className="vx-card-body vx-list">
+              {popular.map((quiz, idx) => {
+                const existing = results.find((item) => item.quizId === quiz.id);
+                const score = existing ? pct(existing) : 0;
+                const avatarColors = ['vx-avatar-primary','vx-avatar-info','vx-avatar-success','vx-avatar-warning','vx-avatar-error'];
+                const avatarCls = avatarColors[idx % avatarColors.length];
+                return (
+                  <Link key={quiz.id} href={`/dashboard/quiz/${quiz.id}`} className="vx-list-item" style={{ textDecoration: 'none' }}>
+                    <div className={`vx-avatar ${avatarCls}`} style={{ fontSize: 20 }}>{quiz.icon}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="vx-list-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{quiz.title}</div>
+                      <div className="vx-list-sub">{quiz.questionCount} questions · {quiz.duration} min</div>
+                    </div>
+                    <span className={`vx-badge ${score >= 70 ? 'vx-badge-success' : score > 0 ? 'vx-badge-warning' : 'vx-badge-muted'}`}>
+                      {score > 0 ? `${score}%` : 'New'}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
@@ -325,15 +339,12 @@ export default function DashboardPage() {
       )}
 
       <section className="dc-grid" style={{ gridTemplateColumns: '1.15fr 0.85fr' }}>
-        <div className="dc-card" style={{ padding: 26 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start' }}>
-            <div>
-              <h2 className="dc-section-title" style={{ fontSize: 30 }}>{config.copy.resourcesTitle}</h2>
-              <p className="dc-section-subtitle" style={{ maxWidth: 'unset' }}>Dynamic article counts are now admin-controlled instead of hardcoded into the page.</p>
-            </div>
-            <span className="dc-chip">{config.layout.resourcesArticleCount} visible</span>
+        <div className="dc-card">
+          <div className="vx-card-header">
+            <h5 className="vx-card-title">{config.copy.resourcesTitle}</h5>
+            <Link href="/dashboard/learn" className="vx-card-link">View all</Link>
           </div>
-          <div className="dc-resource-list" style={{ marginTop: 22 }}>
+          <div className="dc-resource-list" style={{ padding: '20px 20px' }}>
             {articles.map((article) => (
               <article key={article.slug} className="dc-resource-card">
                 <span className="dc-chip" style={{ background: 'rgba(0,237,100,0.12)', color: 'inherit' }}>{article.tag}</span>
@@ -347,62 +358,74 @@ export default function DashboardPage() {
 
         <div className="dc-grid" style={{ gap: 18 }}>
           {config.widgets.showGrowthWidget && (
-            <div className="dc-card" style={{ padding: 24 }}>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Streak and activity</div>
-              <div style={{ marginTop: 10, fontSize: 42, fontWeight: 700, color: 'var(--text)' }}>{currentStreak} days</div>
-              <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-                {activeDays.map((day, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      height: 56,
-                      borderRadius: 18,
-                      border: day.active ? '1px solid rgba(255,216,77,0.5)' : '1px solid var(--border)',
-                      background: day.active ? 'rgba(255,216,77,0.12)' : 'var(--overlay-xs)',
-                      display: 'grid',
-                      placeItems: 'center',
-                      color: day.active ? 'var(--color-xp)' : 'var(--text-secondary)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {day.label}
-                  </div>
-                ))}
+            <div className="dc-card">
+              <div className="vx-card-header">
+                <h5 className="vx-card-title">Streak &amp; activity</h5>
+                <span className="vx-badge vx-badge-warning">{currentStreak} days</span>
+              </div>
+              <div style={{ padding: '16px 20px' }}>
+                <div className="vx-day-grid">
+                  {activeDays.map((day, index) => (
+                    <div key={index} className={`vx-day${day.active ? ' active' : ''}`}>{day.label}</div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
           {config.widgets.showLeaderboardPreview && (
-            <div className="dc-card" style={{ padding: 24 }}>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Momentum snapshot</div>
-              <div style={{ marginTop: 16, display: 'grid', gap: 12 }}>
-                {results.slice(-4).reverse().map((item) => (
-                  <div key={`${item.quizId}-${item.completedAt}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 700, color: 'var(--text)' }}>{quizzes.find((quiz) => quiz.id === item.quizId)?.title ?? item.quizId}</div>
-                      <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(item.completedAt).toLocaleDateString()}</div>
-                    </div>
-                    <div style={{ color: pct(item) >= 70 ? 'var(--platform-success-accent)' : 'var(--platform-danger-accent)', fontWeight: 700 }}>
-                      {pct(item)}%
-                    </div>
+            <div className="dc-card">
+              <div className="vx-card-header">
+                <h5 className="vx-card-title">Recent results</h5>
+                <Link href="/dashboard/progress" className="vx-card-link">See all</Link>
+              </div>
+              <div className="vx-card-body vx-list">
+                {results.length === 0 ? (
+                  <div style={{ padding: '16px 20px', color: 'var(--text-secondary)', fontSize: 13 }}>
+                    No quiz history yet. <Link href="/dashboard/quizzes" style={{ color: 'var(--primary)' }}>Start a course</Link>
                   </div>
-                ))}
-                {results.length === 0 && <div style={{ color: 'var(--text-secondary)' }}>Take your first quiz to start filling this dashboard.</div>}
+                ) : results.slice(-4).reverse().map((item) => {
+                  const score = pct(item);
+                  const quizTitle = quizzes.find((q) => q.id === item.quizId)?.title ?? item.quizId;
+                  return (
+                    <div key={`${item.quizId}-${item.completedAt}`} className="vx-list-item">
+                      <div className={`vx-avatar ${score >= 70 ? 'vx-avatar-success' : 'vx-avatar-error'}`}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          {score >= 70 ? <polyline points="20 6 9 17 4 12" /> : <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>}
+                        </svg>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="vx-list-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{quizTitle}</div>
+                        <div className="vx-list-sub">{new Date(item.completedAt).toLocaleDateString()}</div>
+                      </div>
+                      <span className={`vx-badge ${score >= 70 ? 'vx-badge-success' : 'vx-badge-error'}`}>{score}%</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {config.widgets.showTestimonials && (
-            <div className="dc-card" style={{ padding: 24 }}>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{config.copy.testimonialsTitle}</div>
-              <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{config.copy.testimonialsSubtitle}</div>
-              <div style={{ marginTop: 18, display: 'grid', gap: 12 }}>
-                {PLATFORM_TESTIMONIALS.map((item) => (
-                  <div key={item.company} style={{ padding: 16, borderRadius: 18, border: '1px solid var(--border)', background: 'var(--overlay-xs)' }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>{item.company}</div>
-                    <div style={{ marginTop: 8, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.quote}</div>
-                  </div>
-                ))}
+            <div className="dc-card">
+              <div className="vx-card-header">
+                <h5 className="vx-card-title">{config.copy.testimonialsTitle}</h5>
+              </div>
+              <div className="vx-card-body vx-list">
+                {PLATFORM_TESTIMONIALS.map((item, idx) => {
+                  const avatarColors = ['vx-avatar-primary','vx-avatar-info','vx-avatar-success','vx-avatar-warning'];
+                  return (
+                    <div key={item.company} className="vx-list-item" style={{ alignItems: 'flex-start' }}>
+                      <div className={`vx-avatar ${avatarColors[idx % avatarColors.length]}`} style={{ fontSize: 14, fontWeight: 800 }}>
+                        {item.company.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="vx-list-title">{item.company}</div>
+                        <div className="vx-list-sub" style={{ whiteSpace: 'normal', lineHeight: 1.6 }}>{item.quote}</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
