@@ -97,9 +97,9 @@ export default function DashboardPage() {
 
       {/* ── Welcome hero (Vuexy academy pattern) ── */}
       <div className="vx-card" style={{ marginBottom: 24, overflow: 'hidden' }}>
-        <div style={{ display: 'flex', gap: 0 }}>
+        <div className="dash-academy-hero" style={{ display: 'flex', gap: 0 }}>
           {/* Left: welcome + stats */}
-          <div style={{ flex: 1, padding: '28px 28px 24px', borderRight: '1px solid var(--border)' }}>
+          <div style={{ flex: 1, padding: '28px 28px 24px', borderRight: '1px solid var(--border)', minWidth: 0 }}>
             <h5 style={{ margin: '0 0 4px', fontWeight: 400, fontSize: 15, color: 'var(--text-secondary)' }}>
               Welcome back,
             </h5>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
             </p>
 
             {/* KPI stats row — Vuexy avatar-lg pattern */}
-            <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+            <div className="dash-kpi-row" style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
               {([
                 {
                   label: 'Courses Started', value: String(completedIds.size || 0), cls: 'bg-label-primary',
@@ -140,7 +140,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right: continue path + progress ring */}
-          <div style={{ width: 280, padding: '28px 24px 24px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="dash-academy-hero-right" style={{ width: 280, padding: '28px 24px 24px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 6 }}>Continue Path</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 14 }}>{continueCourse.title}</div>
@@ -183,7 +183,7 @@ export default function DashboardPage() {
       )}
 
       {/* ── Main 2-col grid (Vuexy academy layout) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
+      <div className="dash-academy-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
 
         {/* LEFT COLUMN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

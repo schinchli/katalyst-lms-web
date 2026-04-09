@@ -1969,6 +1969,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Page content padding */
   .page-content { padding: 16px 14px 32px; }
 
+  /* Dashboard academy hero → stack vertically */
+  .dash-academy-hero { flex-direction: column !important; }
+  .dash-academy-hero > div:first-child { border-right: none !important; border-bottom: 1px solid var(--border); }
+  .dash-academy-hero-right { width: 100% !important; }
+  /* Dashboard KPI stats → 1 per row on small mobile, 3 across if room */
+  .dash-kpi-row { flex-wrap: wrap !important; gap: 20px !important; }
+  /* Dashboard main 2-col grid → single col */
+  .dash-academy-grid { grid-template-columns: 1fr !important; }
+
   /* Hero section stacks vertically */
   .dc-hero { border-radius: 12px; }
   .dc-hero .dc-grid { grid-template-columns: 1fr !important; }
