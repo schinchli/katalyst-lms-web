@@ -635,9 +635,11 @@ export default function QuizPage() {
               </div>
             </div>
 
-            {/* Ad — below Course Curriculum + What's Included */}
-            <AdBanner format="horizontal" />
-            <AdBanner format="rectangle" />
+            {/* Ads — two square units stacked in one column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <AdBanner format="square" />
+              <AdBanner format="square" />
+            </div>
 
             {/* About this course */}
             <div className="course-section">
@@ -862,9 +864,10 @@ export default function QuizPage() {
               </div>
             </div>
 
-            {/* Sidebar ad — below enroll card */}
-            <div style={{ marginTop: 16 }}>
-              <AdBanner format="rectangle" />
+            {/* Sidebar ads — two square units stacked */}
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <AdBanner format="square" />
+              <AdBanner format="square" />
             </div>
           </div>
         </div>
@@ -950,11 +953,11 @@ export default function QuizPage() {
           ))}
         </div>
 
-        {/* Ad — between results and action buttons */}
-        <AdBanner format="horizontal" />
-
-        {/* Ad — between results and action buttons */}
-        <AdBanner format="horizontal" />
+        {/* Ads — two square units stacked in one column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 4 }}>
+          <AdBanner format="square" />
+          <AdBanner format="square" />
+        </div>
 
         <div style={{ display: 'flex', gap: 12 }}>
           <button onClick={() => startQuiz()} style={{ flex: 1, height: 48, borderRadius: 10, background: 'var(--primary-light)', color: 'var(--primary-text)', fontSize: 15, fontWeight: 700, cursor: 'pointer', border: 'none' }}>Retry Quiz</button>
@@ -1078,9 +1081,10 @@ export default function QuizPage() {
               </div>
             )}
 
-            {/* Ad between CTAs and skip link */}
-            <div style={{ margin: '16px 0 8px' }}>
-              <AdBanner format="horizontal" />
+            {/* Ads — two square units stacked in one column */}
+            <div style={{ margin: '16px 0 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <AdBanner format="square" />
+              <AdBanner format="square" />
             </div>
 
             {/* Skip */}

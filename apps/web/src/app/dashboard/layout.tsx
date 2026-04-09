@@ -12,6 +12,7 @@ import {
   DEFAULT_PLATFORM_THEME,
   normalizePlatformTheme,
 } from '@/lib/platformTheme';
+import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 import { fetchUserTheme } from '@/lib/userTheme';
 import {
   applyThemePrefs,
@@ -211,6 +212,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const [showResults, setShowResults] = useState(false);
   const [isAdmin,     setIsAdmin]     = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const searchRef = useRef<HTMLDivElement>(null);
   const { isPro } = useSubscription();
 
@@ -364,6 +366,14 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
+  // System feature flags — controls nav visibility and feature availability
+  useEffect(() => {
+    fetch('/api/system-features')
+      .then((r) => r.json())
+      .then((body: { config?: unknown }) => setSystemFeatures(normalizeSystemFeatures(body.config)))
+      .catch(() => { /* use defaults */ });
+  }, []);
+
   // Close sidebar on route change (mobile)
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
@@ -432,7 +442,10 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Nav */}
         <nav className="sidebar-nav">
           <div className="nav-section-header">Main Menu</div>
-          {NAV.map((item) => {
+          {NAV.filter((item) => {
+            if (item.href === '/dashboard/leaderboard' && !systemFeatures.leaderboardEnabled) return false;
+            return true;
+          }).map((item) => {
             const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
             const Icon   = item.icon;
             return (

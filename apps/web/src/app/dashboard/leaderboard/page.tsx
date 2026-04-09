@@ -2,6 +2,7 @@
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { LeaderboardEntry } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -38,6 +39,7 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
 
 export default function LeaderboardPage() {
   useManagedQuizContentVersion();
+  const router = useRouter();
   const [period,  setPeriod]  = useState<Period>('alltime');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,9 +58,16 @@ export default function LeaderboardPage() {
     });
     fetch('/api/system-features')
       .then((response) => response.json() as Promise<{ config?: SystemFeaturesConfig }>)
-      .then((body) => setSystemFeatures(body.config ?? DEFAULT_SYSTEM_FEATURES))
+      .then((body) => {
+        const cfg = body.config ?? DEFAULT_SYSTEM_FEATURES;
+        setSystemFeatures(cfg);
+        // Redirect to dashboard if leaderboard feature flag is off
+        if (cfg.leaderboardEnabled === false) {
+          router.replace('/dashboard');
+        }
+      })
       .catch(() => setSystemFeatures(DEFAULT_SYSTEM_FEATURES));
-  }, []);
+  }, [router]);
 
   // Fetch real leaderboard data whenever period changes
   useEffect(() => {

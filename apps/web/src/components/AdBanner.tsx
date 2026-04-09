@@ -45,7 +45,7 @@ declare global {
   interface Window { adsbygoogle: Record<string, unknown>[] }
 }
 
-export type AdFormat = 'horizontal' | 'rectangle';
+export type AdFormat = 'horizontal' | 'rectangle' | 'square';
 
 interface AdBannerProps {
   format?: AdFormat;
@@ -169,6 +169,7 @@ export function AdBanner({ format = 'horizontal', className = '', hidden = false
 
   const slot      = format === 'horizontal' ? cfg.slotH : cfg.slotR;
   const minHeight = format === 'horizontal' ? 90 : 250;
+  const maxWidth  = format === 'square' ? 300 : undefined;
 
   return (
     <div className={`ad-banner-wrapper${className ? ` ${className}` : ''}`}>
@@ -260,7 +261,7 @@ export function AdBanner({ format = 'horizontal', className = '', hidden = false
       ) : (
 
         /* ── Google AdSense unit — rendered only when blocker is absent ───── */
-        <div className="ad-unit-wrapper" style={{ minHeight }}>
+        <div className="ad-unit-wrapper" style={{ minHeight, maxWidth, margin: maxWidth ? '0 auto' : undefined }}>
           <div className="ad-label">Advertisement</div>
           <ins
             ref={insRef}
@@ -269,7 +270,7 @@ export function AdBanner({ format = 'horizontal', className = '', hidden = false
             data-ad-client={cfg.pubId}
             data-ad-slot={slot}
             data-ad-format={format === 'horizontal' ? 'auto' : 'rectangle'}
-            data-full-width-responsive="true"
+            data-full-width-responsive={format === 'horizontal' ? 'true' : 'false'}
           />
         </div>
 

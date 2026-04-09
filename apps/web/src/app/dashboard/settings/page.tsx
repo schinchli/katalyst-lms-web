@@ -1712,6 +1712,22 @@ export default function SettingsPage() {
               Enable option E
             </label>
 
+            {/* ── Hidden features — feature flag log ─────────────────────── */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4, display: 'grid', gap: 12 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15 }}>Hidden Features</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Toggle features that have been temporarily hidden. Off = hidden from all users.
+              </div>
+              <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text)' }}>
+                <input
+                  type="checkbox"
+                  checked={systemFeatures.leaderboardEnabled}
+                  onChange={(event) => setSystemFeatures((prev) => ({ ...prev, leaderboardEnabled: event.target.checked }))}
+                />
+                Leaderboard — hidden 2026-04-09 (pending data quality review)
+              </label>
+            </div>
+
             {/* ── Maintenance mode ───────────────────────────────────────── */}
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4, display: 'grid', gap: 12 }}>
               <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15 }}>Maintenance Mode</div>

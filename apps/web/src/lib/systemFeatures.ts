@@ -20,6 +20,8 @@ export interface SystemFeaturesConfig {
   bannerAdsEnabled: boolean;
   interstitialAdsEnabled: boolean;
   rewardedAdsEnabled: boolean;
+  // Feature flags — hidden features (toggle to re-enable)
+  leaderboardEnabled: boolean;
 }
 
 export const DEFAULT_SYSTEM_FEATURES: SystemFeaturesConfig = {
@@ -39,6 +41,8 @@ export const DEFAULT_SYSTEM_FEATURES: SystemFeaturesConfig = {
   bannerAdsEnabled: true,
   interstitialAdsEnabled: true,
   rewardedAdsEnabled: true,
+  // Hidden features — set to false to hide, toggle in Admin → Settings → Feature Flags
+  leaderboardEnabled: false,
 };
 
 export function normalizeSystemFeatures(value: unknown): SystemFeaturesConfig {
@@ -61,6 +65,7 @@ export function normalizeSystemFeatures(value: unknown): SystemFeaturesConfig {
     bannerAdsEnabled: typeof raw.bannerAdsEnabled === 'boolean' ? raw.bannerAdsEnabled : DEFAULT_SYSTEM_FEATURES.bannerAdsEnabled,
     interstitialAdsEnabled: typeof raw.interstitialAdsEnabled === 'boolean' ? raw.interstitialAdsEnabled : DEFAULT_SYSTEM_FEATURES.interstitialAdsEnabled,
     rewardedAdsEnabled: typeof raw.rewardedAdsEnabled === 'boolean' ? raw.rewardedAdsEnabled : DEFAULT_SYSTEM_FEATURES.rewardedAdsEnabled,
+    leaderboardEnabled: typeof raw.leaderboardEnabled === 'boolean' ? raw.leaderboardEnabled : DEFAULT_SYSTEM_FEATURES.leaderboardEnabled,
   };
 }
 
