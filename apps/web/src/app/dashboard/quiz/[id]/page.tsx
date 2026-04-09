@@ -599,10 +599,7 @@ export default function QuizPage() {
         <div className="course-lp-body">
           {/* Main column */}
           <div className="course-main">
-            {/* Ad — before curriculum */}
-            <AdBanner format="horizontal" />
-
-            {/* Curriculum */}
+            {/* Curriculum — questions hidden, only heading + count shown */}
             <div className="course-section">
               <div className="course-section-hd">
                 Course Curriculum
@@ -610,16 +607,9 @@ export default function QuizPage() {
                   {questionPool.length} questions
                 </span>
               </div>
-              <div className="course-section-bd">
-                {questionPool.map((q, i) => (
-                  <div key={q.id} className="curr-item">
-                    <div className="curr-num" style={{ background: accent + '15', color: accent }}>{i + 1}</div>
-                    <div className="curr-text">
-                      {q.text.length > 100 ? q.text.slice(0, 100) + '…' : q.text}
-                    </div>
-                    <div className="curr-time">30s</div>
-                  </div>
-                ))}
+              <div style={{ padding: '14px 24px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                This quiz contains <strong style={{ color: 'var(--text)' }}>{questionPool.length} practice questions</strong> covering{' '}
+                {quiz.examCode ?? quiz.title}. Questions are randomised each attempt.
               </div>
             </div>
 
@@ -645,7 +635,8 @@ export default function QuizPage() {
               </div>
             </div>
 
-            {/* Ad — after What's Included */}
+            {/* Ad — below Course Curriculum + What's Included */}
+            <AdBanner format="horizontal" />
             <AdBanner format="rectangle" />
 
             {/* About this course */}
@@ -869,6 +860,11 @@ export default function QuizPage() {
               <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
                 {quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1)} Level
               </div>
+            </div>
+
+            {/* Sidebar ad — below enroll card */}
+            <div style={{ marginTop: 16 }}>
+              <AdBanner format="rectangle" />
             </div>
           </div>
         </div>

@@ -546,11 +546,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .course-rating-stars { color: #FF9F43; font-size: 14px; }
 .course-hero-icon  { display: flex; align-items: center; justify-content: center; font-size: 90px; }
 
-.course-lp-body    { display: grid; grid-template-columns: 1fr 300px; gap: 24px; padding: 0 32px 40px; }
+.course-lp-body    { display: grid; grid-template-columns: 1fr 300px; gap: 24px; padding: 0 32px 40px; align-items: start; }
 .course-main       { }
-.course-sidebar    { }
+.course-sidebar    { display: flex; flex-direction: column; gap: 16px; }
 
-.course-section    { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+.course-section    { background: var(--surface); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 25px 0 rgba(34,41,47,0.10); margin-bottom: 20px; }
 .course-section-hd { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 16px; font-weight: 700; color: var(--text); }
 .course-section-bd { padding: 8px 0; }
 
@@ -563,7 +563,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .feature-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13px; color: var(--text-secondary); }
 .feature-check { color: var(--success); font-size: 14px; }
 
-.course-enroll-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); padding: 24px; position: sticky; top: 20px; }
+.course-enroll-card { background: var(--surface); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 25px 0 rgba(34,41,47,0.10); padding: 24px; position: sticky; top: 20px; }
 .course-enroll-preview { height: 140px; border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; font-size: 60px; }
 .course-meta-list { margin-bottom: 20px; }
 .course-meta-row  { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
