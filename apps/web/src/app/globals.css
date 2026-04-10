@@ -914,6 +914,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   justify-content: center;
   overflow: hidden;
   padding: 4px 0;
+  /* Contain layout so ad loading cannot shift surrounding content */
+  contain: layout;
 }
 .ad-label {
   font-size: 10px;
@@ -924,7 +926,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 4px 0 2px;
   opacity: 0.6;
 }
-.adsbygoogle { width: 100%; }
+.adsbygoogle { width: 100%; display: block; }
+
+/* CLS prevention — reserves exact ad dimensions during SSR / pre-detection.
+   Matches the minHeight values in AdBanner (90px horizontal, 250px rectangle/square). */
+.ad-unit-placeholder {
+  width: 100%;
+  border-radius: var(--radius);
+  background: transparent;
+}
 
 /* Adblocker notice */
 .adblock-notice {

@@ -614,6 +614,11 @@ export default function QuizPage() {
           </div>
         </div>
 
+        {/* Leaderboard ad — full-width row between hero and body grid */}
+        <div style={{ padding: '0 32px', margin: '16px 0 4px' }}>
+          <AdBanner format="horizontal" />
+        </div>
+
         {/* Body */}
         <div className="course-lp-body">
           {/* Main column */}
@@ -652,12 +657,6 @@ export default function QuizPage() {
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Ads — two square units stacked in one column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <AdBanner format="square" />
-              <AdBanner format="square" />
             </div>
 
             {/* About this course */}
@@ -965,9 +964,8 @@ export default function QuizPage() {
               </div>
             </div>
 
-            {/* Sidebar ads — two square units stacked */}
-            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <AdBanner format="square" />
+            {/* Sidebar ad — single square */}
+            <div style={{ marginTop: 16 }}>
               <AdBanner format="square" />
             </div>
           </div>
@@ -1040,24 +1038,40 @@ export default function QuizPage() {
           <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{quiz.title} · {quizMode === 'fun_and_learn' ? `Questions explored: ${activeQuestions.length}` : (passed ? 'You passed!' : '70% needed to pass')}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
+        <div className="dash-stats-grid" style={{ marginBottom: 24 }}>
           {[
-            { label: 'Correct', val: score,                                                color: 'var(--success)' },
-            { label: 'Wrong',   val: Object.keys(answers).length - score,                  color: 'var(--error)' },
-            { label: 'Points',  val: pointScore,                                            color: accent },
-            { label: 'Skipped', val: activeQuestions.length - Object.keys(answers).length,  color: 'var(--text-secondary)' },
+            {
+              label: 'Correct', val: score, color: 'var(--success)', iconBg: 'rgba(40,199,111,0.12)',
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+            },
+            {
+              label: 'Wrong', val: Object.keys(answers).length - score, color: 'var(--error)', iconBg: 'rgba(255,76,81,0.12)',
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+            },
+            {
+              label: 'Points', val: pointScore, color: accent, iconBg: 'rgba(115,103,240,0.12)',
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+            },
+            {
+              label: 'Skipped', val: activeQuestions.length - Object.keys(answers).length, color: 'var(--text-secondary)', iconBg: 'rgba(168,170,174,0.12)',
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>,
+            },
           ].map((s) => (
-            <div key={s.label} style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', padding: '16px', textAlign: 'center', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.val}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{s.label}</div>
+            <div key={s.label} className="dash-stat-card">
+              <div className="dash-stat-icon" style={{ background: s.iconBg, color: s.color }}>
+                {s.icon}
+              </div>
+              <div>
+                <div className="dash-stat-value" style={{ color: s.color }}>{s.val}</div>
+                <div className="dash-stat-label">{s.label}</div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Ads — two square units stacked in one column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 4 }}>
-          <AdBanner format="square" />
-          <AdBanner format="square" />
+        {/* Results ad — horizontal leaderboard spans full width between stats and review */}
+        <div style={{ margin: '8px 0 16px' }}>
+          <AdBanner format="horizontal" />
         </div>
 
         {/* ── Leave a Review ──────────────────────────────────────── */}
@@ -1198,8 +1212,13 @@ export default function QuizPage() {
           </span>
         </div>
 
+        {/* Upsell ad — horizontal banner in its own row above the card, not inside the CTA card */}
+        <div style={{ padding: '0 16px', marginBottom: 16 }}>
+          <AdBanner format="horizontal" />
+        </div>
+
         {/* Main upsell card */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px 32px' }}>
           <div className="upsell-card">
 
             {/* Score ring + checkpoint badge */}
@@ -1288,12 +1307,6 @@ export default function QuizPage() {
                 {paymentError}
               </div>
             )}
-
-            {/* Ads — two square units stacked in one column */}
-            <div style={{ margin: '16px 0 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <AdBanner format="square" />
-              <AdBanner format="square" />
-            </div>
 
             {/* Skip */}
             <button

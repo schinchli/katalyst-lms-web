@@ -9,6 +9,7 @@ import { DEFAULT_APP_CONTENT, normalizeAppContent, type AppContentConfig } from 
 import { applyQuizCatalogOverrides, normalizeQuizCatalogOverrides, type QuizCatalogOverrides } from '@/lib/quizCatalog';
 import { PLATFORM_THEME_PRESETS, applyPlatformThemePreset } from '@/lib/platformTheme';
 import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { getAdSenseConfig, ADSENSE_STORAGE_KEY, DEFAULT_ADSENSE, type AdSenseConfig } from '@/components/AdBanner';
 import {
   applyManagedQuizContent,
   normalizeManagedQuizContent,
@@ -157,7 +158,9 @@ export default function SettingsPage() {
   const [config, setConfig] = useState<PlatformExperienceConfig>(DEFAULT_PLATFORM_EXPERIENCE);
   const [quizOverrides, setQuizOverrides] = useState<QuizCatalogOverrides>({});
   const [appContent, setAppContent] = useState<AppContentConfig>(DEFAULT_APP_CONTENT);
-  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  const [systemFeatures,  setSystemFeatures]  = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
+  const [adsenseConfig,   setAdsenseConfig]   = useState<AdSenseConfig>(DEFAULT_ADSENSE);
+  const [adsenseSaved,    setAdsenseSaved]     = useState(false);
   const [managedQuizContent, setManagedQuizContent] = useState<ManagedQuizContent>(EMPTY_MANAGED_CONTENT);
   const [selectedManagedQuizId, setSelectedManagedQuizId] = useState('');
   const [importSourceQuizId, setImportSourceQuizId] = useState('');
@@ -223,6 +226,8 @@ export default function SettingsPage() {
           return;
         }
         setAuthorized(true);
+        // Load AdSense config from localStorage (admin override) or env vars
+        setAdsenseConfig(getAdSenseConfig());
 
         const [configRes, quizCatalogRes, appContentRes, systemFeaturesRes, quizContentRes, categoriesRes, contestsRes, coinPacksRes, dailyAnalyticsRes] = await Promise.all([
           fetch('/api/admin/mobile-config', {
@@ -1799,6 +1804,104 @@ export default function SettingsPage() {
                   />
                 </label>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Google AdSense Config ────────────────────────────────────────── */}
+        <div className="dc-card" style={{ padding: 24 }}>
+          <h2 className="dc-section-title" style={{ fontSize: 28 }}>Google AdSense</h2>
+          <p className="dc-section-subtitle">
+            Configure your AdSense publisher ID and slot IDs. Setting{' '}
+            <code style={{ fontFamily: 'monospace', background: 'var(--border)', padding: '1px 5px', borderRadius: 3, fontSize: 12 }}>NEXT_PUBLIC_ADSENSE_PUB_ID</code>,{' '}
+            <code style={{ fontFamily: 'monospace', background: 'var(--border)', padding: '1px 5px', borderRadius: 3, fontSize: 12 }}>NEXT_PUBLIC_ADSENSE_SLOT_H</code>, and{' '}
+            <code style={{ fontFamily: 'monospace', background: 'var(--border)', padding: '1px 5px', borderRadius: 3, fontSize: 12 }}>NEXT_PUBLIC_ADSENSE_SLOT_R</code>{' '}
+            in Vercel environment variables enables ads for all users globally.
+            The fields below store a local browser override (useful for testing on this device only).
+          </p>
+
+          <div style={{ display: 'grid', gap: 14, marginTop: 20 }}>
+            {/* Effective config preview */}
+            <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--bg)', border: '1px solid var(--border)', fontSize: 12 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 8 }}>
+                Active config (env vars → local override)
+              </div>
+              <div style={{ display: 'grid', gap: 4, fontFamily: 'monospace', color: 'var(--text)' }}>
+                <div>
+                  <span style={{ color: 'var(--text-secondary)' }}>pubId: </span>
+                  <span style={{ color: adsenseConfig.pubId === DEFAULT_ADSENSE.pubId ? 'var(--error)' : 'var(--success)' }}>
+                    {adsenseConfig.pubId}
+                  </span>
+                  {adsenseConfig.pubId === DEFAULT_ADSENSE.pubId && (
+                    <span style={{ color: 'var(--error)', marginLeft: 8, fontFamily: 'inherit', fontSize: 11 }}>⚠ placeholder — ads won&apos;t load</span>
+                  )}
+                </div>
+                <div><span style={{ color: 'var(--text-secondary)' }}>slotH: </span>{adsenseConfig.slotH}</div>
+                <div><span style={{ color: 'var(--text-secondary)' }}>slotR: </span>{adsenseConfig.slotR}</div>
+              </div>
+            </div>
+
+            {/* Publisher ID */}
+            <label>
+              <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Publisher ID (ca-pub-…)</div>
+              <input
+                className="admin-field-input"
+                value={adsenseConfig.pubId}
+                onChange={(e) => setAdsenseConfig((p) => ({ ...p, pubId: e.target.value }))}
+                placeholder="ca-pub-XXXXXXXXXXXXXXXXX"
+                spellCheck={false}
+              />
+            </label>
+
+            {/* Slot IDs */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <label>
+                <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Horizontal slot ID</div>
+                <input
+                  className="admin-field-input"
+                  value={adsenseConfig.slotH}
+                  onChange={(e) => setAdsenseConfig((p) => ({ ...p, slotH: e.target.value }))}
+                  placeholder="1234567890"
+                  spellCheck={false}
+                />
+              </label>
+              <label>
+                <div style={{ marginBottom: 6, color: 'var(--text-secondary)', fontSize: 13 }}>Rectangle/square slot ID</div>
+                <input
+                  className="admin-field-input"
+                  value={adsenseConfig.slotR}
+                  onChange={(e) => setAdsenseConfig((p) => ({ ...p, slotR: e.target.value }))}
+                  placeholder="0987654321"
+                  spellCheck={false}
+                />
+              </label>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <button
+                style={{ height: 38, padding: '0 20px', borderRadius: 8, background: 'var(--primary)', color: '#fff', fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                onClick={() => {
+                  localStorage.setItem(ADSENSE_STORAGE_KEY, JSON.stringify(adsenseConfig));
+                  setAdsenseSaved(true);
+                  setTimeout(() => setAdsenseSaved(false), 2500);
+                }}
+              >
+                Save override (this browser)
+              </button>
+              <button
+                style={{ height: 38, padding: '0 20px', borderRadius: 8, background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, border: '1.5px solid var(--border)', cursor: 'pointer', fontFamily: 'inherit' }}
+                onClick={() => {
+                  localStorage.removeItem(ADSENSE_STORAGE_KEY);
+                  setAdsenseConfig(getAdSenseConfig());
+                  setAdsenseSaved(false);
+                }}
+              >
+                Clear override
+              </button>
+              {adsenseSaved && (
+                <span style={{ fontSize: 13, color: 'var(--success)', fontWeight: 600 }}>✓ Saved locally — set env vars in Vercel for all users</span>
+              )}
             </div>
           </div>
         </div>

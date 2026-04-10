@@ -97,10 +97,22 @@ export default function EcommerceDashboardPage() {
   }
 
   const statCards = [
-    { label: 'Total Revenue',   value: stats ? formatCurrency(stats.totalRevenue) : '...', icon: '💰', color: 'var(--success)' },
-    { label: 'Total Orders',    value: stats ? String(stats.totalOrders) : '...', icon: '📦', color: 'var(--primary)' },
-    { label: 'Total Customers', value: stats ? String(stats.totalCustomers) : '...', icon: '👥', color: 'var(--info)' },
-    { label: 'Pro Subscribers', value: stats ? String(stats.proSubscribers) : '...', icon: '⭐', color: 'var(--warning)' },
+    {
+      label: 'Total Revenue', value: stats ? formatCurrency(stats.totalRevenue) : '—', color: 'var(--success)', iconBg: 'rgba(40,199,111,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+    },
+    {
+      label: 'Total Orders', value: stats ? String(stats.totalOrders) : '—', color: 'var(--primary)', iconBg: 'rgba(115,103,240,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>,
+    },
+    {
+      label: 'Total Customers', value: stats ? String(stats.totalCustomers) : '—', color: 'var(--info)', iconBg: 'rgba(0,207,232,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+    },
+    {
+      label: 'Pro Subscribers', value: stats ? String(stats.proSubscribers) : '—', color: 'var(--warning)', iconBg: 'rgba(255,159,67,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+    },
   ];
 
   return (
@@ -120,21 +132,15 @@ export default function EcommerceDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+      <div className="dash-stats-grid" style={{ marginBottom: 24 }}>
         {statCards.map((s) => (
-          <div key={s.label} className="vx-card" style={{ padding: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 42, height: 42, borderRadius: 8,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 20, background: 'var(--primary-light)',
-              }}>
-                {s.icon}
-              </div>
-              <div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{s.label}</div>
-              </div>
+          <div key={s.label} className="dash-stat-card">
+            <div className="dash-stat-icon" style={{ background: s.iconBg, color: s.color }}>
+              {s.icon}
+            </div>
+            <div>
+              <div className="dash-stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="dash-stat-label">{s.label}</div>
             </div>
           </div>
         ))}
