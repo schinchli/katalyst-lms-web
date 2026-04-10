@@ -614,11 +614,6 @@ export default function QuizPage() {
           </div>
         </div>
 
-        {/* Leaderboard ad — full-width row between hero and body grid */}
-        <div style={{ padding: '0 32px', margin: '16px 0 4px' }}>
-          <AdBanner format="horizontal" />
-        </div>
-
         {/* Body */}
         <div className="course-lp-body">
           {/* Main column */}
@@ -739,6 +734,8 @@ export default function QuizPage() {
                 </div>
               </div>
             )}
+            {/* Bottom-of-content ad — after all sections, before sidebar */}
+            <AdBanner format="horizontal" />
           </div>
 
           {/* Sidebar */}
