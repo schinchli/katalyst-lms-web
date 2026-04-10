@@ -540,9 +540,8 @@ test.describe('Leaderboard UI', () => {
     await loginAndGo(page, '/dashboard/leaderboard');
     await page.getByText('Monthly', { exact: true }).click();
     await page.waitForTimeout(1500);
-    const body = await page.textContent('body');
-    expect(body).toBeTruthy();
-    expect(body).not.toMatch(/500|internal server error/i);
+    // Verify leaderboard heading still visible (page didn't crash/redirect)
+    await expect(page.locator('h1').filter({ hasText: 'Leaderboard' })).toBeVisible();
   });
 
   test('clicking Today tab does not crash page', async ({ page }) => {
