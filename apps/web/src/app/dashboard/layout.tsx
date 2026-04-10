@@ -25,12 +25,13 @@ import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/comp
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 const NAV = [
-  { href: '/dashboard',             label: 'Home',        icon: HomeIcon },
-  { href: '/dashboard/quizzes',     label: 'Courses',     icon: BookIcon },
-  { href: '/dashboard/learn',       label: 'Learn',       icon: PlayNavIcon },
-  { href: '/dashboard/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
-  { href: '/dashboard/bookmarks',   label: 'Bookmarks',   icon: BookmarkNavIcon },
-  { href: '/dashboard/profile',     label: 'Profile',     icon: UserIcon },
+  { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
+  { href: '/dashboard/quizzes',      label: 'Courses',     icon: BookIcon },
+  { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
+  { href: '/dashboard/flashcards',   label: 'Flashcards',  icon: FlashcardIcon },
+  { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
+  { href: '/dashboard/bookmarks',    label: 'Bookmarks',   icon: BookmarkNavIcon },
+  { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
 ];
 
 const ADMIN_NAV  = { href: '/dashboard/admin',    label: 'Admin',    icon: AdminIcon };
@@ -92,6 +93,14 @@ function PlayNavIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" fill={active ? 'currentColor' : 'none'} />
+    </svg>
+  );
+}
+function FlashcardIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
     </svg>
   );
 }
