@@ -480,9 +480,9 @@ test.describe('Quiz Submit API (auth required)', () => {
 
   test('POST /api/quiz-submit score appears in leaderboard', async ({ request }) => {
     test.skip(!userToken, 'Could not obtain user token');
-    // Give DB a moment to write
-    await new Promise((r) => setTimeout(r, 1500));
-    const res  = await request.get(`${BASE}/api/leaderboard?period=alltime`);
+    // Give DB a moment to write, then bypass CDN cache with timestamp param
+    await new Promise((r) => setTimeout(r, 2000));
+    const res  = await request.get(`${BASE}/api/leaderboard?period=alltime&_t=${Date.now()}`);
     const body = await res.json() as { ok: boolean; entries: unknown[] };
     expect(body.ok).toBe(true);
     expect(body.entries.length).toBeGreaterThan(0);
