@@ -440,7 +440,7 @@ test.describe('Quiz Submit API (auth required)', () => {
   test.beforeAll(async ({ playwright }) => {
     // Exchange email/password for a Supabase JWT via the REST API
     const supabaseUrl  = 'https://swydybtzyjxftzfzqqnv.supabase.co';
-    const supabaseAnon = process.env.SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eWR5YnR6eWp4ZnR6ZnpxcW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzk2MzcsImV4cCI6MjA1NTY1NTYzN30.CqKXIJJc_NbZQ2tROEDVi0bwJEDNZq8b1JXvMaEivT4';
+    const supabaseAnon = process.env.SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eWR5YnR6eWp4ZnR6ZnpxcW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MDczNzYsImV4cCI6MjA4Nzk4MzM3Nn0.kbhZzrXzl4u7dn754VhbY43PFpVvMoG4kJRX-8lxKV4';
     const authRes = await (await playwright.request.newContext()).post(
       `${supabaseUrl}/auth/v1/token?grant_type=password`,
       {

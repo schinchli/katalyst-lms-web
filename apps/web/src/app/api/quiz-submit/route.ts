@@ -141,8 +141,6 @@ export async function POST(req: NextRequest) {
   const completedAt    = new Date().toISOString();
 
   // Write result to Supabase using service role (bypasses RLS)
-  // NOTE: `mode` column requires a DB migration if not present:
-  //   ALTER TABLE quiz_results ADD COLUMN IF NOT EXISTS mode text;
   const db = adminClient();
   const { error: writeError } = await db.from('quiz_results').upsert(
     {
@@ -153,7 +151,6 @@ export async function POST(req: NextRequest) {
       time_taken:      timeTaken,
       answers,
       completed_at:    completedAt,
-      mode:            quiz.mode ?? null,
     },
     { onConflict: 'user_id,quiz_id' },
   );
