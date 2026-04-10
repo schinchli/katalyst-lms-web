@@ -81,9 +81,45 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Failed to fetch customers' }, { status: 500 });
     }
 
+    const customers = data ?? [];
+
+    // Fetch purchase counts and unlocked course counts for each customer
+    const userIds = customers.map((c) => c.id as string).filter(Boolean);
+    const purchaseCountMap = new Map<string, number>();
+    const unlockedCountMap = new Map<string, number>();
+
+    if (userIds.length > 0) {
+      const { data: purchaseRows } = await db
+        .from('purchases')
+        .select('user_id')
+        .in('user_id', userIds)
+        .eq('status', 'completed');
+
+      for (const row of purchaseRows ?? []) {
+        const uid = row.user_id as string;
+        purchaseCountMap.set(uid, (purchaseCountMap.get(uid) ?? 0) + 1);
+      }
+
+      const { data: unlockedRows } = await db
+        .from('unlocked_courses')
+        .select('user_id')
+        .in('user_id', userIds);
+
+      for (const row of unlockedRows ?? []) {
+        const uid = row.user_id as string;
+        unlockedCountMap.set(uid, (unlockedCountMap.get(uid) ?? 0) + 1);
+      }
+    }
+
+    const enriched = customers.map((c) => ({
+      ...c,
+      purchase_count:  purchaseCountMap.get(c.id as string) ?? 0,
+      unlocked_count:  unlockedCountMap.get(c.id as string) ?? 0,
+    }));
+
     return NextResponse.json({
       ok: true,
-      customers: data ?? [],
+      customers: enriched,
       total: count ?? 0,
     });
   } catch (err: unknown) {

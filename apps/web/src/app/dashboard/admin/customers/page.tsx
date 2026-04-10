@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Admin Customer List — Katalyst
- * Paginated customer table with search.
+ * Paginated table with search, purchase counts, and Grant Access modal.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -19,6 +19,14 @@ interface Customer {
   created_at: string;
   coins: number | null;
   streak: number | null;
+  purchase_count: number;
+  unlocked_count: number;
+}
+
+interface Quiz {
+  id: string;
+  title: string;
+  _source: string;
 }
 
 type PageStatus = 'loading' | 'authorized' | 'unauthorized' | 'error';
@@ -49,6 +57,14 @@ export default function CustomersPage() {
   const [search, setSearch]         = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const LIMIT = 20;
+
+  // Grant Access modal state
+  const [grantTarget, setGrantTarget]     = useState<Customer | null>(null);
+  const [quizList, setQuizList]           = useState<Quiz[]>([]);
+  const [selectedQuizId, setSelectedQuizId] = useState('');
+  const [grantReason, setGrantReason]     = useState('');
+  const [grantLoading, setGrantLoading]   = useState(false);
+  const [grantMsg, setGrantMsg]           = useState('');
 
   useEffect(() => {
     (async () => {
@@ -98,6 +114,55 @@ export default function CustomersPage() {
     }, 300);
   }
 
+  async function openGrantModal(customer: Customer) {
+    setGrantTarget(customer);
+    setSelectedQuizId('');
+    setGrantReason('');
+    setGrantMsg('');
+    // Fetch quiz list if not already loaded
+    if (quizList.length === 0) {
+      const res = await fetch('/api/admin/quiz-builder', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const body = await res.json() as { ok: boolean; quizzes: Quiz[] };
+        if (body.ok) setQuizList(body.quizzes);
+      }
+    }
+  }
+
+  async function handleGrantAccess() {
+    if (!grantTarget || !selectedQuizId) return;
+    setGrantLoading(true);
+    setGrantMsg('');
+    try {
+      const selectedQuiz = quizList.find((q) => q.id === selectedQuizId);
+      const res = await fetch('/api/admin/grant-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId:    grantTarget.id,
+          quizId:    selectedQuizId,
+          quizTitle: selectedQuiz?.title ?? selectedQuizId,
+          reason:    grantReason || 'Admin grant',
+        }),
+      });
+      const body = await res.json() as { ok: boolean; error?: string };
+      if (body.ok) {
+        setGrantMsg('✓ Access granted successfully');
+        fetchCustomers(); // refresh counts
+      } else {
+        setGrantMsg(`Error: ${body.error ?? 'Unknown error'}`);
+      }
+    } catch {
+      setGrantMsg('Error: Request failed');
+    }
+    setGrantLoading(false);
+  }
+
   if (pageStatus === 'loading') return <LoadingSpinner label="Verifying admin access..." />;
   if (pageStatus !== 'authorized') {
     return (
@@ -140,7 +205,7 @@ export default function CustomersPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Customer', 'Email', 'Plan', 'Coins', 'Streak', 'Joined'].map((h) => (
+                {['Customer', 'Email', 'Plan', 'Purchases', 'Unlocked', 'Coins', 'Streak', 'Joined', 'Actions'].map((h) => (
                   <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5 }}>{h}</th>
                 ))}
               </tr>
@@ -148,7 +213,7 @@ export default function CustomersPage() {
             <tbody>
               {customers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  <td colSpan={9} style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
                     No customers found.
                   </td>
                 </tr>
@@ -161,7 +226,7 @@ export default function CustomersPage() {
                           width: 34, height: 34, borderRadius: '50%',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 14, fontWeight: 700, color: '#fff',
-                          background: avatarColor(c.id),
+                          background: avatarColor(c.id), flexShrink: 0,
                         }}>
                           {avatarInitial(c.name)}
                         </div>
@@ -176,11 +241,36 @@ export default function CustomersPage() {
                         <span className="vx-badge vx-badge-secondary">Free</span>
                       )}
                     </td>
+                    <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--text)' }}>
+                      {c.purchase_count > 0 ? (
+                        <span
+                          style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline' }}
+                          onClick={() => router.push(`/dashboard/admin/orders?user=${c.id}`)}
+                        >
+                          {c.purchase_count}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-secondary)' }}>0</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--info)' }}>{c.unlocked_count}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--warning)' }}>{c.coins ?? 0}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--error)' }}>
                       {c.streak ?? 0} 🔥
                     </td>
                     <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{formatDate(c.created_at)}</td>
+                    <td style={{ padding: '10px 14px' }}>
+                      <button
+                        onClick={() => openGrantModal(c)}
+                        style={{
+                          padding: '4px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                          cursor: 'pointer', border: 'none', background: 'var(--primary)',
+                          color: '#fff', fontFamily: 'inherit', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Grant Access
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -221,6 +311,94 @@ export default function CustomersPage() {
           </div>
         </div>
       </div>
+
+      {/* Grant Access Modal */}
+      {grantTarget && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: 16,
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setGrantTarget(null); }}
+        >
+          <div className="vx-card" style={{ width: '100%', maxWidth: 460, padding: 24 }}>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Grant Course Access</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
+              Granting access to <strong>{grantTarget.name ?? grantTarget.email}</strong> without payment.
+              This will appear in Orders and the user's unlocked courses.
+            </div>
+
+            {/* Quiz selector */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                Select Quiz / Course
+              </label>
+              <select
+                value={selectedQuizId}
+                onChange={(e) => setSelectedQuizId(e.target.value)}
+                className="admin-field-input"
+                style={{ width: '100%' }}
+              >
+                <option value="">— Choose a quiz —</option>
+                {quizList.map((q) => (
+                  <option key={q.id} value={q.id}>
+                    {q.title} {q._source === 'managed' ? '(managed)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Reason */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                Reason (optional)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Scholarship, demo access, refund comp..."
+                value={grantReason}
+                onChange={(e) => setGrantReason(e.target.value)}
+                className="admin-field-input"
+                style={{ width: '100%' }}
+                maxLength={500}
+              />
+            </div>
+
+            {/* Feedback */}
+            {grantMsg && (
+              <div style={{
+                padding: '8px 12px', borderRadius: 6, marginBottom: 14, fontSize: 13, fontWeight: 600,
+                background: grantMsg.startsWith('✓') ? 'var(--success-light, #d4edda)' : 'var(--error-light, #f8d7da)',
+                color: grantMsg.startsWith('✓') ? 'var(--success)' : 'var(--error)',
+              }}>
+                {grantMsg}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setGrantTarget(null)}
+                style={{
+                  padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                  cursor: 'pointer', border: '1.5px solid var(--border)', background: 'transparent',
+                  color: 'var(--text-secondary)', fontFamily: 'inherit',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGrantAccess}
+                disabled={!selectedQuizId || grantLoading}
+                className="btn-primary"
+                style={{ padding: '8px 20px', fontSize: 13, opacity: (!selectedQuizId || grantLoading) ? 0.6 : 1 }}
+              >
+                {grantLoading ? 'Granting…' : 'Grant Access'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
