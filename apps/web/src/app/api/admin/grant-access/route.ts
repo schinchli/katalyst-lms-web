@@ -73,14 +73,29 @@ export async function POST(req: NextRequest) {
   const { userId, quizId, quizTitle, reason } = parsed.data;
   const db = serviceClient();
 
-  // Verify the target user exists
-  const { data: targetUser, error: userErr } = await db
+  // Verify the target user exists — try user_profiles first, fall back to auth.users
+  let userName = '';
+  let userEmail = '';
+
+  const { data: profile } = await db
     .from('user_profiles')
-    .select('id, name, email')
+    .select('id, name')
     .eq('id', userId)
     .maybeSingle();
 
-  if (userErr || !targetUser) {
+  if (profile) {
+    userName  = (profile.name as string) ?? '';
+  } else {
+    // Fallback: look up from auth.users admin API
+    const { data: authUser, error: authErr } = await db.auth.admin.getUserById(userId);
+    if (authErr || !authUser?.user) {
+      return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });
+    }
+    userName  = (authUser.user.user_metadata?.name as string) ?? '';
+    userEmail = authUser.user.email ?? '';
+  }
+
+  if (!profile && !userName && !userEmail) {
     return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });
   }
 
@@ -110,8 +125,8 @@ export async function POST(req: NextRequest) {
       status:       'completed',
       purchase_type:'course',
       plan:         null,
-      user_name:    (targetUser.name as string) ?? '',
-      user_email:   (targetUser.email as string) ?? '',
+      user_name:    userName,
+      user_email:   userEmail,
       metadata:     {
         granted_by:  admin.id,
         admin_email: admin.email,
@@ -139,12 +154,12 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      ok:          true,
+      ok:        true,
       userId,
       quizId,
-      userName:    (targetUser.name as string) ?? '',
-      userEmail:   (targetUser.email as string) ?? '',
-      grantedAt:   now,
+      userName,
+      userEmail,
+      grantedAt: now,
     });
 
   } catch (err: unknown) {

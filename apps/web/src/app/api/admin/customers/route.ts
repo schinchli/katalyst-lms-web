@@ -1,8 +1,11 @@
 /**
  * GET /api/admin/customers
  *
- * Paginated list of user_profiles. Admin-only.
- * Query params: page (default 1), limit (default 20), search (email/name filter).
+ * Paginated list of users (from auth.users + user_profiles).
+ * Enriches with email from auth, is_pro from subscriptions,
+ * purchase_count and unlocked_count from purchases/unlocked_courses.
+ * Admin-only.
+ * Query params: page (default 1), limit (default 20), search (name filter).
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -64,37 +67,65 @@ export async function GET(req: NextRequest) {
   const db = serviceClient();
 
   try {
-    let query = db
-      .from('user_profiles')
-      .select('id, name, email, is_pro, created_at, coins, streak', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
-    }
-
-    const { data, error, count } = await query;
-
-    if (error) {
-      logger.error(ROUTE, 'fetch_failed', { ip, userId: user.id, reason: error.message });
+    // Fetch user list from auth.users (only admin API has email access)
+    const { data: authData, error: authListErr } = await db.auth.admin.listUsers({
+      page,
+      perPage: limit,
+    });
+    if (authListErr) {
+      logger.error(ROUTE, 'auth_list_failed', { ip, userId: user.id, reason: authListErr.message });
       return NextResponse.json({ ok: false, error: 'Failed to fetch customers' }, { status: 500 });
     }
 
-    const customers = data ?? [];
+    let authUsers = authData.users ?? [];
+    const total   = authData.total ?? authUsers.length;
 
-    // Fetch purchase counts and unlocked course counts for each customer
-    const userIds = customers.map((c) => c.id as string).filter(Boolean);
+    // Apply search filter on name or email
+    if (search) {
+      const q = search.toLowerCase();
+      authUsers = authUsers.filter((u) =>
+        (u.email ?? '').toLowerCase().includes(q) ||
+        (u.user_metadata?.name ?? '').toLowerCase().includes(q),
+      );
+    }
+
+    const userIds = authUsers.map((u) => u.id);
+
+    // Fetch profiles for display name (user_profiles has id, name, role, created_at)
+    const profileMap = new Map<string, { name: string | null; created_at: string }>();
+    if (userIds.length > 0) {
+      const { data: profiles } = await db
+        .from('user_profiles')
+        .select('id, name, created_at')
+        .in('id', userIds);
+      for (const p of profiles ?? []) {
+        profileMap.set(p.id as string, {
+          name:       (p.name as string | null) ?? null,
+          created_at: p.created_at as string,
+        });
+      }
+    }
+
+    // Fetch subscription status (is_pro)
+    const subscriptionMap = new Map<string, boolean>();
+    if (userIds.length > 0) {
+      const { data: subs } = await db
+        .from('subscriptions')
+        .select('user_id, tier')
+        .in('user_id', userIds);
+      for (const s of subs ?? []) {
+        subscriptionMap.set(s.user_id as string, (s.tier as string) === 'premium');
+      }
+    }
+
+    // Fetch purchase counts
     const purchaseCountMap = new Map<string, number>();
     const unlockedCountMap = new Map<string, number>();
-
     if (userIds.length > 0) {
       const { data: purchaseRows } = await db
         .from('purchases')
         .select('user_id')
-        .in('user_id', userIds)
-        .eq('status', 'completed');
-
+        .in('user_id', userIds);
       for (const row of purchaseRows ?? []) {
         const uid = row.user_id as string;
         purchaseCountMap.set(uid, (purchaseCountMap.get(uid) ?? 0) + 1);
@@ -104,24 +135,33 @@ export async function GET(req: NextRequest) {
         .from('unlocked_courses')
         .select('user_id')
         .in('user_id', userIds);
-
       for (const row of unlockedRows ?? []) {
         const uid = row.user_id as string;
         unlockedCountMap.set(uid, (unlockedCountMap.get(uid) ?? 0) + 1);
       }
     }
 
-    const enriched = customers.map((c) => ({
-      ...c,
-      purchase_count:  purchaseCountMap.get(c.id as string) ?? 0,
-      unlocked_count:  unlockedCountMap.get(c.id as string) ?? 0,
-    }));
+    // Build enriched customer list
+    const customers = authUsers
+      .filter((u) => u.id !== user.id) // exclude the requesting admin if desired
+      .slice(from, to + 1)             // manual pagination slice for search results
+      .map((u) => {
+        const profile = profileMap.get(u.id);
+        return {
+          id:             u.id,
+          name:           profile?.name ?? (u.user_metadata?.name as string | null) ?? null,
+          email:          u.email ?? null,
+          is_pro:         subscriptionMap.get(u.id) ?? false,
+          created_at:     profile?.created_at ?? u.created_at,
+          coins:          null as null,  // not in schema yet — shown as 0 in UI
+          streak:         null as null,  // not in schema yet
+          purchase_count: purchaseCountMap.get(u.id) ?? 0,
+          unlocked_count: unlockedCountMap.get(u.id) ?? 0,
+        };
+      });
 
-    return NextResponse.json({
-      ok: true,
-      customers: enriched,
-      total: count ?? 0,
-    });
+    return NextResponse.json({ ok: true, customers, total });
+
   } catch (err: unknown) {
     logger.error(ROUTE, 'unhandled_error', {
       ip, userId: user.id, reason: err instanceof Error ? err.message : String(err),
