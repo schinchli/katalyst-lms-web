@@ -173,18 +173,24 @@ export default function OrdersPage() {
                 </tr>
               ) : (
                 orders.map((o, i) => (
-                  <tr key={o.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <tr
+                    key={o.id}
+                    onClick={() => router.push(`/dashboard/admin/orders/${o.id}`)}
+                    style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+                  >
                     <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{(page - 1) * LIMIT + i + 1}</td>
                     <td style={{ padding: '10px 14px', fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)' }}>
-                      {o.id.slice(0, 8)}...
+                      {o.id.slice(0, 8)}…
                     </td>
                     <td style={{ padding: '10px 14px' }}>
                       <div style={{ fontWeight: 600, color: 'var(--text)' }}>{o.user_name}</div>
                       <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{o.user_email}</div>
                     </td>
-                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{o.quiz_id}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{o.quiz_id || '—'}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 700, color: 'var(--success)' }}>{formatCurrency(o.amount, o.currency)}</td>
-                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{o.gateway || '-'}</td>
+                    <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{o.gateway || '—'}</td>
                     <td style={{ padding: '10px 14px' }}>
                       <span className={`vx-badge vx-badge-${statusBadge(o.status)}`}>{o.status}</span>
                     </td>

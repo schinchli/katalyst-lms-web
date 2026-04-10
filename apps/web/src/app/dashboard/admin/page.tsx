@@ -349,6 +349,29 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* ── Admin Quick Links ──────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'Quiz Builder', icon: '🏗️', desc: 'Create & manage quizzes', href: '/dashboard/admin/quiz-builder', color: 'var(--primary)' },
+          { label: 'Products',     icon: '📦', desc: 'Full quiz catalog',       href: '/dashboard/admin/products',     color: 'var(--info)' },
+          { label: 'Orders',       icon: '🧾', desc: 'Purchase history',        href: '/dashboard/admin/orders',       color: 'var(--success)' },
+          { label: 'Customers',    icon: '👥', desc: 'User accounts',           href: '/dashboard/admin/customers',    color: 'var(--warning)' },
+          { label: 'Reviews',      icon: '⭐', desc: 'Moderate reviews',        href: '/dashboard/admin/reviews',      color: 'var(--error)' },
+          { label: 'E-Commerce',   icon: '🛒', desc: 'Sales dashboard',         href: '/dashboard/admin/ecommerce',    color: '#7367F0' },
+        ].map((link) => (
+          <div
+            key={link.href}
+            className="vx-card"
+            onClick={() => router.push(link.href)}
+            style={{ padding: '16px 18px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4 }}
+          >
+            <div style={{ fontSize: 22 }}>{link.icon}</div>
+            <div style={{ fontWeight: 700, fontSize: 13, color: link.color }}>{link.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{link.desc}</div>
+          </div>
+        ))}
+      </div>
+
       {/* Recent Purchases table */}
       <div className="info-card">
         <div className="info-card-header">

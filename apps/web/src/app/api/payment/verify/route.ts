@@ -164,7 +164,25 @@ export async function POST(req: NextRequest) {
       razorpay_payment_id,
       razorpay_order_id,
       status:              'completed',
+      gateway:             'razorpay',
+      currency:            'INR',
+      quiz_id:             courseId ?? null,
       purchased_at:        new Date().toISOString(),
+    });
+
+    // Dual-write to orders table (clean audit trail)
+    await supabaseAdmin.from('orders').insert({
+      user_id:             user.id,
+      quiz_id:             courseId ?? 'subscription',
+      amount:              order.amount,
+      currency:            'INR',
+      gateway:             'razorpay',
+      status:              'completed',
+      purchase_type:       purchaseType,
+      plan:                plan ?? null,
+      razorpay_payment_id,
+      razorpay_order_id,
+      metadata:            { plan: plan ?? null, notes: order.notes ?? {} },
     });
   }
 
