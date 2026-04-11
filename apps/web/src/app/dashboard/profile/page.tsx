@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { quizzes } from '@/data/quizzes';
+import { quizQuestions, quizzes } from '@/data/quizzes';
+import type { Question, Quiz } from '@/types';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
@@ -44,6 +45,9 @@ export default function ProfilePage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<AppThemePrefs>(DEFAULT_THEME_PREFS);
+  // Bookmarks state
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
+
   // Account deletion state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -51,6 +55,12 @@ export default function ProfilePage() {
   const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem('web-bookmarks');
+      const parsed: string[] = stored ? (JSON.parse(stored) as string[]) : [];
+      setBookmarkedIds(Array.isArray(parsed) ? parsed : []);
+    } catch { /* best-effort */ }
+
     setResults(getLocalResults());
 
     try {
@@ -81,6 +91,26 @@ export default function ProfilePage() {
         .catch(() => {});
     });
   }, []);
+
+  const questionIndex = useMemo(() => {
+    const index = new Map<string, { question: Question; quiz: Quiz }>();
+    quizzes.forEach((quiz) => {
+      const qs = quizQuestions[quiz.id] ?? [];
+      qs.forEach((q) => index.set(q.id, { question: q, quiz }));
+    });
+    return index;
+  }, []);
+
+  const bookmarkEntries = useMemo(
+    () => bookmarkedIds.map((id) => questionIndex.get(id)).filter((e): e is { question: Question; quiz: Quiz } => Boolean(e)),
+    [bookmarkedIds, questionIndex],
+  );
+
+  const removeBookmark = (questionId: string) => {
+    const next = bookmarkedIds.filter((id) => id !== questionId);
+    setBookmarkedIds(next);
+    try { localStorage.setItem('web-bookmarks', JSON.stringify(next)); } catch { /* best-effort */ }
+  };
 
   const completedCount = useMemo(() => new Set(results.map((item) => item.quizId)).size, [results]);
   const average = results.length ? Math.round(results.reduce((sum, item) => sum + score(item), 0) / results.length) : 0;
@@ -224,6 +254,50 @@ export default function ProfilePage() {
             <button className="settings-btn-ghost" onClick={handleResetHistory}>{confirmReset ? 'Confirm reset history' : 'Reset quiz history'}</button>
           </div>
         </div>
+      </div>
+
+      {/* Bookmarks */}
+      <div className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12, flexWrap: 'wrap' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+            Bookmarks {bookmarkEntries.length > 0 && <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginLeft: 6 }}>({bookmarkEntries.length})</span>}
+          </h2>
+          {bookmarkEntries.length > 0 && (
+            <button
+              onClick={() => router.push(`/dashboard/quiz/${bookmarkEntries[0]?.quiz.id ?? 'review'}?review=bookmarks`)}
+              style={{ height: 36, paddingInline: 18, borderRadius: 8, background: 'var(--primary)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              ▶ Start Review
+            </button>
+          )}
+        </div>
+        {bookmarkEntries.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '28px 0', color: 'var(--text-secondary)', fontSize: 14 }}>
+            No bookmarks yet — click the ★ icon on any quiz question to save it here.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {bookmarkEntries.map(({ question, quiz }) => (
+              <div key={question.id} style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', padding: '2px 8px', borderRadius: 6, background: 'var(--surface)', border: '1px solid var(--border)' }}>{quiz.title}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: quiz.difficulty === 'beginner' ? 'var(--success)' : quiz.difficulty === 'intermediate' ? 'var(--warning)' : 'var(--error)' }}>{quiz.difficulty}</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 14, color: 'var(--text)', lineHeight: 1.6, fontWeight: 500 }}>{question.text}</p>
+                </div>
+                <button
+                  onClick={() => removeBookmark(question.id)}
+                  title="Remove bookmark"
+                  aria-label="Remove bookmark"
+                  style={{ flexShrink: 0, background: 'rgba(255,76,81,0.07)', border: '1px solid rgba(255,76,81,0.2)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--error)', fontFamily: 'inherit' }}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Danger Zone */}

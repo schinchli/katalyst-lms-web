@@ -30,7 +30,6 @@ const NAV = [
   { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
   { href: '/dashboard/flashcards',   label: 'Flashcards',  icon: FlashcardIcon },
   { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
-  { href: '/dashboard/bookmarks',    label: 'Bookmarks',   icon: BookmarkNavIcon },
   { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
 ];
 
