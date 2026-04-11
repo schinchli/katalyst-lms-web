@@ -17,9 +17,9 @@ const securityHeaders = [
       // unsafe-inline + unsafe-eval required by Next.js 15 App Router
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://js.stripe.com https://pagead2.googlesyndication.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https:",
+      "img-src 'self' data: blob: https: https://cdn.sanity.io",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://katalyst-supabase-proxy.schinchli5801.workers.dev wss://katalyst-supabase-proxy.schinchli5801.workers.dev https://*.supabase.co wss://*.supabase.co https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://checkout.razorpay.com https://api.razorpay.com https://api.stripe.com",
+      "connect-src 'self' https://katalyst-supabase-proxy.schinchli5801.workers.dev wss://katalyst-supabase-proxy.schinchli5801.workers.dev https://*.supabase.co wss://*.supabase.co https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://checkout.razorpay.com https://api.razorpay.com https://api.stripe.com https://api.sanity.io https://cdn.sanity.io https://*.api.sanity.io",
       "frame-src https://checkout.razorpay.com https://api.razorpay.com https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
       "frame-ancestors 'none'",
       "base-uri 'self'",
@@ -37,6 +37,9 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],  // Modern image formats
     minimumCacheTTL: 86400,        // Cache images for 1 day
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.sanity.io' },
+    ],
   },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }];
