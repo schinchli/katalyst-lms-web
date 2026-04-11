@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import FpNav from '@/components/FpNav';
+import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
   title: 'Terms of Service — Katalyst',
@@ -10,17 +12,7 @@ export default function TermsPage() {
   const updated = 'April 11, 2026';
   return (
     <div className="fp-root">
-      {/* Minimal top bar */}
-      <nav className="fp-nav">
-        <Link href="/" className="fp-nav-brand">
-          <div className="fp-nav-logo">K</div>
-          <span className="fp-nav-name">Katalyst</span>
-        </Link>
-        <div className="fp-nav-actions">
-          <Link href="/privacy"   className="fp-btn-ghost" style={{ fontSize: 13 }}>Privacy</Link>
-          <Link href="/dashboard" className="fp-btn-primary" style={{ fontSize: 13, padding: '7px 16px' }}>Go to app</Link>
-        </div>
-      </nav>
+      <FpNav />
 
       <div className="fp-legal">
         <div className="fp-legal-header">
@@ -203,7 +195,7 @@ export default function TermsPage() {
         </p>
         <p>
           You may delete your account at any time via the app (Profile → Danger Zone → Delete Account) or
-          by visiting <Link href="/delete-account">katalysthq.app/delete-account</Link>.
+          by visiting <Link href="/delete-account">learnkloud.today/delete-account</Link>.
         </p>
 
         <h2 id="t13">13. Governing Law &amp; Dispute Resolution</h2>
@@ -228,11 +220,13 @@ export default function TermsPage() {
         </ul>
 
         <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid var(--border)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <Link href="/privacy"      className="fp-btn-ghost" style={{ fontSize: 13 }}>Privacy Policy</Link>
+          <Link href="/privacy"        className="fp-btn-ghost" style={{ fontSize: 13 }}>Privacy Policy</Link>
           <Link href="/delete-account" className="fp-btn-ghost" style={{ fontSize: 13 }}>Delete Account</Link>
-          <Link href="/"             className="fp-btn-ghost" style={{ fontSize: 13 }}>Back to Home</Link>
+          <Link href="/"               className="fp-btn-ghost" style={{ fontSize: 13 }}>Back to Home</Link>
         </div>
       </div>
+
+      <FpFooter />
     </div>
   );
 }

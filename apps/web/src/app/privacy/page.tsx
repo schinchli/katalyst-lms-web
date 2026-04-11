@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import FpNav from '@/components/FpNav';
+import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — Katalyst',
@@ -10,17 +12,7 @@ export default function PrivacyPage() {
   const updated = 'April 11, 2026';
   return (
     <div className="fp-root">
-      {/* Minimal top bar */}
-      <nav className="fp-nav">
-        <Link href="/" className="fp-nav-brand">
-          <div className="fp-nav-logo">K</div>
-          <span className="fp-nav-name">Katalyst</span>
-        </Link>
-        <div className="fp-nav-actions">
-          <Link href="/terms"    className="fp-btn-ghost" style={{ fontSize: 13 }}>Terms</Link>
-          <Link href="/dashboard" className="fp-btn-primary" style={{ fontSize: 13, padding: '7px 16px' }}>Go to app</Link>
-        </div>
-      </nav>
+      <FpNav />
 
       <div className="fp-legal">
         <div className="fp-legal-header">
@@ -50,7 +42,7 @@ export default function PrivacyPage() {
 
         <p>
           Katalyst (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the Katalyst web application at{' '}
-          <a href="https://lms-amber-two.vercel.app">katalysthq.app</a> and the Katalyst mobile app on iOS and
+          <a href="https://learnkloud.today">learnkloud.today</a> and the Katalyst mobile app on iOS and
           Android (collectively, the &quot;Service&quot;). This Privacy Policy explains how we collect, use,
           disclose, and safeguard your information when you use our Service. Please read this carefully.
           If you disagree with the terms, please discontinue use of the Service.
@@ -124,7 +116,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           You can request account deletion at any time via <strong>Profile → Danger Zone → Delete Account</strong> in
-          the app, or by visiting <Link href="/delete-account">katalysthq.app/delete-account</Link>.
+          the app, or by visiting <Link href="/delete-account">learnkloud.today/delete-account</Link>.
         </p>
 
         <h2 id="s5">5. Security</h2>
@@ -167,9 +159,7 @@ export default function PrivacyPage() {
         </p>
 
         <h2 id="s8">8. Cookies &amp; Tracking</h2>
-        <p>
-          The Katalyst web portal uses the following types of storage:
-        </p>
+        <p>The Katalyst web portal uses the following types of storage:</p>
         <ul>
           <li><strong>localStorage:</strong> Stores your theme preference, quiz progress, profile settings, and session tokens. This data never leaves your device except as part of API calls to our servers.</li>
           <li><strong>Session cookies:</strong> Supabase sets a secure, HTTP-only session cookie to maintain your authenticated session.</li>
@@ -214,7 +204,7 @@ export default function PrivacyPage() {
         <ul>
           <li><strong>Email:</strong> <a href="mailto:privacy@katalysthq.app">privacy@katalysthq.app</a></li>
           <li><strong>Support:</strong> <a href="mailto:support@katalysthq.app">support@katalysthq.app</a></li>
-          <li><strong>Account deletion:</strong> <Link href="/delete-account">katalysthq.app/delete-account</Link></li>
+          <li><strong>Account deletion:</strong> <Link href="/delete-account">learnkloud.today/delete-account</Link></li>
         </ul>
 
         <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid var(--border)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -223,6 +213,8 @@ export default function PrivacyPage() {
           <Link href="/" className="fp-btn-ghost" style={{ fontSize: 13 }}>Back to Home</Link>
         </div>
       </div>
+
+      <FpFooter />
     </div>
   );
 }
