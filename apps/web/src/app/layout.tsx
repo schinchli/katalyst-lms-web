@@ -3,14 +3,22 @@ import './globals.css';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'Katalyst — Modern cloud learning built for builders',
-  description: 'Advance faster with project-based cloud, database, and product engineering skills. Practice, ship, and track progress in one place.',
+  title: 'Katalyst — Master AWS & Cloud Certifications',
+  description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Daily challenges, leaderboard, instant explanations, and a mobile app. Free to start.',
   robots: { index: true, follow: true },
+  metadataBase: new URL('https://learnkloud.today'),
+  alternates: { canonical: 'https://learnkloud.today' },
   openGraph: {
     type: 'website',
     siteName: 'Katalyst',
-    title: 'Katalyst — Modern cloud learning built for builders',
-    description: 'Advance faster with project-based cloud, database, and product engineering skills.',
+    url: 'https://learnkloud.today',
+    title: 'Katalyst — Master AWS & Cloud Certifications',
+    description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Free to start.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Katalyst — Master AWS & Cloud Certifications',
+    description: '400+ practice questions for AWS CLF-C02 and GenAI. Free to start.',
   },
 };
 
