@@ -7,15 +7,17 @@ export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? '';
 export const dataset   = process.env.NEXT_PUBLIC_SANITY_DATASET   ?? 'production';
 const apiVersion       = '2024-01-01';
 
-// Public read client (used in API routes and server components)
-export const sanityClient = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: true,
-  // Use SANITY_API_READ_TOKEN for private datasets; omit for public
-  token: process.env.SANITY_API_READ_TOKEN,
-});
+// Public read client (used in API routes and server components).
+// Returns a no-op client when projectId is not configured (local dev / build time).
+export const sanityClient = projectId
+  ? createClient({
+      projectId,
+      dataset,
+      apiVersion,
+      useCdn: true,
+      token: process.env.SANITY_API_READ_TOKEN,
+    })
+  : createClient({ projectId: 'placeholder', dataset, apiVersion, useCdn: false });
 
 // Image URL builder
 const builder = imageUrlBuilder({ projectId, dataset });

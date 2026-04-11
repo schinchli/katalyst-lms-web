@@ -16,6 +16,8 @@ import { checkRateLimit }            from '@/lib/rateLimiter';
 import { logger }                    from '@/lib/logger';
 import { fetchArticleFull }          from '@/lib/sanityClient';
 
+export const dynamic = 'force-dynamic';
+
 const ROUTE = '/api/articles/[slug]';
 
 function adminClient() {
