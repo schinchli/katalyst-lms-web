@@ -118,9 +118,10 @@ export const THEME_PACKS: ThemePack[] = [
 ];
 
 export const FONT_OPTIONS = [
-  { label: 'Space Grotesk (Default)', value: 'Space Grotesk' },
+  { label: 'Public Sans (Default)', value: 'Public Sans' },
   { label: 'Inter', value: 'Inter' },
   { label: 'DM Sans', value: 'DM Sans' },
+  { label: 'Space Grotesk', value: 'Space Grotesk' },
   { label: 'Sora', value: 'Sora' },
   { label: 'Poppins', value: 'Poppins' },
   { label: 'Nunito', value: 'Nunito' },
@@ -138,7 +139,7 @@ export const FONT_SIZES = [
 
 export const DEFAULT_THEME_PREFS: AppThemePrefs = {
   themeId: 'aurora',
-  fontFamily: 'Space Grotesk',
+  fontFamily: 'Public Sans',
   fontSize: '16',   // 16px — W3C / WCAG recommended body text baseline
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   usePlatform: true,
@@ -193,7 +194,7 @@ export function applyThemePrefs(prefs: AppThemePrefs): void {
   root.style.fontSize = `${prefs.fontSize}px`;
   root.style.setProperty('--base-font-size', `${prefs.fontSize}px`);
 
-  const baseFonts = ['Space Grotesk', 'Inter', 'DM Sans', 'Sora', 'Poppins', 'Nunito'];
+  const baseFonts = ['Public Sans', 'Space Grotesk', 'Inter', 'DM Sans', 'Sora', 'Poppins', 'Nunito'];
   const selected = prefs.fontFamily || DEFAULT_THEME_PREFS.fontFamily;
   const body = document.body;
   if (baseFonts.includes(selected)) {

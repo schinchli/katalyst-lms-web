@@ -24,8 +24,8 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
     description: 'Deep navy dashboards with green-violet highlights and cleaner learning rails.',
     heroPreview: 'linear-gradient(135deg, #00152D 0%, #00ED64 18%, #3D7BFF 62%, #6F44FF 100%)',
     buttonStyle: 'Rounded, bold green',
-    headingFont: 'Sora',
-    bodyFont: 'Inter',
+    headingFont: 'Public Sans',
+    bodyFont: 'Public Sans',
   },
   {
     id: 'aurora',
@@ -33,8 +33,8 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
     description: 'Energetic launch style with magenta-blue-cyan gradients.',
     heroPreview: 'linear-gradient(145deg, #C084FC 0%, #0EA5E9 55%, #22D3EE 100%)',
     buttonStyle: 'Pill, glow',
-    headingFont: 'Space Grotesk',
-    bodyFont: 'Inter',
+    headingFont: 'Public Sans',
+    bodyFont: 'Public Sans',
   },
   {
     id: 'sandstone',
@@ -42,8 +42,8 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
     description: 'Warm, low-glare study mode for long reading sessions.',
     heroPreview: 'linear-gradient(135deg, #F5E6D3 0%, #E6D2BF 100%)',
     buttonStyle: 'Solid teal',
-    headingFont: 'Sora',
-    bodyFont: 'Inter',
+    headingFont: 'Public Sans',
+    bodyFont: 'Public Sans',
   },
   {
     id: 'midnight',
@@ -51,8 +51,8 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
     description: 'High-contrast dashboard style with cyan accents.',
     heroPreview: 'radial-gradient(circle at 24% 20%, #22D3EE55 0%, #0F172A 58%)',
     buttonStyle: 'Squared cyan',
-    headingFont: 'Inter',
-    bodyFont: 'Inter',
+    headingFont: 'Public Sans',
+    bodyFont: 'Public Sans',
   },
 ];
 
