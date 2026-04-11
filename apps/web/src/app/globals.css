@@ -1956,8 +1956,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* Mobile */
 @media (max-width: 768px) {
+  /* Constrain the content area to the viewport so percentage widths resolve correctly */
+  .main-content { overflow-x: hidden; }
+  .page-content { width: 100%; box-sizing: border-box; }
   /* Constrain all cards & containers to viewport — prevents content clipping */
-  .vx-card, .dc-card, .vx-action-card { max-width: 100%; box-sizing: border-box; overflow-x: hidden; }
+  .vx-card, .dc-card, .vx-action-card { width: 100% !important; max-width: 100% !important; box-sizing: border-box; overflow-x: hidden; }
   /* Ensure flex/grid children don't overflow their mobile containers */
   .dash-academy-hero > div { min-width: 0; width: 100% !important; flex-shrink: 1 !important; }
   .dash-kpi-row > div { min-width: 0; }
