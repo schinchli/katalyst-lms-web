@@ -7,16 +7,18 @@ export default function FpNav() {
   const [open, setOpen] = useState(false);
   return (
     <nav className="fp-nav">
-      <Link href="/" className="fp-nav-brand">
-        <div className="fp-nav-logo">K</div>
-        <span className="fp-nav-name">Katalyst</span>
-      </Link>
+      <div className="fp-nav-left">
+        <Link href="/" className="fp-nav-brand">
+          <div className="fp-nav-logo">K</div>
+          <span className="fp-nav-name">Katalyst</span>
+        </Link>
 
-      <div className={`fp-nav-links${open ? ' open' : ''}`}>
-        <a href="/#features" className="fp-nav-link" onClick={() => setOpen(false)}>Features</a>
-        <a href="/#pricing"  className="fp-nav-link" onClick={() => setOpen(false)}>Pricing</a>
-        <a href="/#faq"      className="fp-nav-link" onClick={() => setOpen(false)}>FAQ</a>
-        <Link href="/about"  className="fp-nav-link" onClick={() => setOpen(false)}>About</Link>
+        <div className={`fp-nav-links${open ? ' open' : ''}`}>
+          <a href="/#features" className="fp-nav-link" onClick={() => setOpen(false)}>Features</a>
+          <a href="/#pricing"  className="fp-nav-link" onClick={() => setOpen(false)}>Pricing</a>
+          <a href="/#faq"      className="fp-nav-link" onClick={() => setOpen(false)}>FAQ</a>
+          <Link href="/about"  className="fp-nav-link" onClick={() => setOpen(false)}>About</Link>
+        </div>
       </div>
 
       <div className="fp-nav-actions">

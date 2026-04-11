@@ -2387,12 +2387,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   color: var(--text);
   letter-spacing: -0.3px;
 }
+.fp-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
 .fp-nav-links {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
-  justify-content: center;
 }
 .fp-nav-link {
   padding: 8px 14px;
