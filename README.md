@@ -37,8 +37,10 @@ lms/
 │       │   │   ├── api/              # Vercel serverless API routes
 │       │   │   │   ├── admin/
 │       │   │   │   │   ├── check/        GET  — admin role check
+│       │   │   │   │   ├── quiz-catalog/ GET/POST — admin quiz premium/free overrides
 │       │   │   │   │   └── purchases/    GET  — all-platform purchases
 │       │   │   │   ├── leaderboard/      GET  — public leaderboard
+│       │   │   │   ├── quiz-catalog/     GET  — public quiz premium/free overrides
 │       │   │   │   ├── quiz-submit/      POST — server-side score validation
 │       │   │   │   ├── quizzes/stats/    GET  — student count per quiz
 │       │   │   │   ├── recaptcha/verify/ POST — reCAPTCHA v3 verification
@@ -68,6 +70,7 @@ lms/
 │       │   ├── lib/
 │       │   │   ├── db.ts                Supabase CRUD helpers (client-side)
 │       │   │   ├── logger.ts            structured JSON logger
+│       │   │   ├── quizCatalog.ts       quiz premium/free override merge layer
 │       │   │   ├── rateLimiter.ts       in-memory rate limiter
 │       │   │   ├── recaptcha.ts         reCAPTCHA server-side verify
 │       │   │   ├── schemas.ts           shared Zod schemas
@@ -80,7 +83,9 @@ lms/
 │   ├── progressFetch/
 │   └── leaderboardFetch/
 ├── mobile/                            Expo app (git submodule)
-├── supabase/migrations/               DB migration SQL
+│   ├── config/quizCatalog.ts          mobile quiz premium/free override merge layer
+│   └── services/quizCatalogService.ts syncs admin overrides from app_settings
+├── supabase/migrations/               DB migration SQL (includes per-user theme_pref + platform theme)
 ├── scripts/
 │   ├── security-gate.sh               13-check security gate (quick / ci / full)
 │   ├── install-hooks.sh               installs pre-commit + pre-push hooks
@@ -642,6 +647,11 @@ To run it manually:
 bash scripts/security-gate.sh --quick
 ```
 
+### Theme system (web + mobile)
+- Admin chooses the platform theme (`platform_theme` in Supabase app_settings); default flows to every client.
+- Each user can opt out and save a custom theme pack (colors, fonts, size, timezone) stored in `user_profiles.theme_pref` and applied across devices (web + mobile).
+- Mobile honors platform theme by default; switch to Custom in Profile → Appearance to override and sync back to Supabase.
+
 ### Deploy
 
 ```bash
@@ -654,3 +664,31 @@ bash scripts/deploy.sh       # full security gate + vercel --prod --yes
 ## Changelog
 
 See [`CHANGELOG.md`](./CHANGELOG.md).
+### `GET /api/quiz-catalog`
+
+Returns the public quiz premium/free override map stored in `app_settings.key = quiz_catalog_overrides`.
+This lets web and mobile consume admin-managed premium flags without hardcoding them into the client.
+
+### `GET /api/admin/quiz-catalog`
+### `POST /api/admin/quiz-catalog`
+
+Admin-only quiz catalog management endpoints.
+
+**Purpose:**
+- Mark any quiz as free or premium from the web dashboard
+- Set or update one-time course unlock prices
+- Keep the web dashboard and mobile app on the same premium gating source of truth
+
+**Stored setting key:** `quiz_catalog_overrides`
+
+**Payload shape:**
+```json
+{
+  "clf-c02-full-exam": { "isPremium": true, "price": 499 },
+  "clf-c02-cloud-concepts": { "isPremium": false, "price": 0 }
+}
+```
+
+The current default policy is:
+- `clf-c02-full-exam` remains premium
+- all other CLF-C02 quizzes are free unless an admin override changes them

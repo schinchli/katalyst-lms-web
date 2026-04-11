@@ -1,21 +1,53 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'Katalyst — Modern cloud learning built for builders',
-  description: 'Advance faster with project-based cloud, database, and product engineering skills. Practice, ship, and track progress in one place.',
+  title: 'LearnKloud — Master AWS & Cloud Certifications',
+  description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Daily challenges, leaderboard, instant explanations, and a mobile app. Free to start.',
+  robots: { index: true, follow: true },
+  metadataBase: new URL('https://learnkloud.today'),
+  alternates: { canonical: 'https://learnkloud.today' },
+  openGraph: {
+    type: 'website',
+    siteName: 'LearnKloud',
+    url: 'https://learnkloud.today',
+    title: 'LearnKloud — Master AWS & Cloud Certifications',
+    description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Free to start.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LearnKloud — Master AWS & Cloud Certifications',
+    description: '400+ practice questions for AWS CLF-C02 and GenAI. Free to start.',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F6F8FB' },
+    { media: '(prefers-color-scheme: dark)',  color: '#0B1221' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark">
       <head>
-        {/* Prevent flash of light mode — apply dark before first paint */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}})();` }} />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('learnkloud-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&o.presetId&&typeof o.presetId==='string'&&o.presetId!==null){document.documentElement.setAttribute('data-platform-theme',o.presetId);}else{document.documentElement.removeAttribute('data-platform-theme');}}var e=localStorage.getItem('learnkloud-platform-experience-cache');if(e){var c=JSON.parse(e);if(c&&c.theme&&(c.theme.platformPreset===null||!c.theme.platformPreset)){document.documentElement.removeAttribute('data-platform-theme');}}}catch(ex){}`}
+        </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Public Sans — design system font; font-display=swap eliminates render-blocking */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
           rel="stylesheet"
         />
       </head>

@@ -18,6 +18,7 @@ import { z }                        from 'zod';
 import { checkRateLimit }           from '@/lib/rateLimiter';
 import { logger }                   from '@/lib/logger';
 import { quizQuestions, quizzes }   from '@/data/quizzes';
+import { buildManagedQuizDataset, MANAGED_QUIZ_CONTENT_KEY } from '@/lib/managedQuizContent';
 
 const ROUTE = '/api/quiz-submit';
 
@@ -80,7 +81,15 @@ export async function POST(req: NextRequest) {
   const { quizId, answers, startedAt } = parsed.data;
 
   // Validate quiz exists
-  const quiz = quizzes.find((q) => q.id === quizId);
+  const settings = await adminClient()
+    .from('app_settings')
+    .select('value')
+    .eq('key', MANAGED_QUIZ_CONTENT_KEY)
+    .maybeSingle();
+  const managedDataset = buildManagedQuizDataset(settings.data?.value);
+  const availableQuizzes = managedDataset.quizzes.length > 0 ? managedDataset.quizzes : quizzes;
+  const availableQuestions = Object.keys(managedDataset.questions).length > 0 ? managedDataset.questions : quizQuestions;
+  const quiz = availableQuizzes.find((q) => q.id === quizId);
   if (!quiz) {
     return NextResponse.json({ ok: false, error: 'Quiz not found' }, { status: 404 });
   }
@@ -102,7 +111,9 @@ export async function POST(req: NextRequest) {
   const timeTaken = Math.min(elapsedSecs, quiz.duration * 60);
 
   // Load questions and calculate score server-side
-  const questions = quizQuestions[quizId] ?? [];
+  const allQuestions = availableQuestions[quizId] ?? [];
+  const fixedQuestionCount = Math.max(0, quiz.fixedQuestionCount ?? 0);
+  const questions = fixedQuestionCount > 0 ? allQuestions.slice(0, Math.min(fixedQuestionCount, allQuestions.length)) : allQuestions;
   if (questions.length === 0) {
     logger.error(ROUTE, 'no_questions', { ip, userId: user.id, quizId });
     return NextResponse.json({ ok: false, error: 'Quiz data unavailable' }, { status: 500 });
@@ -111,10 +122,19 @@ export async function POST(req: NextRequest) {
   // Only score questions that are actually in this quiz (ignore extra submitted keys)
   const validQIds  = new Set(questions.map((q) => q.id));
   let   finalScore = 0;
+  let   pointScore = 0;
+  const correctScore = quiz.correctScore ?? 1;
+  const wrongScore = quiz.wrongScore ?? 0;
   for (const [qId, chosen] of Object.entries(answers)) {
     if (!validQIds.has(qId)) continue;
     const q = questions.find((q) => q.id === qId);
-    if (q && chosen === q.correctOptionId) finalScore++;
+    if (!q) continue;
+    if (chosen === q.correctOptionId) {
+      finalScore++;
+      pointScore += correctScore;
+    } else {
+      pointScore += wrongScore;
+    }
   }
 
   const totalQuestions = questions.length;
@@ -140,13 +160,103 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Failed to save result' }, { status: 500 });
   }
 
-  logger.info(ROUTE, 'submit_ok', { userId: user.id, quizId, score: finalScore, totalQuestions, timeTaken });
+  logger.info(ROUTE, 'submit_ok', { userId: user.id, quizId, score: finalScore, pointScore, totalQuestions, timeTaken });
+
+  // ── Coin awards (best-effort — never block the response) ─────────────────
+  try {
+    const isPerfect    = totalQuestions > 0 && finalScore === totalQuestions;
+    const baseCoins    = finalScore * (quiz.correctScore ?? 1);
+
+    // Check if this is the daily quiz (read from app_settings)
+    const sfRow = await db
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'system_feature_flags')
+      .maybeSingle();
+    const sf = sfRow.data?.value as { dailyQuizEnabled?: boolean; dailyQuizQuizId?: string } | null;
+    const isDailyQuiz  = Boolean(sf?.dailyQuizEnabled && sf?.dailyQuizQuizId === quizId);
+
+    const txRows: Array<{ user_id: string; amount: number; reason: string; reference_id: string }> = [];
+
+    if (baseCoins > 0) {
+      txRows.push({ user_id: user.id, amount: baseCoins, reason: 'quiz_complete', reference_id: quizId });
+    }
+    if (isPerfect) {
+      txRows.push({ user_id: user.id, amount: 10, reason: 'perfect_score', reference_id: quizId });
+    }
+    if (isDailyQuiz) {
+      txRows.push({ user_id: user.id, amount: 5, reason: 'daily_quiz', reference_id: quizId });
+    }
+
+    if (txRows.length > 0) {
+      const totalCoins = txRows.reduce((sum, row) => sum + row.amount, 0);
+      // Insert transactions — check error individually so a failed insert doesn't
+      // silently skip the balance increment (which would leave history/balance out of sync)
+      const { error: insertErr } = await db.from('coin_transactions').insert(txRows);
+      if (insertErr) {
+        logger.warn(ROUTE, 'coin_insert_failed', { userId: user.id, quizId, reason: insertErr.message });
+      } else {
+        // Only increment balance if the transactions were recorded successfully
+        const { error: rpcErr } = await db.rpc('increment_user_coins', { p_user_id: user.id, p_amount: totalCoins });
+        if (rpcErr) {
+          logger.warn(ROUTE, 'coin_increment_failed', { userId: user.id, quizId, reason: rpcErr.message });
+        }
+      }
+    }
+  } catch (coinErr) {
+    // Never let coin award failure break quiz submission
+    logger.warn(ROUTE, 'coin_award_failed', { userId: user.id, quizId, reason: String(coinErr) });
+  }
+
+  // ── Daily quiz analytics (best-effort — never block the response) ────────
+  try {
+    const sfRow2 = await db
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'system_feature_flags')
+      .maybeSingle();
+    const sf2 = sfRow2.data?.value as { dailyQuizEnabled?: boolean; dailyQuizQuizId?: string } | null;
+    if (sf2?.dailyQuizEnabled && sf2?.dailyQuizQuizId === quizId) {
+      const statsRow = await db
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'daily_quiz_stats')
+        .maybeSingle();
+      const existing = (statsRow.data?.value ?? {}) as { attempts?: number; completions?: number; lastUpdated?: string };
+      const nextStats = {
+        attempts:    (existing.attempts    ?? 0) + 1,
+        completions: (existing.completions ?? 0) + 1,
+        lastUpdated: completedAt,
+      };
+      await db.from('app_settings').upsert(
+        { key: 'daily_quiz_stats', value: nextStats },
+        { onConflict: 'key' },
+      );
+    }
+  } catch (analyticsErr) {
+    logger.warn(ROUTE, 'daily_analytics_failed', { userId: user.id, quizId, reason: String(analyticsErr) });
+  }
+
+  // Check ads_removed entitlement on user profile
+  // DB migration required:
+  // ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ads_removed boolean DEFAULT false;
+  let adsRemoved = false;
+  try {
+    const { data: profileRow } = await db
+      .from('user_profiles')
+      .select('ads_removed')
+      .eq('id', user.id)
+      .maybeSingle();
+    adsRemoved = (profileRow as { ads_removed?: boolean } | null)?.ads_removed ?? false;
+  } catch { /* non-fatal — column may not exist yet */ }
 
   return NextResponse.json({
     ok: true,
     score:          finalScore,
+    pointScore,
     totalQuestions,
     timeTaken,
     completedAt,
+    adsRemoved,
   });
 }

@@ -72,6 +72,22 @@ export async function checkRateLimit(
   }
 }
 
+/** Like checkRateLimit but also returns seconds until the window resets. */
+export async function checkRateLimitWithReset(
+  key:      string,
+  limit:    number,
+  windowMs: number,
+): Promise<{ allowed: boolean; resetAfterSec: number }> {
+  const now   = Date.now();
+  const entry = store.get(key);
+  const resetAfterSec = entry && now <= entry.resetAt
+    ? Math.ceil((entry.resetAt - now) / 1000)
+    : Math.ceil(windowMs / 1000);
+
+  const allowed = await checkRateLimit(key, limit, windowMs);
+  return { allowed, resetAfterSec };
+}
+
 // For local tests only (Upstash path not reflected here)
 export function getRemainingRequests(key: string, limit: number): number {
   const entry = store.get(key);

@@ -1,18 +1,34 @@
 'use client';
 import Link from 'next/link';
+import Script from 'next/script';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { quizzes } from '@/data/quizzes';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/lib/supabase';
 import { migrateFromLocalStorage } from '@/lib/db';
-import { applyThemePrefs, normalizeThemePrefs, DEFAULT_THEME_PREFS } from '@/lib/themePacks';
+import {
+  applyPlatformThemePreset,
+  DEFAULT_PLATFORM_THEME,
+  normalizePlatformTheme,
+} from '@/lib/platformTheme';
+import { DEFAULT_SYSTEM_FEATURES, normalizeSystemFeatures, type SystemFeaturesConfig } from '@/lib/systemFeatures';
+import { fetchUserTheme } from '@/lib/userTheme';
+import {
+  applyThemePrefs,
+  applyFontSize,
+  normalizeThemePrefs,
+  DEFAULT_THEME_PREFS,
+} from '@/lib/themePacks';
+import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvider';
+import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const NAV = [
   { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
-  { href: '/dashboard/quizzes',      label: 'Quizzes',     icon: BookIcon },
+  { href: '/dashboard/quizzes',      label: 'Courses',     icon: BookIcon },
   { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
-  { href: '/dashboard/progress',     label: 'Progress',    icon: TrendIcon },
+  { href: '/dashboard/flashcards',   label: 'Flashcards',  icon: FlashcardIcon },
   { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
   { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
 ];
@@ -65,10 +81,25 @@ function SunIcon() {
     </svg>
   );
 }
+function BookmarkNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
 function PlayNavIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" fill={active ? 'currentColor' : 'none'} />
+    </svg>
+  );
+}
+function FlashcardIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
     </svg>
   );
 }
@@ -114,16 +145,82 @@ function SettingsIcon({ active }: { active: boolean }) {
   );
 }
 
-const DIFF_COLOR: Record<string, string> = { beginner: '#28C76F', intermediate: '#FF9F43', advanced: '#FF4C51' };
-const CERT_COLOR: Record<string, string> = { foundational: '#28C76F', associate: '#00BAD1', professional: '#FF9F43', specialty: '#7367F0' };
+function CoinsNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v2m0 8v2M9 9h4a2 2 0 0 1 0 4H9" />
+    </svg>
+  );
+}
+function StoreNavIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function ContestIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="6" />
+      <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+    </svg>
+  );
+}
+function BattleIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z" />
+      <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+      <path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z" />
+      <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z" />
+      <path d="M14 14.5V13h-4v1.5" />
+      <path d="M10 9.5V11h4V9.5" />
+      <path d="M12 13v-2" />
+    </svg>
+  );
+}
+function SelfChallengeIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10" />
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+    </svg>
+  );
+}
+
+const DIFF_COLOR: Record<string, string> = { beginner: 'var(--success)', intermediate: 'var(--warning)', advanced: 'var(--error)' };
+const CERT_COLOR: Record<string, string> = { foundational: 'var(--success)', associate: 'var(--info)', professional: 'var(--warning)', specialty: '#7367F0' };
+
+function HamburgerIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+function CloseIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
+  useManagedQuizContentVersion();
   const pathname = usePathname();
   const router   = useRouter();
   const [dark,        setDark]        = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isAdmin,     setIsAdmin]     = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [systemFeatures, setSystemFeatures] = useState<SystemFeaturesConfig>(DEFAULT_SYSTEM_FEATURES);
   const searchRef = useRef<HTMLDivElement>(null);
   const { isPro } = useSubscription();
 
@@ -148,6 +245,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       // One-time migration: localStorage → Supabase (no-op if already migrated)
       migrateFromLocalStorage(u.id).catch(() => { /* best-effort */ });
 
+      // Load user theme pref to sync web/mobile
+      fetchUserTheme(u.id)
+        .then((prefs) => {
+          try {
+            localStorage.setItem('learnkloud-theme', JSON.stringify(prefs));
+            applyFontSize(prefs.fontSize);          // always apply font size
+            if (!prefs.usePlatform) applyThemePrefs(prefs);
+          } catch { /* ignore */ }
+        })
+        .catch(() => { /* ignore */ });
+
       const quizResults = (() => {
         try { return JSON.parse(localStorage.getItem('quiz-results') || '[]'); } catch { return []; }
       })();
@@ -166,6 +274,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     });
   }, []);
 
+  // Real-time session monitoring — redirects to /login when session expires
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') router.replace('/login');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [router]);
+
   // Dark mode
   useEffect(() => {
     const saved = localStorage.getItem('theme');
@@ -173,15 +291,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (isDark) { document.documentElement.setAttribute('data-theme', 'dark'); setDark(true); }
     else { document.documentElement.setAttribute('data-theme', ''); setDark(false); }
 
-    // Apply user appearance preferences (theme pack + font + size)
+    // Apply cached platform theme immediately (server source is fetched below)
     try {
-      const raw = localStorage.getItem('katalyst-theme');
-      if (raw) {
-        applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
-      } else {
-        applyThemePrefs(DEFAULT_THEME_PREFS);
-      }
+      const raw = localStorage.getItem('learnkloud-platform-theme-cache');
+      const cached = raw ? normalizePlatformTheme(JSON.parse(raw)) : DEFAULT_PLATFORM_THEME;
+      applyPlatformThemePreset(cached.presetId);
+    } catch {
+      applyPlatformThemePreset(DEFAULT_PLATFORM_THEME.presetId);
+    }
+
+    // Apply font size from cache immediately (prevents FOUC on reload)
+    // Always applied regardless of usePlatform — font size is a universal preference
+    try {
+      const raw = localStorage.getItem('learnkloud-theme');
+      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      applyFontSize(prefs.fontSize);
+      if (!prefs.usePlatform) applyThemePrefs(prefs);
     } catch { /* best-effort */ }
+  }, []);
+
+  // Fetch platform theme from server so all clients stay consistent.
+  useEffect(() => {
+    let active = true;
+    fetch('/api/theme')
+      .then((r) => r.json())
+      .then((d: { ok?: boolean; theme?: unknown }) => {
+        if (!active || !d?.ok) return;
+        const theme = normalizePlatformTheme(d.theme);
+        applyPlatformThemePreset(theme.presetId);
+        try {
+          const raw = localStorage.getItem('learnkloud-theme');
+          const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+          applyFontSize(prefs.fontSize);
+          if (!prefs.usePlatform) applyThemePrefs(prefs);
+        } catch { /* best-effort */ }
+      })
+      .catch(() => { /* best-effort */ });
+
+    return () => { active = false; };
   }, []);
 
   const toggleDark = () => {
@@ -190,8 +337,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
     localStorage.setItem('theme', next ? 'dark' : 'light');
     try {
-      const raw = localStorage.getItem('katalyst-theme');
-      if (raw) applyThemePrefs(normalizeThemePrefs(JSON.parse(raw)));
+      const raw = localStorage.getItem('learnkloud-theme');
+      const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
+      if (!prefs.usePlatform) applyThemePrefs(prefs);
     } catch { /* best-effort */ }
   };
 
@@ -226,22 +374,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push('/login');
   };
 
+  // System feature flags — controls nav visibility and feature availability
+  useEffect(() => {
+    fetch('/api/system-features')
+      .then((r) => r.json())
+      .then((body: { config?: unknown }) => setSystemFeatures(normalizeSystemFeatures(body.config)))
+      .catch(() => { /* use defaults */ });
+  }, []);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => { setSidebarOpen(false); }, [pathname]);
+
   return (
-    <div className="page-wrapper">
-      {/* Sidebar */}
-      <aside className="sidebar">
+    <PlatformExperienceProvider>
+      {/* Razorpay checkout — loaded lazily once for all dashboard pages */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <div className="page-wrapper">
+
+      {/* Sidebar — LEFT side (vertical menu pattern, first in DOM) */}
+      <aside className={`sidebar${sidebarOpen ? ' mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="sidebar-logo-icon">K</div>
             <div>
-              <div className="sidebar-brand-name">Katalyst</div>
+              <div className="sidebar-brand-name">LearnKloud</div>
               <div className="sidebar-brand-sub">Supercharge Your Career</div>
             </div>
           </div>
         </div>
 
         {/* Search */}
-        <div ref={searchRef} style={{ padding: '0 16px 16px', position: 'relative' }}>
+        <div ref={searchRef} style={{ padding: '12px 16px 8px', position: 'relative', borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
             <SearchIcon />
             <input
@@ -286,7 +449,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Nav */}
         <nav className="sidebar-nav">
-          {NAV.map((item) => {
+          <div className="nav-section-header">Main Menu</div>
+          {NAV.filter((item) => {
+            if (item.href === '/dashboard/leaderboard' && !systemFeatures.leaderboardEnabled) return false;
+            return true;
+          }).map((item) => {
             const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
             const Icon   = item.icon;
             return (
@@ -301,6 +468,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const activeSettings = pathname === SETTINGS_NAV.href;
             return (
               <>
+                <div className="nav-section-header" style={{ marginTop: 8 }}>Admin</div>
                 <Link href={ADMIN_NAV.href} className={`nav-item${activeAdmin ? ' active' : ''}`}>
                   <AdminIcon active={activeAdmin} />
                   {ADMIN_NAV.label}
@@ -321,41 +489,73 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               href="/dashboard/profile"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                padding: '6px 12px', minHeight: 36, borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
                 background: isPro ? '#FF9F4318' : 'var(--bg)',
-                color:      isPro ? '#FF9F43'  : 'var(--text-secondary)',
+                color:      isPro ? 'var(--warning)'  : 'var(--text-secondary)',
                 border:     isPro ? '1px solid #FF9F4340' : '1px solid var(--border)',
               }}
             >
               {isPro ? '⭐ Pro' : 'Free Plan'}
             </Link>
             <button
+              type="button"
               onClick={toggleDark}
               title={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)' }}
             >
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
             <div style={{ position: 'relative', display: 'inline-flex' }} className="logout-wrap">
               <button
+                type="button"
+                aria-label="Sign out"
                 onClick={handleLogout}
                 style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.15s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = '#FF4C51'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#FF4C5114'; e.currentTarget.style.color = 'var(--error)'; e.currentTarget.style.borderColor = '#FF4C5140'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
                 <LogoutIcon />
               </button>
-              <span style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2F2B3D', color: '#fff', fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 5, whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s' }} className="logout-tip">
+              <span style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', fontSize: 11, fontWeight: 600, padding: '4px 8px', borderRadius: 5, whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s' }} className="logout-tip">
                 Logout
               </span>
             </div>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Katalyst v1.0</span>
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>LearnKloud v1.0</span>
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="main-content">{children}</main>
-    </div>
+      {/* Main content — RIGHT of sidebar */}
+      <main className="main-content">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
+
+      {/* Mobile sidebar overlay */}
+      <div
+        className={`sidebar-overlay${sidebarOpen ? ' open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile hamburger FAB */}
+      <button
+        className="mobile-nav-btn"
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+      >
+        {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
+      </button>
+
+      </div>
+    </PlatformExperienceProvider>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ManagedQuizContentProvider>
+      <DashboardLayoutInner>{children}</DashboardLayoutInner>
+    </ManagedQuizContentProvider>
   );
 }

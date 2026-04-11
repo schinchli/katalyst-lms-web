@@ -158,7 +158,7 @@ export async function recordPurchase(userId: string, purchase: Omit<PurchaseReco
 
 // ── localStorage Migration (run once on first login) ───────────────────────
 
-const MIGRATION_KEY = 'katalyst-migrated';
+const MIGRATION_KEY = 'learnkloud-migrated';
 
 export async function migrateFromLocalStorage(userId: string): Promise<void> {
   if (typeof window === 'undefined') return;
@@ -183,20 +183,20 @@ export async function migrateFromLocalStorage(userId: string): Promise<void> {
     }
 
     // 3. Subscription
-    const subRaw = localStorage.getItem('katalyst-subscription');
+    const subRaw = localStorage.getItem('learnkloud-subscription');
     if (subRaw === 'premium') {
       await saveSubscription(userId, 'premium');
     }
 
     // 4. Unlocked courses
-    const unlockedRaw = localStorage.getItem('katalyst-unlocked-courses');
+    const unlockedRaw = localStorage.getItem('learnkloud-unlocked-courses');
     if (unlockedRaw) {
       const courseIds: string[] = JSON.parse(unlockedRaw);
       await Promise.all(courseIds.map((courseId) => unlockCourse(userId, courseId)));
     }
 
     // 5. Purchases
-    const purchasesRaw = localStorage.getItem('katalyst-purchases');
+    const purchasesRaw = localStorage.getItem('learnkloud-purchases');
     if (purchasesRaw) {
       const purchases: PurchaseRecord[] = JSON.parse(purchasesRaw);
       await Promise.all(purchases.map((p) => recordPurchase(userId, p)));

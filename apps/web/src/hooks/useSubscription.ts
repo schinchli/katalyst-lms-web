@@ -21,9 +21,9 @@ import type { PurchaseRecord } from '@/lib/db';
 
 export type { PurchaseRecord };
 
-const SUBSCRIPTION_KEY = 'katalyst-subscription';
-const UNLOCKED_KEY     = 'katalyst-unlocked-courses';
-const PURCHASES_KEY    = 'katalyst-purchases';
+const SUBSCRIPTION_KEY = 'learnkloud-subscription';
+const UNLOCKED_KEY     = 'learnkloud-unlocked-courses';
+const PURCHASES_KEY    = 'learnkloud-purchases';
 
 export function useSubscription() {
   const [userId,          setUserId]          = useState<string | null>(null);

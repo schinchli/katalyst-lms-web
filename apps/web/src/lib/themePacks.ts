@@ -20,9 +20,17 @@ export interface AppThemePrefs {
   fontFamily: string;
   fontSize: string;
   timezone: string;
+  usePlatform: boolean;
 }
 
 export const THEME_PACKS: ThemePack[] = [
+  {
+    id: 'violet',
+    label: 'LearnKloud Violet',
+    emoji: '💜',
+    light: { primary: '#7367F0', primaryLight: 'rgba(115,103,240,0.12)', primaryText: '#4C3BE4', gradientFrom: '#7367F0', gradientTo: '#9E95F5', gradientAccent: '#C084FC' },
+    dark:  { primary: '#9E95F5', primaryLight: 'rgba(115,103,240,0.18)', primaryText: '#C4BDFA', gradientFrom: '#7367F0', gradientTo: '#9E95F5', gradientAccent: '#C084FC' },
+  },
   {
     id: 'aurora',
     label: 'Neon Aurora',
@@ -79,44 +87,95 @@ export const THEME_PACKS: ThemePack[] = [
     light: { primary: '#475569', primaryLight: '#F1F5F9', primaryText: '#334155', gradientFrom: '#94A3B8', gradientTo: '#CBD5E1', gradientAccent: '#64748B' },
     dark:  { primary: '#94A3B8', primaryLight: '#24303F', primaryText: '#CBD5E1', gradientFrom: '#0F172A', gradientTo: '#334155', gradientAccent: '#475569' },
   },
+  {
+    id: 'indigo',
+    label: 'Indigo Pro',
+    emoji: '🔷',
+    light: { primary: '#4361EE', primaryLight: '#EEF2FF', primaryText: '#3451C7', gradientFrom: '#4361EE', gradientTo: '#7C3AED', gradientAccent: '#06B6D4' },
+    dark:  { primary: '#6C8EF5', primaryLight: '#1E1D4A', primaryText: '#A5B4FC', gradientFrom: '#4361EE', gradientTo: '#7C3AED', gradientAccent: '#22D3EE' },
+  },
+  {
+    id: 'teal',
+    label: 'Teal Fresh',
+    emoji: '🩵',
+    light: { primary: '#0D9488', primaryLight: '#CCFBF1', primaryText: '#0F766E', gradientFrom: '#0D9488', gradientTo: '#0EA5E9', gradientAccent: '#22D3EE' },
+    dark:  { primary: '#2DD4BF', primaryLight: '#14302E', primaryText: '#5EEAD4', gradientFrom: '#0D9488', gradientTo: '#0369A1', gradientAccent: '#06B6D4' },
+  },
+  {
+    id: 'amber',
+    label: 'Amber Focus',
+    emoji: '🌟',
+    light: { primary: '#D97706', primaryLight: '#FEF3C7', primaryText: '#B45309', gradientFrom: '#F59E0B', gradientTo: '#EF4444', gradientAccent: '#F97316' },
+    dark:  { primary: '#FBBF24', primaryLight: '#2D1F04', primaryText: '#FDE68A', gradientFrom: '#D97706', gradientTo: '#DC2626', gradientAccent: '#F97316' },
+  },
+  {
+    id: 'crimson',
+    label: 'Crimson Edge',
+    emoji: '🔴',
+    light: { primary: '#E11D48', primaryLight: '#FFE4E6', primaryText: '#BE123C', gradientFrom: '#E11D48', gradientTo: '#7C3AED', gradientAccent: '#F43F5E' },
+    dark:  { primary: '#FB7185', primaryLight: '#3A0D1A', primaryText: '#FDA4AF', gradientFrom: '#BE123C', gradientTo: '#6D28D9', gradientAccent: '#E11D48' },
+  },
 ];
 
 export const FONT_OPTIONS = [
-  { label: 'Space Grotesk (Default)', value: 'Space Grotesk' },
+  { label: 'Public Sans (Default)', value: 'Public Sans' },
   { label: 'Inter', value: 'Inter' },
   { label: 'DM Sans', value: 'DM Sans' },
+  { label: 'Space Grotesk', value: 'Space Grotesk' },
   { label: 'Sora', value: 'Sora' },
   { label: 'Poppins', value: 'Poppins' },
   { label: 'Nunito', value: 'Nunito' },
 ];
 
+// Web best-practice font sizes (root HTML font-size, scales all rem values)
+// Small  → 14px  — compact, high information density
+// Medium → 16px  — WCAG / W3C recommended base (web standard)
+// Large  → 18px  — comfortable for extended reading / accessibility
 export const FONT_SIZES = [
-  { label: 'Small', value: '13' },
-  { label: 'Medium', value: '14' },
-  { label: 'Large', value: '15' },
-  { label: 'X-Large', value: '16' },
+  { label: 'Small',  value: '14' },
+  { label: 'Medium', value: '16' },
+  { label: 'Large',  value: '18' },
 ];
 
 export const DEFAULT_THEME_PREFS: AppThemePrefs = {
   themeId: 'aurora',
-  fontFamily: 'Space Grotesk',
-  fontSize: '14',
+  fontFamily: 'Public Sans',
+  fontSize: '16',   // 16px — W3C / WCAG recommended body text baseline
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  usePlatform: true,
 };
 
 export function resolveThemePack(themeId?: string): ThemePack {
   return THEME_PACKS.find((p) => p.id === themeId) ?? THEME_PACKS[0];
 }
 
+// Migrate legacy font size values to the current 3-option set
+const FONT_SIZE_MIGRATION: Record<string, string> = {
+  '13': '14', // old Small → new Small
+  '15': '16', // old Large → new Medium
+};
+const VALID_FONT_SIZES = new Set(FONT_SIZES.map((f) => f.value));
+
 export function normalizeThemePrefs(raw: unknown): AppThemePrefs {
   if (!raw || typeof raw !== 'object') return DEFAULT_THEME_PREFS;
   const r = raw as Record<string, unknown>;
+  const rawSize = typeof r.fontSize === 'string' ? r.fontSize : DEFAULT_THEME_PREFS.fontSize;
+  const migratedSize = FONT_SIZE_MIGRATION[rawSize] ?? rawSize;
+  const fontSize = VALID_FONT_SIZES.has(migratedSize) ? migratedSize : DEFAULT_THEME_PREFS.fontSize;
   return {
     themeId: typeof r.themeId === 'string' ? r.themeId : DEFAULT_THEME_PREFS.themeId,
     fontFamily: typeof r.fontFamily === 'string' ? r.fontFamily : DEFAULT_THEME_PREFS.fontFamily,
-    fontSize: typeof r.fontSize === 'string' ? r.fontSize : DEFAULT_THEME_PREFS.fontSize,
+    fontSize,
     timezone: typeof r.timezone === 'string' ? r.timezone : DEFAULT_THEME_PREFS.timezone,
+    usePlatform: typeof r.usePlatform === 'boolean' ? r.usePlatform : DEFAULT_THEME_PREFS.usePlatform,
   };
+}
+
+/** Apply only font size — safe to call regardless of usePlatform. */
+export function applyFontSize(fontSize: string): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.style.fontSize = `${fontSize}px`;
+  document.documentElement.style.setProperty('--base-font-size', `${fontSize}px`);
 }
 
 export function applyThemePrefs(prefs: AppThemePrefs): void {
@@ -133,8 +192,9 @@ export function applyThemePrefs(prefs: AppThemePrefs): void {
   root.style.setProperty('--gradient-to', tokens.gradientTo);
   root.style.setProperty('--gradient-accent', tokens.gradientAccent);
   root.style.fontSize = `${prefs.fontSize}px`;
+  root.style.setProperty('--base-font-size', `${prefs.fontSize}px`);
 
-  const baseFonts = ['Space Grotesk', 'Inter', 'DM Sans', 'Sora', 'Poppins', 'Nunito'];
+  const baseFonts = ['Public Sans', 'Space Grotesk', 'Inter', 'DM Sans', 'Sora', 'Poppins', 'Nunito'];
   const selected = prefs.fontFamily || DEFAULT_THEME_PREFS.fontFamily;
   const body = document.body;
   if (baseFonts.includes(selected)) {

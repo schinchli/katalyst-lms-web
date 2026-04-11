@@ -88,6 +88,10 @@ export interface Quiz {
   icon: string;                // Feather icon name
   certLevel?: CertLevel;
   examCode?: string;
+  enabled?: boolean;
+  fixedQuestionCount?: number;
+  correctScore?: number;
+  wrongScore?: number;
 }
 
 export type QuizCategory =
@@ -119,7 +123,8 @@ export type QuizCategory =
   | 'ans-c01'
   | 'scs-c03'
   | 'pas-c01'
-  | 'mls-c01';
+  | 'mls-c01'
+  | (string & {});
 
 // ─── Daily Quiz ───────────────────────────────────────────────────────────────
 

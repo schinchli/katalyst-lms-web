@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 /**
- * Admin Dashboard — Katalyst
+ * Admin Dashboard — LearnKloud
  *
  * SECURITY: Admin access is verified server-side via /api/admin/check.
  * The user's Supabase JWT is sent to the server and validated there.
@@ -13,10 +13,12 @@ import { useState, useEffect } from 'react';
 import { useRouter }           from 'next/navigation';
 import { quizzes }             from '@/data/quizzes';
 import { supabase }            from '@/lib/supabase';
+import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import type { PurchaseRecord } from '@/lib/db';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // ── Upsell config (mirrors quiz page) ────────────────────────────────────────
-const ADMIN_MSGS_KEY = 'katalyst-admin-msgs';
+const ADMIN_MSGS_KEY = 'learnkloud-admin-msgs';
 interface UpsellConfig {
   freeLimit:      number;
   headline:       string;
@@ -45,6 +47,7 @@ type AdminStatus = 'loading' | 'authorized' | 'unauthorized' | 'error';
 
 export default function AdminPage() {
   const router = useRouter();
+  useManagedQuizContentVersion();
   const [status,      setStatus]      = useState<AdminStatus>('loading');
   const [purchases,   setPurchases]   = useState<PurchaseRecord[]>([]);
   const [userId,      setUserId]      = useState<string | null>(null);
@@ -96,35 +99,29 @@ export default function AdminPage() {
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (status === 'loading') {
-    return (
-      <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, border: '3px solid var(--border)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Verifying admin access…</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner label="Verifying admin access…" />;
   }
 
   // ── Unauthorized ─────────────────────────────────────────────────────────
   if (status === 'unauthorized' || status === 'error') {
     return (
-      <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ textAlign: 'center', maxWidth: 380 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🔐</div>
-          <h2 style={{ marginBottom: 8, color: 'var(--text)' }}>Access Denied</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 24, lineHeight: 1.6 }}>
-            {status === 'error'
-              ? 'An error occurred while verifying your access. Please try again.'
-              : 'You do not have permission to view this page. Admin access is granted by a server-side administrator.'}
-          </p>
-          <button className="btn-primary" onClick={() => router.push('/dashboard')}>
+      <div className="page-error" role="alert">
+        <div className="page-error-icon">🔐</div>
+        <p style={{ margin: 0, fontWeight: 700 }}>Access Denied</p>
+        <p style={{ margin: '4px 0 16px', color: 'var(--text-secondary)', fontSize: 13 }}>
+          {status === 'error'
+            ? 'An error occurred while verifying your access. Please try again.'
+            : 'You do not have permission to view this page.'}
+        </p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button className="btn-primary" style={{ minHeight: 40 }} onClick={() => router.push('/dashboard')}>
             ← Back to Dashboard
           </button>
           {status === 'error' && (
             <button
-              onClick={() => { setStatus('loading'); }}
-              style={{ display: 'block', margin: '12px auto 0', background: 'none', border: 'none', color: 'var(--primary-text)', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}
+              className="btn-ghost"
+              style={{ minHeight: 40 }}
+              onClick={() => setStatus('loading')}
             >
               Retry
             </button>
@@ -141,10 +138,22 @@ export default function AdminPage() {
   const recent   = [...purchases].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
 
   const statCards = [
-    { label: 'Total Revenue',   value: `₹${totalRev.toLocaleString()}`, color: '#28C76F' },
-    { label: 'Pro Subscribers', value: String(subs.length),              color: '#FF9F43' },
-    { label: 'Course Unlocks',  value: String(unlocks.length),           color: 'var(--primary)' },
-    { label: 'Total Sales',     value: String(purchases.length),         color: '#00BAD1' },
+    {
+      label: 'Total Revenue', value: `₹${totalRev.toLocaleString()}`, color: 'var(--success)', iconBg: 'rgba(40,199,111,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+    },
+    {
+      label: 'Pro Subscribers', value: String(subs.length), color: 'var(--warning)', iconBg: 'rgba(255,159,67,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+    },
+    {
+      label: 'Course Unlocks', value: String(unlocks.length), color: 'var(--primary)', iconBg: 'rgba(115,103,240,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+    },
+    {
+      label: 'Total Sales', value: String(purchases.length), color: 'var(--info)', iconBg: 'rgba(0,207,232,0.12)',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>,
+    },
   ];
 
   return (
@@ -172,18 +181,21 @@ export default function AdminPage() {
       </div>
 
       {/* Security notice */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 8, background: '#28C76F14', border: '1px solid #28C76F30', marginBottom: 24, fontSize: 13, color: '#1A6B3C' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 8, background: '#28C76F14', border: '1px solid #28C76F30', marginBottom: 24, fontSize: 13, color: 'var(--success-on-tint)' }}>
         <span>🔒</span>
         <span>Admin access verified via server-side JWT authentication. Showing your account data.</span>
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+      <div className="dash-stats-grid" style={{ marginBottom: 24 }}>
         {statCards.map((s) => (
-          <div key={s.label} className="info-card" style={{ margin: 0 }}>
-            <div style={{ padding: '20px 20px 4px' }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{s.label}</div>
+          <div key={s.label} className="dash-stat-card">
+            <div className="dash-stat-icon" style={{ background: s.iconBg, color: s.color }}>
+              {s.icon}
+            </div>
+            <div>
+              <div className="dash-stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="dash-stat-label">{s.label}</div>
             </div>
           </div>
         ))}
@@ -195,7 +207,7 @@ export default function AdminPage() {
           <div className="info-card-header">Purchase Type Breakdown</div>
           <div className="info-card-body">
             {[
-              { label: 'Pro Subscriptions', count: subs.length,    color: '#FF9F43', pct: purchases.length ? Math.round((subs.length    / purchases.length) * 100) : 0 },
+              { label: 'Pro Subscriptions', count: subs.length,    color: 'var(--warning)', pct: purchases.length ? Math.round((subs.length    / purchases.length) * 100) : 0 },
               { label: 'Course Unlocks',    count: unlocks.length, color: 'var(--primary)', pct: purchases.length ? Math.round((unlocks.length / purchases.length) * 100) : 0 },
             ].map((tier) => (
               <div key={tier.label} style={{ marginBottom: 16 }}>
@@ -346,10 +358,33 @@ export default function AdminPage() {
               Reset to defaults
             </button>
             {msgsSaved && (
-              <span style={{ fontSize: 13, color: '#28C76F', fontWeight: 600 }}>✓ Saved — live for all users</span>
+              <span style={{ fontSize: 13, color: 'var(--success)', fontWeight: 600 }}>✓ Saved — live for all users</span>
             )}
           </div>
         </div>
+      </div>
+
+      {/* ── Admin Quick Links ──────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'Quiz Builder', icon: '🏗️', desc: 'Create & manage quizzes', href: '/dashboard/admin/quiz-builder', color: 'var(--primary)' },
+          { label: 'Products',     icon: '📦', desc: 'Full quiz catalog',       href: '/dashboard/admin/products',     color: 'var(--info)' },
+          { label: 'Orders',       icon: '🧾', desc: 'Purchase history',        href: '/dashboard/admin/orders',       color: 'var(--success)' },
+          { label: 'Customers',    icon: '👥', desc: 'User accounts',           href: '/dashboard/admin/customers',    color: 'var(--warning)' },
+          { label: 'Reviews',      icon: '⭐', desc: 'Moderate reviews',        href: '/dashboard/admin/reviews',      color: 'var(--error)' },
+          { label: 'E-Commerce',   icon: '🛒', desc: 'Sales dashboard',         href: '/dashboard/admin/ecommerce',    color: '#7367F0' },
+        ].map((link) => (
+          <div
+            key={link.href}
+            className="vx-card"
+            onClick={() => router.push(link.href)}
+            style={{ padding: '16px 18px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4 }}
+          >
+            <div style={{ fontSize: 22 }}>{link.icon}</div>
+            <div style={{ fontWeight: 700, fontSize: 13, color: link.color }}>{link.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{link.desc}</div>
+          </div>
+        ))}
       </div>
 
       {/* Recent Purchases table */}
@@ -392,12 +427,12 @@ export default function AdminPage() {
                           display: 'inline-flex', alignItems: 'center', gap: 4,
                           padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
                           background: p.purchaseType === 'subscription' ? '#FF9F4318' : 'var(--primary-light)',
-                          color:      p.purchaseType === 'subscription' ? '#FF9F43'   : 'var(--primary-text)',
+                          color:      p.purchaseType === 'subscription' ? 'var(--warning)'   : 'var(--primary-text)',
                         }}>
                           {p.purchaseType === 'subscription' ? 'Pro' : 'Course'}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 16px', fontWeight: 700, color: '#28C76F' }}>₹{p.amount.toLocaleString()}</td>
+                      <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--success)' }}>₹{p.amount.toLocaleString()}</td>
                       <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
                         {new Date(p.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>

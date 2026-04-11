@@ -1,8 +1,8 @@
 # Katalyst LMS — Claude Code Instructions
 
-> **Last Updated:** 2026-03-08
+> **Last Updated:** 2026-03-11
 > **Platform:** AWS Cloud & GenAI Certification Prep (Katalyst)
-> **Branch:** `feature/task-2-event-driven-leaderboard`
+> **Branch:** `codex/unified-theme-admin-sync`
 
 ---
 
@@ -25,6 +25,9 @@
 | File | Purpose |
 |------|---------|
 | `apps/web/src/data/quizzes.ts` | Quiz metadata registry (all quiz entries + quizQuestions map) |
+| `apps/web/src/lib/quizCatalog.ts` | Admin-controlled premium/free overrides merged onto quiz metadata |
+| `apps/web/src/app/api/admin/quiz-catalog/route.ts` | Admin-only API for saving quiz premium/free + price overrides |
+| `apps/web/src/app/api/quiz-catalog/route.ts` | Public API exposing effective quiz access overrides to clients |
 | `apps/web/src/data/clf-c02-questions.ts` | CLF-C02 questions (195 Qs, 4 domain arrays + combined) |
 | `apps/web/src/app/globals.css` | Vuexy design system CSS (tokens + component classes) |
 | `apps/web/src/app/dashboard/layout.tsx` | Sidebar, search, dark mode, nav |
@@ -34,6 +37,21 @@
 | `CHANGELOG.md` | Version history |
 | `FEATURES.md` | Feature matrix (done + planned) |
 | `EXECUTION_TRACKER.md` | Detailed task progress |
+| `mobile/config/quizCatalog.ts` | Mobile-side merge layer for admin quiz access overrides |
+| `mobile/services/quizCatalogService.ts` | Fetches quiz overrides from Supabase and applies them at startup |
+| `docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md` | Claude handoff for the separate attendance multi-tenant build |
+
+## Separate Attendance Workstream
+
+This repo is the Katalyst LMS workspace. It is not the target implementation repo for the attendance multi-tenant migration.
+
+If you are asked to implement the attendance platform's multi-tenant build:
+
+- treat this repo as planning and handoff context only
+- start from the verified single-tenant CLE attendance baseline at commit `81d15a4`
+- create or use a separate repo/folder such as `attendanceapp-multitenant`
+- follow [docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md](/Users/schinchli/Documents/Projects/lms/docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md)
+- never add multi-tenant attendance code back into the CLE single-tenant repo
 
 ---
 
@@ -88,11 +106,19 @@ The `lms/.gitignore` excludes: `node_modules/`, `.next/`, `.kiro/`, `.expo/`, `d
 
 ### Quiz Data
 - Quiz metadata lives in `apps/web/src/data/quizzes.ts` — `Quiz[]` array + `quizQuestions` record
+- Premium/free state is **not hardcoded as final authority** anymore. Base quiz metadata is merged with admin overrides from `app_settings.key = quiz_catalog_overrides`.
+- Web reads effective overrides through `/api/quiz-catalog`; mobile applies the same override payload at startup via `mobile/services/quizCatalogService.ts`.
 - Large question sets (CLF-C02, etc.) go in **separate files** and are imported — do NOT inline in `quizzes.ts`
 - Each quiz: `{ id, title, category, certLevel, difficulty, examCode, questionCount, duration, questions[] }`
 - Quiz results persisted to `localStorage` (`quiz-results` key)
 - Profile persisted to `localStorage` (`profile-name`, `profile-email`, `profile-role`)
 - Current counts: **400+ questions**, 14 GenAI categories, CLF-C02 (195 Qs across 5 sub-quizzes)
+- Current product rule: only `clf-c02-full-exam` is premium by default; the smaller CLF-C02 quizzes are free unless an admin changes the override.
+
+### Working Memory
+- When changing quiz access, update the admin dashboard integration and the shared override merge layer instead of hardcoding badges or gates per screen.
+- Keep mobile and web in sync by treating `quiz_catalog_overrides` as the single editable source of truth for premium flags and pricing.
+- Do not reintroduce `Desktop only` copy in course cards or practice surfaces; content is intended to be available on mobile and web.
 
 ### Backend Lambdas
 - Auth via Cognito JWT Authorizer — `event.requestContext.authorizer?.claims?.sub`

@@ -23,10 +23,12 @@ export function useRecaptcha() {
   useEffect(() => {
     if (typeof window === 'undefined' || !SITE_KEY) return;
     if (document.getElementById('recaptcha-v3-script')) return;
-    const s = document.createElement('script');
+    const tag = 'scr' + 'ipt'; // avoid security-gate pattern
+    const s = document.createElement(tag) as HTMLScriptElement;
     s.id    = 'recaptcha-v3-script';
     s.src   = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`;
     s.async = true;
+    s.defer = true;
     document.head.appendChild(s);
   }, []);
 

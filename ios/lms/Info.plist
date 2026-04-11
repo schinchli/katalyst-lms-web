@@ -26,6 +26,8 @@
 	<true/>
 	<key>LSMinimumSystemVersion</key>
 	<string>12.0</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses analytics to improve your learning experience and show relevant ads. You can opt out in Settings.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
