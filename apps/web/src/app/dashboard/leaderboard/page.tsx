@@ -40,7 +40,7 @@ function isSameLocalDay(isoDate: string, reference = new Date()) {
 export default function LeaderboardPage() {
   useManagedQuizContentVersion();
   const router = useRouter();
-  const [period,  setPeriod]  = useState<Period>('alltime');
+  const [period,  setPeriod]  = useState<Period>('daily');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId,  setUserId]  = useState<string | null>(null);
