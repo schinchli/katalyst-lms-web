@@ -18,7 +18,7 @@
     "@lms/shared-types": "*",
     "@lms/theme": "*",
     "@supabase/supabase-js": "^2.98.0",
-    "next": "^16.1.1",
+    "next": "^16.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^4.3.6"
