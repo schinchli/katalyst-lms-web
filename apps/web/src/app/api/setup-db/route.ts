@@ -9,7 +9,7 @@
  *
  * Run once (from a new terminal while `npm run dev` is running):
  *   curl -X POST http://localhost:8080/api/setup-db \
- *     -H "x-setup-token: katalyst-setup-2026"
+ *     -H "x-setup-token: <value of SETUP_TOKEN from .env.local>"
  */
 
 import { NextRequest, NextResponse } from 'next/server';
