@@ -489,7 +489,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
               href="/dashboard/profile"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                padding: '6px 12px', minHeight: 36, borderRadius: 20, fontSize: 11, fontWeight: 700, textDecoration: 'none',
                 background: isPro ? '#FF9F4318' : 'var(--bg)',
                 color:      isPro ? 'var(--warning)'  : 'var(--text-secondary)',
                 border:     isPro ? '1px solid #FF9F4340' : '1px solid var(--border)',

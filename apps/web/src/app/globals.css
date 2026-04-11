@@ -1956,6 +1956,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* Mobile */
 @media (max-width: 768px) {
+  /* Constrain all cards & containers to viewport — prevents content clipping */
+  .vx-card, .dc-card, .vx-action-card { max-width: 100%; box-sizing: border-box; overflow-x: hidden; }
+  /* Ensure flex/grid children don't overflow their mobile containers */
+  .dash-academy-hero > div { min-width: 0; width: 100% !important; flex-shrink: 1 !important; }
+  .dash-kpi-row > div { min-width: 0; }
+  .page-content > * { max-width: 100%; }
+
   /* Show hamburger, hide desktop sidebar */
   .mobile-nav-btn { display: flex; }
 
