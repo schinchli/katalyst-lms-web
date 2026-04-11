@@ -1997,6 +1997,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .dash-kpi-row { flex-wrap: wrap !important; gap: 20px !important; }
   /* Dashboard main 2-col grid → single col */
   .dash-academy-grid { grid-template-columns: 1fr !important; }
+  /* Grid children must allow shrinking below their content min-size */
+  .dash-academy-grid > div { min-width: 0; }
 
   /* Hero section stacks vertically */
   .dc-hero { border-radius: 12px; }
