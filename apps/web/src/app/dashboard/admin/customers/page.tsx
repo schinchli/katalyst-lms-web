@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Customer List — Katalyst
+ * Admin Customer List — LearnKloud
  * Paginated table with search, purchase counts, and Grant Access modal.
  */
 

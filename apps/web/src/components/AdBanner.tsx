@@ -26,7 +26,7 @@ import { DEFAULT_SYSTEM_FEATURES, type SystemFeaturesConfig } from '@/lib/system
 import { supabase } from '@/lib/supabase';
 
 // ── AdSense config (localStorage — editable via Admin → Settings) ─────────────
-export const ADSENSE_STORAGE_KEY = 'katalyst-adsense-config';
+export const ADSENSE_STORAGE_KEY = 'learnkloud-adsense-config';
 
 export interface AdSenseConfig { pubId: string; slotH: string; slotR: string; }
 
@@ -264,7 +264,7 @@ export function AdBanner({ format = 'horizontal', className = '', hidden = false
             <div>
               <div className="adblock-notice-title">Ad blocker detected</div>
               <p className="adblock-notice-text">
-                Katalyst is free because of ads. Please whitelist this site to keep
+                LearnKloud is free because of ads. Please whitelist this site to keep
                 the content free, or upgrade to Pro for an ad-free experience.
               </p>
             </div>
@@ -298,7 +298,7 @@ export function AdBanner({ format = 'horizontal', className = '', hidden = false
                 <li>
                   <strong>Other blockers</strong> — find &quot;Allowlist&quot; or
                   &quot;Whitelist&quot; in the extension settings and add{' '}
-                  <code>katalyst.dev</code>
+                  <code>learnkloud.today</code>
                 </li>
               </ol>
               <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>

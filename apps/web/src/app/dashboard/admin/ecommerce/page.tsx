@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin E-Commerce Dashboard — Katalyst
+ * Admin E-Commerce Dashboard — LearnKloud
  * Stats overview: revenue, orders, customers, pro subscribers + recent orders table.
  */
 

@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 /**
- * Admin Dashboard — Katalyst
+ * Admin Dashboard — LearnKloud
  *
  * SECURITY: Admin access is verified server-side via /api/admin/check.
  * The user's Supabase JWT is sent to the server and validated there.
@@ -18,7 +18,7 @@ import type { PurchaseRecord } from '@/lib/db';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 // ── Upsell config (mirrors quiz page) ────────────────────────────────────────
-const ADMIN_MSGS_KEY = 'katalyst-admin-msgs';
+const ADMIN_MSGS_KEY = 'learnkloud-admin-msgs';
 interface UpsellConfig {
   freeLimit:      number;
   headline:       string;

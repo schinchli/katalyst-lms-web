@@ -27,7 +27,7 @@ function formatDate(iso: string | null) {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-// ── Portable Text → Katalyst styled components ────────────────────────────────
+// ── Portable Text → LearnKloud styled components ─────────────────────────────
 
 const portableTextComponents: PortableTextComponents = {
   block: {
@@ -332,7 +332,7 @@ export default function ArticlePage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
               <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--primary-light)', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 700, color: 'var(--primary)', flexShrink: 0 }}>K</div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{article.author ?? 'Katalyst Team'}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{article.author ?? 'LearnKloud Team'}</div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatDate(article.publishedAt)}</div>
               </div>
             </div>

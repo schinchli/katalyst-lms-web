@@ -4,8 +4,8 @@ import FpNav from '@/components/FpNav';
 import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Katalyst',
-  description: 'How Katalyst collects, uses, and protects your personal information.',
+  title: 'Privacy Policy — LearnKloud',
+  description: 'How LearnKloud collects, uses, and protects your personal information.',
 };
 
 export default function PrivacyPage() {
@@ -41,8 +41,8 @@ export default function PrivacyPage() {
         </div>
 
         <p>
-          Katalyst (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the Katalyst web application at{' '}
-          <a href="https://learnkloud.today">learnkloud.today</a> and the Katalyst mobile app on iOS and
+          LearnKloud (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the LearnKloud web application at{' '}
+          <a href="https://learnkloud.today">learnkloud.today</a> and the LearnKloud mobile app on iOS and
           Android (collectively, the &quot;Service&quot;). This Privacy Policy explains how we collect, use,
           disclose, and safeguard your information when you use our Service. Please read this carefully.
           If you disagree with the terms, please discontinue use of the Service.
@@ -159,7 +159,7 @@ export default function PrivacyPage() {
         </p>
 
         <h2 id="s8">8. Cookies &amp; Tracking</h2>
-        <p>The Katalyst web portal uses the following types of storage:</p>
+        <p>The LearnKloud web portal uses the following types of storage:</p>
         <ul>
           <li><strong>localStorage:</strong> Stores your theme preference, quiz progress, profile settings, and session tokens. This data never leaves your device except as part of API calls to our servers.</li>
           <li><strong>Session cookies:</strong> Supabase sets a secure, HTTP-only session cookie to maintain your authenticated session.</li>
@@ -175,17 +175,17 @@ export default function PrivacyPage() {
         <ul>
           <li>Visit <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">adssettings.google.com</a> to manage your Google ad personalisation settings.</li>
           <li>Install an ad blocker or use the &quot;Whitelist this site&quot; flow shown when an ad blocker is detected.</li>
-          <li>Upgrade to a Katalyst Pro subscription — Pro members see no ads.</li>
+          <li>Upgrade to a LearnKloud Pro subscription — Pro members see no ads.</li>
         </ul>
         <p>
-          Katalyst is a participant in the Google AdSense program. Google&apos;s use of advertising cookies
+          LearnKloud is a participant in the Google AdSense program. Google&apos;s use of advertising cookies
           is governed by the{' '}
           <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
         </p>
 
         <h2 id="s10">10. International Data Transfers</h2>
         <p>
-          Katalyst is operated from India. If you access the Service from outside India, your information
+          LearnKloud is operated from India. If you access the Service from outside India, your information
           may be transferred to and processed in India and the United States (Vercel, Supabase infrastructure).
           By using the Service you consent to this transfer. We rely on standard contractual clauses and
           Supabase&apos;s Data Processing Addendum where required by applicable law.

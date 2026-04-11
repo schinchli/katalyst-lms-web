@@ -2,9 +2,8 @@
  * @lms/theme — NativeWind / Tailwind CSS config
  *
  * Import into any app's tailwind.config.js:
- *   const { vuexyColors, vuexyExtend } = require('@lms/theme/tailwind');
+ *   const { appColors, appExtend } = require('@lms/theme/tailwind');
  *
- * All color tokens derive from Vuexy v10.11.1 design system.
  * Naming convention:
  *   app-{semantic}-{modifier?}
  *   app-bg            → background (light)
@@ -12,8 +11,8 @@
  */
 
 // ─── Semantic color tokens ────────────────────────────────────────────────────
-const vuexyColors = {
-  // Primary (Vuexy purple — same in light + dark)
+const appColors = {
+  // Primary purple — same in light + dark
   'app-primary': '#7367F0',
 
   // Backgrounds
@@ -57,14 +56,13 @@ const vuexyColors = {
 };
 
 // ─── Full extend block ─────────────────────────────────────────────────────────
-const vuexyExtend = {
-  colors: vuexyColors,
+const appExtend = {
+  colors: appColors,
   fontFamily: {
     sans: ['Inter', 'system-ui', 'sans-serif'],
     mono: ['SpaceMono', 'Courier New', 'monospace'],
   },
   borderRadius: {
-    // Vuexy uses 6px as base border-radius
     DEFAULT: '6px',
     sm:   '6px',
     md:   '8px',
@@ -75,4 +73,5 @@ const vuexyExtend = {
   },
 };
 
-module.exports = { vuexyColors, vuexyExtend };
+// Keep legacy exports for backwards compat with any existing tailwind configs
+module.exports = { appColors, appExtend, vuexyColors: appColors, vuexyExtend: appExtend };

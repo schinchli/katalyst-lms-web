@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
   const receiptSuffix = purchaseType === 'course' && courseId
     ? `course-${courseId.slice(0, 20)}`
     : `sub-${plan ?? 'annual'}`;
-  const receipt = `katalyst-${receiptSuffix}-${user.id.slice(0, 8)}-${Date.now()}`;
+  const receipt = `learnkloud-${receiptSuffix}-${user.id.slice(0, 8)}-${Date.now()}`;
 
   const keyId     = process.env.RAZORPAY_KEY_ID     ?? '';
   const keySecret = process.env.RAZORPAY_KEY_SECRET ?? '';

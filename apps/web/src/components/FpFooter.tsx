@@ -7,7 +7,7 @@ export default function FpFooter() {
         <div>
           <Link href="/" className="fp-nav-brand" style={{ textDecoration: 'none' }}>
             <div className="fp-nav-logo">K</div>
-            <span className="fp-nav-name">Katalyst</span>
+            <span className="fp-nav-name">LearnKloud</span>
           </Link>
           <p className="fp-footer-brand-desc">
             Master AWS &amp; cloud certifications with 400+ practice questions, daily challenges,
@@ -37,7 +37,7 @@ export default function FpFooter() {
         </div>
       </div>
       <div className="fp-footer-bottom">
-        <span className="fp-footer-copy">© {new Date().getFullYear()} Katalyst. All rights reserved.</span>
+        <span className="fp-footer-copy">© {new Date().getFullYear()} LearnKloud. All rights reserved.</span>
         <div style={{ display: 'flex', gap: 16 }}>
           <Link href="/privacy" className="fp-footer-link" style={{ margin: 0 }}>Privacy</Link>
           <Link href="/terms"   className="fp-footer-link" style={{ margin: 0 }}>Terms</Link>

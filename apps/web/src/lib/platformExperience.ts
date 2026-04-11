@@ -1,7 +1,7 @@
 import type { PlatformThemePresetId } from '@/lib/platformTheme';
 
 export const PLATFORM_EXPERIENCE_KEY = 'mobile_experience_config';
-export const PLATFORM_EXPERIENCE_CACHE_KEY = 'katalyst-platform-experience-cache';
+export const PLATFORM_EXPERIENCE_CACHE_KEY = 'learnkloud-platform-experience-cache';
 
 export interface PlatformExperienceConfig {
   copy: {
@@ -75,7 +75,7 @@ export const DEFAULT_PLATFORM_EXPERIENCE: PlatformExperienceConfig = {
   copy: {
     authHeadline: 'Build data and AI skills. Anytime, anywhere.',
     authSubheadline: 'Guided practice, streaks, quizzes, and editorial resources in one focused learning system.',
-    homeEyebrow: 'Katalyst Growth System',
+    homeEyebrow: 'LearnKloud Growth System',
     homeHeroTitle: 'Your next skill sprint is already laid out.',
     homeHeroSubtitle: 'Pick up where you left off, revisit flashcards, and move through practice paths with a calmer, sharper interface.',
     homePrimaryCta: 'Continue learning',

@@ -9,8 +9,8 @@ import FpFooter from '@/components/FpFooter';
 
 const FAQS = [
   {
-    q: 'What certifications does Katalyst cover?',
-    a: 'Katalyst currently covers AWS Certified Cloud Practitioner (CLF-C02) with 195 questions across 5 domain-specific sub-quizzes, plus 14 GenAI and cloud technology categories. More certifications (SAA-C03, AI Practitioner) are on the roadmap.',
+    q: 'What certifications does LearnKloud cover?',
+    a: 'LearnKloud currently covers AWS Certified Cloud Practitioner (CLF-C02) with 195 questions across 5 domain-specific sub-quizzes, plus 14 GenAI and cloud technology categories. More certifications (SAA-C03, AI Practitioner) are on the roadmap.',
   },
   {
     q: 'Is there a free plan?',
@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     q: 'Is there a mobile app?',
-    a: 'Yes. Katalyst is available on Android (Google Play) and iOS (App Store). The mobile app syncs your progress, daily streaks, coins, and leaderboard rank in real time with the web portal.',
+    a: 'Yes. LearnKloud is available on Android (Google Play) and iOS (App Store). The mobile app syncs your progress, daily streaks, coins, and leaderboard rank in real time with the web portal.',
   },
   {
     q: 'How is Pro different from the free tier?',
@@ -37,7 +37,7 @@ function FaqSection() {
       <div style={{ maxWidth: 1140, margin: '0 auto' }}>
         <div className="fp-tag">FAQ</div>
         <h2 className="fp-section-title">Frequently asked questions</h2>
-        <p className="fp-section-sub">Everything you need to know about Katalyst and how it works.</p>
+        <p className="fp-section-sub">Everything you need to know about LearnKloud and how it works.</p>
         <div className="fp-faq-list">
           {FAQS.map((f, i) => (
             <div key={i} className="fp-faq-item">

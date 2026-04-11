@@ -249,7 +249,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       fetchUserTheme(u.id)
         .then((prefs) => {
           try {
-            localStorage.setItem('katalyst-theme', JSON.stringify(prefs));
+            localStorage.setItem('learnkloud-theme', JSON.stringify(prefs));
             applyFontSize(prefs.fontSize);          // always apply font size
             if (!prefs.usePlatform) applyThemePrefs(prefs);
           } catch { /* ignore */ }
@@ -293,7 +293,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
     // Apply cached platform theme immediately (server source is fetched below)
     try {
-      const raw = localStorage.getItem('katalyst-platform-theme-cache');
+      const raw = localStorage.getItem('learnkloud-platform-theme-cache');
       const cached = raw ? normalizePlatformTheme(JSON.parse(raw)) : DEFAULT_PLATFORM_THEME;
       applyPlatformThemePreset(cached.presetId);
     } catch {
@@ -303,7 +303,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     // Apply font size from cache immediately (prevents FOUC on reload)
     // Always applied regardless of usePlatform — font size is a universal preference
     try {
-      const raw = localStorage.getItem('katalyst-theme');
+      const raw = localStorage.getItem('learnkloud-theme');
       const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
       applyFontSize(prefs.fontSize);
       if (!prefs.usePlatform) applyThemePrefs(prefs);
@@ -320,7 +320,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         const theme = normalizePlatformTheme(d.theme);
         applyPlatformThemePreset(theme.presetId);
         try {
-          const raw = localStorage.getItem('katalyst-theme');
+          const raw = localStorage.getItem('learnkloud-theme');
           const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
           applyFontSize(prefs.fontSize);
           if (!prefs.usePlatform) applyThemePrefs(prefs);
@@ -337,7 +337,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-theme', next ? 'dark' : '');
     localStorage.setItem('theme', next ? 'dark' : 'light');
     try {
-      const raw = localStorage.getItem('katalyst-theme');
+      const raw = localStorage.getItem('learnkloud-theme');
       const prefs = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
       if (!prefs.usePlatform) applyThemePrefs(prefs);
     } catch { /* best-effort */ }
@@ -391,13 +391,13 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="page-wrapper">
 
-      {/* Sidebar — LEFT side (Vuexy vertical menu pattern, first in DOM) */}
+      {/* Sidebar — LEFT side (vertical menu pattern, first in DOM) */}
       <aside className={`sidebar${sidebarOpen ? ' mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="sidebar-logo-icon">K</div>
             <div>
-              <div className="sidebar-brand-name">Katalyst</div>
+              <div className="sidebar-brand-name">LearnKloud</div>
               <div className="sidebar-brand-sub">Supercharge Your Career</div>
             </div>
           </div>
@@ -522,7 +522,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
               </span>
             </div>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Katalyst v1.0</span>
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>LearnKloud v1.0</span>
         </div>
       </aside>
 

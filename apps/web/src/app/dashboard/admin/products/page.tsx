@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Products — Katalyst
+ * Admin Products — LearnKloud
  * Full quiz catalog: built-in + managed, fetched from /api/admin/quiz-builder.
  * Click "Edit" to open in Quiz Builder. Click row to preview the quiz.
  */

@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Order List — Katalyst
+ * Admin Order List — LearnKloud
  * Paginated orders table with status filter tabs.
  */
 

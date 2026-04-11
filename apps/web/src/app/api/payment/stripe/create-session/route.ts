@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency:     'usd',
         product_data: {
-          name:        `Katalyst Pro — ${plan === 'annual' ? 'Annual' : 'Monthly'}`,
+          name:        `LearnKloud Pro — ${plan === 'annual' ? 'Annual' : 'Monthly'}`,
           description: plan === 'annual'
             ? 'All-access pass: every quiz, domain, and certification track.'
             : 'Monthly all-access — cancel anytime.',
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency:     'usd',
         product_data: {
-          name:        `Katalyst — Course Unlock`,
+          name:        `LearnKloud — Course Unlock`,
           description: `Permanent access to quiz: ${courseId}`,
           images: [],
         },

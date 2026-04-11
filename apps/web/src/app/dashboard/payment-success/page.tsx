@@ -78,7 +78,7 @@ export default function PaymentSuccessPage() {
         {/* Compact logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 36 }}>
           <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 800, color: '#fff', flexShrink: 0 }}>K</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Katalyst</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>LearnKloud</div>
         </div>
 
         {/* Loading state */}

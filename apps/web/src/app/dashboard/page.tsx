@@ -95,7 +95,7 @@ export default function DashboardPage() {
   return (
     <div className="page-content">
 
-      {/* ── Welcome hero (Vuexy academy pattern) ── */}
+      {/* ── Welcome hero ── */}
       <div className="vx-card" style={{ marginBottom: 24, overflow: 'hidden' }}>
         <div className="dash-academy-hero" style={{ display: 'flex', gap: 0 }}>
           {/* Left: welcome + stats */}
@@ -110,7 +110,7 @@ export default function DashboardPage() {
               {config.copy.homeHeroSubtitle || 'Your progress this week is looking great. Keep it up and earn more points!'}
             </p>
 
-            {/* KPI stats row — Vuexy avatar-lg pattern */}
+            {/* KPI stats row */}
             <div className="dash-kpi-row" style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
               {([
                 {
@@ -182,13 +182,13 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Main 2-col grid (Vuexy academy layout) ── */}
+      {/* ── Main 2-col grid ── */}
       <div className="dash-academy-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
 
         {/* LEFT COLUMN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* Top Courses — Vuexy list card */}
+          {/* Top Courses */}
           {config.widgets.showPopularCourses && (
             <div className="vx-card">
               <div className="vx-card-header">
@@ -220,7 +220,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Assignment / Quiz Progress — Vuexy pattern with progress bars */}
+          {/* Assignment / Quiz Progress */}
           {results.length > 0 && (
             <div className="vx-card">
               <div className="vx-card-header">
@@ -283,7 +283,7 @@ export default function DashboardPage() {
         {/* RIGHT COLUMN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* Quick Actions — Vuexy action card pattern */}
+          {/* Quick Actions */}
           {config.widgets.showHomeActions && (
             <div className="vx-card">
               <div className="vx-card-header">

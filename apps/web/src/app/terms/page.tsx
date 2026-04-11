@@ -4,8 +4,8 @@ import FpNav from '@/components/FpNav';
 import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — Katalyst',
-  description: 'Terms and conditions for using the Katalyst cloud certification preparation platform.',
+  title: 'Terms of Service — LearnKloud',
+  description: 'Terms and conditions for using the LearnKloud cloud certification preparation platform.',
 };
 
 export default function TermsPage() {
@@ -18,7 +18,7 @@ export default function TermsPage() {
         <div className="fp-legal-header">
           <div className="fp-tag" style={{ marginBottom: 12 }}>Legal</div>
           <h1 className="fp-legal-title">Terms of Service</h1>
-          <p className="fp-legal-meta">Last updated: {updated} · By using Katalyst you agree to these terms</p>
+          <p className="fp-legal-meta">Last updated: {updated} · By using LearnKloud you agree to these terms</p>
         </div>
 
         {/* Table of contents */}
@@ -45,13 +45,13 @@ export default function TermsPage() {
 
         <h2 id="t1">1. Acceptance of Terms</h2>
         <p>
-          By accessing or using the Katalyst web portal, iOS app, or Android app (collectively, the
+          By accessing or using the LearnKloud web portal, iOS app, or Android app (collectively, the
           &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;) and
           our <Link href="/privacy">Privacy Policy</Link>. If you do not agree, do not use the Service.
         </p>
         <p>
-          These Terms constitute a legally binding agreement between you and Katalyst
-          (&quot;Katalyst&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
+          These Terms constitute a legally binding agreement between you and LearnKloud
+          (&quot;LearnKloud&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
         </p>
 
         <h2 id="t2">2. Eligibility</h2>
@@ -133,7 +133,7 @@ export default function TermsPage() {
         <h2 id="t7">7. Intellectual Property</h2>
         <p>
           All content on the Service — including but not limited to quiz questions, answer explanations, code,
-          graphics, logos, and the Katalyst name — is owned by or licensed to Katalyst and is protected by
+          graphics, logos, and the LearnKloud name — is owned by or licensed to LearnKloud and is protected by
           copyright, trademark, and other intellectual property laws.
         </p>
         <p>
@@ -161,7 +161,7 @@ export default function TermsPage() {
           A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
         </p>
         <p>
-          Katalyst does not guarantee that: (a) the Service will be error-free or uninterrupted; (b) any
+          LearnKloud does not guarantee that: (a) the Service will be error-free or uninterrupted; (b) any
           defects will be corrected; (c) practice questions will guarantee a passing score on any third-party
           certification exam. Exam syllabi and question formats are controlled by the respective certification
           bodies and may change without notice.
@@ -169,7 +169,7 @@ export default function TermsPage() {
 
         <h2 id="t10">10. Limitation of Liability</h2>
         <p>
-          TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, KATALYST AND ITS DIRECTORS, EMPLOYEES, AGENTS,
+          TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LEARNKLOUD AND ITS DIRECTORS, EMPLOYEES, AGENTS,
           AND LICENSORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
           DAMAGES — INCLUDING LOSS OF PROFITS, DATA, OR GOODWILL — ARISING OUT OF OR IN CONNECTION WITH YOUR
           USE OF THE SERVICE, WHETHER BASED ON WARRANTY, CONTRACT, TORT, OR ANY OTHER LEGAL THEORY, EVEN IF
@@ -177,12 +177,12 @@ export default function TermsPage() {
         </p>
         <p>
           OUR TOTAL LIABILITY TO YOU FOR ALL CLAIMS ARISING FROM OR RELATED TO THE SERVICE SHALL NOT EXCEED
-          THE GREATER OF (A) THE AMOUNT YOU PAID TO KATALYST IN THE 12 MONTHS PRECEDING THE CLAIM, OR (B) ₹500.
+          THE GREATER OF (A) THE AMOUNT YOU PAID TO LEARNKLOUD IN THE 12 MONTHS PRECEDING THE CLAIM, OR (B) ₹500.
         </p>
 
         <h2 id="t11">11. Indemnification</h2>
         <p>
-          You agree to defend, indemnify, and hold harmless Katalyst and its affiliates from and against any
+          You agree to defend, indemnify, and hold harmless LearnKloud and its affiliates from and against any
           claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of
           your use of the Service, your User Content, or your violation of these Terms.
         </p>

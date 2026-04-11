@@ -4,8 +4,8 @@ import FpNav from '@/components/FpNav';
 import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
-  title: 'How to Use Katalyst — Instructions',
-  description: 'Learn how to get the most out of Katalyst — quizzes, daily challenges, the leaderboard, and Pro features.',
+  title: 'How to Use LearnKloud — Instructions',
+  description: 'Learn how to get the most out of LearnKloud — quizzes, daily challenges, the leaderboard, and Pro features.',
 };
 
 export default function InstructionsPage() {
@@ -16,7 +16,7 @@ export default function InstructionsPage() {
       <div className="fp-legal">
         <div className="fp-legal-header">
           <div className="fp-tag" style={{ marginBottom: 12 }}>Guide</div>
-          <h1 className="fp-legal-title">How to Use Katalyst</h1>
+          <h1 className="fp-legal-title">How to Use LearnKloud</h1>
           <p className="fp-legal-meta">Everything you need to get the most out of your certification prep</p>
         </div>
 
@@ -65,7 +65,7 @@ export default function InstructionsPage() {
         </ul>
 
         <h2>6. Pro features</h2>
-        <p>Upgrade to <strong>Katalyst Pro</strong> to unlock:</p>
+        <p>Upgrade to <strong>LearnKloud Pro</strong> to unlock:</p>
         <ul>
           <li>Unlimited questions per quiz attempt (no 25-question cap)</li>
           <li>The full 195-question CLF-C02 mock exam</li>
@@ -81,7 +81,7 @@ export default function InstructionsPage() {
 
         <h2>7. Mobile app</h2>
         <ul>
-          <li>Download Katalyst from the <strong>Google Play Store</strong> or <strong>Apple App Store</strong>.</li>
+          <li>Download LearnKloud from the <strong>Google Play Store</strong> or <strong>Apple App Store</strong>.</li>
           <li>Sign in with the same account you use on the web — all progress, streaks, and coins sync automatically.</li>
           <li>The mobile app supports offline caching of your recent quiz sessions.</li>
         </ul>

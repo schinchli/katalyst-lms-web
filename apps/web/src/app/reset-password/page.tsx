@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 64 }}>
             <div style={{ width: 42, height: 42, borderRadius: 10, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 18, fontWeight: 800, color: '#fff' }}>K</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>Katalyst</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>LearnKloud</div>
           </div>
 
           <h1 style={{ margin: '0 0 18px', fontSize: 42, fontWeight: 700, lineHeight: 1.15, color: '#fff' }}>
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
           {/* Logo (mobile only) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 }} className="auth-mobile-logo">
             <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 800, color: '#fff' }}>K</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Katalyst</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>LearnKloud</div>
           </div>
 
           {success ? (

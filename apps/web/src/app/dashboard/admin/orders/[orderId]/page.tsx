@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Order Detail — Katalyst
+ * Admin Order Detail — LearnKloud
  * Shows full details of a single order record.
  */
 

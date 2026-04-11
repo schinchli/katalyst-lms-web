@@ -5,7 +5,7 @@ interface LoadingSpinnerProps {
 }
 
 /**
- * Vuexy-standard loading spinner.
+ * Standard loading spinner.
  * Uses CSS classes from globals.css: .spinner, .spinner-sm, .spinner-lg, .page-loading
  */
 export default function LoadingSpinner({ size = 'md', label = 'Loading…', className }: LoadingSpinnerProps) {

@@ -26,7 +26,7 @@ export interface AppThemePrefs {
 export const THEME_PACKS: ThemePack[] = [
   {
     id: 'violet',
-    label: 'Vuexy Violet',
+    label: 'LearnKloud Violet',
     emoji: '💜',
     light: { primary: '#7367F0', primaryLight: 'rgba(115,103,240,0.12)', primaryText: '#4C3BE4', gradientFrom: '#7367F0', gradientTo: '#9E95F5', gradientAccent: '#C084FC' },
     dark:  { primary: '#9E95F5', primaryLight: 'rgba(115,103,240,0.18)', primaryText: '#C4BDFA', gradientFrom: '#7367F0', gradientTo: '#9E95F5', gradientAccent: '#C084FC' },

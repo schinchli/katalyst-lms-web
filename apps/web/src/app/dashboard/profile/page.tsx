@@ -64,7 +64,7 @@ export default function ProfilePage() {
     setResults(getLocalResults());
 
     try {
-      const raw = localStorage.getItem('katalyst-theme');
+      const raw = localStorage.getItem('learnkloud-theme');
       const next = raw ? normalizeThemePrefs(JSON.parse(raw)) : DEFAULT_THEME_PREFS;
       setTheme(next);
       if (!next.usePlatform) applyThemePrefs(next);
@@ -173,7 +173,7 @@ export default function ProfilePage() {
 
   return (
     <div className="page-content">
-      {/* User card — Vuexy pattern */}
+      {/* User card */}
       <div className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           {/* Avatar */}
@@ -190,7 +190,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Stats row — Vuexy avatar+icon pattern */}
+        {/* Stats row */}
         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 20, marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
           {[
             {

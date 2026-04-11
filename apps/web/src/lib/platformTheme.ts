@@ -15,7 +15,7 @@ export interface PlatformThemePreset {
 }
 
 export const PLATFORM_THEME_KEY = 'platform_theme';
-export const PLATFORM_THEME_CACHE_KEY = 'katalyst-platform-theme-cache';
+export const PLATFORM_THEME_CACHE_KEY = 'learnkloud-platform-theme-cache';
 
 export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
   {
@@ -56,7 +56,7 @@ export const PLATFORM_THEME_PRESETS: PlatformThemePreset[] = [
   },
 ];
 
-// null = no platform theme override; base Vuexy purple tokens apply
+// null = no platform theme override; base design tokens apply
 export const DEFAULT_PLATFORM_THEME: PlatformThemeConfig = { presetId: null };
 
 export function normalizePlatformTheme(raw: unknown): PlatformThemeConfig {

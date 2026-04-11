@@ -4,8 +4,8 @@ import FpNav from '@/components/FpNav';
 import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
-  title: 'About — Katalyst',
-  description: 'Katalyst is a cloud certification prep platform with 400+ practice questions for AWS CLF-C02, GenAI, and more.',
+  title: 'About — LearnKloud',
+  description: 'LearnKloud is a cloud certification prep platform with 400+ practice questions for AWS CLF-C02, GenAI, and more.',
 };
 
 export default function AboutPage() {
@@ -15,12 +15,12 @@ export default function AboutPage() {
 
       {/* Hero */}
       <section className="fp-section" style={{ textAlign: 'center', paddingBottom: 0 }}>
-        <div className="fp-tag">About Katalyst</div>
+        <div className="fp-tag">About LearnKloud</div>
         <h1 className="fp-section-title" style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}>
           Built to help you pass — not just practice
         </h1>
         <p className="fp-section-sub" style={{ maxWidth: 640, margin: '0 auto 48px' }}>
-          Katalyst is a cloud certification prep platform that combines a rigorous question bank,
+          LearnKloud is a cloud certification prep platform that combines a rigorous question bank,
           real-time leaderboard, and daily challenges to turn casual studying into consistent progress.
         </p>
       </section>
@@ -32,7 +32,7 @@ export default function AboutPage() {
             {[
               { icon: '🎯', title: 'Our mission', desc: 'Make cloud certification accessible to everyone — whether you\'re switching careers, upskilling at work, or chasing your first AWS badge.' },
               { icon: '🔬', title: 'Our approach', desc: 'Every question is authored with a clear explanation. Understanding the why beats memorising the what — especially for scenario-based AWS exams.' },
-              { icon: '🌐', title: 'Our reach', desc: 'Katalyst runs on web and mobile (iOS + Android). Your streak, coins, and progress sync in real time across every device you use.' },
+              { icon: '🌐', title: 'Our reach', desc: 'LearnKloud runs on web and mobile (iOS + Android). Your streak, coins, and progress sync in real time across every device you use.' },
             ].map((c) => (
               <div key={c.title} className="fp-feature-card">
                 <div className="fp-feature-icon" style={{ background: 'rgba(115,103,240,0.12)' }}>{c.icon}</div>
@@ -47,7 +47,7 @@ export default function AboutPage() {
       {/* What we cover */}
       <section className="fp-section">
         <div className="fp-tag">Coverage</div>
-        <h2 className="fp-section-title">What Katalyst covers today</h2>
+        <h2 className="fp-section-title">What LearnKloud covers today</h2>
         <p className="fp-section-sub">More certifications are on the roadmap — here&apos;s what you can prep for right now.</p>
         <div className="fp-features-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
           {[

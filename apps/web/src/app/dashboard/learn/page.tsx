@@ -129,7 +129,7 @@ export default function LearnPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--primary-light)', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 700, color: 'var(--primary)' }}>K</div>
-                      <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{article.author ?? 'Katalyst Team'}</span>
+                      <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{article.author ?? 'LearnKloud Team'}</span>
                     </div>
                     {article.readTime && (
                       <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>

@@ -110,7 +110,7 @@ export function usePayment(callbacks?: {
         key:         orderData.keyId,
         amount:      orderData.amount,
         currency:    orderData.currency,
-        name:        'Katalyst',
+        name:        'LearnKloud',
         description: opts.type === 'subscription'
           ? `Pro ${opts.plan === 'annual' ? '₹999/yr' : '₹149/mo'}`
           : 'Course unlock',

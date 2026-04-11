@@ -3,21 +3,21 @@ import './globals.css';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'Katalyst — Master AWS & Cloud Certifications',
+  title: 'LearnKloud — Master AWS & Cloud Certifications',
   description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Daily challenges, leaderboard, instant explanations, and a mobile app. Free to start.',
   robots: { index: true, follow: true },
   metadataBase: new URL('https://learnkloud.today'),
   alternates: { canonical: 'https://learnkloud.today' },
   openGraph: {
     type: 'website',
-    siteName: 'Katalyst',
+    siteName: 'LearnKloud',
     url: 'https://learnkloud.today',
-    title: 'Katalyst — Master AWS & Cloud Certifications',
+    title: 'LearnKloud — Master AWS & Cloud Certifications',
     description: '400+ practice questions for AWS CLF-C02, GenAI and cloud certifications. Free to start.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Katalyst — Master AWS & Cloud Certifications',
+    title: 'LearnKloud — Master AWS & Cloud Certifications',
     description: '400+ practice questions for AWS CLF-C02 and GenAI. Free to start.',
   },
 };
@@ -36,11 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark">
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
-          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('katalyst-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&o.presetId&&typeof o.presetId==='string'&&o.presetId!==null){document.documentElement.setAttribute('data-platform-theme',o.presetId);}else{document.documentElement.removeAttribute('data-platform-theme');}}var e=localStorage.getItem('katalyst-platform-experience-cache');if(e){var c=JSON.parse(e);if(c&&c.theme&&(c.theme.platformPreset===null||!c.theme.platformPreset)){document.documentElement.removeAttribute('data-platform-theme');}}}catch(ex){}`}
+          {`try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.removeAttribute('data-theme');}var p=localStorage.getItem('learnkloud-platform-theme-cache');if(p){var o=JSON.parse(p);if(o&&o.presetId&&typeof o.presetId==='string'&&o.presetId!==null){document.documentElement.setAttribute('data-platform-theme',o.presetId);}else{document.documentElement.removeAttribute('data-platform-theme');}}var e=localStorage.getItem('learnkloud-platform-experience-cache');if(e){var c=JSON.parse(e);if(c&&c.theme&&(c.theme.platformPreset===null||!c.theme.platformPreset)){document.documentElement.removeAttribute('data-platform-theme');}}}catch(ex){}`}
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Public Sans — matches Vuexy design system; font-display=swap eliminates render-blocking */}
+        {/* Public Sans — design system font; font-display=swap eliminates render-blocking */}
         <link
           rel="preload"
           as="style"

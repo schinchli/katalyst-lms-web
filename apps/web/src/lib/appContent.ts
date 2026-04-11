@@ -10,7 +10,7 @@ export interface AppContentConfig {
 }
 
 export const DEFAULT_APP_CONTENT: AppContentConfig = {
-  appName: 'Katalyst LMS',
+  appName: 'LearnKloud LMS',
   supportEmail: 'support@example.com',
   privacyPolicy: `We respect your privacy.
 
@@ -20,7 +20,7 @@ If you need help with your data or account, contact support.`,
   termsAndConditions: `By using this app, you agree to use the platform lawfully and not attempt to abuse quizzes, payments, or account systems.
 
 Premium purchases unlock access according to the plan or course you buy. Access may be suspended for fraud, abuse, or chargeback disputes.`,
-  aboutUs: `Katalyst LMS helps learners build cloud, AI, and certification skills through guided practice, quiz-based learning, and progress tracking.`,
+  aboutUs: `LearnKloud LMS helps learners build cloud, AI, and certification skills through guided practice, quiz-based learning, and progress tracking.`,
   instructions: `How to use the app:
 
 1. Create an account or sign in.

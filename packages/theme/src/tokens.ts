@@ -1,22 +1,18 @@
 /**
- * @lms/theme — Vuexy Design Tokens
+ * @lms/theme — LearnKloud Design Tokens
  *
- * Single source of truth. All color/spacing/radius values derive from Vuexy v10.11.1.
- * Updating Vuexy? Only change values here — all apps inherit automatically.
- *
- * Vuexy source of truth:
- *   nextjs-version › typescript-version › src/@core/theme/colorSchemes.ts
- *   html-version › scss/_bootstrap-extended/_variables.scss
+ * Single source of truth. All color/spacing/radius values for the LearnKloud design system.
+ * Updating tokens? Only change values here — all apps inherit automatically.
  */
 
 // ─── Core Brand ─────────────────────────────────────────────────────────────
-export const PRIMARY   = '#7367F0'; // Vuexy purple
+export const PRIMARY   = '#7367F0'; // primary purple
 export const SECONDARY = '#808390';
 export const SUCCESS   = '#28C76F';
 export const WARNING   = '#FF9F43';
 export const ERROR     = '#FF4C51';
 export const INFO      = '#00BAD1';
-export const AWS       = '#FF9900'; // AWS orange (non-Vuexy brand)
+export const AWS       = '#FF9900'; // AWS orange
 
 // ─── Light Theme ────────────────────────────────────────────────────────────
 export const light = {
@@ -28,12 +24,12 @@ export const light = {
   info:            INFO,
   aws:             AWS,
 
-  background:      '#F8F7FA',   // Vuexy light bg
+  background:      '#F8F7FA',   // light bg
   surface:         '#FFFFFF',
-  surfaceBorder:   '#DBDADE',   // Vuexy table-border
+  surfaceBorder:   '#DBDADE',   // table-border
 
-  text:            '#23212A',   // Vuexy heading-color
-  textSecondary:   '#6A6B76',   // Vuexy text-muted
+  text:            '#23212A',   // heading-color
+  textSecondary:   '#6A6B76',   // text-muted
 
   primaryLight:    '#EBE9FD',   // primary at 10% opacity on white
   successTint:     '#D1F7E2',   // success at 10% on white
@@ -54,12 +50,12 @@ export const dark = {
   info:            INFO,
   aws:             AWS,
 
-  background:      '#25293C',   // Vuexy dark main bg
-  surface:         '#2F3349',   // Vuexy dark card bg
-  surfaceBorder:   '#4B4F66',   // Vuexy dark divider
+  background:      '#25293C',   // dark main bg
+  surface:         '#2F3349',   // dark card bg
+  surfaceBorder:   '#4B4F66',   // dark divider
 
-  text:            '#E3E7FA',   // Vuexy dark heading
-  textSecondary:   '#9EA1BA',   // Vuexy dark muted
+  text:            '#E3E7FA',   // dark heading
+  textSecondary:   '#9EA1BA',   // dark muted
 
   primaryLight:    '#43406B',   // primary-light in dark context
   successTint:     '#0B3324',

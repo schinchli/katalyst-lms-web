@@ -1,6 +1,6 @@
-/* ===== Vuexy Design Tokens ===== */
+/* ===== LearnKloud Design Tokens ===== */
 :root {
-  /* Primary — Vuexy purple */
+  /* Primary — primary purple */
   --primary:         #7367F0;
   --primary-2:       #CE9FFC;
   --primary-light:   rgba(115,103,240,0.16);
@@ -9,12 +9,12 @@
   --gradient-from:   #CE9FFC;
   --gradient-to:     #7367F0;
   --gradient-accent: #9E95F5;
-  /* Semantic status — Vuexy standard */
+  /* Semantic status — standard */
   --success:         #28C76F;
   --warning:         #FF9F43;
   --error:           #EA5455;
   --info:            #00CFE8;
-  /* Typography — Public Sans matches Vuexy design system */
+  /* Typography — Public Sans matches design system */
   --font-heading:    'Public Sans';
   --font-body:       'Public Sans';
   /* Interaction */
@@ -37,7 +37,7 @@
 }
 
 [data-theme="dark"] {
-  /* Vuexy dark palette */
+  /* dark palette */
   --bg:              #25293C;
   --surface:         #2F3349;
   --border:          #434968;
@@ -210,7 +210,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .main-content   { flex: 1; overflow: auto; min-width: 0; }
 .page-content   { padding: 24px 28px 48px; max-width: 1200px; }
 
-/* ===== Sidebar (left-side, Vuexy vertical menu) ===== */
+/* ===== Sidebar (left-side, vertical menu) ===== */
 .sidebar {
   width: 260px; flex-shrink: 0;
   background: var(--surface); border-right: 1px solid var(--border);
@@ -218,7 +218,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   position: sticky; top: 0; height: 100vh; overflow-y: auto; overflow-x: hidden;
   box-shadow: 4px 0 24px rgba(47,43,61,0.06);
 }
-/* Vuexy sidebar header (app-brand) */
+/* sidebar header (app-brand) */
 .sidebar-header {
   height: 64px; padding: 0 20px;
   display: flex; align-items: center; justify-content: space-between;
@@ -236,14 +236,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .sidebar-brand-name { font-weight: 700; font-size: 15px; color: var(--text); line-height: 1.2; }
 .sidebar-brand-sub  { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
 
-/* Vuexy menu-inner — the nav list container */
+/* menu-inner — the nav list container */
 .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
 .sidebar-footer {
   padding: 12px 20px 16px; border-top: 1px solid var(--border);
   font-size: 12px; color: var(--text-secondary); flex-shrink: 0;
 }
 
-/* Vuexy menu-item / menu-link pattern */
+/* menu-item / menu-link pattern */
 .nav-item {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 20px; margin: 2px 12px; border-radius: 6px;
@@ -257,7 +257,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 .nav-icon { font-size: 16px; }
 
-/* Vuexy menu section header */
+/* menu section header */
 .nav-section-header {
   padding: 16px 20px 6px; font-size: 11px; font-weight: 700;
   color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px;
@@ -420,7 +420,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: var(--button-radius);
 }
 .btn-ghost:hover { background: color-mix(in srgb, var(--primary) 20%, transparent); }
-/* Badge — Vuexy-style pill labels */
+/* Badge — pill labels */
 .badge {
   display: inline-flex; align-items: center; padding: 2px 10px;
   border-radius: 100px; font-size: 12px; font-weight: 600; line-height: 1.6;
@@ -432,7 +432,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .badge-info    { background: rgba(0,207,232,0.16); color: #00CFE8; }
 .badge-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
 
-/* ===== Vuexy bg-label-* utility classes ===== */
+/* ===== bg-label-* utility classes utility classes ===== */
 .bg-label-primary   { background: var(--primary-light) !important; color: var(--primary) !important; }
 .bg-label-success   { background: rgba(40,199,111,0.16) !important; color: #28C76F !important; }
 .bg-label-warning   { background: rgba(255,159,67,0.16) !important; color: #FF9F43 !important; }
@@ -440,7 +440,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .bg-label-info      { background: rgba(0,207,232,0.16) !important; color: #00CFE8 !important; }
 .bg-label-secondary { background: rgba(134,139,143,0.16) !important; color: var(--text-secondary) !important; }
 
-/* ===== Vuexy Avatar system ===== */
+/* ===== avatar system ===== */
 .avatar {
   width: 38px; height: 38px; border-radius: 6px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -455,7 +455,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .rounded-circle { border-radius: 50% !important; }
 .rounded        { border-radius: 6px !important; }
 
-/* ===== Vuexy card system ===== */
+/* ===== card system ===== */
 .vx-card {
   background: var(--surface); border-radius: 8px;
   border: 1px solid var(--border);
@@ -471,12 +471,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-card-link  { font-size: 13px; color: var(--primary); font-weight: 600; }
 .vx-card-link:hover { text-decoration: underline; }
 
-/* Vuexy KPI widget */
+/* KPI widget */
 .vx-kpi { display: flex; align-items: center; gap: 14px; }
 .vx-kpi-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-bottom: 3px; }
 .vx-kpi-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
 
-/* Vuexy list items */
+/* list items */
 .vx-list { }
 .vx-list-item {
   display: flex; align-items: center; gap: 14px;
@@ -488,7 +488,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-list-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
 .vx-list-sub   { font-size: 12px; color: var(--text-secondary); }
 
-/* Vuexy colored avatar squares */
+/* colored avatar squares */
 .vx-avatar { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
 .vx-avatar-sm { width: 34px; height: 34px; border-radius: 6px; font-size: 16px; }
 .vx-avatar-primary { background: var(--primary-light); color: var(--primary); }
@@ -498,7 +498,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-avatar-error   { background: rgba(234,84,85,0.16); color: #EA5455; }
 .vx-avatar-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
 
-/* Vuexy badge pills */
+/* badge pills */
 .vx-badge { display: inline-flex; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .vx-badge-primary   { background: var(--primary-light); color: var(--primary); }
 .vx-badge-success   { background: rgba(40,199,111,0.16); color: #28C76F; }
@@ -508,22 +508,22 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-badge-secondary { background: rgba(134,139,143,0.16); color: var(--text-secondary); }
 .vx-badge-muted     { background: var(--primary-light); color: var(--text-secondary); }
 
-/* Vuexy action cards */
+/* action cards */
 .vx-action-card { display: flex; align-items: center; gap: 16px; padding: 18px 22px; text-decoration: none; transition: background 0.12s; }
 .vx-action-card:hover { background: var(--bg); }
 .vx-action-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
 .vx-action-sub   { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
 .vx-action-info  { flex: 1; min-width: 0; }
 
-/* Vuexy streak day grid */
+/* streak day grid */
 .vx-day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .vx-day { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 700; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); }
 .vx-day.active { border-color: rgba(255,159,67,0.4); background: rgba(255,159,67,0.12); color: #FF9F43; }
 
-/* Vuexy assignment progress circles */
+/* assignment progress circles */
 .chart-progress-ring { display: inline-flex; align-items: center; justify-content: center; }
 
-/* Vuexy separator */
+/* separator */
 .card-separator-right { border-right: 1px solid var(--border); }
 .dash-stat-value { font-size: 22px; font-weight: 700; line-height: 1.1; }
 .dash-stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 3px; font-weight: 500; }
@@ -1808,7 +1808,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   gap: 18px;
 }
 
-/* ===== Vuexy Icon Avatar ===== */
+/* ===== icon avatar ===== */
 .vx-avatar {
   width: 42px; height: 42px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -1820,7 +1820,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-avatar-info    { background: rgba(0,207,232,0.16);   color: var(--info); }
 .vx-avatar-error   { background: rgba(234,84,85,0.16);   color: var(--error); }
 
-/* ===== Vuexy Card Header / Body ===== */
+/* ===== card header / body ===== */
 .vx-card-header {
   padding: 18px 20px;
   display: flex; align-items: center; justify-content: space-between;
@@ -1831,12 +1831,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-card-link  { font-size: 13px; color: var(--primary); font-weight: 600; text-decoration: none; }
 .vx-card-link:hover { text-decoration: underline; }
 
-/* ===== Vuexy KPI Stats (avatar icon + label + value) ===== */
+/* ===== KPI stats (avatar icon + label + value) ===== */
 .vx-kpi { display: flex; align-items: center; gap: 14px; }
 .vx-kpi-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px; }
 .vx-kpi-value { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1.1; }
 
-/* ===== Vuexy List Items ===== */
+/* ===== list items ===== */
 .vx-list { display: flex; flex-direction: column; }
 .vx-list-item {
   display: flex; align-items: center; gap: 14px;
@@ -1847,7 +1847,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-list-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; line-height: 1.3; }
 .vx-list-sub   { font-size: 12px; color: var(--text-secondary); }
 
-/* ===== Vuexy Badges ===== */
+/* ===== badges ===== */
 .vx-badge         { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .vx-badge-primary { background: rgba(115,103,240,0.16); color: var(--primary); }
 .vx-badge-success { background: rgba(40,199,111,0.16);  color: var(--success); }
@@ -1856,7 +1856,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-badge-info    { background: rgba(0,207,232,0.16);   color: var(--info); }
 .vx-badge-muted   { background: var(--primary-light);   color: var(--text-secondary); }
 
-/* ===== Vuexy Action Cards (home quick-access) ===== */
+/* ===== action cards (home quick-access) ===== */
 .vx-action-card {
   display: flex; align-items: center; gap: 16px;
   padding: 18px 20px; text-decoration: none;
@@ -1867,7 +1867,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .vx-action-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
 .vx-action-sub   { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
 
-/* ===== Vuexy Day Track (streak grid) ===== */
+/* ===== day track (streak grid) ===== */
 .vx-day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 16px; }
 .vx-day {
   aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center;
@@ -2050,6 +2050,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @media (max-width: 640px) {
   /* Admin stats → single column */
   div[style*="repeat(2, 1fr)"] { grid-template-columns: 1fr !important; }
+  /* Profile form grid (1fr 1fr) → single column on small screens */
+  div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
   /* Leaderboard podium — tighter spacing */
   .leaderboard-podium { gap: 6px !important; padding: 0 4px !important; }
   /* Page padding */
@@ -2058,6 +2060,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   div[style*="auto 1fr auto"] { grid-template-columns: 1fr !important; }
   /* Hero padding reduction */
   .dc-hero { padding: 18px 16px !important; }
+  /* Leaderboard right-side info text — shrink gracefully */
+  .leaderboard-row div[style*="fontSize: 12"] { font-size: 11px !important; }
 }
 
 @media (max-width: 480px) {
@@ -2334,7 +2338,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* ========================================================
    FRONT PAGES — landing, pricing, privacy, terms
-   Modelled on Vuexy front-page layout patterns
+   Modelled on front-page layout patterns
    ======================================================== */
 
 /* ── Layout shell ── */
@@ -3008,7 +3012,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .fp-pricing-grid { max-width: 100%; }
 }
 
-/* ===== Vuexy Auth Cover Layout ===== */
+/* ===== auth cover layout ===== */
 /* Left panel visible on ≥1024px (d-none d-xl-flex equivalent) */
 @media (min-width: 1024px) {
   .auth-cover-panel { display: flex !important; flex-direction: column; }

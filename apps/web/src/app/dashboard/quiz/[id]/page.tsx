@@ -790,7 +790,7 @@ export default function QuizPage() {
                 </button>
               )}
 
-              {/* Paywall modal — centred Vuexy dialog */}
+              {/* Paywall modal */}
               {showPaywall && (
                 <div
                   style={{ position: 'fixed', inset: 0, background: 'rgba(47,43,61,0.72)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}

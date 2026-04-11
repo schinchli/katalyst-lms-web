@@ -35,7 +35,7 @@ export default function StudioPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Public Sans, sans-serif', gap: 16 }}>
         <div style={{ fontSize: 32 }}>🔒</div>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#4B465C' }}>Admin access required</h2>
-        <p style={{ margin: 0, color: '#A5A3AE', fontSize: 14 }}>Sign in with an admin account to access the Katalyst Studio.</p>
+        <p style={{ margin: 0, color: '#A5A3AE', fontSize: 14 }}>Sign in with an admin account to access the LearnKloud Studio.</p>
         <a href="/dashboard" style={{ marginTop: 8, padding: '10px 20px', background: '#7367F0', color: '#fff', borderRadius: 8, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
           Go to Dashboard
         </a>

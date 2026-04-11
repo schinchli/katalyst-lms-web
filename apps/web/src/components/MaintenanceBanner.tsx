@@ -36,7 +36,7 @@ export function MaintenanceBanner({ message }: MaintenanceBannerProps) {
           {message}
         </p>
         <a
-          href="mailto:support@katalyst.app"
+          href="mailto:support@learnkloud.app"
           style={{
             display: 'inline-block',
             marginTop: 8,

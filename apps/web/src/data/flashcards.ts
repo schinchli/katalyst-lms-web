@@ -1,5 +1,5 @@
 /**
- * Flashcard decks for Katalyst LMS.
+ * Flashcard decks for LearnKloud LMS.
  * Each deck has a set of cards with a front (term/concept) and back (definition/explanation).
  */
 

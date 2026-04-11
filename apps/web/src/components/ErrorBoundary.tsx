@@ -14,7 +14,7 @@ interface State {
 
 /**
  * Top-level error boundary for the dashboard.
- * Catches uncaught render errors and shows a user-friendly Vuexy-styled error state.
+ * Catches uncaught render errors and shows a user-friendly styled error state.
  */
 export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {

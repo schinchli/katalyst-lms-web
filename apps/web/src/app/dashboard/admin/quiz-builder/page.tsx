@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Quiz Builder — Katalyst
+ * Admin Quiz Builder — LearnKloud
  * Create and manage quizzes + questions stored in Supabase (managed_quiz_content).
  * Built-in quizzes (from quizzes.ts) show as read-only metadata with edit capability.
  */

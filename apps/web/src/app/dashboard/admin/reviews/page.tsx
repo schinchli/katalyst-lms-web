@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 /**
- * Admin Manage Reviews — Katalyst
+ * Admin Manage Reviews — LearnKloud
  * View and edit quiz review stats stored in app_settings.
  */
 

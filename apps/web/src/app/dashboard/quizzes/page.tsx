@@ -212,7 +212,7 @@ export default function QuizzesPage() {
           })}
         </div>
       ) : (
-        /* LIST VIEW — Vuexy list card pattern */
+        /* LIST VIEW */
         <div className="vx-card">
           {/* Table header */}
           <div style={{ padding: '12px 22px', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '1fr 100px 80px 120px', gap: 12, alignItems: 'center' }}>

@@ -10,7 +10,7 @@ export default function FpNav() {
       <div className="fp-nav-left">
         <Link href="/" className="fp-nav-brand">
           <div className="fp-nav-logo">K</div>
-          <span className="fp-nav-name">Katalyst</span>
+          <span className="fp-nav-name">LearnKloud</span>
         </Link>
 
         <div className={`fp-nav-links${open ? ' open' : ''}`}>

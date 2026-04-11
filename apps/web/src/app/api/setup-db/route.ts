@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
         error: 'SUPABASE_ACCESS_TOKEN not set.',
         instructions: [
           '1. Go to https://supabase.com/dashboard/account/tokens',
-          '2. Click "Generate new token" → name it "katalyst-setup"',
+          '2. Click "Generate new token" → name it "learnkloud-setup"',
           '3. Add to apps/web/.env.local:  SUPABASE_ACCESS_TOKEN=sbp_xxxx',
           '4. Restart dev server, then re-run this curl command',
         ],

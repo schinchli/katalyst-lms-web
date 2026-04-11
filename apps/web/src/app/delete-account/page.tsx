@@ -4,8 +4,8 @@ import FpNav from '@/components/FpNav';
 import FpFooter from '@/components/FpFooter';
 
 export const metadata: Metadata = {
-  title: 'Delete Account — Katalyst',
-  description: 'How to permanently delete your Katalyst account and all associated data.',
+  title: 'Delete Account — LearnKloud',
+  description: 'How to permanently delete your LearnKloud account and all associated data.',
 };
 
 export default function DeleteAccountPage() {
@@ -23,9 +23,9 @@ export default function DeleteAccountPage() {
         </div>
 
         <h2>How to delete your account</h2>
-        <p>You can delete your Katalyst account directly from the app in a few steps:</p>
+        <p>You can delete your LearnKloud account directly from the app in a few steps:</p>
         <ol>
-          <li>Open the <strong>Katalyst app</strong> on your device.</li>
+          <li>Open the <strong>LearnKloud app</strong> on your device.</li>
           <li>Tap <strong>Profile</strong> in the bottom navigation bar.</li>
           <li>Scroll down to <strong>Danger Zone</strong>.</li>
           <li>Tap <strong>Delete Account</strong>.</li>
@@ -54,7 +54,7 @@ export default function DeleteAccountPage() {
         <ul>
           <li>Send an email to <a href="mailto:support@katalysthq.app">support@katalysthq.app</a></li>
           <li>Use the subject line: <strong>Account Deletion Request</strong></li>
-          <li>Include the email address registered to your Katalyst account so we can verify and action the request</li>
+          <li>Include the email address registered to your LearnKloud account so we can verify and action the request</li>
         </ul>
         <p>We will process your deletion request within 30 days of receipt.</p>
 

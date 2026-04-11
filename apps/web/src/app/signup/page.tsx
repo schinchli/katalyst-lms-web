@@ -93,7 +93,7 @@ export default function SignupPage() {
         <div style={{ position: 'relative', zIndex: 1, padding: '48px 52px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 64 }}>
             <div style={{ width: 42, height: 42, borderRadius: 10, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 18, fontWeight: 800, color: '#fff' }}>K</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>Katalyst</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>LearnKloud</div>
           </div>
 
           <h1 style={{ margin: '0 0 18px', fontSize: 42, fontWeight: 700, lineHeight: 1.15, color: '#fff' }}>
@@ -126,7 +126,7 @@ export default function SignupPage() {
         <div style={{ width: '100%', maxWidth: 400 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 }} className="auth-mobile-logo">
             <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 800, color: '#fff' }}>K</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Katalyst</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>LearnKloud</div>
           </div>
 
           {step === 'confirm' ? (
