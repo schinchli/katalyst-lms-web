@@ -504,22 +504,27 @@ test.describe('Flashcards', () => {
 
   // ── 13. Restart deck ─────────────────────────────────────────────────────
 
-  test('"Restart deck" resets all state and localStorage', async () => {
+  test('"Restart deck" keeps mastered cards excluded and restarts with remaining cards', async () => {
+    // reachFinishScreen marks 3 known + 1 skipped, then advances through 16 more
+    // After finish: 3 known cards, 17 skipped/reviewed
     await reachFinishScreen();
 
     await page.getByRole('button', { name: 'Restart deck' }).click();
     await page.waitForTimeout(200);
 
-    // Should be back to card 1 of 20, 0 known
-    await expect(page.getByText(/Card 1 of 20/)).toBeVisible();
-    await expect(page.getByText(/0 known/)).toBeVisible();
-    await expect(page.getByText(CARD_1_FRONT)).toBeVisible();
+    // Should restart with only unmastered cards (20 - 3 known = 17), 3 still known
+    await expect(page.getByText(/Card 1 of 17/)).toBeVisible();
+    await expect(page.getByText(/3 known/)).toBeVisible();
+    // Known cards (EC2, S3, RDS) are excluded — first card is the 4th original card
+    await expect(page.getByText(CARD_1_FRONT)).not.toBeVisible();
 
-    // localStorage should be empty
+    // localStorage still holds the 3 known IDs
     const stored = await page.evaluate((deckId: string) => {
       return localStorage.getItem(`flashcards-known-${deckId}`);
     }, DECK_ID);
-    expect(stored).toBeNull();
+    expect(stored).not.toBeNull();
+    const ids = JSON.parse(stored!) as string[];
+    expect(ids).toHaveLength(3);
   });
 
   // ── 14. Back navigation ───────────────────────────────────────────────────

@@ -250,16 +250,17 @@ function StudyView({
     setReviewRound((r) => r + 1);
   }, [deck.cards, skipped]);
 
+  // "Restart deck" keeps mastered cards excluded — only resets the review queue.
+  // Cards already marked "Knew it" are not shown again (user already knows them).
   const resetAll = useCallback(() => {
-    saveKnownIds(deck.id, new Set());
-    setKnown(new Set());
+    const remaining = deck.cards.filter((c) => !known.has(c.id));
     setSkipped(new Set());
-    setQueue([...deck.cards]);
+    setQueue(remaining);
     setIndex(0);
     setFlipped(false);
-    setFinished(false);
+    setFinished(remaining.length === 0);
     setReviewRound(1);
-  }, [deck]);
+  }, [deck, known]);
 
   const unmarkKnown = useCallback((cardId: string) => {
     setKnown((k) => {
@@ -459,6 +460,12 @@ function StudyView({
 
 export default function FlashcardsPage() {
   const [activeDeck, setActiveDeck] = useState<FlashcardDeck | null>(null);
+
+  // Scroll to top whenever the view switches (deck grid ↔ study view)
+  useEffect(() => {
+    document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeDeck]);
 
   if (activeDeck) {
     return <StudyView deck={activeDeck} onBack={() => setActiveDeck(null)} />;

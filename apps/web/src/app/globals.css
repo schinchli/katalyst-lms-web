@@ -206,8 +206,10 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
 /* ===== Layout ===== */
-.page-wrapper   { display: flex; flex-direction: row; min-height: 100vh; background: var(--bg); }
-.main-content   { flex: 1; overflow: auto; min-width: 0; }
+/* height:100vh + overflow:hidden locks the shell to the viewport on desktop.
+   .main-content scrolls internally — sidebar stays fixed, no content bleeds below. */
+.page-wrapper   { display: flex; flex-direction: row; height: 100vh; overflow: hidden; background: var(--bg); }
+.main-content   { flex: 1; overflow-y: auto; overflow-x: hidden; min-width: 0; }
 .page-content   { padding: 24px 28px 48px; max-width: 1200px; }
 
 /* ===== Sidebar (left-side, vertical menu) ===== */
@@ -1982,9 +1984,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   }
   .sidebar.mobile-open { left: 0; }
 
-  /* Full-width main on mobile */
-  .page-wrapper { flex-direction: column; }
-  .main-content { width: 100%; padding-bottom: 80px; }
+  /* Full-width main on mobile — restore normal page scroll (sidebar is a fixed overlay) */
+  .page-wrapper { flex-direction: column; height: auto; overflow: visible; }
+  .main-content { width: 100%; overflow-y: visible; padding-bottom: 80px; }
 
   /* Page content padding */
   .page-content { padding: 16px 14px 32px; }
