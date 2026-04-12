@@ -12,7 +12,6 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    // Allow local storage, don't clear between tests in the same file
     storageState: undefined,
   },
   projects: [
@@ -21,5 +20,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // Don't start the server — assume it's already running on :8080
+  // In CI: Playwright starts the dev server automatically.
+  // Locally: assume the server is already running on :8080.
+  webServer: process.env.CI
+    ? {
+        command: 'npm run dev',
+        port: 8080,
+        timeout: 120_000,
+        reuseExistingServer: false,
+        env: {
+          NEXT_PUBLIC_SUPABASE_URL:      process.env.NEXT_PUBLIC_SUPABASE_URL      ?? '',
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+          NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '',
+          ADMIN_EMAILS:                  process.env.ADMIN_EMAILS                  ?? '',
+        },
+      }
+    : undefined,
 });
