@@ -2,8 +2,31 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { flashcardDecks, type FlashcardDeck, type Flashcard } from '@/data/flashcards';
+
+// ── localStorage persistence helpers ─────────────────────────────────────────
+
+function loadKnownIds(deckId: string): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(`flashcards-known-${deckId}`);
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveKnownIds(deckId: string, known: Set<string>) {
+  try {
+    if (known.size === 0) {
+      localStorage.removeItem(`flashcards-known-${deckId}`);
+    } else {
+      localStorage.setItem(`flashcards-known-${deckId}`, JSON.stringify([...known]));
+    }
+  } catch {
+    // storage full or unavailable — silently skip
+  }
+}
 
 // ── Deck selection view ───────────────────────────────────────────────────────
 
@@ -183,22 +206,40 @@ function StudyView({
   deck: FlashcardDeck;
   onBack: () => void;
 }) {
-  const [index, setIndex]       = useState(0);
-  const [flipped, setFlipped]   = useState(false);
-  const [known, setKnown]       = useState<Set<string>>(new Set());
-  const [skipped, setSkipped]   = useState<Set<string>>(new Set());
-  const [finished, setFinished] = useState(false);
+  // Load persisted known IDs once — exclude those from the initial queue
+  const [known, setKnown] = useState<Set<string>>(() => loadKnownIds(deck.id));
+  const [queue, setQueue] = useState<Flashcard[]>(() => {
+    const persistedKnown = loadKnownIds(deck.id);
+    return deck.cards.filter((c) => !persistedKnown.has(c.id));
+  });
+  const [index, setIndex]         = useState(0);
+  const [flipped, setFlipped]     = useState(false);
+  const [skipped, setSkipped]     = useState<Set<string>>(new Set());
+  // If every card is already known, start on the finish screen
+  const [finished, setFinished]   = useState(() => {
+    const persistedKnown = loadKnownIds(deck.id);
+    return deck.cards.every((c) => persistedKnown.has(c.id));
+  });
+  const [reviewRound, setReviewRound] = useState(1);
 
-  const card = deck.cards[index];
-  const total = deck.cards.length;
+  const card  = queue[index];
+  const total = queue.length;
 
-  const next = useCallback(() => {
+  const advance = useCallback((nextIndex: number, nextQueue: Flashcard[]) => {
     setFlipped(false);
     setTimeout(() => {
-      if (index + 1 >= total) setFinished(true);
-      else setIndex((i) => i + 1);
+      if (nextIndex >= nextQueue.length) {
+        setFinished(true);
+      } else {
+        setIndex(nextIndex);
+        setQueue(nextQueue);
+      }
     }, 150);
-  }, [index, total]);
+  }, []);
+
+  const next = useCallback(() => {
+    advance(index + 1, queue);
+  }, [advance, index, queue]);
 
   const prev = useCallback(() => {
     if (index === 0) return;
@@ -207,14 +248,25 @@ function StudyView({
   }, [index]);
 
   const markKnown = useCallback(() => {
-    setKnown((k) => new Set([...k, card.id]));
-    next();
-  }, [card, next]);
+    const updated = new Set([...known, card.id]);
+    setKnown(updated);
+    saveKnownIds(deck.id, updated);
+    // remove from skipped if it was there
+    setSkipped((s) => { const n = new Set(s); n.delete(card.id); return n; });
+    advance(index + 1, queue);
+  }, [known, card, deck.id, advance, index, queue]);
 
   const markSkip = useCallback(() => {
     setSkipped((s) => new Set([...s, card.id]));
-    next();
-  }, [card, next]);
+    // remove from known if it was there
+    setKnown((k) => {
+      const updated = new Set(k);
+      updated.delete(card.id);
+      saveKnownIds(deck.id, updated);
+      return updated;
+    });
+    advance(index + 1, queue);
+  }, [card, deck.id, advance, index, queue]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -228,40 +280,98 @@ function StudyView({
     return () => window.removeEventListener('keydown', handler);
   }, [next, prev, markKnown, markSkip]);
 
+  const startReviewRound = useCallback(() => {
+    const reviewCards = deck.cards.filter((c) => skipped.has(c.id));
+    setQueue(reviewCards);
+    setIndex(0);
+    setFlipped(false);
+    setFinished(false);
+    setReviewRound((r) => r + 1);
+  }, [deck.cards, skipped]);
+
+  const resetAll = useCallback(() => {
+    const cleared: Set<string> = new Set();
+    saveKnownIds(deck.id, cleared);
+    setKnown(cleared);
+    setSkipped(new Set());
+    setQueue([...deck.cards]);
+    setIndex(0);
+    setFlipped(false);
+    setFinished(false);
+    setReviewRound(1);
+  }, [deck]);
+
+  // Called from the finish screen — moves a card out of "known" into "needs review"
+  const unmarkKnown = useCallback((cardId: string) => {
+    setKnown((k) => {
+      const updated = new Set(k);
+      updated.delete(cardId);
+      saveKnownIds(deck.id, updated);
+      return updated;
+    });
+    setSkipped((s) => new Set([...s, cardId]));
+  }, [deck.id]);
+
   if (finished) {
+    const knownCards  = deck.cards.filter((c) => known.has(c.id));
+    const reviewCards = deck.cards.filter((c) => skipped.has(c.id));
+    const hasReview   = reviewCards.length > 0;
+
     return (
       <div className="page-content">
-        <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', minHeight: 400, gap: 20, textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>Deck Complete!</h2>
-          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 15 }}>
-            You reviewed all {total} cards in <strong style={{ color: 'var(--text)' }}>{deck.title}</strong>
-          </p>
-          <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--success, #28C76F)' }}>{known.size}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Knew it</div>
+        <div style={{ maxWidth: 640, margin: '0 auto' }}>
+          {/* Hero */}
+          <div style={{ textAlign: 'center', padding: '32px 0 24px' }}>
+            <div style={{ fontSize: 52 }}>{hasReview ? '📋' : '🎉'}</div>
+            <h2 style={{ margin: '12px 0 6px', fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>
+              {hasReview ? `Round ${reviewRound} Complete` : 'All Cards Mastered!'}
+            </h2>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
+              {deck.title}
+            </p>
+          </div>
+
+          {/* Score row */}
+          <div style={{
+            display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 28,
+          }}>
+            <div style={{
+              flex: 1, maxWidth: 160, textAlign: 'center', padding: '16px 12px',
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
+            }}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--success, #28C76F)' }}>{known.size}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>Knew it</div>
             </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--warning, #FF9F43)' }}>{skipped.size}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Need review</div>
+            <div style={{
+              flex: 1, maxWidth: 160, textAlign: 'center', padding: '16px 12px',
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
+            }}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--warning, #FF9F43)' }}>{skipped.size}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>Need review</div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
+            {hasReview && (
+              <button onClick={startReviewRound} className="btn-primary" style={{ padding: '10px 22px', fontSize: 14 }}>
+                ↻ Review {reviewCards.length} card{reviewCards.length !== 1 ? 's' : ''}
+              </button>
+            )}
             <button
-              onClick={() => { setIndex(0); setFlipped(false); setKnown(new Set()); setSkipped(new Set()); setFinished(false); }}
-              className="btn-primary"
-              style={{ padding: '10px 24px' }}
+              onClick={resetAll}
+              style={{
+                padding: '10px 22px', borderRadius: 8, fontWeight: 600, fontSize: 14,
+                border: '1.5px solid var(--border)', background: 'transparent',
+                color: 'var(--text)', cursor: 'pointer', fontFamily: 'inherit',
+              }}
             >
-              Study Again
+              Restart deck
             </button>
             <button
               onClick={onBack}
               style={{
-                padding: '10px 24px', borderRadius: 8, fontWeight: 600, fontSize: 14,
+                padding: '10px 22px', borderRadius: 8, fontWeight: 600, fontSize: 14,
                 border: '1.5px solid var(--border)', background: 'transparent',
                 color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit',
               }}
@@ -269,6 +379,59 @@ function StudyView({
               All Decks
             </button>
           </div>
+
+          {/* "Need review" card list */}
+          {hasReview && (
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--warning, #FF9F43)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Need review ({reviewCards.length})
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {reviewCards.map((c) => (
+                  <div key={c.id} style={{
+                    background: 'var(--surface)', border: '1px solid var(--warning, #FF9F43)',
+                    borderRadius: 10, padding: '12px 16px',
+                  }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{c.front}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{c.back}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* "Knew it" card list */}
+          {knownCards.length > 0 && (
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--success, #28C76F)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Knew it ({knownCards.length})
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {knownCards.map((c) => (
+                  <div key={c.id} style={{
+                    background: 'var(--surface)', border: '1px solid var(--border)',
+                    borderRadius: 10, padding: '10px 16px',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                  }}>
+                    <span style={{ color: 'var(--success, #28C76F)', fontSize: 14, flexShrink: 0 }}>✓</span>
+                    <span style={{ fontSize: 13, color: 'var(--text)', flex: 1 }}>{c.front}</span>
+                    <button
+                      onClick={() => unmarkKnown(c.id)}
+                      title="Move back to review"
+                      style={{
+                        flexShrink: 0, padding: '3px 10px', borderRadius: 6,
+                        fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                        border: '1px solid var(--border)', background: 'transparent',
+                        color: 'var(--text-secondary)', fontFamily: 'inherit',
+                      }}
+                    >
+                      undo
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -291,7 +454,7 @@ function StudyView({
         <div>
           <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>{deck.title}</h1>
           <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
-            Card {index + 1} of {total} · {known.size} known
+            {reviewRound > 1 ? `Review round ${reviewRound} · ` : ''}Card {index + 1} of {total} · {known.size} known
           </p>
         </div>
       </div>
