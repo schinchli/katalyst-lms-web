@@ -24,5 +24,14 @@ export async function GET() {
     return NextResponse.json({ ok: true, content: { quizzes: [], questions: {} } });
   }
 
-  return NextResponse.json({ ok: true, content: buildManagedQuizDataset(data?.value) });
+  const dataset = buildManagedQuizDataset(data?.value);
+
+  // Never expose test/internal quizzes (ids starting with "playwright-") to end users.
+  // They remain visible in the admin quiz-builder API for testing purposes.
+  const publicContent = {
+    ...dataset,
+    quizzes: dataset.quizzes.filter((q) => !q.id.startsWith('playwright-')),
+  };
+
+  return NextResponse.json({ ok: true, content: publicContent });
 }

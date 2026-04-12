@@ -141,7 +141,15 @@ test.describe('Admin Quiz Builder CRUD', () => {
       extraHTTPHeaders: { Authorization: `Bearer ${ADMIN_TOKEN}` },
     }).then((ctx) => { api = ctx; }),
   );
-  test.afterAll(() => api.dispose());
+  test.afterAll(async () => {
+    // Guarantee cleanup: delete the playwright test quiz even if the explicit
+    // delete test was skipped or failed. Prevents test fixtures leaking to prod.
+    if (createdQuizId) {
+      await api.delete(`/api/admin/quiz-builder/${createdQuizId}`).catch(() => {/* already gone */});
+      createdQuizId = '';
+    }
+    await api.dispose();
+  });
 
   test('GET /api/admin/quiz-builder returns merged catalog', async () => {
     const res  = await api.get('/api/admin/quiz-builder');
@@ -182,14 +190,23 @@ test.describe('Admin Quiz Builder CRUD', () => {
     expect(ids).toContain(createdQuizId);
   });
 
-  test('new quiz appears in public /api/quiz-content', async ({ request }) => {
+  test('new quiz appears in admin /api/admin/quiz-builder after creation', async () => {
+    // Playwright-prefixed quizzes are filtered from the public quiz-content API
+    // (they're internal test fixtures). Verify via the admin API instead.
     test.skip(!createdQuizId, 'Skipped: quiz creation test did not run first');
-    // Allow a moment for cache invalidation (if any)
-    await new Promise((r) => setTimeout(r, 2000));
+    const res  = await api.get('/api/admin/quiz-builder');
+    const body = await res.json() as { ok: boolean; quizzes: Array<{ id: string }> };
+    const ids  = body.quizzes.map((q) => q.id);
+    expect(ids).toContain(createdQuizId);
+  });
+
+  test('playwright-prefixed quizzes are hidden from public /api/quiz-content', async ({ request }) => {
+    // Safety net: ensure test quizzes never leak to end users even if cleanup fails.
+    test.skip(!createdQuizId, 'Skipped: quiz creation test did not run first');
     const res  = await request.get(`${BASE}/api/quiz-content`);
     const body = await res.json() as { ok: boolean; content?: { quizzes: Array<{ id: string }> } };
     const ids  = (body.content?.quizzes ?? []).map((q) => q.id);
-    expect(ids).toContain(createdQuizId);
+    expect(ids).not.toContain(createdQuizId);
   });
 
   test('PUT /api/admin/quiz-builder/:id/questions saves questions', async () => {
