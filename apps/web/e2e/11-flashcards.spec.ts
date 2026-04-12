@@ -448,6 +448,39 @@ test.describe('Flashcards', () => {
     await expect(page.getByText(/2 known/)).toBeVisible();
   });
 
+  test('marking known during session persists when deck is reopened (real flow, no reload)', async () => {
+    // This is the exact flow the user reported as broken:
+    // mark 3 cards known → go back → reopen → should see 17 cards, not 20
+
+    await clearFlashcardStorage(page);
+    await page.goto(`${BASE}/dashboard/flashcards`);
+    await page.waitForLoadState('networkidle');
+    await page.getByText(DECK_TITLE).click();
+
+    // Mark 3 cards as "Knew it" (cards 1, 2, 3 — EC2, S3, RDS)
+    for (let i = 0; i < 3; i++) {
+      await page.getByRole('button', { name: /Knew it/i }).click();
+      await page.waitForTimeout(200);
+    }
+
+    // Go back to deck grid — NO page reload
+    await page.getByRole('button', { name: /Decks/i }).click();
+    await expect(page.getByRole('heading', { name: 'Flashcards' })).toBeVisible();
+
+    // Reopen the same deck
+    await page.getByText(DECK_TITLE).click();
+    await page.waitForTimeout(300);
+
+    // Should see 17 cards (20 - 3 known), starting from card 4 (AWS Lambda)
+    await expect(page.getByText(/Card 1 of 17/)).toBeVisible();
+    await expect(page.getByText(/3 known/)).toBeVisible();
+    // First card shown is card 4 (AWS Lambda), not EC2/S3/RDS
+    await expect(page.getByText('AWS Lambda')).toBeVisible();
+    await expect(page.getByText(CARD_1_FRONT)).not.toBeVisible(); // EC2 excluded
+    await expect(page.getByText(CARD_2_FRONT)).not.toBeVisible(); // S3 excluded
+    await expect(page.getByText(CARD_3_FRONT)).not.toBeVisible(); // RDS excluded
+  });
+
   // ── 12. All cards known → finish screen on mount ──────────────────────────
 
   test('if all cards are already known, finish screen shows immediately', async () => {
