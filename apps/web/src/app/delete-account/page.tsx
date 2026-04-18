@@ -52,7 +52,7 @@ export default function DeleteAccountPage() {
           If you are unable to sign in or access the app, you can request account deletion by email:
         </p>
         <ul>
-          <li>Send an email to <a href="mailto:support@katalysthq.app">support@katalysthq.app</a></li>
+          <li>Send an email to <a href="mailto:support@learnkloud.today">support@learnkloud.today</a></li>
           <li>Use the subject line: <strong>Account Deletion Request</strong></li>
           <li>Include the email address registered to your LearnKloud account so we can verify and action the request</li>
         </ul>
@@ -62,7 +62,7 @@ export default function DeleteAccountPage() {
         <p>
           Deleting your account does not automatically cancel an active subscription processed through
           Razorpay or Stripe. To avoid future charges, please cancel your subscription before deleting
-          your account, or contact <a href="mailto:support@katalysthq.app">support@katalysthq.app</a> to
+          your account, or contact <a href="mailto:support@learnkloud.today">support@learnkloud.today</a> to
           request cancellation as part of your deletion.
         </p>
 

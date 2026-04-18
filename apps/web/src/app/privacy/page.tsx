@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           <li><strong>Payment information:</strong> When you purchase a Pro subscription or individual quiz unlock, payment is processed by Razorpay (India) or Stripe (international). We do <em>not</em> store your card number, CVV, or full payment details on our servers — only the order ID, amount, currency, status, and gateway reference returned by the payment processor.</li>
           <li><strong>Quiz activity:</strong> Your answers, scores, time taken, bookmarked questions, and review submissions for each quiz attempt.</li>
           <li><strong>Reviews and feedback:</strong> Star ratings and written comments you submit for quizzes.</li>
-          <li><strong>Support communications:</strong> Emails or messages you send to support@katalysthq.app.</li>
+          <li><strong>Support communications:</strong> Emails or messages you send to support@learnkloud.today.</li>
         </ul>
 
         <h3>1.2 Information collected automatically</h3>
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
         </ul>
         <p>
           Despite these measures, no system is completely secure. If you discover a security vulnerability,
-          please report it to <a href="mailto:security@katalysthq.app">security@katalysthq.app</a>.
+          please report it to <a href="mailto:security@learnkloud.today">security@learnkloud.today</a>.
         </p>
 
         <h2 id="s6">6. Your Rights</h2>
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
           <li><strong>Withdraw consent:</strong> Where processing is based on consent, withdraw it at any time.</li>
         </ul>
         <p>
-          To exercise any of these rights, email <a href="mailto:privacy@katalysthq.app">privacy@katalysthq.app</a>.
+          To exercise any of these rights, email <a href="mailto:privacy@learnkloud.today">privacy@learnkloud.today</a>.
           We will respond within 30 days. EU/EEA residents may also lodge a complaint with their local data
           protection authority.
         </p>
@@ -155,7 +155,7 @@ export default function PrivacyPage() {
           The Service is not directed at children under the age of 13 (or 16 in the EU/EEA). We do not
           knowingly collect personal information from children. If you believe a child has provided us with
           personal data without parental consent, please contact us at{' '}
-          <a href="mailto:privacy@katalysthq.app">privacy@katalysthq.app</a> and we will promptly delete it.
+          <a href="mailto:privacy@learnkloud.today">privacy@learnkloud.today</a> and we will promptly delete it.
         </p>
 
         <h2 id="s8">8. Cookies &amp; Tracking</h2>
@@ -202,8 +202,8 @@ export default function PrivacyPage() {
         <h2 id="s12">12. Contact Us</h2>
         <p>If you have questions, concerns, or requests regarding this Privacy Policy or your data, contact us:</p>
         <ul>
-          <li><strong>Email:</strong> <a href="mailto:privacy@katalysthq.app">privacy@katalysthq.app</a></li>
-          <li><strong>Support:</strong> <a href="mailto:support@katalysthq.app">support@katalysthq.app</a></li>
+          <li><strong>Email:</strong> <a href="mailto:privacy@learnkloud.today">privacy@learnkloud.today</a></li>
+          <li><strong>Support:</strong> <a href="mailto:support@learnkloud.today">support@learnkloud.today</a></li>
           <li><strong>Account deletion:</strong> <Link href="/delete-account">learnkloud.today/delete-account</Link></li>
         </ul>
 

@@ -89,7 +89,7 @@ export default function InstructionsPage() {
         <h2>8. Getting help</h2>
         <p>
           If you run into any issues or have questions, contact us at{' '}
-          <a href="mailto:support@katalysthq.app">support@katalysthq.app</a>.
+          <a href="mailto:support@learnkloud.today">support@learnkloud.today</a>.
           We typically respond within 24 hours.
         </p>
 

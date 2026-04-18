@@ -30,7 +30,7 @@ export default function FpFooter() {
         </div>
         <div>
           <div className="fp-footer-col-title">Support</div>
-          <a href="mailto:support@katalysthq.app" className="fp-footer-link">support@katalysthq.app</a>
+          <a href="mailto:support@learnkloud.today" className="fp-footer-link">support@learnkloud.today</a>
           <Link href="/instructions" className="fp-footer-link">Instructions</Link>
           <Link href="/login"        className="fp-footer-link">Sign in</Link>
           <Link href="/signup"       className="fp-footer-link">Create account</Link>

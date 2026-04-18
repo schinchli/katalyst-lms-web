@@ -67,7 +67,7 @@ export default function TermsPage() {
           <li>You must provide a valid email address and create a strong password (minimum 12 characters, including upper and lowercase letters, a number, and a special character).</li>
           <li>You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account.</li>
           <li>You may not share your account, create multiple accounts to circumvent restrictions, or impersonate any other person.</li>
-          <li>Notify us immediately at <a href="mailto:support@katalysthq.app">support@katalysthq.app</a> if you believe your account has been compromised.</li>
+          <li>Notify us immediately at <a href="mailto:support@learnkloud.today">support@learnkloud.today</a> if you believe your account has been compromised.</li>
         </ul>
 
         <h2 id="t4">4. Acceptable Use</h2>
@@ -110,7 +110,7 @@ export default function TermsPage() {
         <p>
           You may cancel your subscription at any time. Cancellation takes effect at the end of the current
           billing period; you retain Pro access until that date. To cancel, contact
-          <a href="mailto:support@katalysthq.app"> support@katalysthq.app</a> or use the cancellation flow
+          <a href="mailto:support@learnkloud.today"> support@learnkloud.today</a> or use the cancellation flow
           in your subscription management portal.
         </p>
 
@@ -126,7 +126,7 @@ export default function TermsPage() {
           <strong>Individual quiz unlocks:</strong> Non-refundable once the premium quiz content has been accessed.
         </p>
         <p>
-          To request a refund, email <a href="mailto:support@katalysthq.app">support@katalysthq.app</a> with
+          To request a refund, email <a href="mailto:support@learnkloud.today">support@learnkloud.today</a> with
           your order ID and reason. We reserve the right to approve or deny refund requests at our discretion.
         </p>
 
@@ -215,8 +215,8 @@ export default function TermsPage() {
         <h2 id="t15">15. Contact</h2>
         <p>For questions about these Terms, contact us at:</p>
         <ul>
-          <li><strong>Email:</strong> <a href="mailto:support@katalysthq.app">support@katalysthq.app</a></li>
-          <li><strong>Legal queries:</strong> <a href="mailto:legal@katalysthq.app">legal@katalysthq.app</a></li>
+          <li><strong>Email:</strong> <a href="mailto:support@learnkloud.today">support@learnkloud.today</a></li>
+          <li><strong>Legal queries:</strong> <a href="mailto:legal@learnkloud.today">legal@learnkloud.today</a></li>
         </ul>
 
         <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid var(--border)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>

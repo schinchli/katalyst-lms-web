@@ -6,6 +6,12 @@ import {
   clf02BillingQuestions,
   clf02FullPracticeQuestions,
 } from './clf-c02-questions';
+import {
+  aipC01RagFoundationsQuestions,
+  aipC01SecurityOpsQuestions,
+  aipC01AdvancedPatternsQuestions,
+  aipC01FullExamQuestions,
+} from './aip-c01-questions';
 
 export const quizzes: Quiz[] = [
   // ── AWS Quick Start — 5 free beginner questions ──────────────────────────────
@@ -167,6 +173,12 @@ export const quizQuestions: Record<string, Question[]> = {
   'clf-c02-security':       clf02SecurityQuestions,
   'clf-c02-technology':     clf02TechnologyQuestions,
   'clf-c02-billing':        clf02BillingQuestions,
+
+  // ── AIP-C01 ──────────────────────────────────────────────────────────────────
+  'aip-c01-rag-foundations':   aipC01RagFoundationsQuestions,
+  'aip-c01-security-ops':      aipC01SecurityOpsQuestions,
+  'aip-c01-advanced-patterns': aipC01AdvancedPatternsQuestions,
+  'aip-c01-full-exam':         aipC01FullExamQuestions,
   'clf-c02-full-exam':      clf02FullPracticeQuestions,
   // Legacy key kept for backward-compat with stored localStorage results
   'clf-c02': [

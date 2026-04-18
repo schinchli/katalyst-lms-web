@@ -89,7 +89,7 @@ export default function AboutPage() {
         <h2 className="fp-cta-title">Questions or feedback?</h2>
         <p className="fp-cta-sub">We&apos;d love to hear from you — whether it&apos;s a question, a bug report, or a feature idea.</p>
         <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="mailto:support@katalysthq.app" className="fp-btn-cta">Contact support</a>
+          <a href="mailto:support@learnkloud.today" className="fp-btn-cta">Contact support</a>
           <Link href="/signup" className="fp-btn-outline" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.35)' }}>
             Get started free
           </Link>
