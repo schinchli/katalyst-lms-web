@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useCallback } from 'react';
 import { flashcardDecks, type FlashcardDeck, type Flashcard } from '@/data/flashcards';
+import { supabase } from '@/lib/supabase';
 
 // ── localStorage persistence helpers ─────────────────────────────────────────
 
@@ -26,6 +27,37 @@ function saveKnownIds(deckId: string, known: Set<string>) {
   } catch {
     // storage full or unavailable — silently skip
   }
+}
+
+// ── DB sync helpers (fire-and-forget) ────────────────────────────────────────
+
+async function getToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
+}
+
+function dbSyncProgress(deckId: string, known: Set<string>) {
+  getToken().then((token) => {
+    if (!token) return;
+    fetch('/api/flashcard-progress', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deckId, knownIds: [...known] }),
+    }).catch(() => { /* best-effort */ });
+  });
+}
+
+async function fetchDbProgress(deckId: string): Promise<Set<string> | null> {
+  const token = await getToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(`/api/flashcard-progress?deckId=${encodeURIComponent(deckId)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    const json = await res.json() as { ok: boolean; knownIds: string[] };
+    return json.ok ? new Set(json.knownIds) : null;
+  } catch { return null; }
 }
 
 // ── Deck selection view ───────────────────────────────────────────────────────
@@ -192,6 +224,19 @@ function StudyView({
   });
   const [reviewRound, setReviewRound] = useState(1);
 
+  // Hydrate known IDs from DB on mount — DB wins over localStorage if it has data.
+  useEffect(() => {
+    fetchDbProgress(deck.id).then((dbKnown) => {
+      if (!dbKnown || dbKnown.size === 0) return;
+      setKnown(dbKnown);
+      saveKnownIds(deck.id, dbKnown);
+      const remaining = deck.cards.filter((c) => !dbKnown.has(c.id));
+      setQueue(remaining);
+      setFinished(remaining.length === 0);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deck.id]);
+
   const card  = queue[index];
   const total = queue.length;
 
@@ -214,6 +259,7 @@ function StudyView({
     const updated = new Set([...known, card.id]);
     setKnown(updated);
     saveKnownIds(deck.id, updated);
+    dbSyncProgress(deck.id, updated);
     setSkipped((s) => { const n = new Set(s); n.delete(card.id); return n; });
     advance(index + 1, queue);
   }, [known, card, deck.id, advance, index, queue]);
@@ -267,6 +313,7 @@ function StudyView({
       const updated = new Set(k);
       updated.delete(cardId);
       saveKnownIds(deck.id, updated);
+      dbSyncProgress(deck.id, updated);
       return updated;
     });
     setSkipped((s) => new Set([...s, cardId]));

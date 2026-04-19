@@ -27,6 +27,9 @@ export function urlFor(source: SanityImageSource) {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+export type ArticleProvider = 'AWS' | 'GCP' | 'Azure' | 'Oracle' | 'Databricks' | 'Snowflake' | 'General';
+export type ArticleCategory = 'Cloud' | 'Data' | 'AI' | 'Security' | 'DevOps' | 'General';
+
 export type ArticleListItem = {
   _id:          string;
   title:        string;
@@ -38,6 +41,9 @@ export type ArticleListItem = {
   readTime:     string | null;
   accessTier:   'free' | 'premium';
   featured:     boolean;
+  provider:     ArticleProvider;
+  category:     ArticleCategory;
+  organisation: string;
   relatedQuizId: string | null;
   coverImage:   SanityImageSource | null;
 };
@@ -60,16 +66,35 @@ const ARTICLE_LIST_FIELDS = `
   readTime,
   accessTier,
   featured,
+  "provider": coalesce(provider, "General"),
+  "category": coalesce(category, "General"),
+  "organisation": coalesce(organisation, "LearnKloud Team"),
   relatedQuizId,
   coverImage
 `;
 
-/** Fetch all published articles (metadata only — no body). */
-export async function fetchArticleList(): Promise<ArticleListItem[]> {
+export interface ArticleListParams {
+  providers?: ArticleProvider[];
+  categories?: ArticleCategory[];
+  sort?: 'date' | 'organisation';
+  limit?: number;
+}
+
+/** Fetch articles with optional provider/category filters and sort. */
+export async function fetchArticleList(params: ArticleListParams = {}): Promise<ArticleListItem[]> {
   if (!projectId) return [];
-  return sanityClient.fetch<ArticleListItem[]>(
-    `*[_type == "article" && defined(slug.current)] | order(featured desc, publishedAt desc) { ${ARTICLE_LIST_FIELDS} }`,
-  );
+  const { providers, categories, sort = 'date', limit = 100 } = params;
+
+  const filters = [`_type == "article"`, `defined(slug.current)`];
+  if (providers?.length) filters.push(`provider in ${JSON.stringify(providers)}`);
+  if (categories?.length) filters.push(`category in ${JSON.stringify(categories)}`);
+
+  const orderClause = sort === 'organisation'
+    ? `organisation asc, publishedAt desc`
+    : `featured desc, publishedAt desc`;
+
+  const query = `*[${filters.join(' && ')}] | order(${orderClause}) [0...${limit}] { ${ARTICLE_LIST_FIELDS} }`;
+  return sanityClient.fetch<ArticleListItem[]>(query);
 }
 
 /** Fetch a single article with full Portable Text body. */

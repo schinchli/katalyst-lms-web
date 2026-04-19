@@ -8,6 +8,9 @@ export type Article = {
   readTime?: string;
   content: ArticleSection[];
   relatedQuizId?: string;
+  provider?: 'AWS' | 'GCP' | 'Azure' | 'Oracle' | 'Databricks' | 'Snowflake' | 'General';
+  category?: 'Cloud' | 'Data' | 'AI' | 'Security' | 'DevOps' | 'General';
+  organisation?: string;
 };
 
 export type ArticleSection =
@@ -30,6 +33,9 @@ export const FEATURED_ARTICLES: Article[] = [
     date: 'January 20, 2026',
     readTime: '6 min read',
     relatedQuizId: 'aws-quick-start',
+    provider: 'General',
+    category: 'AI',
+    organisation: 'LearnKloud Team',
     content: [
       { type: 'intro', text: 'Hugging Face is the de-facto hub for open-source ML models. This cheat sheet covers the essential APIs you need to load models, run inference, and fine-tune on custom data — all without getting lost in the documentation.' },
       { type: 'heading', text: 'Core Concepts' },
@@ -78,6 +84,9 @@ inputs = tok("Hello world", return_tensors="pt", padding=True, truncation=True)
     author: 'LearnKloud Team',
     date: 'January 12, 2026',
     readTime: '5 min read',
+    provider: 'General',
+    category: 'Data',
+    organisation: 'LearnKloud Team',
     content: [
       { type: 'intro', text: 'SQL and LLMs are a natural pair — LLMs can draft, explain, and optimize queries; SQL can ground AI outputs in real structured data. This cheat sheet shows the prompt patterns that work best and the guardrails that prevent dangerous outputs.' },
       { type: 'heading', text: 'The Text-to-SQL Prompt Pattern' },
@@ -120,6 +129,9 @@ Rules:
     author: 'LearnKloud Team',
     date: 'January 7, 2026',
     readTime: '7 min read',
+    provider: 'General',
+    category: 'AI',
+    organisation: 'LearnKloud Team',
     content: [
       { type: 'intro', text: 'AI agents combine reasoning, memory, and tool use to complete multi-step tasks autonomously. Understanding the core patterns helps you build reliable agents instead of fragile prompt chains.' },
       { type: 'heading', text: 'Agent Anatomy' },
@@ -161,6 +173,9 @@ Final Answer: Estimated monthly cost is $18.67.` },
     date: 'December 28, 2025',
     readTime: '8 min read',
     relatedQuizId: 'clf-c02-technology',
+    provider: 'AWS',
+    category: 'AI',
+    organisation: 'AWS Blog',
     content: [
       { type: 'intro', text: 'Amazon Bedrock Guardrails lets you apply safety policies to any foundation model on Bedrock — including Claude, Titan, and Llama models — without changing your application code. This guide covers the key configuration options and real-world rollout patterns.' },
       { type: 'heading', text: 'What Guardrails Cover' },
@@ -205,6 +220,9 @@ Final Answer: Estimated monthly cost is $18.67.` },
     author: 'LearnKloud Team',
     date: 'December 18, 2025',
     readTime: '6 min read',
+    provider: 'General',
+    category: 'AI',
+    organisation: 'LearnKloud Team',
     content: [
       { type: 'intro', text: 'Building reliable AI features requires treating prompts like software. That means versioning, testing, and measuring them. This framework gives you a repeatable evaluation process that catches regressions before they reach users.' },
       { type: 'heading', text: 'The Four Evaluation Dimensions' },
@@ -244,6 +262,9 @@ Target thresholds:
     author: 'LearnKloud Team',
     date: 'December 11, 2025',
     readTime: '5 min read',
+    provider: 'AWS',
+    category: 'DevOps',
+    organisation: 'LearnKloud Team',
     content: [
       { type: 'intro', text: 'LLMs are non-deterministic and expensive. Without proper observability you are flying blind — you will not know when outputs degrade, costs spike, or safety issues emerge. Instrument from day one, not as an afterthought.' },
       { type: 'heading', text: 'Essential Events to Log' },

@@ -1614,6 +1614,13 @@ export default function QuizPage() {
               {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && !isFunAndLearnMode && (
                 <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
+                  {currentQ.docUrl && (
+                    <div style={{ marginTop: 10 }}>
+                      <a href={currentQ.docUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 600, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', textDecoration: 'underline', opacity: 0.85 }}>
+                        📖 View on AWS Docs →
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
               {/* Fun and Learn: explanation already shown before options; on feedback show correct/incorrect only */}

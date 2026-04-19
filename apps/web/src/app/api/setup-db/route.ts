@@ -159,6 +159,31 @@ create trigger on_subscription_change
   after insert or update on public.subscriptions
   for each row execute function public.sync_subscription_to_profiles();
 
+-- ── Bookmarks (stores bookmarked question IDs per user) ─────────────────────
+create table if not exists public.bookmarks (
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  question_id text not null,
+  created_at  timestamptz not null default now(),
+  primary key (user_id, question_id)
+);
+alter table public.bookmarks enable row level security;
+drop policy if exists "own bookmarks" on public.bookmarks;
+create policy "own bookmarks" on public.bookmarks
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ── Flashcard Progress (known card IDs per user per deck) ────────────────────
+create table if not exists public.flashcard_progress (
+  user_id    uuid        not null references auth.users(id) on delete cascade,
+  deck_id    text        not null,
+  known_ids  jsonb       not null default '[]'::jsonb,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, deck_id)
+);
+alter table public.flashcard_progress enable row level security;
+drop policy if exists "own flashcard_progress" on public.flashcard_progress;
+create policy "own flashcard_progress" on public.flashcard_progress
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
 -- ── Trigger: auto-create profile rows on new Supabase user ───────────────
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer as $$
@@ -197,7 +222,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Retry-After': '60' } } as never);
   }
 
-  if (!SETUP_TOKEN || req.headers.get('x-setup-token') !== SETUP_TOKEN) {
+  if (!SETUP_TOKEN || req.headers.get('x-setup-token') !== SETUP_TOKEN.trim()) {
     logger.authFail(ROUTE, 'invalid_setup_token', { ip });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -222,7 +247,7 @@ export async function POST(req: NextRequest) {
     method:  'POST',
     headers: {
       'Content-Type':  'application/json',
-      'Authorization': `Bearer ${pat}`,
+      'Authorization': `Bearer ${pat.trim()}`,
     },
     body: JSON.stringify({ query: MIGRATION_SQL }),
   });
@@ -237,7 +262,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     message: 'Schema created.',
-    tables: ['user_profiles', 'quiz_results', 'subscriptions', 'unlocked_courses', 'purchases', 'profiles'],
+    tables: ['user_profiles', 'quiz_results', 'subscriptions', 'unlocked_courses', 'purchases', 'profiles', 'bookmarks', 'flashcard_progress'],
     rpc:     ['append_unlocked_course'],
     triggers: ['on_auth_user_created', 'on_subscription_change'],
   });

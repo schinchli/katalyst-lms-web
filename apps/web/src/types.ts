@@ -71,6 +71,7 @@ export interface Question {
   text: string;
   options: Option[];
   explanation?: string;
+  docUrl?: string;
   correctOptionId: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   category?: string;

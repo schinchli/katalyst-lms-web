@@ -156,6 +156,68 @@ export async function recordPurchase(userId: string, purchase: Omit<PurchaseReco
   });
 }
 
+// ── Bookmarks ───────────────────────────────────────────────────────────────
+
+export async function getBookmarks(userId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('bookmarks')
+    .select('question_id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(500);
+
+  if (error || !data) return [];
+  return data.map((row) => row.question_id as string);
+}
+
+export async function addBookmark(userId: string, questionId: string): Promise<void> {
+  await supabase.from('bookmarks').upsert(
+    { user_id: userId, question_id: questionId },
+    { onConflict: 'user_id,question_id' },
+  );
+}
+
+export async function removeBookmark(userId: string, questionId: string): Promise<void> {
+  await supabase.from('bookmarks').delete()
+    .eq('user_id', userId)
+    .eq('question_id', questionId);
+}
+
+export async function saveBookmarks(userId: string, questionIds: string[]): Promise<void> {
+  // Delete all and re-insert — used for bulk migration only.
+  await supabase.from('bookmarks').delete().eq('user_id', userId);
+  if (questionIds.length === 0) return;
+  await supabase.from('bookmarks').insert(
+    questionIds.map((question_id) => ({ user_id: userId, question_id })),
+  );
+}
+
+// ── Flashcard Progress ──────────────────────────────────────────────────────
+
+export async function getFlashcardProgress(userId: string, deckId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('flashcard_progress')
+    .select('known_ids')
+    .eq('user_id', userId)
+    .eq('deck_id', deckId)
+    .maybeSingle();
+
+  if (error || !data) return [];
+  return (data.known_ids as string[]) ?? [];
+}
+
+export async function saveFlashcardProgress(userId: string, deckId: string, knownIds: string[]): Promise<void> {
+  await supabase.from('flashcard_progress').upsert(
+    {
+      user_id:    userId,
+      deck_id:    deckId,
+      known_ids:  knownIds,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id,deck_id' },
+  );
+}
+
 // ── localStorage Migration (run once on first login) ───────────────────────
 
 const MIGRATION_KEY = 'learnkloud-migrated';
@@ -201,6 +263,27 @@ export async function migrateFromLocalStorage(userId: string): Promise<void> {
       const purchases: PurchaseRecord[] = JSON.parse(purchasesRaw);
       await Promise.all(purchases.map((p) => recordPurchase(userId, p)));
     }
+
+    // 6. Bookmarks
+    const bookmarksRaw = localStorage.getItem('web-bookmarks');
+    if (bookmarksRaw) {
+      const questionIds: string[] = JSON.parse(bookmarksRaw);
+      if (questionIds.length > 0) await saveBookmarks(userId, questionIds);
+    }
+
+    // 7. Flashcard progress (all decks)
+    const flashcardKeys = Object.keys(localStorage).filter((k) =>
+      k.startsWith('flashcards-known-'),
+    );
+    await Promise.all(
+      flashcardKeys.map(async (key) => {
+        const deckId = key.replace('flashcards-known-', '');
+        const raw    = localStorage.getItem(key);
+        if (!raw) return;
+        const knownIds: string[] = JSON.parse(raw);
+        if (knownIds.length > 0) await saveFlashcardProgress(userId, deckId, knownIds);
+      }),
+    );
 
     localStorage.setItem(MIGRATION_KEY, 'true');
   } catch {

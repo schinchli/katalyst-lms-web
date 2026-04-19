@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { quizQuestions, quizzes } from '@/data/quizzes';
 import type { Question, Quiz } from '@/types';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import { supabase } from '@/lib/supabase';
 
 interface BookmarkEntry {
   question: Question;
@@ -21,6 +22,62 @@ function buildQuestionIndex(): Map<string, BookmarkEntry> {
   return index;
 }
 
+// ── localStorage helpers (local cache) ───────────────────────────────────────
+
+function localLoad(): string[] {
+  try {
+    const raw = localStorage.getItem('web-bookmarks');
+    const parsed: string[] = raw ? (JSON.parse(raw) as string[]) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
+function localSave(ids: string[]) {
+  try { localStorage.setItem('web-bookmarks', JSON.stringify(ids)); } catch { /* best-effort */ }
+}
+
+// ── DB sync helpers ───────────────────────────────────────────────────────────
+
+async function getToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
+}
+
+async function fetchDbBookmarks(): Promise<string[] | null> {
+  const token = await getToken();
+  if (!token) return null;
+  try {
+    const res = await fetch('/api/bookmarks', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    const json = await res.json() as { ok: boolean; bookmarks: string[] };
+    return json.ok ? json.bookmarks : null;
+  } catch { return null; }
+}
+
+async function dbAdd(questionId: string): Promise<void> {
+  const token = await getToken();
+  if (!token) return;
+  fetch('/api/bookmarks', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questionId }),
+  }).catch(() => { /* fire-and-forget */ });
+}
+
+async function dbRemove(questionId: string): Promise<void> {
+  const token = await getToken();
+  if (!token) return;
+  fetch('/api/bookmarks', {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questionId }),
+  }).catch(() => { /* fire-and-forget */ });
+}
+
+// ── Page component ────────────────────────────────────────────────────────────
+
 export default function BookmarksPage() {
   const router = useRouter();
   const quizContentVersion = useManagedQuizContentVersion();
@@ -29,18 +86,25 @@ export default function BookmarksPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('web-bookmarks');
-      const parsed: string[] = stored ? (JSON.parse(stored) as string[]) : [];
-      setBookmarkedIds(Array.isArray(parsed) ? parsed : []);
-    } catch { /* best-effort */ }
+    // 1. Paint immediately from localStorage (no flicker).
+    const local = localLoad();
+    setBookmarkedIds(local);
     setLoaded(true);
+
+    // 2. Hydrate from DB in background; DB wins if it has data.
+    fetchDbBookmarks().then((dbIds) => {
+      if (dbIds !== null) {
+        setBookmarkedIds(dbIds);
+        localSave(dbIds);
+      }
+    });
   }, []);
 
   const removeBookmark = (questionId: string) => {
     const next = bookmarkedIds.filter((id) => id !== questionId);
     setBookmarkedIds(next);
-    try { localStorage.setItem('web-bookmarks', JSON.stringify(next)); } catch { /* best-effort */ }
+    localSave(next);
+    dbRemove(questionId);
   };
 
   const entries: BookmarkEntry[] = bookmarkedIds
@@ -49,8 +113,6 @@ export default function BookmarksPage() {
 
   const handleStartReview = () => {
     if (bookmarkedIds.length === 0) return;
-    // Navigate to quiz player with review=bookmarks param.
-    // We use the first bookmarked quiz's id as context, but pass review flag.
     router.push(`/dashboard/quiz/${entries[0]?.quiz.id ?? 'review'}?review=bookmarks`);
   };
 

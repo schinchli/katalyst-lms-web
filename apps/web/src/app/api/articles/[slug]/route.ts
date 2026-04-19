@@ -2,6 +2,9 @@
  * GET /api/articles/[slug]
  * Headers: Authorization: Bearer <supabase_access_token>
  *
+ * Fetches a single article from Sanity CMS.
+ * Falls back to static FEATURED_ARTICLES when Sanity is not configured.
+ *
  * Access control:
  *   - No token        → 401  (all articles require a registered account)
  *   - free article    → 200  (any authenticated user)
@@ -15,6 +18,7 @@ import { createClient }              from '@supabase/supabase-js';
 import { checkRateLimit }            from '@/lib/rateLimiter';
 import { logger }                    from '@/lib/logger';
 import { fetchArticleFull }          from '@/lib/sanityClient';
+import { FEATURED_ARTICLES }         from '@/lib/experienceFixtures';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,10 +81,33 @@ export async function GET(
     return NextResponse.json({ ok: false, error: 'Invalid or expired token', code: 'UNAUTHENTICATED' }, { status: 401 });
   }
 
-  // Fetch article from Sanity
+  // Fetch article from Sanity, fall back to static fixture
   let article;
   try {
-    article = await fetchArticleFull(slug);
+    const sanityArticle = await fetchArticleFull(slug);
+    if (sanityArticle) {
+      article = sanityArticle;
+    } else {
+      // Static fixture fallback (pre-Sanity / local dev)
+      const fixture = FEATURED_ARTICLES.find((a) => a.slug === slug);
+      if (fixture) {
+        article = {
+          _id:           fixture.slug,
+          title:         fixture.title,
+          slug:          fixture.slug,
+          tag:           fixture.tag,
+          excerpt:       fixture.description,
+          author:        fixture.author,
+          publishedAt:   fixture.date,
+          readTime:      fixture.readTime ?? null,
+          accessTier:    'free' as const,
+          featured:      false,
+          relatedQuizId: fixture.relatedQuizId ?? null,
+          coverImage:    null,
+          body:          [],
+        };
+      }
+    }
   } catch (err) {
     logger.error(ROUTE, 'Sanity fetch failed', { slug, error: String(err), ip });
     return NextResponse.json({ ok: false, error: 'Failed to load article' }, { status: 500 });
@@ -100,7 +127,6 @@ export async function GET(
           ok: false,
           error: 'Premium content',
           code: 'PREMIUM_REQUIRED',
-          // Return metadata so the client can render a paywall with article info
           article: {
             _id:         article._id,
             title:       article.title,
