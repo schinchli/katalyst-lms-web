@@ -38,7 +38,7 @@ We do not sell your personal data. We share data only with:
 • Razorpay (payment processing — subject to Razorpay's privacy policy)
 
 4. DATA RETENTION
-Your account data is retained as long as your account is active. You may request deletion of your account and all associated data at any time via Settings → Delete Account or the public deletion instructions page at https://lms-amber-two.vercel.app/delete-account.
+Your account data is retained as long as your account is active. You may request deletion of your account and all associated data at any time via Settings → Delete Account or the public deletion instructions page at https://learnkloud.today/delete-account.
 
 5. SECURITY
 All data is transmitted over HTTPS. Authentication tokens are stored in the device's secure enclave (iOS Keychain / Android Keystore). We do not store passwords in plain text.
@@ -47,13 +47,13 @@ All data is transmitted over HTTPS. Authentication tokens are stored in the devi
 The Service is not directed at children under 13. We do not knowingly collect data from children under 13.
 
 7. YOUR RIGHTS
-You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at support@learnkloudhq.app, use the in-app account deletion feature, or follow the web instructions at https://lms-amber-two.vercel.app/delete-account.
+You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at support@learnkloud.today, use the in-app account deletion feature, or follow the web instructions at https://learnkloud.today/delete-account.
 
 8. CHANGES TO THIS POLICY
 We may update this policy. We will notify you of material changes via the app or email. Continued use after changes constitutes acceptance.
 
 9. CONTACT
-LearnKloud LMS | support@learnkloudhq.app`,
+LearnKloud.Today | support@learnkloud.today`,
 
   termsAndConditions: `Last updated: March 2026
 
@@ -92,7 +92,7 @@ LearnKloud is an independent prep resource and is not affiliated with or endorse
 To the maximum extent permitted by law, LearnKloud shall not be liable for indirect, incidental, or consequential damages arising from your use of the Service.
 
 9. TERMINATION
-We may suspend or terminate your account if you violate these Terms. You may delete your account at any time via Settings → Delete Account or via the public instructions at https://lms-amber-two.vercel.app/delete-account.
+We may suspend or terminate your account if you violate these Terms. You may delete your account at any time via Settings → Delete Account or via the public instructions at https://learnkloud.today/delete-account.
 
 10. CHANGES TO TERMS
 We may modify these Terms at any time. Continued use after changes constitutes acceptance of the updated Terms.
@@ -101,7 +101,7 @@ We may modify these Terms at any time. Continued use after changes constitutes a
 These Terms are governed by the laws of India. Any disputes shall be resolved in the courts of Bangalore, Karnataka.
 
 12. CONTACT
-LearnKloud LMS | support@learnkloudhq.app`,
+LearnKloud.Today | support@learnkloud.today`,
 };
 
 export function ManagedContentPage({ contentKey }: { contentKey: ContentKey }) {
@@ -124,7 +124,7 @@ export function ManagedContentPage({ contentKey }: { contentKey: ContentKey }) {
   return (
     <div className="page-content dc-shell">
       <section className="dc-hero" style={{ padding: 30 }}>
-        <span className="dc-chip">{content?.appName ?? 'LearnKloud LMS'}</span>
+        <span className="dc-chip">{content?.appName ?? 'LearnKloud.Today'}</span>
         <h1 style={{ margin: '18px 0 12px', fontSize: 'clamp(34px, 4.5vw, 54px)', lineHeight: 1.03 }}>{title}</h1>
         <p style={{ margin: 0, maxWidth: 780, color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.8 }}>
           Managed from admin settings and shared across the website and mobile app.

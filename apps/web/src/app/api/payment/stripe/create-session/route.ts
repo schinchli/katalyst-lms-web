@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
   const { purchaseType, plan, courseId, quizId } = parsed.data;
 
   // ── Build Stripe line item ────────────────────────────────────────────────
-  const origin = req.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://lms-amber-two.vercel.app';
+  const origin = req.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://learnkloud.today';
   const successBase = `${origin}/dashboard/payment-success`;
   const cancelBase  = quizId ? `${origin}/dashboard/quiz/${quizId}` : `${origin}/dashboard/quizzes`;
 
