@@ -13,7 +13,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Push notifications (Expo + SNS)
 - Streak tracking + badge engine
 
-### Added
+---
+
+## [0.9.0] — 2026-04-20 — Mobile UX Polish: Navigation, Flashcard Memory Flow & Auth
+
+### Added (Mobile)
+
+- **Flashcard memory buttons** — flip a card to reveal "Still learning ↻" (orange) and "I knew it ✓" (green) action buttons; known cards are removed from the active queue immediately
+- **Flashcard review screen** — tapping Finish after the last card opens a full review screen showing:
+  - Stats banner: Total cards · You know (green) · To learn (orange)
+  - Mastery progress bar with percentage
+  - ↻ Still Learning list — each card has a per-card ✓ button to mark known inline
+  - ✓ I Knew It list (dimmed) — cards already mastered this session
+- **Flashcard complete screen** — once all cards are known (via practice or Mark All Known), shows a trophy, full stats banner, progress bar, and two CTAs: Restart Flashcards / Go to Home
+- **Flashcard bulk actions** — "Mark All Known" button in review footer completes the entire pack in one tap; "Practice Again" reruns only the still-learning subset
+- **Flashcard AsyncStorage persistence** — known set persisted per filter pack using `flashcards-known-{filter}` key; survives app restarts
+- **Login/Logout in hamburger drawer** — drawer footer shows Log In (primary blue) for guest/unauthenticated users and Log Out (red) for authenticated users; Login closes drawer and navigates to auth screen
+- **Quiz equal-width buttons** — Previous and Check/Next buttons in quiz nav are now equal width (`flex: 1`) for a consistent tap target
+- **Home screen "See All →" link** — quizzes section header now has a tappable See All → link routing to the Quizzes tab
+- **Reduced home screen spacing** — top padding reduced from 58 px to 12 px; gaps tightened for a denser, cleaner layout
+
+### Fixed (Mobile)
+
+- **Guest auth redirect bug** — `AuthGuard` was bouncing guest users (`isAuthenticated: true, step: 'guest'`) back to `/(tabs)` immediately when they tapped Log In from the profile page or hamburger; fixed by allowing `step === 'guest'` users through to `/(auth)` routes
+- **Navigation hamburger overlap** — replaced floating absolute-positioned trigger (hardcoded `top: insets.top + 88`) with a proper `AppHeader` component that lives above the `<Tabs>` in the layout; eliminates overlap with "Hi Guest" / page title area
+- **Drawer state centralised** — extracted drawer open/close/toggle into a Zustand `drawerStore`; `AppHeader` and `MobileLeftDrawer` share the same store, eliminating duplicate state and stale-closure bugs
+
+### Added (P6 — Economy and Monetisation, 2026-03-16)
 - **P6 — Economy and Monetisation (2026-03-16)**
   - **Coin Ledger API** — quiz-submit awards coins after each attempt: `quiz_complete` (score × correctScore), `perfect_score` (+10), `daily_quiz` (+5); inserts into `coin_transactions` table and calls `increment_user_coins` RPC on `user_profiles`
   - **Remove-Ads Entitlement** — new `GET /api/ads` returns per-user `adsRemoved` flag from `user_profiles.ads_removed`; `AdBanner.tsx` and `AdBanner.native.tsx` check global kill-switch (`systemFeatures.adsEnabled + bannerAdsEnabled`) AND per-user entitlement before rendering
