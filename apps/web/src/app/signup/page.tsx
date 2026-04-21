@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { DEFAULT_PLATFORM_EXPERIENCE, normalizePlatformExperience } from '@/lib/platformExperience';
+import { isDisposableEmail } from '@/lib/emailValidation';
 
 type SignupStep = 'form' | 'confirm';
 
@@ -31,6 +32,7 @@ export default function SignupPage() {
     event.preventDefault();
     setError('');
 
+    if (isDisposableEmail(email)) return setError('Disposable email addresses are not allowed. Please use your real email.');
     if (password.length < 12) return setError('Password must be at least 12 characters.');
     if (!/[A-Z]/.test(password)) return setError('Password must contain at least one uppercase letter.');
     if (!/[a-z]/.test(password)) return setError('Password must contain at least one lowercase letter.');

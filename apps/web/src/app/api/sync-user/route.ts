@@ -13,6 +13,7 @@ import { createClient }               from '@supabase/supabase-js';
 import { checkRateLimit }             from '@/lib/rateLimiter';
 import { logger }                     from '@/lib/logger';
 import { SyncUserSchema }             from '@/lib/schemas';
+import { isDisposableEmail }          from '@/lib/emailValidation';
 
 const ROUTE = '/api/sync-user';
 
@@ -72,6 +73,12 @@ export async function POST(req: NextRequest) {
   if (tokenUser.email && tokenUser.email !== email) {
     logger.authFail(ROUTE, 'email_mismatch', { ip, userId: supabaseId });
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Reject disposable/throwaway email addresses server-side
+  if (isDisposableEmail(email)) {
+    logger.warn(ROUTE, 'disposable_email_blocked', { ip, userId: supabaseId });
+    return NextResponse.json({ ok: false, error: 'Disposable email addresses are not permitted' }, { status: 422 });
   }
 
   const displayName = name?.trim() ? name.trim().slice(0, 100) : email.split('@')[0].slice(0, 100);
