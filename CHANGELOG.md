@@ -15,6 +15,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.2] — 2026-04-21 — Disposable Email Block + Docs Sync
+
+### Added
+
+- **Disposable email validation** — 30+ throwaway providers blocked at signup on both mobile and web; server-side gate added to `/api/sync-user` (422) to catch any client bypass
+- **Email format validation** — regex check before Supabase call on mobile signup
+- **Shared util** — `apps/web/src/lib/emailValidation.ts` (`isDisposableEmail`, `isValidEmailFormat`) used by signup page and sync-user route
+
+### Docs
+
+- `FEATURES.md` — added Mobile Auth section tracking all auth screens + v0.10.0/v0.10.1 fixes
+- `FEATURE_IMPLEMENTATION_LOG.md` — full 2026-04-21 session log added
+- `.claude/skills/mobile-auth.md` — new skill documenting auth store patterns, AuthGuard rules, guest flow, drawer logic, OTA discipline
+
+---
+
 ## [0.10.1] — 2026-04-21 — Auth Reliability + Home Screen Spacing
 
 ### Fixed (Mobile)
