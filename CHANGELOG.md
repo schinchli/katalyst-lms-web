@@ -15,6 +15,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.3] — 2026-04-21 — Web Auth Hardening: OTP Verify + Middleware Route Protection
+
+### Added
+
+- **`/verify-email` page** — 6-digit OTP entry with paste support, auto-advance, resend, expiry errors; matches mobile verify screen UX
+- **Next.js `middleware.ts`** — edge-level route guard: `/dashboard/**` requires auth (redirects to `/login?next=...`); auth pages redirect authenticated users to `/dashboard`
+- **`@supabase/ssr`** — replaced `createClient` with `createBrowserClient` (cookie-based sessions) enabling server-side auth reads in middleware
+- **Login banners** — `?verified=1` (email confirmed) and `?reset=success` (password updated) contextual feedback
+- **`?next=` redirect** — login page honours the destination preserved by middleware
+- **E2E test suite** — `apps/web/e2e/auth-flows.spec.ts`: 22 test cases covering route protection (TC-RP), signup (TC-SU), OTP verification (TC-VE), login (TC-LI), authenticated redirects (TC-AU), password reset (TC-PR)
+
+### Changed
+
+- Signup no longer shows inline "confirm" state — redirects to `/verify-email?email=...`
+- Supabase auth config: `enable_confirmations=true`, `mailer_otp_length=6`, `mailer_otp_exp=3600`, email template updated to say "60 minutes"
+
+---
+
 ## [0.10.2] — 2026-04-21 — Disposable Email Block + Docs Sync
 
 ### Added
