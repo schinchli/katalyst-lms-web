@@ -15,6 +15,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.1] — 2026-04-21 — Auth Reliability + Home Screen Spacing
+
+### Fixed (Mobile)
+
+- **Drawer Login/Logout toggle** — `signInUser` and `onAuthStateChange` now always set `step: 'authenticated'` on successful sign-in, even when the `user_profiles` fetch times out or fails; drawer now correctly shows "Log Out" for authenticated users
+- **Continue as Guest** — `setGuestUser()` now followed by `router.replace('/(tabs)')` on both login and signup screens; guest navigation no longer silently no-ops
+
+### Changed (Mobile)
+
+- **Home screen spacing** — `gap` increased from 12→18, `paddingTop` from 12→20; horizontal padding now adapts to device width via `useWindowDimensions` (16px on small phones, 20px on standard, 24px on large screens)
+
+---
+
 ## [0.10.0] — 2026-04-21 — Premium Auth UI Redesign
 
 ### Changed (Mobile)
