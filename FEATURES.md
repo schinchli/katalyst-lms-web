@@ -7,6 +7,17 @@
 
 ## ✅ Live Features
 
+### Mobile Auth (`mobile/app/(auth)/`)
+| Screen | Status | Details |
+|--------|--------|---------|
+| Login | ✅ v0.10.0 | Flat layout, `#4285F4` Google G badge, borderless icon inputs, gradient CTA, guest + email/password sign-in |
+| Signup | ✅ v0.10.0 | Same flat pattern, name/email/password fields, min-8/upper/number password validation |
+| Forgot Password | ✅ v0.10.0 | 2-stage: email → code+new-password; gradient CTA per stage |
+| Verify | ✅ v0.10.0 | 6-digit OTP input, resend code, gradient CTA |
+| Auth store reliability | ✅ v0.10.1 | `step: 'authenticated'` always set on successful sign-in; profile-fetch failures no longer block auth state update |
+| Continue as Guest | ✅ v0.10.1 | `setGuestUser()` + `router.replace('/(tabs)')` — guests navigate to tabs immediately |
+| Drawer Login/Logout | ✅ v0.10.1 | Shows "Log Out" for `step==='authenticated'`, "Log In" for guest/idle |
+
 ### Web Portal (`apps/web`)
 | Feature | Route | Details |
 |---------|-------|---------|

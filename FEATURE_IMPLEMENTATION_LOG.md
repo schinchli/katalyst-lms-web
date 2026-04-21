@@ -1,5 +1,49 @@
 # Feature Implementation Log
 
+---
+
+## 2026-04-21 (Auth Reliability, Home Spacing, Premium Auth UI — v0.10.0 / v0.10.1)
+
+### Auth Store Reliability Fix (`mobile/stores/authStore.ts`) — commit `3770eb4`
+
+- **`signInUser`**: wrapped `buildUserFromSession()` in `try/catch`; if profile fetch fails (timeout, missing `user_profiles` row, network error), store now always sets `step: 'authenticated'` and falls back to a minimal user object derived from the Supabase auth user. Previously, any exception propagated and left `step` stuck at `'idle'`, causing the drawer to show "Log In" after a successful sign-in.
+- **`onAuthStateChange` handler**: same fix — always sets `isAuthenticated: true, step: 'authenticated'` when `session?.user` is truthy, even if the profile DB call throws. User object falls back to `session.user.id/email` defaults.
+
+### Home Screen Responsive Spacing (`mobile/app/(tabs)/index.tsx`) — commit `3770eb4`
+
+- Added `useWindowDimensions` import.
+- `hPad` computed at runtime: 16px (<380px wide), 20px (<430px), 24px (430px+).
+- `ScrollView contentContainerStyle` uses `[styles.scroll, { paddingHorizontal: hPad }]`.
+- `styles.scroll` updated: `gap` 12→18, `paddingTop` 12→20, `paddingBottom` 36→48.
+
+### Premium Auth UI Redesign — all 4 auth screens — commits `7281926`, `e432651` (v0.10.0)
+
+**`mobile/app/(auth)/login.tsx`** — complete rewrite
+- `GoogleG` component: 22×22 `#4285F4` circle, white "G" (replaces Feather `globe` + "EN" language chip).
+- Borderless tinted-background inputs with prefix icons (`mail`, `lock`) and eye-toggle on password.
+- Horizontal `LinearGradient` CTA ("Sign In").
+- "Continue as guest" now calls `setGuestUser()` + `router.replace('/(tabs)')` — navigation was previously a no-op.
+
+**`mobile/app/(auth)/signup.tsx`** — complete rewrite
+- Same flat layout: `LinearGradient` logo box, `user`/`mail`/`lock` icon inputs, eye-toggle.
+- "Continue as guest" same fix applied.
+
+**`mobile/app/(auth)/forgot-password.tsx`** — complete rewrite
+- Two-stage (request / reset): `lock`→`key` icon circle.
+- Stage inputs: `mail` for email, `hash` for 6-digit code, `lock`+eye for new password.
+- Gradient CTA label switches ("Send Reset Code" / "Reset Password").
+
+**`mobile/app/(auth)/verify.tsx`** — complete rewrite
+- Removed old `logoCard` (coloured hero card) and `formCard` (elevated white card).
+- Now matches flat pattern: `primaryLight` icon circle, heading, subheading.
+- `hash` icon prefix on code input, gradient CTA ("Verify Email"), error/success banners.
+
+### OTA Update published
+- `eas update --branch preview` — update group `4a6f4ad1` — includes auth reliability + home spacing.
+- Build at commit `3a786bf`.
+
+---
+
 ## 2026-03-18 (Security Hardening & Production Launch Prep)
 
 ### Critical Security Fixes
