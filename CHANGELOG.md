@@ -15,6 +15,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.0] — 2026-04-21 — Premium Auth UI Redesign
+
+### Changed (Mobile)
+
+- **Premium input fields** — all 4 auth screens (login, signup, forgot-password, verify) replace boxed `Input` components with borderless tinted-background fields; each field has a prefix icon (mail, lock, user, hash) and password fields have an eye-toggle for show/hide
+- **Gradient CTA buttons** — "Sign In", "Get Started", "Send Reset Code", "Reset Password", "Verify Email" buttons now use a horizontal `LinearGradient` (brand colours) instead of flat solid fill
+- **Google sign-in button** — Feather `globe` icon and "Continue with Google" text replaced with a proper `#4285F4` Google G badge and "Google" label; no EN language chip
+- **Verify screen flattened** — was still using the old coloured hero card + elevated form card pattern; now matches the flat layout of the other 3 auth screens
+- **Uniform auth layout** — all 4 screens share identical structure: icon/logo mark · heading · subheading · borderless inputs · gradient CTA · footer links; `gap: 28` scroll container, `borderRadius: 16` inputs, `borderRadius: 20` icon circles
+
+### Fixed (Mobile)
+
+- **EN language chip removed** — was a leftover from old hero-card design; no language indicator appears anywhere on auth screens
+- **No more "two boxes"** — email + password inputs no longer render as hard-bordered cards on Android
+
+---
+
 ## [0.9.0] — 2026-04-20 — Mobile UX Polish: Navigation, Flashcard Memory Flow & Auth
 
 ### Added (Mobile)
