@@ -16,12 +16,14 @@ function LoginPageContent() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copy, setCopy] = useState(DEFAULT_PLATFORM_EXPERIENCE.copy);
-  const [accountDeleted, setAccountDeleted] = useState(false);
+  const [accountDeleted,  setAccountDeleted]  = useState(false);
+  const [passwordReset,   setPasswordReset]   = useState(false);
+  const [emailVerified,   setEmailVerified]   = useState(false);
 
   useEffect(() => {
-    if (searchParams.get('deleted') === '1') {
-      setAccountDeleted(true);
-    }
+    if (searchParams.get('deleted') === '1')         setAccountDeleted(true);
+    if (searchParams.get('reset')   === 'success')   setPasswordReset(true);
+    if (searchParams.get('verified') === '1')        setEmailVerified(true);
     fetch('/api/platform-config')
       .then((res) => res.json())
       .then((body: { config?: unknown }) => setCopy(normalizePlatformExperience(body.config).copy))
@@ -75,7 +77,9 @@ function LoginPageContent() {
       }).catch(() => {});
     }
 
-    router.push('/dashboard');
+    const next = searchParams.get('next');
+    const destination = next && next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard';
+    router.push(destination);
   };
 
   return (
@@ -135,6 +139,20 @@ function LoginPageContent() {
           <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             Sign in to continue your learning path, streaks, and certification practice.
           </p>
+
+          {emailVerified && (
+            <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: 'rgba(40,199,111,0.1)', border: '1px solid rgba(40,199,111,0.25)', color: 'var(--success)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <span>Email verified! Sign in to get started.</span>
+              <button type="button" onClick={() => setEmailVerified(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--success)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            </div>
+          )}
+
+          {passwordReset && (
+            <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: 'rgba(40,199,111,0.1)', border: '1px solid rgba(40,199,111,0.25)', color: 'var(--success)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <span>Password updated successfully. Sign in with your new password.</span>
+              <button type="button" onClick={() => setPasswordReset(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--success)', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+            </div>
+          )}
 
           {accountDeleted && (
             <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: 'rgba(40,199,111,0.1)', border: '1px solid rgba(40,199,111,0.25)', color: 'var(--success)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>

@@ -8,12 +8,10 @@ import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { DEFAULT_PLATFORM_EXPERIENCE, normalizePlatformExperience } from '@/lib/platformExperience';
 import { isDisposableEmail } from '@/lib/emailValidation';
 
-type SignupStep = 'form' | 'confirm';
 
 export default function SignupPage() {
   const router = useRouter();
   const { execute: recaptcha } = useRecaptcha();
-  const [step, setStep] = useState<SignupStep>('form');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -75,12 +73,14 @@ export default function SignupPage() {
       return;
     }
 
+    // Email already confirmed (e.g. email confirmation disabled in dev) — go straight in
     if (data.session) {
       router.push('/dashboard');
       return;
     }
 
-    setStep('confirm');
+    // Email confirmation required — send user to OTP entry page
+    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
   };
 
   return (
@@ -131,58 +131,41 @@ export default function SignupPage() {
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>LearnKloud</div>
           </div>
 
-          {step === 'confirm' ? (
-            <div style={{ textAlign: 'center', paddingTop: 20 }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(40,199,111,0.12)', display: 'grid', placeItems: 'center', margin: '0 auto 20px' }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          <h4 style={{ margin: '0 0 6px', fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>Create an account 🚀</h4>
+          <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            Join the platform and start your certification prep journey.
+          </p>
+
+          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <label>
+              <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Full name</div>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="admin-field-input" placeholder="Jane Smith" />
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Email</div>
+              <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="admin-field-input" required placeholder="you@example.com" />
+            </label>
+            <label>
+              <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Password</div>
+              <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="admin-field-input" required placeholder="12+ chars, upper/lower/number/symbol" />
+              <div style={{ marginTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>Min. 12 characters with upper, lower, number, and symbol.</div>
+            </label>
+
+            {error && (
+              <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(234,84,85,0.1)', border: '1px solid rgba(234,84,85,0.25)', color: 'var(--error)', fontSize: 13 }}>
+                {error}
               </div>
-              <h4 style={{ margin: '0 0 10px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Check your inbox</h4>
-              <p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: 14 }}>
-                We sent a confirmation link to <strong style={{ color: 'var(--text)' }}>{email}</strong>. Open it to activate your account.
-              </p>
-              <Link href="/login" className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', minWidth: 160 }}>
-                Go to sign in
-              </Link>
-            </div>
-          ) : (
-            <>
-              <h4 style={{ margin: '0 0 6px', fontSize: 24, fontWeight: 700, color: 'var(--text)' }}>Create an account 🚀</h4>
-              <p style={{ margin: '0 0 28px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Join the platform and start your certification prep journey.
-              </p>
+            )}
 
-              <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                <label>
-                  <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Full name</div>
-                  <input value={name} onChange={(e) => setName(e.target.value)} className="admin-field-input" placeholder="Jane Smith" />
-                </label>
-                <label>
-                  <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Email</div>
-                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="admin-field-input" required placeholder="you@example.com" />
-                </label>
-                <label>
-                  <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>Password</div>
-                  <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="admin-field-input" required placeholder="12+ chars, upper/lower/number/symbol" />
-                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>Min. 12 characters with upper, lower, number, and symbol.</div>
-                </label>
+            <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: 4, minHeight: 48, fontSize: 15 }}>
+              {loading ? 'Creating account…' : 'Create account'}
+            </button>
+          </form>
 
-                {error && (
-                  <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(234,84,85,0.1)', border: '1px solid rgba(234,84,85,0.25)', color: 'var(--error)', fontSize: 13 }}>
-                    {error}
-                  </div>
-                )}
-
-                <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: 4, minHeight: 48, fontSize: 15 }}>
-                  {loading ? 'Creating account…' : 'Create account'}
-                </button>
-              </form>
-
-              <p style={{ marginTop: 24, textAlign: 'center', fontSize: 14, color: 'var(--text-secondary)' }}>
-                Already have an account?{' '}
-                <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
-              </p>
-            </>
-          )}
+          <p style={{ marginTop: 24, textAlign: 'center', fontSize: 14, color: 'var(--text-secondary)' }}>
+            Already have an account?{' '}
+            <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+          </p>
         </div>
       </div>
     </div>
