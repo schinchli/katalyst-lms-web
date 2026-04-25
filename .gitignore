@@ -42,10 +42,17 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# IDE
+# IDE / AI tool configs
 .vscode/
 .idea/
 .kiro/
+.cursor/
+.cursorrules
+.mcp.json
+.opencode.json
+.windsurfrules
+AGENTS.md
+GEMINI.md
 
 # Next.js build output
 .next/
@@ -67,4 +74,11 @@ supabase/
 
 # Knowledge graph (generated)
 .understand-anything/
+
+# Test artifacts
 apps/web/test-results/
+apps/web/e2e-report/
+apps/web/e2e-screenshots/
+test-results/
+backend/test-results/
+nikto_*.txt
