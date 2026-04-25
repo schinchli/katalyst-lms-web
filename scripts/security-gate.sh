@@ -408,7 +408,7 @@ check_rls() {
   HTTP_CODE=$(echo "$RESPONSE" | tail -1)
   BODY=$(echo "$RESPONSE" | sed '$d')
 
-  if [ "$HTTP_CODE" != "200" ]; then
+  if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
     warn "Supabase API returned HTTP $HTTP_CODE — cannot verify RLS live"
     warn "Response: $BODY"
     return
