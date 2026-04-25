@@ -7,7 +7,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'http://localhost:8080';
 const TEST_EMAIL = `qa+${Date.now()}@mailtest.katalyst.dev`;
 const TEST_PASSWORD = 'TestPwd@1234!';
 
