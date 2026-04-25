@@ -108,9 +108,17 @@ test.describe('Verify Email OTP', () => {
 
   test('TC-VE-02: paste fills all 6 boxes', async ({ page }) => {
     await page.goto(`${BASE}/verify-email?email=test@example.com`);
-    const first = page.locator('input[inputMode="numeric"]').first();
-    await first.click();
-    await page.keyboard.insertText('123456');
+    await page.locator('input[inputMode="numeric"]').first().click();
+    // Dispatch a real ClipboardEvent on the container div (where onPaste is attached)
+    await page.evaluate(() => {
+      const input = document.querySelector('input[inputMode="numeric"]') as HTMLInputElement;
+      const container = input?.parentElement;
+      if (container) {
+        const dt = new DataTransfer();
+        dt.setData('text/plain', '123456');
+        container.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true }));
+      }
+    });
     const inputs = page.locator('input[inputMode="numeric"]');
     for (let i = 0; i < 6; i++) {
       await expect(inputs.nth(i)).toHaveValue(String(i + 1));
@@ -124,9 +132,16 @@ test.describe('Verify Email OTP', () => {
 
   test('TC-VE-04: submit enabled after full 6-digit entry', async ({ page }) => {
     await page.goto(`${BASE}/verify-email?email=test@example.com`);
-    const first = page.locator('input[inputMode="numeric"]').first();
-    await first.click();
-    await page.keyboard.insertText('123456');
+    await page.locator('input[inputMode="numeric"]').first().click();
+    await page.evaluate(() => {
+      const input = document.querySelector('input[inputMode="numeric"]') as HTMLInputElement;
+      const container = input?.parentElement;
+      if (container) {
+        const dt = new DataTransfer();
+        dt.setData('text/plain', '123456');
+        container.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true }));
+      }
+    });
     await expect(page.locator('button[type="submit"]')).toBeEnabled();
   });
 

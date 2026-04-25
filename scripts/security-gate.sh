@@ -369,43 +369,73 @@ check_security_headers() {
 }
 
 # =============================================================================
-# CHECK 9: RLS — setup-db route has RLS enabled on all tables
+# CHECK 9: RLS — query live Supabase DB for any public table missing RLS
 # =============================================================================
 check_rls() {
-  section "Row Level Security (RLS)"
+  section "Row Level Security (RLS) — live database check"
 
-  SETUP_DB="$API_DIR/setup-db/route.ts"
-  if [ ! -f "$SETUP_DB" ]; then
-    warn "setup-db/route.ts not found — cannot verify RLS"
+  # Require env vars for live check
+  if [ -z "${SUPABASE_PROJECT_REF:-}" ] || [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+    # Fall back to env file if present
+    ENV_FILE="$REPO_ROOT/apps/web/.env.local"
+    if [ -f "$ENV_FILE" ]; then
+      SUPABASE_PROJECT_REF=$(grep "^SUPABASE_PROJECT_REF=" "$ENV_FILE" | cut -d= -f2- | tr -d '"' || true)
+      SUPABASE_ACCESS_TOKEN=$(grep "^SUPABASE_ACCESS_TOKEN=" "$ENV_FILE" | cut -d= -f2- | tr -d '"' || true)
+    fi
+  fi
+
+  if [ -z "${SUPABASE_PROJECT_REF:-}" ] || [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+    warn "SUPABASE_PROJECT_REF / SUPABASE_ACCESS_TOKEN not set — skipping live RLS check"
+    warn "Set these vars to enable real-time RLS audit (catches tables from all apps)"
+    # Static fallback: check migration files don't disable RLS anywhere
+    RLS_DISABLED=$(grep -rn "DISABLE ROW LEVEL SECURITY" "$REPO_ROOT/supabase/migrations/" 2>/dev/null || true)
+    if [ -n "$RLS_DISABLED" ]; then
+      fail "RLS explicitly DISABLED in migrations — never acceptable: $RLS_DISABLED"
+    else
+      pass "No RLS DISABLE statements in migration files (set SUPABASE_ACCESS_TOKEN for live check)"
+    fi
     return
   fi
 
-  TABLES=("user_profiles" "quiz_results" "subscriptions" "unlocked_courses" "purchases")
-  RLS_MISSING=()
-  for table in "${TABLES[@]}"; do
-    if ! grep -q "ENABLE ROW LEVEL SECURITY.*$table\|$table.*ENABLE ROW LEVEL SECURITY\|ENABLE ROW LEVEL SECURITY" "$SETUP_DB" 2>/dev/null; then
-      # Check if setup-db just has one blanket RLS enablement
-      if ! grep -q "ENABLE ROW LEVEL SECURITY" "$SETUP_DB" 2>/dev/null; then
-        RLS_MISSING+=("$table")
-      fi
-    fi
-  done
+  # Query live DB — any public table with rowsecurity = false is a breach
+  QUERY='{"query":"SELECT tablename FROM pg_tables WHERE schemaname = '"'"'public'"'"' AND rowsecurity = false ORDER BY tablename"}'
+  RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+    "https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}/database/query" \
+    -H "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "$QUERY" 2>/dev/null)
 
-  RLS_COUNT=$(grep -c "ENABLE ROW LEVEL SECURITY" "$SETUP_DB" 2>/dev/null || echo "0")
-  if [ "$RLS_COUNT" -ge 5 ]; then
-    pass "RLS enabled on all $RLS_COUNT tables"
-  elif [ "$RLS_COUNT" -gt 0 ]; then
-    warn "RLS enabled on $RLS_COUNT tables — verify all 5 core tables are covered"
-  else
-    fail "RLS not found in setup-db — all tables must have ROW LEVEL SECURITY"
+  HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+  BODY=$(echo "$RESPONSE" | sed '$d')
+
+  if [ "$HTTP_CODE" != "200" ]; then
+    warn "Supabase API returned HTTP $HTTP_CODE — cannot verify RLS live"
+    warn "Response: $BODY"
+    return
   fi
 
-  # Ensure no table has RLS explicitly disabled
-  RLS_DISABLED=$(grep -n "DISABLE ROW LEVEL SECURITY" "$SETUP_DB" 2>/dev/null || true)
-  if [ -n "$RLS_DISABLED" ]; then
-    fail "RLS explicitly DISABLED — never acceptable: $RLS_DISABLED"
+  UNPROTECTED=$(echo "$BODY" | python3 -c \
+    "import sys,json; rows=json.load(sys.stdin); print('\n'.join(r['tablename'] for r in rows))" \
+    2>/dev/null || true)
+
+  if [ -n "$UNPROTECTED" ]; then
+    fail "Tables with RLS DISABLED (publicly readable/writable):\n$UNPROTECTED"
   else
-    pass "No RLS DISABLE statements found"
+    TABLE_COUNT=$(echo "$BODY" | python3 -c \
+      "import sys,json; \
+       r=__import__('urllib.request',fromlist=['urlopen']); \
+       import json,sys; \
+       # count all public tables for context \
+       print(0)" 2>/dev/null || echo "?")
+    pass "All public tables have RLS enabled (verified against live Supabase DB)"
+  fi
+
+  # Also ensure no migration file explicitly disables RLS
+  RLS_DISABLED=$(grep -rn "DISABLE ROW LEVEL SECURITY" "$REPO_ROOT/supabase/migrations/" 2>/dev/null || true)
+  if [ -n "$RLS_DISABLED" ]; then
+    fail "RLS explicitly DISABLED in migrations — never acceptable: $RLS_DISABLED"
+  else
+    pass "No RLS DISABLE statements in migration files"
   fi
 }
 

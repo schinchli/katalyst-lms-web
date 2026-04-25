@@ -7,7 +7,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": ["jest", "node"]
   },
   "include": ["lambdas/**/*.ts", "jest.config.ts"],
   "exclude": ["node_modules", "dist"]
