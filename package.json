@@ -21,7 +21,7 @@
     "security-gate": "bash scripts/security-gate.sh"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^12.9.0",
+    "@testing-library/react-native": "^13.3.3",
     "react-test-renderer": "19.1.0",
     "turbo": "^2.5.4",
     "typescript": "~5.9.2"
