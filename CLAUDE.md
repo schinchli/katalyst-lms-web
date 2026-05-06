@@ -1,8 +1,8 @@
 # Katalyst LMS — Claude Code Instructions
 
-> **Last Updated:** 2026-03-11
+> **Last Updated:** 2026-05-06
 > **Platform:** AWS Cloud & GenAI Certification Prep (Katalyst)
-> **Branch:** `codex/unified-theme-admin-sync`
+> **Branch:** `main`
 
 ---
 
@@ -12,7 +12,7 @@
 
 | Layer | Tech | Location |
 |-------|------|----------|
-| Web portal | Next.js 15 App Router | `apps/web/` |
+| Web portal | Next.js 16 App Router | `apps/web/` |
 | Mobile app | Expo SDK 54 (React Native 0.81) | `mobile/` |
 | Backend | AWS Lambda + TypeScript | `backend/lambdas/` |
 | Infra (planned) | AWS CDK | `infrastructure/cdk/` |
@@ -36,7 +36,7 @@
 | `backend/lambdas/leaderboardFetch/index.ts` | Leaderboard Lambda |
 | `CHANGELOG.md` | Version history |
 | `FEATURES.md` | Feature matrix (done + planned) |
-| `EXECUTION_TRACKER.md` | Detailed task progress |
+| `docs/DESIRED_FEATURES_BACKLOG.md` | Detailed backlog + planned phases |
 | `mobile/config/quizCatalog.ts` | Mobile-side merge layer for admin quiz access overrides |
 | `mobile/services/quizCatalogService.ts` | Fetches quiz overrides from Supabase and applies them at startup |
 | `docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md` | Claude handoff for the separate attendance multi-tenant build |
@@ -167,7 +167,7 @@ Everything else is blocked by `.vercelignore`.
 | `backend/` | AWS Lambda — separate deployment |
 | `mobile/` | Expo/React Native — not web |
 | `infrastructure/` | AWS CDK — separate deployment |
-| `ios/`, `supabase/`, `frontend/`, `docs/` | Not needed at build time |
+| `ios/`, `supabase/`, `docs/` | Not needed at build time |
 | `apps/web/e2e/`, `apps/web/scripts/` | Test/tooling only |
 | `apps/web/jest.config.ts`, `playwright.config.ts` | Test config |
 | `**/__tests__/`, `**/*.test.ts`, `**/*.spec.*` | All test files |

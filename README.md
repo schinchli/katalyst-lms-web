@@ -14,7 +14,7 @@ and an admin dashboard — secured from client to database with a zero-trust pos
 
 | Layer | Technology |
 |-------|-----------|
-| Web portal | Next.js 15 App Router (TypeScript) |
+| Web portal | Next.js 16 App Router (TypeScript) |
 | Styling | Vuexy design system (CSS-only replica, no package) |
 | Auth | Supabase Auth (email + password + email confirmation) |
 | Database | Supabase PostgreSQL + Row Level Security |
@@ -31,70 +31,77 @@ and an admin dashboard — secured from client to database with a zero-trust pos
 ```
 lms/
 ├── apps/
-│   └── web/                          # Next.js 15 web portal
-│       ├── src/
-│       │   ├── app/
-│       │   │   ├── api/              # Vercel serverless API routes
-│       │   │   │   ├── admin/
-│       │   │   │   │   ├── check/        GET  — admin role check
-│       │   │   │   │   ├── quiz-catalog/ GET/POST — admin quiz premium/free overrides
-│       │   │   │   │   └── purchases/    GET  — all-platform purchases
-│       │   │   │   ├── leaderboard/      GET  — public leaderboard
-│       │   │   │   ├── quiz-catalog/     GET  — public quiz premium/free overrides
-│       │   │   │   ├── quiz-submit/      POST — server-side score validation
-│       │   │   │   ├── quizzes/stats/    GET  — student count per quiz
-│       │   │   │   ├── recaptcha/verify/ POST — reCAPTCHA v3 verification
-│       │   │   │   ├── setup-db/         POST — one-shot DB schema setup
-│       │   │   │   └── sync-user/        POST/GET — profile sync
-│       │   │   ├── dashboard/
-│       │   │   │   ├── admin/            admin analytics (admin-only)
-│       │   │   │   ├── leaderboard/      live leaderboard
-│       │   │   │   ├── learn/            learning resources
-│       │   │   │   ├── profile/          user profile + appearance theme
-│       │   │   │   ├── progress/         quiz progress + history
-│       │   │   │   ├── quiz/[id]/        quiz engine (intro → quiz → results)
-│       │   │   │   ├── quizzes/          quiz catalogue + search
-│       │   │   │   └── settings/         admin: AdSense + upsell copy
-│       │   │   ├── login/               sign in
-│       │   │   ├── signup/              sign up
-│       │   │   ├── reset-password/      password reset request
-│       │   │   └── update-password/     set new password (from email link)
-│       │   ├── components/
-│       │   │   └── AdBanner.tsx         Google AdSense banner
-│       │   ├── data/
-│       │   │   ├── quizzes.ts           quiz metadata + question registry
-│       │   │   └── clf-c02-questions.ts CLF-C02 question bank (195 Qs)
-│       │   ├── hooks/
-│       │   │   ├── useSubscription.ts   freemium subscription state
-│       │   │   └── useRecaptcha.ts      reCAPTCHA v3 hook
-│       │   ├── lib/
-│       │   │   ├── db.ts                Supabase CRUD helpers (client-side)
-│       │   │   ├── logger.ts            structured JSON logger
-│       │   │   ├── quizCatalog.ts       quiz premium/free override merge layer
-│       │   │   ├── rateLimiter.ts       in-memory rate limiter
-│       │   │   ├── recaptcha.ts         reCAPTCHA server-side verify
-│       │   │   ├── schemas.ts           shared Zod schemas
-│       │   │   └── supabase.ts          Supabase client (anon key)
-│       │   └── types.ts                 shared TypeScript types
-│       ├── next.config.ts              security headers + config
-│       └── package.json
-├── backend/lambdas/                   AWS Lambda functions (future)
-│   ├── quizSubmit/
-│   ├── progressFetch/
-│   └── leaderboardFetch/
-├── mobile/                            Expo app (git submodule)
-│   ├── config/quizCatalog.ts          mobile quiz premium/free override merge layer
-│   └── services/quizCatalogService.ts syncs admin overrides from app_settings
-├── supabase/migrations/               DB migration SQL (includes per-user theme_pref + platform theme)
+│   ├── web/                           # Next.js 16 web portal (deployed to Vercel)
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── api/              # Vercel serverless API routes
+│   │   │   │   │   ├── admin/
+│   │   │   │   │   │   ├── check/        GET  — admin role check
+│   │   │   │   │   │   ├── quiz-catalog/ GET/POST — quiz premium/free overrides
+│   │   │   │   │   │   └── purchases/    GET  — all-platform purchases
+│   │   │   │   │   ├── leaderboard/      GET  — public leaderboard
+│   │   │   │   │   ├── quiz-catalog/     GET  — public quiz overrides
+│   │   │   │   │   ├── quiz-submit/      POST — server-side score validation
+│   │   │   │   │   ├── quizzes/stats/    GET  — student count per quiz
+│   │   │   │   │   ├── recaptcha/verify/ POST — reCAPTCHA v3 verification
+│   │   │   │   │   ├── setup-db/         POST — one-shot DB schema setup
+│   │   │   │   │   └── sync-user/        POST/GET — profile sync
+│   │   │   │   ├── dashboard/
+│   │   │   │   │   ├── admin/            admin analytics (admin-only)
+│   │   │   │   │   ├── leaderboard/      live leaderboard
+│   │   │   │   │   ├── learn/            learning resources
+│   │   │   │   │   ├── profile/          user profile + appearance theme
+│   │   │   │   │   ├── progress/         quiz progress + history
+│   │   │   │   │   ├── quiz/[id]/        quiz engine (intro → quiz → results)
+│   │   │   │   │   ├── quizzes/          quiz catalogue + search
+│   │   │   │   │   └── settings/         admin: AdSense + upsell copy
+│   │   │   │   ├── login/               sign in
+│   │   │   │   ├── signup/              sign up
+│   │   │   │   ├── verify-email/        6-digit OTP confirmation
+│   │   │   │   ├── reset-password/      password reset request
+│   │   │   │   └── update-password/     set new password (from email link)
+│   │   │   ├── components/            reusable UI components
+│   │   │   ├── data/
+│   │   │   │   ├── quizzes.ts           quiz metadata + question registry
+│   │   │   │   └── clf-c02-questions.ts CLF-C02 question bank (195 Qs)
+│   │   │   ├── hooks/
+│   │   │   │   ├── useSubscription.ts   freemium subscription state
+│   │   │   │   └── useRecaptcha.ts      reCAPTCHA v3 hook
+│   │   │   └── lib/
+│   │   │       ├── quizCatalog.ts       quiz premium/free override merge layer
+│   │   │       ├── rateLimiter.ts       in-memory per-IP rate limiter
+│   │   │       ├── supabase.ts          Supabase client (cookie-based sessions)
+│   │   │       └── emailValidation.ts   disposable email + format validation
+│   │   ├── e2e/                       Playwright E2E tests (22 auth test cases)
+│   │   ├── next.config.ts             security headers + CSP config
+│   │   └── package.json
+│   └── admin/                         # Admin panel (Vuexy — not yet deployed)
+├── backend/lambdas/                   AWS Lambda functions (deployed separately)
+│   ├── quizSubmit/                    POST /quiz/submit — score validation + EventBridge
+│   ├── progressFetch/                 GET /progress — user stats + history
+│   └── leaderboardFetch/              GET /leaderboard — daily/monthly/alltime top-20
+├── packages/
+│   ├── shared-types/                  @lms/shared-types — TypeScript interfaces
+│   └── theme/                         @lms/theme — design tokens + Tailwind config
+├── mobile/                            Expo SDK 54 app (git submodule → katalyst-mobile.git)
+│   ├── config/quizCatalog.ts          quiz override merge layer
+│   └── services/quizCatalogService.ts syncs admin overrides from app_settings at startup
+├── infrastructure/cdk/                AWS CDK stack (planned deployment)
+├── supabase/migrations/               DB migration SQL
+├── docs/                              Architecture + reference docs
+│   ├── ARCHITECTURE.md
+│   ├── VUEXY_WIDGET_CATALOG.md        design system reference
+│   ├── DESIRED_FEATURES_BACKLOG.md    planned phases + backlog
+│   ├── store/                         Play Store + App Store submission docs
+│   └── archive/                       superseded planning docs
 ├── scripts/
 │   ├── security-gate.sh               13-check security gate (quick / ci / full)
 │   ├── install-hooks.sh               installs pre-commit + pre-push hooks
 │   └── deploy.sh                      full gate + vercel --prod --yes
-├── .github/workflows/
-│   └── ci.yml                         CI: security-gate → typecheck + tests + build
+├── .github/workflows/                 CI/CD: ci, codeql, eas-build, secret-scan, type-check
 ├── SECURITY_AUDIT.md                  300-rule compliance audit
 ├── THREAT_MODEL.md                    STRIDE threat model
-├── SECURITY_HEADERS.md                HTTP security headers docs
+├── SECURITY_HEADERS.md                HTTP security headers reference
 ├── API_SECURITY_REPORT.md             per-route security analysis
 └── vercel.json                        Vercel build config
 ```

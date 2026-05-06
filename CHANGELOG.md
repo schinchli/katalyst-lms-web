@@ -9,9 +9,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Pending
 - CDK infrastructure (DynamoDB tables, Cognito, API Gateway)
-- Stripe/purchase flow (purchaseValidate Lambda full implementation)
+- Stripe/Razorpay purchase flow
 - Push notifications (Expo + SNS)
 - Streak tracking + badge engine
+
+---
+
+## [0.10.4] — 2026-05-06 — Dependency Updates + Repo Cleanup
+
+### Changed
+- **Next.js** upgraded to 16.2.4 across `apps/web` and `apps/admin`
+- **`@supabase/supabase-js`** → 2.105.3
+- **`axios`** → 1.16.0 (closes follow-redirects CVE GHSA-r4q5-vmmm-2653)
+- **`react-native-screens`** → 4.24.0, **`react-native-gesture-handler`** → 2.31.2
+- **`@react-navigation/drawer`** → 7.9.9, **`@tanstack/react-query`** → 5.100.9
+- **`expo`** → 54.0.34, **`react`** → 19.2.5 (aligns react/react-dom peer dep)
+- **`postcss`** override `>=8.5.10` applied in both API and mobile
+
+### Removed
+- **`frontend/`** — legacy empty stub folder deleted
+- **`backend/lambdas/purchaseValidate/`** — empty stub deleted
+- **`START_HERE.md`**, **`MASTER_CHECKLIST.md`** — empty placeholders removed
+- **`CLAUDE_COMMANDMENTS.md`**, **`EXECUTION_TRACKER.md`**, **`FEATURE_IMPLEMENTATION_LOG.md`**, **`LMS_IMPLEMENTATION_PLAN.md`**, **`PROJECT_SUMMARY.md`**, **`README_IMPLEMENTATION.md`**, **`QUICK_REFERENCE.md`** — superseded docs archived to `docs/archive/`
+- **Store/launch docs** moved to `docs/store/`
+- **`VUEXY_WIDGET_CATALOG.md`**, **`DESIRED_FEATURES_BACKLOG.md`** moved to `docs/`
+
+### Fixed
+- `.gitignore` now excludes `.code-review-graph/` (generated knowledge graph)
+- `.vercelignore` cleaned: removed `frontend/` reference, explicit `docs/` exclusion
+- `CLAUDE.md`, `README.md`, `FEATURES.md` updated to Next.js 16, current branch, accurate structure
 
 ---
 

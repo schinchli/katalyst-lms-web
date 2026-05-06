@@ -1,7 +1,7 @@
 # Katalyst LMS — Features
 
 > **Platform:** AWS Cloud & Generative AI Certification Preparation
-> **Stack:** Next.js 15 (web) · Expo SDK 54 (mobile) · AWS Lambda + DynamoDB (backend)
+> **Stack:** Next.js 16 (web) · Expo SDK 54 (mobile) · AWS Lambda + DynamoDB (backend)
 
 ---
 
@@ -42,7 +42,6 @@
 | quizSubmit | `POST /quiz/submit` | Validates, saves attempt, updates stats, emits EventBridge event |
 | progressFetch | `GET /progress` | Returns statistics + last 10 attempts (parallel DynamoDB fetch) |
 | leaderboardFetch | `GET /leaderboard?period=` | Top-20 for daily / monthly / alltime periods |
-| purchaseValidate | `POST /purchase/validate` | Stub — Stripe webhook handler (pending) |
 
 ### Quiz Content
 | Quiz | Exam Code | Questions | Access |
