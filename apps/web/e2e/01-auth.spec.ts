@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication', () => {
   test('login page loads and shows form elements', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/Katalyst|Login/i);
+    await expect(page).toHaveTitle(/LearnKloud|Katalyst|Login/i);
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
     // Sign in button

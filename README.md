@@ -2,9 +2,7 @@
 
 **AWS & GenAI Certification Prep Platform**
 
-Katalyst is a full-stack Learning Management System for AWS Cloud and GenAI certification
-preparation. It includes a quiz engine, live leaderboard, progress tracking, freemium paywall,
-and an admin dashboard — secured from client to database with a zero-trust posture.
+Katalyst is a full-stack LMS for AWS Cloud and GenAI certification preparation. It includes a quiz engine, flashcards, live leaderboard, battles, contests, coin economy, progress tracking, freemium paywall, and an admin dashboard — secured from client to database with a zero-trust posture.
 
 **Live:** https://lms-amber-two.vercel.app
 
@@ -14,14 +12,17 @@ and an admin dashboard — secured from client to database with a zero-trust pos
 
 | Layer | Technology |
 |-------|-----------|
-| Web portal | Next.js 15 App Router (TypeScript) |
+| Web portal | Next.js 16 App Router (TypeScript) |
 | Styling | Vuexy design system (CSS-only replica, no package) |
 | Auth | Supabase Auth (email + password + email confirmation) |
-| Database | Supabase PostgreSQL + Row Level Security |
+| Database | Supabase PostgreSQL + Row Level Security (15 tables) |
 | Bot protection | Google reCAPTCHA v3 |
 | Deployment | Vercel (serverless functions) |
-| Mobile | Expo SDK 54 / React Native 0.81 (submodule) |
-| Backend | AWS Lambda + TypeScript (implemented, future integration) |
+| Mobile | Expo SDK 54 / React Native 0.81 (git submodule → `katalyst-mobile.git`) |
+| Backend (Lambda) | AWS Lambda + TypeScript (6 functions, EventBridge, DynamoDB) |
+| Edge functions | Supabase Edge Functions (mirrors Lambda layer) |
+| Payments | Stripe Checkout + Razorpay (server-side, both supported) |
+| CMS | Sanity v3 (articles / learn section) |
 | Monorepo | Turborepo |
 
 ---
@@ -31,496 +32,360 @@ and an admin dashboard — secured from client to database with a zero-trust pos
 ```
 lms/
 ├── apps/
-│   └── web/                          # Next.js 15 web portal
-│       ├── src/
-│       │   ├── app/
-│       │   │   ├── api/              # Vercel serverless API routes
-│       │   │   │   ├── admin/
-│       │   │   │   │   ├── check/        GET  — admin role check
-│       │   │   │   │   ├── quiz-catalog/ GET/POST — admin quiz premium/free overrides
-│       │   │   │   │   └── purchases/    GET  — all-platform purchases
-│       │   │   │   ├── leaderboard/      GET  — public leaderboard
-│       │   │   │   ├── quiz-catalog/     GET  — public quiz premium/free overrides
-│       │   │   │   ├── quiz-submit/      POST — server-side score validation
-│       │   │   │   ├── quizzes/stats/    GET  — student count per quiz
-│       │   │   │   ├── recaptcha/verify/ POST — reCAPTCHA v3 verification
-│       │   │   │   ├── setup-db/         POST — one-shot DB schema setup
-│       │   │   │   └── sync-user/        POST/GET — profile sync
-│       │   │   ├── dashboard/
-│       │   │   │   ├── admin/            admin analytics (admin-only)
-│       │   │   │   ├── leaderboard/      live leaderboard
-│       │   │   │   ├── learn/            learning resources
-│       │   │   │   ├── profile/          user profile + appearance theme
-│       │   │   │   ├── progress/         quiz progress + history
-│       │   │   │   ├── quiz/[id]/        quiz engine (intro → quiz → results)
-│       │   │   │   ├── quizzes/          quiz catalogue + search
-│       │   │   │   └── settings/         admin: AdSense + upsell copy
-│       │   │   ├── login/               sign in
-│       │   │   ├── signup/              sign up
-│       │   │   ├── reset-password/      password reset request
-│       │   │   └── update-password/     set new password (from email link)
-│       │   ├── components/
-│       │   │   └── AdBanner.tsx         Google AdSense banner
-│       │   ├── data/
-│       │   │   ├── quizzes.ts           quiz metadata + question registry
-│       │   │   └── clf-c02-questions.ts CLF-C02 question bank (195 Qs)
-│       │   ├── hooks/
-│       │   │   ├── useSubscription.ts   freemium subscription state
-│       │   │   └── useRecaptcha.ts      reCAPTCHA v3 hook
-│       │   ├── lib/
-│       │   │   ├── db.ts                Supabase CRUD helpers (client-side)
-│       │   │   ├── logger.ts            structured JSON logger
-│       │   │   ├── quizCatalog.ts       quiz premium/free override merge layer
-│       │   │   ├── rateLimiter.ts       in-memory rate limiter
-│       │   │   ├── recaptcha.ts         reCAPTCHA server-side verify
-│       │   │   ├── schemas.ts           shared Zod schemas
-│       │   │   └── supabase.ts          Supabase client (anon key)
-│       │   └── types.ts                 shared TypeScript types
-│       ├── next.config.ts              security headers + config
-│       └── package.json
-├── backend/lambdas/                   AWS Lambda functions (future)
-│   ├── quizSubmit/
-│   ├── progressFetch/
-│   └── leaderboardFetch/
-├── mobile/                            Expo app (git submodule)
-│   ├── config/quizCatalog.ts          mobile quiz premium/free override merge layer
-│   └── services/quizCatalogService.ts syncs admin overrides from app_settings
-├── supabase/migrations/               DB migration SQL (includes per-user theme_pref + platform theme)
+│   ├── web/                           # Next.js 16 web portal (deployed to Vercel)
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── api/              # 53 Vercel serverless API routes (see API Routes below)
+│   │   │   │   ├── dashboard/        # 20 dashboard pages + layouts
+│   │   │   │   ├── login/            sign in
+│   │   │   │   ├── signup/           sign up
+│   │   │   │   ├── verify-email/     6-digit OTP confirmation
+│   │   │   │   ├── reset-password/   password reset request
+│   │   │   │   ├── update-password/  set new password (from email link)
+│   │   │   │   ├── about/            about page
+│   │   │   │   ├── privacy/          privacy policy
+│   │   │   │   ├── terms/            terms of service
+│   │   │   │   ├── instructions/     app instructions
+│   │   │   │   ├── delete-account/   self-serve account deletion
+│   │   │   │   └── studio/           Sanity Studio (CMS)
+│   │   │   ├── components/           AdBanner, DailyQuizBadge, ErrorBoundary,
+│   │   │   │                         FpFooter, FpNav, LoadingSpinner,
+│   │   │   │                         MaintenanceBanner, ManagedContentPage,
+│   │   │   │                         ManagedQuizContentProvider, PlatformExperienceProvider
+│   │   │   ├── data/
+│   │   │   │   ├── quizzes.ts        quiz metadata registry (6 CLF-C02 quizzes)
+│   │   │   │   ├── clf-c02-questions.ts  CLF-C02 question bank (195 Qs)
+│   │   │   │   ├── aip-c01-questions.ts  AIP-C01 question bank
+│   │   │   │   └── flashcards.ts     flashcard decks
+│   │   │   ├── hooks/
+│   │   │   │   ├── useSubscription.ts   freemium subscription state
+│   │   │   │   ├── useRecaptcha.ts      reCAPTCHA v3 hook
+│   │   │   │   └── usePayment.ts        payment flow hook
+│   │   │   └── lib/
+│   │   │       ├── quizCatalog.ts       admin override merge layer
+│   │   │       ├── rateLimiter.ts       in-memory per-IP rate limiter
+│   │   │       ├── supabase.ts          Supabase client (cookie-based sessions)
+│   │   │       ├── stripe.ts            Stripe singleton + price IDs
+│   │   │       ├── systemFeatures.ts    feature-flag schema + defaults
+│   │   │       ├── platformExperience.ts  white-label copy + theme config
+│   │   │       ├── platformTheme.ts     platform-level theme presets
+│   │   │       ├── themePacks.ts        user theme packs
+│   │   │       ├── appContent.ts        managed static content schema
+│   │   │       ├── managedQuizContent.ts  admin-managed quiz content schema
+│   │   │       ├── profanityFilter.ts   review moderation
+│   │   │       ├── logger.ts            structured JSON logging
+│   │   │       ├── sanityClient.ts      Sanity GROQ client
+│   │   │       ├── schemas.ts           shared Zod schemas
+│   │   │       ├── emailValidation.ts   disposable email + format check
+│   │   │       └── db.ts                Supabase CRUD helpers + localStorage fallback
+│   │   ├── schemas/                  Sanity document schemas (article)
+│   │   ├── e2e/                      15 Playwright spec files
+│   │   ├── next.config.ts            security headers + CSP config
+│   │   └── package.json
+│   └── admin/                        # Vuexy admin panel (config only, not yet deployed)
+│
+├── backend/
+│   ├── lambdas/                      6 AWS Lambda functions
+│   │   ├── quizSubmit/               POST /quiz/submit
+│   │   ├── progressFetch/            GET /progress
+│   │   ├── leaderboardFetch/         GET /leaderboard
+│   │   ├── adminStats/               GET /admin/stats
+│   │   ├── createOrder/              POST /payment/create-order (Razorpay)
+│   │   └── verifyPayment/            POST /payment/verify (Razorpay + HMAC)
+│   └── events/                       3 EventBridge processors
+│       ├── analyticsProcessor/       lms.quiz.submitted analytics aggregation
+│       ├── badgeProcessor/           badge award on quiz events
+│       └── streakProcessor/          daily streak tracking
+│
+├── supabase/
+│   ├── functions/                    6 Edge Functions (mirrors Lambda layer)
+│   │   ├── quiz-submit/
+│   │   ├── progress-fetch/
+│   │   ├── leaderboard-fetch/
+│   │   ├── admin-stats/
+│   │   ├── create-order/
+│   │   └── verify-payment/
+│   ├── migrations/                   13 SQL migration files
+│   └── proxy/                        Supabase reverse proxy worker
+│
+├── packages/
+│   ├── shared-types/                 @lms/shared-types — 27-table TypeScript interface set
+│   │   └── src/  user, quiz, progress, battle, contest, learning, settings, api
+│   └── theme/                        @lms/theme — design tokens + Tailwind config
+│
+├── mobile/                           Expo SDK 54 app (git submodule → katalyst-mobile.git)
+│   ├── app/
+│   │   ├── (auth)/                   login, signup, forgot-password, verify
+│   │   ├── (tabs)/                   index, quizzes, learn, progress, profile, bookmarks, search
+│   │   ├── quiz/[id].tsx             mobile quiz engine
+│   │   ├── quiz/bookmarks-review.tsx bookmark review mode
+│   │   ├── flashcards.tsx            flashcard study mode
+│   │   ├── leaderboard.tsx           live leaderboard (daily/monthly/alltime)
+│   │   ├── learning-path.tsx         guided learning path
+│   │   ├── battle.tsx                real-time quiz battle
+│   │   ├── battle-lobby.tsx          battle matchmaking
+│   │   ├── contest.tsx               quiz contest mode
+│   │   ├── challenge.tsx             self-challenge mode
+│   │   ├── coin-store.tsx            coin shop
+│   │   ├── coin-history.tsx          transaction history
+│   │   ├── admin-settings.tsx        admin config screen
+│   │   └── dev-config.tsx            dev environment switcher
+│   ├── components/                   QuestionView, FlashCard, QuizCard, AppHeader,
+│   │                                 AppTabBar, Badge, BadgeCelebrationModal, Button,
+│   │                                 Card, DailyLimitModal, Input, MobileLeftDrawer,
+│   │                                 PremiumGateModal, ProgressBar, AdBanner,
+│   │                                 ForceUpdateScreen, MaintenanceScreen,
+│   │                                 ManagedContentScreen
+│   ├── stores/                       authStore, quizStore, progressStore, bookmarkStore,
+│   │                                 drawerStore, learningPathStore, platformConfigStore,
+│   │                                 systemFeatureStore, rateLimitStore, themeStore
+│   ├── services/                     apiService, quizCatalogService, appContentService,
+│   │                                 systemFeatureService, platformConfigService,
+│   │                                 themeSyncService, managedQuizContentService, articlesService
+│   ├── data/                         quizzes (20 entries), clf-c02-questions, aip-c01-questions,
+│   │                                 flashcards, learningPaths, videos, examGuides, challenges,
+│   │                                 contests, leaderboard
+│   └── config/                       supabase, quizCatalog, appConfig, appContent,
+│                                     systemFeatures, platformExperience, managedQuizContent,
+│                                     themePresets, experience, db
+│
+├── infrastructure/cdk/               AWS CDK stack (planned deployment)
+│   ├── lib/constructs/               api-gateway, cloudfront, cognito, dynamodb-tables,
+│   │                                 event-handlers, s3-buckets
+│   └── test/                         CDK construct unit tests
+│
+├── docs/
+│   ├── ARCHITECTURE.md               system architecture overview
+│   ├── DESIRED_FEATURES_BACKLOG.md   planned phases + backlog
+│   ├── QUIZ_BUILDER_INTEGRATION.md   admin quiz builder design
+│   ├── STEERING.md                   product steering notes
+│   ├── VUEXY_WIDGET_CATALOG.md       design system reference
+│   ├── store/                        Play Store + App Store submission docs
+│   └── archive/                      superseded planning docs
+│
 ├── scripts/
-│   ├── security-gate.sh               13-check security gate (quick / ci / full)
-│   ├── install-hooks.sh               installs pre-commit + pre-push hooks
-│   └── deploy.sh                      full gate + vercel --prod --yes
-├── .github/workflows/
-│   └── ci.yml                         CI: security-gate → typecheck + tests + build
-├── SECURITY_AUDIT.md                  300-rule compliance audit
-├── THREAT_MODEL.md                    STRIDE threat model
-├── SECURITY_HEADERS.md                HTTP security headers docs
-├── API_SECURITY_REPORT.md             per-route security analysis
-└── vercel.json                        Vercel build config
+│   ├── security-gate.sh              13-check gate (quick / ci / full)
+│   ├── install-hooks.sh              pre-commit + pre-push hooks
+│   └── deploy.sh                     full gate + vercel --prod --yes
+│
+├── .github/workflows/                ci.yml, codeql.yml, eas-update.yml,
+│                                     secret-scan.yml, type-check.yml
+├── SECURITY_AUDIT.md                 300-rule compliance audit
+├── THREAT_MODEL.md                   STRIDE threat model
+├── SECURITY_HEADERS.md               HTTP security headers reference
+├── API_SECURITY_REPORT.md            per-route security analysis
+└── vercel.json                       Vercel build + routing config
 ```
 
 ---
 
 ## API Routes
 
-All routes are serverless functions on Vercel.
-**Base URL:** `https://lms-amber-two.vercel.app`
+All 53 routes are Vercel serverless functions. Base URL: `https://lms-amber-two.vercel.app`
+
+### Public Routes (no auth required)
+
+| Method | Route | Description | Rate limit |
+|--------|-------|-------------|-----------|
+| GET | `/api/leaderboard?period=` | Top-50 by daily/monthly/alltime | 60/min |
+| GET | `/api/quiz-catalog` | Admin-managed premium/free overrides | 60/min |
+| GET | `/api/quizzes/stats?quiz_id=` | Student count per quiz | 60/min |
+| GET | `/api/platform-config` | Platform theme + white-label config | 60/min |
+| GET | `/api/system-features` | Feature flags (maintenance, ads, daily quiz) | 60/min |
+| GET | `/api/app-content` | Managed static content (hero, testimonials, FAQs) | 60/min |
+| GET | `/api/contests` | Active contest list | 60/min |
+| GET | `/api/theme` | Platform theme preset | 60/min |
+| GET | `/api/coin-packs` | Available coin pack listings | 60/min |
+| GET/POST | `/api/articles` | Sanity CMS articles (public read) | 60/min |
+| GET | `/api/articles/[slug]` | Single article by slug | 60/min |
+| POST | `/api/recaptcha/verify` | reCAPTCHA v3 token verification | 10/min |
+| GET | `/api/payment/country` | Detect user country for pricing | 60/min |
+| POST | `/api/payment/stripe/webhook` | Stripe webhook (HMAC-verified) | 10/min |
+
+### Authenticated Routes (Bearer JWT required)
+
+| Method | Route | Description | Rate limit |
+|--------|-------|-------------|-----------|
+| POST | `/api/quiz-submit` | Score calculation + Supabase write | 20/min |
+| POST/GET | `/api/sync-user` | Upsert/check user profile | 20/min |
+| GET | `/api/quiz-content?quizId=` | Full question set for a quiz | 30/min |
+| GET/POST/DELETE | `/api/bookmarks` | Bookmark questions | 60/min |
+| GET/POST | `/api/flashcard-progress` | Known card IDs per deck | 60/min |
+| GET/POST | `/api/coins` | Coin balance + transaction history | 30/min |
+| POST | `/api/payment/create-order` | Razorpay order creation | 10/min |
+| POST | `/api/payment/verify` | Razorpay HMAC verify + grant access | 10/min |
+| POST | `/api/payment/stripe/create-session` | Stripe Checkout Session | 10/min |
+| GET | `/api/payment/stripe/verify` | Verify Stripe session post-redirect | 10/min |
+| GET/POST | `/api/battle` | Battle session create/join/status | 30/min |
+| GET | `/api/quiz-reviews/[id]` | Fetch reviews for a quiz | 30/min |
+| GET | `/api/referral` | Referral code + stats | 30/min |
+| DELETE | `/api/account/delete` | Self-serve account deletion | 3/min |
+| GET | `/api/ads` | Ad config for current user | 30/min |
+
+### Admin Routes (admin JWT required)
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/api/admin/check` | Verify admin role |
+| GET/POST | `/api/admin/quiz-catalog` | Quiz premium/free + price overrides |
+| GET/POST | `/api/admin/quiz-content` | Manage quiz question content |
+| GET/POST | `/api/admin/quiz-builder` | Quiz CRUD (list + create) |
+| GET/PUT/DELETE | `/api/admin/quiz-builder/[quizId]` | Single quiz management |
+| GET/POST/DELETE | `/api/admin/quiz-builder/[quizId]/questions` | Question CRUD |
+| GET | `/api/admin/purchases` | All-platform purchase analytics |
+| GET | `/api/admin/customers` | Customer list |
+| GET | `/api/admin/orders` | Order list |
+| GET/PUT | `/api/admin/orders/[orderId]` | Single order management |
+| GET | `/api/admin/ecommerce-stats` | Revenue + conversion metrics |
+| GET | `/api/admin/daily-quiz-analytics` | Daily quiz engagement data |
+| GET/POST | `/api/admin/system-features` | Feature flag management |
+| GET/POST | `/api/admin/theme` | Platform theme override |
+| GET/POST | `/api/admin/app-content` | Static content editor |
+| GET/POST | `/api/admin/categories` | Quiz category management |
+| GET/POST | `/api/admin/coin-packs` | Coin pack configuration |
+| GET/POST | `/api/admin/contests` | Contest CRUD |
+| GET/POST | `/api/admin/reviews` | Quiz review list + moderation |
+| GET | `/api/admin/pending-reviews` | Unmoderated review queue |
+| POST | `/api/admin/moderate-review` | Approve/reject review |
+| GET/POST | `/api/admin/mobile-config` | Mobile platform experience editor |
+| POST | `/api/admin/grant-access` | Manually grant premium/course to user |
+
+### Setup Routes
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| POST | `/api/setup-db` | One-shot DB schema init (`x-setup-token` auth) |
 
 ---
 
-### `GET /api/admin/check`
+## Database Schema (Supabase PostgreSQL)
 
-Verifies whether the authenticated user has admin access.
-Used by dashboard layout and all admin-guarded pages on every mount.
+All tables have Row Level Security enabled. 13 migration files.
 
-| Property | Value |
-|----------|-------|
-| Auth | Bearer JWT (Supabase access token) |
-| Rate limit | 30 req / 60 s per IP |
-| Payload | None |
+| Table | Key Columns | RLS |
+|-------|-------------|-----|
+| `user_profiles` | id (PK), name, role, subscription, theme_pref | user owns row |
+| `quiz_results` | id, user_id, quiz_id, score, total_questions, time_taken, answers, mode | user owns row; upsert on (user_id, quiz_id) |
+| `subscriptions` | id, user_id (UNIQUE), tier, plan, started_at | user reads own; service role writes |
+| `unlocked_courses` | id, user_id, course_id; UNIQUE (user_id, course_id) | user reads own |
+| `purchases` | id, user_id, purchase_type, course_id, amount, purchased_at | user reads own |
+| `profiles` | id, subscription_tier, unlocked_courses (TEXT[]) | user owns row |
+| `quiz_attempts` | id, user_id, quiz_id, score, pct, passed, time_taken | user owns row |
+| `user_statistics` | user_id (PK), total_quizzes, total_coins, total_xp, streak_days | user owns row |
+| `badges` | id, user_id, badge_type, earned_at | user reads own |
+| `bookmarks` | (user_id, quiz_id) composite PK | user owns row |
+| `flashcard_progress` | (user_id, deck_id) composite PK, known_ids TEXT[] | user owns row |
+| `quiz_reviews` | id, user_id, quiz_id, rating, body, moderated | user reads approved + own |
+| `orders` | id, user_id, amount, status, provider, provider_order_id | user reads own |
+| `app_settings` | key (PK), value (JSONB), updated_at | read-all; write service role only |
 
-**Request:**
-```http
-GET /api/admin/check
-Authorization: Bearer <access_token>
-```
+**Key `app_settings` entries:**
 
-**Responses:**
-```json
-200  { "isAdmin": true }
-200  { "isAdmin": false }
-401  { "ok": false, "error": "Unauthorized" }
-429  { "ok": false, "error": "Too many requests" }
-```
-
-**Security:** JWT verified via `supabase.auth.getUser()`. Admin set is read from
-`ADMIN_EMAILS` env var — never from localStorage or client state.
-
----
-
-### `GET /api/admin/purchases`
-
-Returns all platform purchases for admin analytics. Only accessible to admins.
-
-| Property | Value |
-|----------|-------|
-| Auth | Bearer JWT + email in `ADMIN_EMAILS` |
-| Rate limit | 30 req / 60 s per IP |
-| Payload | None |
-
-**Request:**
-```http
-GET /api/admin/purchases
-Authorization: Bearer <access_token>
-```
-
-**Response 200:**
-```json
-{
-  "ok": true,
-  "purchases": [
-    {
-      "id": "uuid",
-      "userId": "uuid",
-      "purchaseType": "subscription",
-      "plan": "annual",
-      "amount": 999,
-      "date": "2026-03-01T00:00:00Z"
-    }
-  ],
-  "totalRevenue": 9990
-}
-```
-
-**Error responses:** 401 (bad token), 403 (not admin), 429 (rate limited), 500 (DB error)
+| Key | Purpose |
+|-----|---------|
+| `quiz_catalog_overrides` | Admin-managed premium flags + prices per quiz ID |
+| `platform_theme` | Active platform theme preset |
+| `system_feature_flags` | Feature flags (maintenance, ads, daily quiz, leaderboard, etc.) |
+| `mobile_experience_config` | White-label copy + layout for mobile home screen |
+| `app_content` | Managed static content (hero, testimonials, FAQs, banners) |
 
 ---
 
-### `GET /api/leaderboard`
+## Quiz Content
 
-Returns the top-50 ranked users for a given time period. Public endpoint.
+### Web Quiz Registry (6 quizzes, 395 questions)
 
-| Property | Value |
-|----------|-------|
-| Auth | None (public) |
-| Rate limit | 60 req / 60 s per IP |
-| CDN cache | `max-age=60, s-maxage=60` |
+| Quiz ID | Title | Questions | Access |
+|---------|-------|-----------|--------|
+| `aws-quick-start` | AWS Quick Start Quiz | 5 | Free (no limit) |
+| `clf-c02-cloud-concepts` | CLF-C02: Cloud Concepts | 29 | Free (25Q limit) |
+| `clf-c02-billing` | CLF-C02: Billing, Pricing & Support | 34 | Free (25Q limit) |
+| `clf-c02-security` | CLF-C02: Security & Compliance | 42 | Free (25Q limit) |
+| `clf-c02-technology` | CLF-C02: Technology | 90 | Free (25Q limit) |
+| `clf-c02-full-exam` | CLF-C02 Full Practice Exam | 195 | Premium (admin override) |
 
-**Query parameters:**
-| Param | Required | Values | Default |
-|-------|----------|--------|---------|
-| `period` | No | `daily`, `monthly`, `alltime` | `alltime` |
+### Mobile Quiz Registry (20 quizzes, 670 questions)
 
-**Request:**
-```http
-GET /api/leaderboard?period=monthly
-```
+Includes 11 GenAI category quizzes (Bedrock, RAG, AI Agents, Prompt Engineering, etc.) + all 5 CLF-C02 sub-quizzes + 4 AIP-C01 quizzes (Full Exam, RAG Foundations, Security & Governance, Agents & Ops).
 
-**Response 200:**
-```json
-{
-  "ok": true,
-  "entries": [
-    {
-      "rank": 1,
-      "userId": "uuid",
-      "name": "Alex C.",
-      "avatarInitial": "A",
-      "score": 850,
-      "coins": 340,
-      "streak": 0,
-      "quizzesCompleted": 5
-    }
-  ]
-}
-```
+### Freemium Model
 
-**Implementation:** Aggregates `quiz_results` by `user_id`, joins `user_profiles`.
-Service-role client used server-side to bypass RLS for public aggregate.
+- Free users: first 25 questions of any non-free quiz → paywall checkpoint
+- **Stripe:** USD subscription (global) — server-side Checkout Session
+- **Razorpay:** INR subscription ₹999/yr | ₹149/mo; per-quiz unlock (backend Lambda)
+- Course unlock: individual quiz at admin-set price
+- Pro users: ad-free, full question access, review mode
 
 ---
 
-### `GET /api/quizzes/stats`
+## Backend Lambdas (AWS)
 
-Returns the count of distinct students who have attempted a quiz.
+| Lambda | Endpoint | Description |
+|--------|----------|-------------|
+| `quizSubmit` | `POST /quiz/submit` | Validates answers, writes to DynamoDB, emits EventBridge `lms.quiz.submitted` |
+| `progressFetch` | `GET /progress` | Returns `UserStatistics` + last 10 `QuizAttempt[]` (parallel DynamoDB fetch) |
+| `leaderboardFetch` | `GET /leaderboard?period=` | Top-20 for daily / monthly / alltime from 3 DynamoDB tables |
+| `adminStats` | `GET /admin/stats` | Scans `lms-purchases` → revenue aggregation |
+| `createOrder` | `POST /payment/create-order` | Creates Razorpay order, returns `{ orderId, amount, currency }` |
+| `verifyPayment` | `POST /payment/verify` | HMAC-SHA256 verify → writes `lms-purchases` → updates Cognito attributes → emits `lms.purchase.completed` |
 
-| Property | Value |
-|----------|-------|
-| Auth | None (public) |
-| Rate limit | 60 req / 60 s per IP |
-| CDN cache | `max-age=300, s-maxage=300` (5 min) |
-
-**Query parameters:**
-| Param | Required |
-|-------|----------|
-| `quiz_id` | Yes |
-
-**Request:**
-```http
-GET /api/quizzes/stats?quiz_id=clf-c02-full-exam
-```
-
-**Response 200:**
-```json
-{ "ok": true, "studentCount": 142 }
-```
-
-**Error responses:** 400 (missing `quiz_id`), 429 (rate limited), 500 (DB error)
+**EventBridge processors:** `analyticsProcessor` (quiz analytics), `badgeProcessor` (award badges), `streakProcessor` (daily streak update)
 
 ---
 
-### `POST /api/quiz-submit`
+## Supabase Edge Functions
 
-**Critical security endpoint.** Receives quiz answers, validates timing, calculates
-score server-side from authoritative data, and writes to Supabase. The client
-cannot inject or forge a score.
-
-| Property | Value |
-|----------|-------|
-| Auth | Bearer JWT (required) |
-| Rate limit | 20 req / 60 s per IP |
-| Payload max | 32 KB |
-
-**Request:**
-```http
-POST /api/quiz-submit
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "quizId":    "clf-c02-full-exam",
-  "answers":   { "clf-q1": "opt-b", "clf-q2": "opt-a" },
-  "startedAt": "2026-03-09T10:00:00.000Z"
-}
-```
-
-**Zod schema:**
-```typescript
-{
-  quizId:    z.string().min(1).max(100),
-  answers:   z.record(z.string(), z.string()),
-  startedAt: z.string().datetime({ offset: true }),
-}
-```
-
-**Response 200:**
-```json
-{
-  "ok": true,
-  "score": 42,
-  "totalQuestions": 195,
-  "timeTaken": 3600,
-  "completedAt": "2026-03-09T11:00:00.000Z"
-}
-```
-
-**Error responses:**
-| Code | Cause |
-|------|-------|
-| 400 | Invalid JSON / Zod failure / elapsed < 5 seconds (suspicious) |
-| 401 | Missing or invalid Bearer token |
-| 404 | Unknown `quizId` |
-| 413 | Payload > 32 KB |
-| 429 | Rate limited |
-| 500 | DB write failure |
-
-**Security flow:**
-1. Verify JWT → get `user.id`
-2. Check `Content-Length` ≤ 32 KB
-3. Parse + Zod validate body
-4. Verify `quizId` exists in `quizQuestions`
-5. Validate timing: reject if elapsed < 5s; warn if > duration + 5 min
-6. Calculate score from `quizQuestions[quizId][i].correctOptionId`
-7. Write via service-role: `upsert({ user_id, quiz_id, score, ... }, { onConflict: 'user_id,quiz_id' })`
-8. Return verified `{ score, totalQuestions, timeTaken, completedAt }`
+Mirror of the Lambda layer, deployed to the same Supabase project. Same 6 endpoints: `quiz-submit`, `progress-fetch`, `leaderboard-fetch`, `admin-stats`, `create-order`, `verify-payment`.
 
 ---
 
-### `POST /api/recaptcha/verify`
+## Testing
 
-Verifies a reCAPTCHA v3 token server-side. The reCAPTCHA secret key never
-leaves the server.
-
-| Property | Value |
-|----------|-------|
-| Auth | None (rate-limited) |
-| Rate limit | 10 req / 60 s per IP |
-| Payload max | 4 KB |
-
-**Request:**
-```http
-POST /api/recaptcha/verify
-Content-Type: application/json
-
-{
-  "token":  "03AGdBq...",
-  "action": "signup"
-}
-```
-
-**Zod schema:**
-```typescript
-{
-  token:  z.string(),
-  action: z.enum(['login', 'signup', 'reset_password', 'profile_save', 'contact'])
-}
-```
-
-**Response 200:**
-```json
-{ "ok": true, "score": 0.9 }
-{ "ok": false, "error": "score_too_low" }
-{ "ok": true, "score": 0, "note": "recaptcha_skipped" }
-```
-
-**Note:** An empty `token` (reCAPTCHA unavailable) returns `ok: true` — reCAPTCHA
-is best-effort. The caller decides whether to block on `ok: false`.
+| Suite | Location | Count | Coverage |
+|-------|----------|-------|---------|
+| Backend Jest | `backend/lambdas/` | 82 tests, 6 suites | 98% stmts, 87% branches, 100% funcs |
+| Web Jest | `apps/web/src/__tests__/` | 34 tests, 3 suites | admin-check, db helpers, rate limiter |
+| Playwright E2E | `apps/web/e2e/` | 15 spec files | auth, dashboard, quiz, flashcards, security, responsive, performance |
+| Mobile Jest | `mobile/__tests__/` | authStore, bookmarkStore, Badge, Button | — |
 
 ---
 
-### `POST /api/sync-user`
+## CI/CD
 
-Upserts user profile to Supabase `user_profiles` after login or signup.
+GitHub Actions at `.github/workflows/`:
 
-| Property | Value |
-|----------|-------|
-| Auth | Bearer JWT (required) |
-| Rate limit | 20 req / 60 s per IP |
-| Payload max | 8 KB |
+| Workflow | Triggers | Jobs |
+|----------|----------|------|
+| `ci.yml` | PR/push to main, develop, feature/** | Security Gate → Backend Tests + Web TypeCheck + Mobile TypeCheck → Web Build → E2E → CI Passed gate |
+| `type-check.yml` | PR/push | Web TypeScript check only |
+| `eas-update.yml` | Push to main | EAS Update (OTA push to mobile) |
+| `codeql.yml` | Push + weekly | CodeQL SAST (JavaScript/TypeScript) |
+| `secret-scan.yml` | Push + PR | TruffleHog secret scan |
 
-**Request:**
-```http
-POST /api/sync-user
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "supabaseId":  "uuid",
-  "email":       "user@example.com",
-  "name":        "Jane Smith",
-  "accessToken": "<supabase-access-token>",
-  "createdAt":   "2026-03-09T10:00:00Z"
-}
-```
-
-**Response 200:** `{ "ok": true }`
-
-**Error responses:** 400 (validation), 401 (JWT mismatch), 413 (payload > 8 KB), 429 (rate limited)
-
----
-
-### `GET /api/sync-user`
-
-Health check — returns total platform user count. Authenticated endpoint.
-
-| Property | Value |
-|----------|-------|
-| Auth | Bearer JWT |
-| Rate limit | 10 req / 60 s per IP |
-
-**Response 200:** `{ "ok": true, "totalUsers": 47 }`
-
----
-
-### `POST /api/setup-db`
-
-One-shot database schema initialization. Creates all tables, RLS policies, triggers.
-
-| Property | Value |
-|----------|-------|
-| Auth | `x-setup-token` header |
-| Rate limit | 3 req / 60 s per IP |
-
-**Warning:** Disable or remove after initial setup. Increases attack surface if left enabled.
-
----
-
-## Database Schema
-
-All tables have Row Level Security enabled. Policies use `auth.uid()`.
-
-### `user_profiles`
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | FK → `auth.users.id` |
-| `name` | TEXT | Display name |
-| `role` | TEXT | e.g. "AWS Learner" |
-| `updated_at` | TIMESTAMPTZ | Auto-updated |
-
-**RLS:** SELECT + UPDATE for `auth.uid() = id`
-
-### `quiz_results`
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID | FK → `auth.users.id` |
-| `quiz_id` | TEXT | e.g. "clf-c02-full-exam" |
-| `score` | INTEGER | Server-calculated only |
-| `total_questions` | INTEGER | |
-| `time_taken` | INTEGER | seconds |
-| `answers` | JSONB | `{ questionId: optionId }` |
-| `completed_at` | TIMESTAMPTZ | |
-
-**Unique:** `(user_id, quiz_id)` — upsert on retake
-**RLS:** SELECT + INSERT + UPDATE for `auth.uid() = user_id`
-
-### `subscriptions`
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID UNIQUE | FK → `auth.users.id` |
-| `tier` | TEXT | `'free'` or `'premium'` |
-| `plan` | TEXT | `'annual'` or `'monthly'` |
-| `started_at` | TIMESTAMPTZ | |
-| `updated_at` | TIMESTAMPTZ | |
-
-### `unlocked_courses`
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID | FK → `auth.users.id` |
-| `course_id` | TEXT | quiz ID |
-| `unlocked_at` | TIMESTAMPTZ | |
-
-**Unique:** `(user_id, course_id)`
-
-### `purchases`
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID | FK → `auth.users.id` |
-| `purchase_type` | TEXT | `'subscription'` or `'course'` |
-| `course_id` | TEXT | nullable |
-| `amount` | INTEGER | INR |
-| `purchased_at` | TIMESTAMPTZ | |
-
-**RLS:** SELECT for `auth.uid() = user_id`; writes via service role only
-
-### `profiles` (mobile read model)
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `subscription_tier` | TEXT | synced by trigger |
-| `unlocked_courses` | TEXT[] | synced by trigger |
-| `updated_at` | TIMESTAMPTZ | |
+**Branch protection on `main`:** 5 required CI checks, 1 PR review, CODEOWNERS, linear history, no force push.
 
 ---
 
 ## Environment Variables
 
-| Variable | Client/Server | Required | Purpose |
-|----------|---------------|----------|---------|
+| Variable | Scope | Required | Purpose |
+|----------|-------|----------|---------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Both | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Both | Yes | JWT verification (safe to expose) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Yes | DB writes bypassing RLS |
 | `ADMIN_EMAILS` | Server only | Yes | Comma-separated admin emails |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Client | Yes | reCAPTCHA v3 site key |
 | `RECAPTCHA_SECRET_KEY` | Server only | Yes | reCAPTCHA v3 secret |
+| `STRIPE_SECRET_KEY` | Server only | Payments | Stripe server-side client |
+| `STRIPE_WEBHOOK_SECRET` | Server only | Payments | Stripe webhook HMAC |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Client | Payments | Stripe checkout redirect |
+| `RAZORPAY_KEY_ID` | Client | Payments | Razorpay checkout |
+| `RAZORPAY_KEY_SECRET` | Server only | Payments | Razorpay HMAC verify |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Both | CMS | Sanity project ID |
+| `NEXT_PUBLIC_SANITY_DATASET` | Both | CMS | Sanity dataset (production) |
+| `SANITY_API_TOKEN` | Server only | CMS | Sanity write token |
+| `EXPO_PUBLIC_WEB_URL` | Mobile | Yes | Web portal base URL for API calls |
 | `SETUP_TOKEN` | Server only | Setup only | `/api/setup-db` auth |
-| `SUPABASE_PROJECT_REF` | Server only | Setup only | Supabase project reference |
-| `SUPABASE_ACCESS_TOKEN` | Server only | Setup only | Supabase Management API PAT |
-| `RAZORPAY_KEY_ID` | Client | Future | Razorpay checkout |
-| `RAZORPAY_KEY_SECRET` | Server only | Future | Payment signature verification |
-
----
-
-## Quiz Content
-
-### CLF-C02 — AWS Cloud Practitioner (195 Questions)
-
-| Quiz ID | Title | Questions | Duration | Access |
-|---------|-------|-----------|----------|--------|
-| `clf-c02-cloud-concepts` | Cloud Concepts | 29 | 30 min | **Free** |
-| `clf-c02-billing` | Billing & Pricing | 34 | 35 min | **Free** |
-| `clf-c02-security` | Security & Compliance | 42 | 45 min | Premium |
-| `clf-c02-technology` | Technology & Services | 90 | 90 min | Premium |
-| `clf-c02-full-exam` | Full Practice Exam | 195 | 90 min | Premium |
-
-### Freemium Model
-
-- Free users: first 25 questions of any quiz, then paywall
-- Pro: ₹999/year or ₹149/month (Razorpay — coming soon)
-- Course unlock: individual quiz (one-time fee per quiz)
 
 ---
 
@@ -528,101 +393,45 @@ All tables have Row Level Security enabled. Policies use `auth.uid()`.
 
 | Document | Contents |
 |----------|---------|
-| [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md) | 300-rule compliance audit, section-by-section |
-| [`THREAT_MODEL.md`](./THREAT_MODEL.md) | STRIDE analysis, attack scenarios, accepted risks |
-| [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) | All HTTP security headers explained |
+| [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md) | 300-rule compliance audit |
+| [`THREAT_MODEL.md`](./THREAT_MODEL.md) | STRIDE analysis, attack scenarios |
+| [`SECURITY_HEADERS.md`](./SECURITY_HEADERS.md) | HTTP security headers explained |
 | [`API_SECURITY_REPORT.md`](./API_SECURITY_REPORT.md) | Per-route auth, rate limits, validation |
+| [`SECURITY.md`](./SECURITY.md) | Vulnerability reporting policy |
 
-### Key Properties
+### Key Controls
 
 | Control | Implementation |
 |---------|---------------|
-| Server-side score validation | `/api/quiz-submit` calculates from authoritative `quizQuestions` |
+| Server-side score validation | `/api/quiz-submit` recalculates from `quizQuestions` — client score ignored |
 | Admin access | JWT + `ADMIN_EMAILS` server-side; localStorage never trusted |
-| RLS | All 6 tables: enabled with `auth.uid()` policies |
-| Rate limiting | All 9 routes: 10–60 req/min per IP (in-memory) |
+| RLS | 14 Supabase tables: RLS enabled + `auth.uid()` policies |
+| Rate limiting | All 53 API routes: 3–60 req/min per IP (in-memory) |
 | Payload limits | 4 KB / 8 KB / 32 KB per route |
 | HSTS | 2 years, includeSubDomains, preload |
 | CSP | Strict allowlist, `frame-ancestors 'none'`, `object-src 'none'` |
-| Password strength | Min 12 chars, upper + lower + number + special required |
+| Password | Min 12 chars, upper + lower + number + special |
 | Bot protection | reCAPTCHA v3 on login, signup, reset, profile save |
 | Structured logging | JSON `{ ts, level, route, message, ip, userId, reason }` |
+| Stripe webhooks | HMAC-SHA256 signature verify before any access grant |
+| Razorpay payments | HMAC-SHA256 signature verify before any access grant |
 
 ---
 
 ## Security Gate
 
-Every commit and deploy is gated by `scripts/security-gate.sh` — a mandatory
-check script that blocks the workflow if any security or quality issue is found.
+`scripts/security-gate.sh` — 13 checks, 3 modes.
 
-### How it works
-
-| Trigger | Mode | Checks |
-|---------|------|--------|
-| `git commit` | `--quick` | TypeScript, secret scan, XSS patterns, API rate limits, payload limits, mock data, untracked files, password strength, security headers, RLS, `.vercelignore` |
-| `git push` | `--ci` | Everything above + npm audit + backend tests |
-| `bash scripts/deploy.sh` | `--full` | Everything above + Next.js production build |
-| GitHub Actions CI | `--ci` | Runs as Job 0; blocks all other jobs if it fails |
-
-### Gate checks (13 total)
-
-| # | Check | What it catches |
-|---|-------|----------------|
-| 1 | TypeScript | Any `tsc --noEmit` errors |
-| 2 | Secret scan | `SUPABASE_SERVICE_ROLE_KEY`, `sk_live_`, `rzp_live_`, private keys, GitHub tokens in staged files |
-| 3 | Dangerous patterns | `dangerouslySetInnerHTML`, `eval()`, `window.confirm()`, dynamic script injection |
-| 4 | API route security | Any route missing `checkRateLimit`; any POST route missing `Content-Length` check |
-| 5 | Mock data | Hardcoded fake names, scores, "10,000+ learners" claims, backup files in `src/` |
-| 6 | Untracked source | New files in `apps/web/src/` not staged — nothing silently untracked |
-| 7 | Password strength | `signup/page.tsx` must enforce min-12, upper, lower, number, special char |
-| 8 | Security headers | `next.config.ts` must have HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
-| 9 | RLS | `setup-db/route.ts` must have ≥5 `ENABLE ROW LEVEL SECURITY`; no `DISABLE` statements |
-| 10 | `.vercelignore` | `backend/`, `mobile/`, `infrastructure/`, `supabase/`, `*_backup_*`, `*.md` must be excluded |
-| 11 | npm audit | No high or critical CVEs in `apps/web/` |
-| 12 | Backend tests | All 49 Jest tests must pass |
-| 13 | Next.js build | Production build must succeed (`--full` only) |
-
-### Running the gate manually
+| Trigger | Mode | Extra checks |
+|---------|------|-------------|
+| `git commit` | `--quick` | TypeScript, secrets, XSS, rate limits, payload limits, mock data, untracked files, passwords, headers, RLS, `.vercelignore` |
+| `git push` | `--ci` | Above + npm audit + backend Jest |
+| `bash scripts/deploy.sh` | `--full` | Above + Next.js build |
 
 ```bash
-bash scripts/security-gate.sh --quick   # fast (pre-commit checks only)
-bash scripts/security-gate.sh --ci      # CI mode (+ audit + tests)
-bash scripts/security-gate.sh --full    # pre-deploy (+ Next.js build)
-```
-
-### Installing git hooks
-
-```bash
-bash scripts/install-hooks.sh   # installs pre-commit + pre-push hooks
-# OR — hooks auto-install on `npm install` via "prepare" script
-```
-
-### Bypassing (emergency only)
-
-```bash
-git commit --no-verify -m "hotfix: <reason why gate bypassed>"
-```
-**Document the bypass reason in the commit message. All bypasses are visible in git log.**
-
-### Deploy
-
-```bash
-cd ~/Documents/Projects/lms
-bash scripts/deploy.sh         # runs --full gate, then vercel --prod --yes
-# OR skip the Next.js build step (already verified):
-bash scripts/deploy.sh --skip-build
-```
-
-### Repository structure additions
-
-```
-lms/
-├── scripts/
-│   ├── security-gate.sh     13-check security gate (quick / ci / full modes)
-│   ├── install-hooks.sh     installs pre-commit + pre-push git hooks
-│   └── deploy.sh            full gate + vercel --prod --yes
-└── .github/workflows/
-    └── ci.yml               Job 0: security-gate → Job 1: backend-tests / web-type-check / web-build → ci-passed
+bash scripts/security-gate.sh --quick
+bash scripts/security-gate.sh --ci
+bash scripts/security-gate.sh --full
 ```
 
 ---
@@ -632,31 +441,33 @@ lms/
 ```bash
 git clone https://github.com/schinchli/katalyst-lms-web.git lms
 cd lms
-npm install                  # also runs "prepare" → installs git hooks automatically
+npm install                        # also installs git hooks via "prepare"
 cd apps/web
-cp .env.example .env.local   # fill in Supabase + reCAPTCHA keys
-npm run dev                  # → http://localhost:3000
+cp .env.example .env.local         # fill in Supabase + Stripe + reCAPTCHA keys
+npm run dev                        # → http://localhost:8080
 ```
 
-### Pre-commit checks (automated via git hook)
-
-The pre-commit hook runs `security-gate.sh --quick` automatically on every commit.
-To run it manually:
+### Run tests
 
 ```bash
-bash scripts/security-gate.sh --quick
-```
+# Backend (from lms/)
+cd backend && npm test
 
-### Theme system (web + mobile)
-- Admin chooses the platform theme (`platform_theme` in Supabase app_settings); default flows to every client.
-- Each user can opt out and save a custom theme pack (colors, fonts, size, timezone) stored in `user_profiles.theme_pref` and applied across devices (web + mobile).
-- Mobile honors platform theme by default; switch to Custom in Profile → Appearance to override and sync back to Supabase.
+# Web (from apps/web/)
+npm test
+
+# Web E2E
+npx playwright test
+
+# TypeScript
+cd apps/web && npx tsc --noEmit
+```
 
 ### Deploy
 
 ```bash
 cd ~/Documents/Projects/lms
-bash scripts/deploy.sh       # full security gate + vercel --prod --yes
+bash scripts/deploy.sh             # full security gate + vercel --prod --yes
 ```
 
 ---
@@ -664,31 +475,3 @@ bash scripts/deploy.sh       # full security gate + vercel --prod --yes
 ## Changelog
 
 See [`CHANGELOG.md`](./CHANGELOG.md).
-### `GET /api/quiz-catalog`
-
-Returns the public quiz premium/free override map stored in `app_settings.key = quiz_catalog_overrides`.
-This lets web and mobile consume admin-managed premium flags without hardcoding them into the client.
-
-### `GET /api/admin/quiz-catalog`
-### `POST /api/admin/quiz-catalog`
-
-Admin-only quiz catalog management endpoints.
-
-**Purpose:**
-- Mark any quiz as free or premium from the web dashboard
-- Set or update one-time course unlock prices
-- Keep the web dashboard and mobile app on the same premium gating source of truth
-
-**Stored setting key:** `quiz_catalog_overrides`
-
-**Payload shape:**
-```json
-{
-  "clf-c02-full-exam": { "isPremium": true, "price": 499 },
-  "clf-c02-cloud-concepts": { "isPremium": false, "price": 0 }
-}
-```
-
-The current default policy is:
-- `clf-c02-full-exam` remains premium
-- all other CLF-C02 quizzes are free unless an admin override changes them

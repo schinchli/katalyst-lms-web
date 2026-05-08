@@ -74,6 +74,7 @@ supabase/
 
 # Knowledge graph (generated)
 .understand-anything/
+.code-review-graph/
 
 # Test artifacts
 apps/web/test-results/

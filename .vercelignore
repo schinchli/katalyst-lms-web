@@ -22,8 +22,7 @@ ios/
 # Supabase migrations (run via Supabase CLI)
 supabase/
 
-# Legacy / unused folders
-frontend/
+# Docs (not part of build)
 docs/
 
 # ─── apps/web internal exclusions ─────────────────────────────────────────────
