@@ -15,6 +15,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.5] — 2026-05-08 — Leaderboard Period Fix + Android APK v41
+
+### Fixed
+- **Mobile leaderboard period filtering** — `fetchLeaderboard` in `mobile/services/apiService.ts` now passes `?period=daily|monthly|alltime` to the edge function. Previously the parameter was accepted but silently ignored, so Today/Monthly tabs always fell back to mock data for authenticated users.
+- **Supabase `leaderboard-fetch` edge function** — Updated to handle all three periods: `alltime` continues to read from the `leaderboard_global` view (XP-based); `daily` and `monthly` aggregate `quiz_results.score` filtered by `completed_at ≥ periodStart`. Returns top-50 ranked entries per period.
+- **`EXPO_PUBLIC_WEB_URL` missing in EAS builds** — Added to `mobile/.env` and to `preview`, `preview-stable`, and `production` EAS build profiles. Fixes referral fetch, admin config saves, and article URL resolution when running a production APK.
+
+### Changed
+- **Android versionCode** bumped 40 → 41 (`mobile/app.json`).
+
+### Verified
+- APK `90744f65` (EAS preview, arm64, 30 MB) built and device-tested on Samsung Galaxy (RZCT91S5NLT). All screens pass: auth, home, quizzes, quiz engine, leaderboard (all 3 tabs), learning path, progress, resources, profile. Zero JS errors in logcat.
+
+---
+
 ## [0.10.4] — 2026-05-06 — Dependency Updates + Repo Cleanup
 
 ### Changed
