@@ -15,6 +15,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.10.6] — 2026-05-08 — Knowledge Graph Rebuild + Full Documentation Update
+
+### Changed
+- **Knowledge graph rebuilt** — 1562 nodes (+204), 15566 edges (+2807), 214 files indexed. Reflects all codebase changes since last build on 2026-04-21 (commit `8b5e0a77`). Branch: `fix/ci-branch-protection`.
+- **`README.md`** — Complete rewrite: accurate stack (Stripe added, Sanity CMS, 15 DB tables, 53 API routes, Supabase Edge Functions, 6 Lambdas); full repo structure tree; complete API route table (public + auth + admin); database schema table; full quiz content registry (web 395Q + mobile 670Q); updated test counts (82 backend, 34 web).
+- **`FEATURES.md`** — Complete rewrite: all live features documented (web dashboard 20 pages, mobile 20+ screens, admin routes, payment flows, feature flags, CMS, white-label config); accurate quiz content tables; updated test coverage numbers; revised planned features roadmap.
+- **`CLAUDE.md`** — Key files table rebuilt from scratch: web API routes (53), mobile stores/services/data files, backend Lambdas + event processors, CDK constructs, shared-types package; development commands updated (web port :8080, 82 backend tests, 34 web tests); knowledge graph stats section added.
+- **`package-lock.json`** — Regenerated to sync `postcss >=8.5.10` and `uuid >=14.0.0` overrides added in v0.10.4. Fixes CI `npm ci` lockfile mismatch.
+
+### Fixed
+- **CI lockfile mismatch** — Web TypeCheck and Mobile TypeCheck jobs were failing with `npm ci` rejection because the overrides in `package.json` were not reflected in `package-lock.json`. Fixed by running `npm install --legacy-peer-deps` and committing the updated lockfile.
+
+---
+
 ## [0.10.5] — 2026-05-08 — Leaderboard Period Fix + Android APK v41
 
 ### Fixed

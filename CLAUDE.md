@@ -1,6 +1,6 @@
 # Katalyst LMS — Claude Code Instructions
 
-> **Last Updated:** 2026-05-06
+> **Last Updated:** 2026-05-08
 > **Platform:** AWS Cloud & GenAI Certification Prep (Katalyst)
 > **Branch:** `main`
 
@@ -22,24 +22,134 @@
 
 ## Key Files
 
+### Web Portal
+
 | File | Purpose |
 |------|---------|
-| `apps/web/src/data/quizzes.ts` | Quiz metadata registry (all quiz entries + quizQuestions map) |
-| `apps/web/src/lib/quizCatalog.ts` | Admin-controlled premium/free overrides merged onto quiz metadata |
-| `apps/web/src/app/api/admin/quiz-catalog/route.ts` | Admin-only API for saving quiz premium/free + price overrides |
-| `apps/web/src/app/api/quiz-catalog/route.ts` | Public API exposing effective quiz access overrides to clients |
-| `apps/web/src/data/clf-c02-questions.ts` | CLF-C02 questions (195 Qs, 4 domain arrays + combined) |
+| `apps/web/src/data/quizzes.ts` | Quiz metadata registry (6 CLF-C02 quizzes + quizQuestions map) |
+| `apps/web/src/data/clf-c02-questions.ts` | CLF-C02 question bank (195 Qs, 4 domain arrays + combined) |
+| `apps/web/src/data/aip-c01-questions.ts` | AIP-C01 question bank |
+| `apps/web/src/data/flashcards.ts` | Flashcard deck data |
 | `apps/web/src/app/globals.css` | Vuexy design system CSS (tokens + component classes) |
 | `apps/web/src/app/dashboard/layout.tsx` | Sidebar, search, dark mode, nav |
-| `backend/lambdas/quizSubmit/index.ts` | Quiz submission Lambda |
+| `apps/web/src/app/api/quiz-submit/route.ts` | **CRITICAL** — server-side score validation + Supabase write |
+| `apps/web/src/app/api/quiz-catalog/route.ts` | Public: effective premium/free overrides |
+| `apps/web/src/app/api/admin/quiz-catalog/route.ts` | Admin GET/POST: quiz premium flags + prices |
+| `apps/web/src/app/api/leaderboard/route.ts` | Aggregate quiz_results + user_profiles (service-role) |
+| `apps/web/src/app/api/admin/check/route.ts` | Admin role check via JWT + ADMIN_EMAILS |
+| `apps/web/src/app/api/payment/stripe/create-session/route.ts` | Stripe Checkout Session creation |
+| `apps/web/src/app/api/payment/stripe/webhook/route.ts` | Stripe webhook HMAC verify + access grant |
+| `apps/web/src/app/api/payment/create-order/route.ts` | Razorpay order creation |
+| `apps/web/src/app/api/payment/verify/route.ts` | Razorpay HMAC verify + access grant |
+| `apps/web/src/app/api/system-features/route.ts` | Feature flags (maintenance, ads, daily quiz, leaderboard) |
+| `apps/web/src/app/api/platform-config/route.ts` | Platform theme + white-label config |
+| `apps/web/src/app/api/app-content/route.ts` | Managed static content (hero, testimonials, FAQs) |
+| `apps/web/src/app/api/admin/system-features/route.ts` | Admin feature flag management |
+| `apps/web/src/app/api/admin/mobile-config/route.ts` | Mobile platform experience editor |
+| `apps/web/src/app/api/admin/quiz-builder/route.ts` | Quiz CRUD (list + create) |
+| `apps/web/src/app/api/bookmarks/route.ts` | Bookmark questions (GET/POST/DELETE) |
+| `apps/web/src/app/api/flashcard-progress/route.ts` | Known card IDs per deck (GET/POST) |
+| `apps/web/src/app/api/battle/route.ts` | Battle session prototype (app_settings-backed) |
+| `apps/web/src/app/api/contests/route.ts` | Active contest list (public, anon key) |
+| `apps/web/src/app/api/coins/route.ts` | Coin balance + transaction history |
+| `apps/web/src/app/api/account/delete/route.ts` | Self-serve account deletion |
+| `apps/web/src/lib/quizCatalog.ts` | Admin override merge layer |
+| `apps/web/src/lib/rateLimiter.ts` | In-memory per-IP rate limiter |
+| `apps/web/src/lib/supabase.ts` | `createBrowserClient` from `@supabase/ssr` (cookie-based sessions) |
+| `apps/web/src/lib/stripe.ts` | Stripe singleton + price IDs + course price helper |
+| `apps/web/src/lib/systemFeatures.ts` | Feature-flag schema + defaults |
+| `apps/web/src/lib/platformExperience.ts` | White-label copy + layout config schema |
+| `apps/web/src/lib/platformTheme.ts` | Platform-level theme preset schema |
+| `apps/web/src/lib/themePacks.ts` | User theme pack definitions |
+| `apps/web/src/lib/appContent.ts` | Managed static content schema |
+| `apps/web/src/lib/managedQuizContent.ts` | Admin-managed quiz content schema |
+| `apps/web/src/lib/profanityFilter.ts` | Review moderation |
+| `apps/web/src/lib/logger.ts` | Structured JSON logging |
+| `apps/web/src/lib/sanityClient.ts` | Sanity GROQ client |
+| `apps/web/src/lib/db.ts` | Supabase CRUD helpers + localStorage fallback |
+| `apps/web/src/middleware.ts` | Edge-level route guard (dashboard=auth required, auth pages=redirect) |
+| `apps/web/src/types.ts` | Shared TypeScript types for web |
+| `apps/web/src/app/verify-email/page.tsx` | 6-digit OTP entry after signup |
+| `apps/web/e2e/auth-flows.spec.ts` | Auth E2E test suite |
+
+### Mobile
+
+| File | Purpose |
+|------|---------|
+| `mobile/stores/authStore.ts` | Auth state: signIn, signUp, Google, OTP, forgotPassword, upgradeToPremium, unlockCourse |
+| `mobile/stores/progressStore.ts` | XP, level, streak, quiz history (Supabase-backed) |
+| `mobile/stores/quizStore.ts` | Active quiz session state |
+| `mobile/stores/bookmarkStore.ts` | Bookmarked question IDs per quiz |
+| `mobile/stores/themeStore.ts` | Active theme pack + Supabase sync |
+| `mobile/stores/systemFeatureStore.ts` | Feature flag state (maintenance, ads, force update) |
+| `mobile/stores/platformConfigStore.ts` | Platform theme + experience config |
+| `mobile/config/quizCatalog.ts` | Mobile-side merge layer for admin quiz overrides |
+| `mobile/config/systemFeatures.ts` | Feature flag schema + defaults (mobile) |
+| `mobile/config/platformExperience.ts` | White-label copy schema (mobile) |
+| `mobile/services/quizCatalogService.ts` | Fetches quiz overrides from app_settings at startup |
+| `mobile/services/systemFeatureService.ts` | Fetches feature flags at startup |
+| `mobile/services/platformConfigService.ts` | Fetches platform config at startup |
+| `mobile/services/themeSyncService.ts` | Syncs user theme pack to/from Supabase |
+| `mobile/services/articlesService.ts` | Fetches Sanity articles |
+| `mobile/data/quizzes.ts` | Mobile quiz metadata (20 entries: 11 GenAI + CLF-C02 + AIP-C01) |
+| `mobile/data/clf-c02-questions.ts` | CLF-C02 question bank (mobile copy) |
+| `mobile/data/aip-c01-questions.ts` | AIP-C01 question bank |
+| `mobile/data/flashcards.ts` | Flashcard deck data |
+| `mobile/data/learningPaths.ts` | Learning path steps |
+| `mobile/data/challenges.ts` | Self-challenge question sets |
+| `mobile/data/contests.ts` | Static contest definitions |
+| `mobile/hooks/useTypography.ts` | Font scale hook (respects accessibility settings) |
+
+### Backend
+
+| File | Purpose |
+|------|---------|
+| `backend/lambdas/quizSubmit/index.ts` | Quiz submission Lambda (DynamoDB + EventBridge) |
 | `backend/lambdas/progressFetch/index.ts` | Progress fetch Lambda |
-| `backend/lambdas/leaderboardFetch/index.ts` | Leaderboard Lambda |
+| `backend/lambdas/leaderboardFetch/index.ts` | Leaderboard Lambda (3 DynamoDB tables) |
+| `backend/lambdas/adminStats/index.ts` | Admin revenue stats Lambda |
+| `backend/lambdas/createOrder/index.ts` | Razorpay order creation Lambda |
+| `backend/lambdas/verifyPayment/index.ts` | Razorpay HMAC verify + Cognito update Lambda |
+| `backend/events/analyticsProcessor/index.ts` | EventBridge: quiz analytics aggregation |
+| `backend/events/badgeProcessor/index.ts` | EventBridge: badge award on quiz events |
+| `backend/events/streakProcessor/index.ts` | EventBridge: daily streak update |
+
+### Infrastructure
+
+| File | Purpose |
+|------|---------|
+| `infrastructure/cdk/lib/lms-stack.ts` | Main CDK stack |
+| `infrastructure/cdk/lib/constructs/dynamodb-tables.ts` | DynamoDB table definitions (quiz-attempts, user-statistics, leaderboard-*, purchases) |
+| `infrastructure/cdk/lib/constructs/api-gateway.ts` | API Gateway + Lambda integrations |
+| `infrastructure/cdk/lib/constructs/cognito-auth.ts` | Cognito User Pool + custom attributes |
+| `infrastructure/cdk/lib/constructs/event-handlers.ts` | EventBridge rules + Lambda targets |
+
+### Packages
+
+| File | Purpose |
+|------|---------|
+| `packages/shared-types/src/index.ts` | Re-exports all domain types |
+| `packages/shared-types/src/quiz.ts` | Category, Subcategory, Question, DailyQuiz interfaces |
+| `packages/shared-types/src/user.ts` | User, Profile, Subscription interfaces |
+| `packages/shared-types/src/progress.ts` | Progress, Streak, Badge interfaces |
+| `packages/shared-types/src/battle.ts` | Battle session interfaces |
+| `packages/shared-types/src/contest.ts` | Contest interfaces |
+| `packages/shared-types/src/learning.ts` | LearningPath, Step interfaces |
+| `packages/shared-types/src/settings.ts` | Settings interfaces |
+| `packages/theme/src/tokens.ts` | Design tokens |
+
+### Reference Docs
+
+| File | Purpose |
+|------|---------|
 | `CHANGELOG.md` | Version history |
-| `FEATURES.md` | Feature matrix (done + planned) |
+| `FEATURES.md` | Complete feature matrix (done + planned) |
 | `docs/DESIRED_FEATURES_BACKLOG.md` | Detailed backlog + planned phases |
-| `mobile/config/quizCatalog.ts` | Mobile-side merge layer for admin quiz access overrides |
-| `mobile/services/quizCatalogService.ts` | Fetches quiz overrides from Supabase and applies them at startup |
-| `docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md` | Claude handoff for the separate attendance multi-tenant build |
+| `docs/ARCHITECTURE.md` | System architecture overview |
+| `docs/QUIZ_BUILDER_INTEGRATION.md` | Admin quiz builder design |
+| `docs/VUEXY_WIDGET_CATALOG.md` | Design system widget reference |
+| `docs/store/` | Play Store + App Store submission docs |
+| `docs/ATTENDANCE_MULTI_TENANT_IMPLEMENTATION_BRIEF.md` | Claude handoff for separate attendance build |
 
 ## Separate Attendance Workstream
 
@@ -59,11 +169,12 @@ If you are asked to implement the attendance platform's multi-tenant build:
 
 ```bash
 # Web portal (from apps/web/)
-npm run dev          # Next.js dev server on :3000
+npm run dev          # Next.js dev server on :8080
 npm run type-check   # tsc --noEmit
+npm test             # Jest — 34 tests (3 suites)
 
 # Backend tests (from backend/)
-npm test             # Jest — 49 tests
+npm test             # Jest — 82 tests (6 suites)
 npm run test:coverage  # With lcov report
 
 # Monorepo (from root lms/)
@@ -79,7 +190,7 @@ npm run build        # Turborepo build
 
 | Path | Tracking |
 |------|----------|
-| `apps/web/`, `backend/`, `packages/`, `ios/`, `docs/` | Regular tracked files |
+| `apps/web/`, `backend/`, `packages/`, `supabase/`, `docs/`, `infrastructure/` | Regular tracked files |
 | `mobile/` | **Git submodule** → `katalyst-mobile.git` (has its own commits + remote) |
 | `apps/web/.next/` | Ignored (build cache — in `.gitignore`) |
 | `.kiro/` | Ignored (IDE config — in `.gitignore`) |
@@ -358,3 +469,12 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 2. Use `detect_changes` for code review.
 3. Use `get_affected_flows` to understand impact.
 4. Use `query_graph` pattern="tests_for" to check coverage.
+
+### Graph Stats (last rebuilt 2026-05-08)
+
+| Metric | Value |
+|--------|-------|
+| Nodes | 1562 |
+| Edges | 15566 |
+| Files indexed | 214 |
+| Branch at build | `fix/ci-branch-protection` |
