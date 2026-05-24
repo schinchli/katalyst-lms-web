@@ -2,6 +2,7 @@
  * Flashcard decks for LearnKloud LMS.
  * Each deck has a set of cards with a front (term/concept) and back (definition/explanation).
  */
+import { eksCoreksFlashcardDecks } from './eks-coreks-flashcards';
 
 export interface Flashcard {
   id: string;
@@ -21,6 +22,9 @@ export interface FlashcardDeck {
 }
 
 export const flashcardDecks: FlashcardDeck[] = [
+  // ── EKS Course (200-COREKS) — 9 decks, 365 cards ──────────────────────────
+  ...eksCoreksFlashcardDecks,
+
   {
     id: 'aws-core-services',
     title: 'AWS Core Services',
