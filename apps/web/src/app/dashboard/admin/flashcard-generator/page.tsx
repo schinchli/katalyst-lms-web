@@ -88,44 +88,62 @@ export default function FlashcardGeneratorPage() {
     return () => { cancelled = true; };
   }, []);
 
-  async function call({ save }: { save: boolean }) {
+  async function generate() {
     if (!topic.trim() || !token) return;
-    if (save) setSaving(true); else { setGenerating(true); setCards([]); setSources([]); setUsage(null); }
+    setGenerating(true); setCards([]); setSources([]); setUsage(null);
     setError(null); setWarning(null); setSavedMsg(null);
-
     try {
       const res = await fetch('/api/admin/generate-flashcards', {
         method:  'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          Authorization:   `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          topic:           topic.trim(),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    JSON.stringify({
+          topic:          topic.trim(),
           count,
           retrievalLimit,
-          corpus:          selectedCorpus.length ? selectedCorpus : undefined,
-          save,
+          corpus:         selectedCorpus.length ? selectedCorpus : undefined,
+          save:           false,
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
         throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
       }
-      // When save=true with edited cards, the server didn't see our edits.
-      // For this v1 we re-generate then save in two clicks; future improvement: explicit save-edited endpoint.
-      if (!save) {
-        setCards(data.cards ?? []);
-        setSources(data.sources ?? []);
-        setUsage(data.usage ?? null);
-        if (data.warning) setWarning(data.warning);
-      } else if (data.saved_count) {
-        setSavedMsg(`✓ Saved ${data.saved_count} card${data.saved_count === 1 ? '' : 's'} to knowledge_chunks (corpus='generated-flashcards')`);
-      }
+      setCards(data.cards ?? []);
+      setSources(data.sources ?? []);
+      setUsage(data.usage ?? null);
+      if (data.warning) setWarning(data.warning);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'unknown error');
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function saveEdited() {
+    if (!cards.length || !token) return;
+    setSaving(true); setError(null); setSavedMsg(null);
+    try {
+      const res = await fetch('/api/admin/save-flashcards', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    JSON.stringify({
+          topic: topic.trim(),
+          cards: cards.map((c) => ({
+            front:            c.front,
+            back:             c.back,
+            source_chunk_ids: c.source_chunk_ids,
+          })),
+          model: usage?.model,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
+      }
+      setSavedMsg(`✓ Saved ${data.saved_count} card${data.saved_count === 1 ? '' : 's'} (with your edits) to knowledge_chunks (corpus='generated-flashcards')`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'unknown error');
+    } finally {
       setSaving(false);
     }
   }
@@ -259,7 +277,7 @@ export default function FlashcardGeneratorPage() {
 
         <div style={{ display: 'flex', gap: 8, marginTop: 18, alignItems: 'center' }}>
           <button
-            onClick={() => call({ save: false })}
+            onClick={generate}
             disabled={generating || saving || !topic.trim()}
             className="vx-btn vx-btn-primary"
             style={{ opacity: (generating || saving || !topic.trim()) ? 0.6 : 1 }}
@@ -268,13 +286,13 @@ export default function FlashcardGeneratorPage() {
           </button>
           {cards.length > 0 && (
             <button
-              onClick={() => call({ save: true })}
+              onClick={saveEdited}
               disabled={saving || generating}
               className="vx-btn vx-btn-outline-secondary"
               style={{ opacity: (saving || generating) ? 0.6 : 1 }}
-              title="Re-runs generation with current settings, then saves to knowledge_chunks"
+              title="Saves your current cards (with any inline edits) to knowledge_chunks"
             >
-              {saving ? 'Saving…' : `💾 Save ${cards.length} card${cards.length === 1 ? '' : 's'}`}
+              {saving ? 'Saving…' : `💾 Save ${cards.length} card${cards.length === 1 ? '' : 's'} with edits`}
             </button>
           )}
           {usage && (

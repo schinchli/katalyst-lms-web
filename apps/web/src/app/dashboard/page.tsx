@@ -182,6 +182,42 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* ── Recommended for you (RAG-personalised from quiz history) ── */}
+      {results.length > 0 && (
+        <div
+          className="vx-card"
+          style={{
+            marginBottom: 24,
+            padding: '18px 22px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 18,
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            background:
+              'linear-gradient(135deg, rgba(115,103,240,0.10), rgba(74,144,226,0.06))',
+            borderColor: 'rgba(115,103,240,0.25)',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+                ✨ Recommended · Personalised
+              </span>
+            </div>
+            <h5 style={{ margin: '0 0 4px', fontWeight: 700, fontSize: 17, color: 'var(--text)' }}>
+              Study the chunks that fix your knowledge gaps
+            </h5>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>
+              We look at your recent quiz mistakes and surface the highest-impact chunks from the knowledge base — ranked by how many of your gaps each one closes.
+            </p>
+          </div>
+          <Link href="/dashboard/recommended" className="btn-primary" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            See my path
+          </Link>
+        </div>
+      )}
+
       {/* ── Main 2-col grid ── */}
       <div className="dash-academy-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
 
