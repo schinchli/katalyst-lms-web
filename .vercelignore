@@ -4,8 +4,9 @@
 # Other apps (not deployed to Vercel)
 apps/admin/
 
-# Monorepo packages (not imported by apps/web)
-packages/
+# Monorepo packages — needed by workspace resolution
+# apps/web imports @lms/shared-types and @lms/theme; keep these folders
+# packages/
 
 # Backend — AWS Lambda (deployed via CDK/SAM separately)
 backend/
