@@ -1,10 +1,12 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
   const { execute: recaptcha } = useRecaptcha();
   const [email,   setEmail]   = useState('');
   const [error,   setError]   = useState('');
@@ -34,13 +36,20 @@ export default function ResetPasswordPage() {
       }
     } catch { /* reCAPTCHA unavailable — continue; rate limiter protects */ }
 
+    // Supabase's email template for this project sends a 6-digit OTP (not a
+    // magic link). After the email is queued, route the user to the verify
+    // page where they enter the code + new password.
     const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
+      redirectTo: `${window.location.origin}/reset-password/verify?email=${encodeURIComponent(email)}`,
     });
     setLoading(false);
 
     if (err) { setError(err.message); return; }
     setSuccess(true);
+    // After a brief beat, send the user to the verify form.
+    setTimeout(() => {
+      router.push(`/reset-password/verify?email=${encodeURIComponent(email)}`);
+    }, 1500);
   };
 
   return (
@@ -68,14 +77,14 @@ export default function ResetPasswordPage() {
             Forgot your password? 🔒
           </h1>
           <p style={{ margin: '0 0 48px', fontSize: 18, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)' }}>
-            No worries — enter your email and we&apos;ll send a secure reset link.
+            No worries — enter your email and we&apos;ll send a 6-digit reset code.
           </p>
 
           {/* Feature points */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              'Secure link sent to your inbox',
-              'Link expires in 24 hours for safety',
+              '6-digit code sent to your inbox',
+              'Code expires in 30 minutes for safety',
               'reCAPTCHA protected',
             ].map((item) => (
               <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -112,11 +121,18 @@ export default function ResetPasswordPage() {
               </div>
               <h4 style={{ margin: '0 0 10px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Check your inbox</h4>
               <p style={{ margin: '0 0 8px', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: 14 }}>
-                We sent a password reset link to
+                We sent a 6-digit reset code to
               </p>
-              <p style={{ margin: '0 0 28px', fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{email}</p>
-              <Link href="/login" className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', minWidth: 160 }}>
-                Back to sign in
+              <p style={{ margin: '0 0 16px', fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{email}</p>
+              <p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: 13 }}>
+                Redirecting you to the verify page…
+              </p>
+              <Link
+                href={`/reset-password/verify?email=${encodeURIComponent(email)}`}
+                className="btn-primary"
+                style={{ display: 'inline-block', textDecoration: 'none', minWidth: 200 }}
+              >
+                Enter code now →
               </Link>
             </div>
           ) : (
