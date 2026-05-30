@@ -43,7 +43,7 @@ coverage/
 
 # ─── Build artifacts (Vercel rebuilds these) ──────────────────────────────────
 **/node_modules/
-apps/web/.next/
+# apps/web/.next/ — DO NOT exclude; Vercel needs the build output here
 **/*.tsbuildinfo
 
 # ─── Data backups ─────────────────────────────────────────────────────────────
