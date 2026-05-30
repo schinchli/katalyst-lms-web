@@ -9,9 +9,64 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Pending
 - CDK infrastructure (DynamoDB tables, Cognito, API Gateway)
-- Stripe/purchase flow (purchaseValidate Lambda full implementation)
+- Stripe/Razorpay purchase flow
 - Push notifications (Expo + SNS)
 - Streak tracking + badge engine
+
+---
+
+## [0.10.6] — 2026-05-08 — Knowledge Graph Rebuild + Full Documentation Update
+
+### Changed
+- **Knowledge graph rebuilt** — 1562 nodes (+204), 15566 edges (+2807), 214 files indexed. Reflects all codebase changes since last build on 2026-04-21 (commit `8b5e0a77`). Branch: `fix/ci-branch-protection`.
+- **`README.md`** — Complete rewrite: accurate stack (Stripe added, Sanity CMS, 15 DB tables, 53 API routes, Supabase Edge Functions, 6 Lambdas); full repo structure tree; complete API route table (public + auth + admin); database schema table; full quiz content registry (web 395Q + mobile 670Q); updated test counts (82 backend, 34 web).
+- **`FEATURES.md`** — Complete rewrite: all live features documented (web dashboard 20 pages, mobile 20+ screens, admin routes, payment flows, feature flags, CMS, white-label config); accurate quiz content tables; updated test coverage numbers; revised planned features roadmap.
+- **`CLAUDE.md`** — Key files table rebuilt from scratch: web API routes (53), mobile stores/services/data files, backend Lambdas + event processors, CDK constructs, shared-types package; development commands updated (web port :8080, 82 backend tests, 34 web tests); knowledge graph stats section added.
+- **`package-lock.json`** — Regenerated to sync `postcss >=8.5.10` and `uuid >=14.0.0` overrides added in v0.10.4. Fixes CI `npm ci` lockfile mismatch.
+
+### Fixed
+- **CI lockfile mismatch** — Web TypeCheck and Mobile TypeCheck jobs were failing with `npm ci` rejection because the overrides in `package.json` were not reflected in `package-lock.json`. Fixed by running `npm install --legacy-peer-deps` and committing the updated lockfile.
+
+---
+
+## [0.10.5] — 2026-05-08 — Leaderboard Period Fix + Android APK v41
+
+### Fixed
+- **Mobile leaderboard period filtering** — `fetchLeaderboard` in `mobile/services/apiService.ts` now passes `?period=daily|monthly|alltime` to the edge function. Previously the parameter was accepted but silently ignored, so Today/Monthly tabs always fell back to mock data for authenticated users.
+- **Supabase `leaderboard-fetch` edge function** — Updated to handle all three periods: `alltime` continues to read from the `leaderboard_global` view (XP-based); `daily` and `monthly` aggregate `quiz_results.score` filtered by `completed_at ≥ periodStart`. Returns top-50 ranked entries per period.
+- **`EXPO_PUBLIC_WEB_URL` missing in EAS builds** — Added to `mobile/.env` and to `preview`, `preview-stable`, and `production` EAS build profiles. Fixes referral fetch, admin config saves, and article URL resolution when running a production APK.
+
+### Changed
+- **Android versionCode** bumped 40 → 41 (`mobile/app.json`).
+
+### Verified
+- APK `90744f65` (EAS preview, arm64, 30 MB) built and device-tested on Samsung Galaxy (RZCT91S5NLT). All screens pass: auth, home, quizzes, quiz engine, leaderboard (all 3 tabs), learning path, progress, resources, profile. Zero JS errors in logcat.
+
+---
+
+## [0.10.4] — 2026-05-06 — Dependency Updates + Repo Cleanup
+
+### Changed
+- **Next.js** upgraded to 16.2.4 across `apps/web` and `apps/admin`
+- **`@supabase/supabase-js`** → 2.105.3
+- **`axios`** → 1.16.0 (closes follow-redirects CVE GHSA-r4q5-vmmm-2653)
+- **`react-native-screens`** → 4.24.0, **`react-native-gesture-handler`** → 2.31.2
+- **`@react-navigation/drawer`** → 7.9.9, **`@tanstack/react-query`** → 5.100.9
+- **`expo`** → 54.0.34, **`react`** → 19.2.5 (aligns react/react-dom peer dep)
+- **`postcss`** override `>=8.5.10` applied in both API and mobile
+
+### Removed
+- **`frontend/`** — legacy empty stub folder deleted
+- **`backend/lambdas/purchaseValidate/`** — empty stub deleted
+- **`START_HERE.md`**, **`MASTER_CHECKLIST.md`** — empty placeholders removed
+- **`CLAUDE_COMMANDMENTS.md`**, **`EXECUTION_TRACKER.md`**, **`FEATURE_IMPLEMENTATION_LOG.md`**, **`LMS_IMPLEMENTATION_PLAN.md`**, **`PROJECT_SUMMARY.md`**, **`README_IMPLEMENTATION.md`**, **`QUICK_REFERENCE.md`** — superseded docs archived to `docs/archive/`
+- **Store/launch docs** moved to `docs/store/`
+- **`VUEXY_WIDGET_CATALOG.md`**, **`DESIRED_FEATURES_BACKLOG.md`** moved to `docs/`
+
+### Fixed
+- `.gitignore` now excludes `.code-review-graph/` (generated knowledge graph)
+- `.vercelignore` cleaned: removed `frontend/` reference, explicit `docs/` exclusion
+- `CLAUDE.md`, `README.md`, `FEATURES.md` updated to Next.js 16, current branch, accurate structure
 
 ---
 
