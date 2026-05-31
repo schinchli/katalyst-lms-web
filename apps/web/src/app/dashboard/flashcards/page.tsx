@@ -1,9 +1,11 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { flashcardDecks, type FlashcardDeck, type Flashcard } from '@/data/flashcards';
 import { supabase } from '@/lib/supabase';
+import { FlipCard } from '@/components/FlipCard';
 
 // ── localStorage persistence helpers ─────────────────────────────────────────
 
@@ -115,91 +117,6 @@ function DeckGrid({ onSelect }: { onSelect: (deck: FlashcardDeck) => void }) {
   );
 }
 
-// ── Individual card flip component ───────────────────────────────────────────
-
-function FlipCard({
-  card,
-  isFlipped,
-  onFlip,
-}: {
-  card: Flashcard;
-  isFlipped: boolean;
-  onFlip: () => void;
-}) {
-  return (
-    <div
-      onClick={onFlip}
-      style={{
-        width: '100%',
-        maxWidth: 600,
-        height: 300,
-        cursor: 'pointer',
-        perspective: '1000px',
-        userSelect: 'none',
-      }}
-    >
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        transformStyle: 'preserve-3d',
-        transition: 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-      }}>
-        {/* Front */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backfaceVisibility: 'hidden',
-          background: 'var(--surface)',
-          border: '2px solid var(--primary)',
-          borderRadius: 'var(--radius)',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: 32,
-          boxShadow: 'var(--shadow)',
-        }}>
-          <span className="vx-badge vx-badge-primary" style={{ marginBottom: 16, letterSpacing: 1 }}>
-            CONCEPT
-          </span>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', textAlign: 'center', lineHeight: 1.3 }}>
-            {card.front}
-          </div>
-          <p style={{ position: 'absolute', bottom: 16, margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
-            Click to reveal answer
-          </p>
-        </div>
-
-        {/* Back */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backfaceVisibility: 'hidden',
-          transform: 'rotateY(180deg)',
-          background: 'var(--surface)',
-          border: '2px solid var(--success)',
-          borderRadius: 'var(--radius)',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: '32px 36px',
-          overflow: 'hidden',
-          boxShadow: 'var(--shadow)',
-        }}>
-          <span className="vx-badge vx-badge-success" style={{ marginBottom: 16, letterSpacing: 1 }}>
-            ANSWER
-          </span>
-          <div style={{
-            fontSize: 15, color: 'var(--text)', textAlign: 'center', lineHeight: 1.6,
-            overflowY: 'auto', maxHeight: 200, whiteSpace: 'pre-line',
-          }}>
-            {card.back}
-          </div>
-          <p style={{ position: 'absolute', bottom: 16, margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
-            Click to flip back
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Study mode view ───────────────────────────────────────────────────────────
 
@@ -506,7 +423,26 @@ function StudyView({
 // ── Root page ─────────────────────────────────────────────────────────────────
 
 export default function FlashcardsPage() {
+  return (
+    <Suspense fallback={null}>
+      <FlashcardsPageContent />
+    </Suspense>
+  );
+}
+
+function FlashcardsPageContent() {
+  const searchParams = useSearchParams();
   const [activeDeck, setActiveDeck] = useState<FlashcardDeck | null>(null);
+
+  // Auto-select a deck if ?deck=<id> is in the URL (used by deep links
+  // from the public /flashcards/[slug] page after login, and from the
+  // Courses page's "🃏 N cards" buttons).
+  useEffect(() => {
+    const deckId = searchParams.get('deck');
+    if (!deckId) return;
+    const match = flashcardDecks.find((d) => d.id === deckId);
+    if (match) setActiveDeck(match);
+  }, [searchParams]);
 
   // Scroll to top whenever the view switches (deck grid ↔ study view)
   useEffect(() => {
