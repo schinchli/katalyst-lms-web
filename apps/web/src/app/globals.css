@@ -3026,6 +3026,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .fp-pricing-grid { max-width: 100%; }
 }
 
+/* Below 500px, drop the ghost "Sign in" button from the nav so brand +
+   primary CTA + hamburger fit. Sign-in stays reachable via /login link
+   on the signup page and from the footer. */
+@media (max-width: 500px) {
+  .fp-nav-actions .fp-btn-ghost { display: none; }
+  .fp-btn-primary { padding: 8px 14px; font-size: 13px; }
+  .fp-nav-name { font-size: 15px; }
+}
+
 /* ===== auth cover layout ===== */
 /* Left panel visible on ≥1024px (d-none d-xl-flex equivalent) */
 @media (min-width: 1024px) {
