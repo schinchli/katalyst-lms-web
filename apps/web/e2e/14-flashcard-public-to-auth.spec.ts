@@ -88,10 +88,10 @@ test.describe('public flashcard → login → resume same deck', () => {
     const signInCta = page.getByRole('link', { name: /Sign in to continue/i });
     await expect(signInCta).toBeVisible();
 
-    // The href should embed the expected next= path
+    // The href should embed the expected next= path (now dynamic /:slug)
     const ctaHref = await signInCta.getAttribute('href');
     expect(ctaHref).toBeTruthy();
-    expect(decodeURIComponent(ctaHref!)).toContain(`/dashboard/flashcards?deck=${DECK_SLUG}`);
+    expect(decodeURIComponent(ctaHref!)).toContain(`/dashboard/flashcards/${DECK_SLUG}`);
 
     // ── 3. Click → /login?next=... ───────────────────────────────────
     await Promise.all([
@@ -107,9 +107,8 @@ test.describe('public flashcard → login → resume same deck', () => {
       page.locator('button[type=submit]').first().click(),
     ]);
 
-    // ── 5. Should land on /dashboard/flashcards with the deck selected ──
-    expect(page.url()).toContain('/dashboard/flashcards');
-    expect(page.url()).toContain(`deck=${DECK_SLUG}`);
+    // ── 5. Should land on /dashboard/flashcards/<slug> directly ──
+    expect(page.url()).toContain(`/dashboard/flashcards/${DECK_SLUG}`);
 
     // Wait for client to auto-select the deck and render the study view
     await page.waitForTimeout(800);
