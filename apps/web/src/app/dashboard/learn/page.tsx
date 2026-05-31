@@ -77,49 +77,65 @@ export default function LearnPage() {
         </div>
       )}
 
-      {/* Article grid */}
+      {/* Article grid — same layout as /dashboard/quizzes */}
       {!loading && articles.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
           {articles.map((article) => {
-            const tagColor   = TAG_COLORS[article.tag ?? ''] ?? 'vx-badge-secondary';
+            const tagColor    = TAG_COLORS[article.tag ?? ''] ?? 'vx-badge-secondary';
             const avatarColor = TAG_AVATAR[article.tag ?? ''] ?? 'vx-avatar-primary';
+            const tagLetter   = article.tag?.charAt(0).toUpperCase() ?? 'A';
+
             return (
-              <Link key={article.slug} href={`/dashboard/learn/${article.slug}`} style={{ textDecoration: 'none' }}>
-                <article
-                  className="vx-card"
-                  style={{ height: '100%', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'box-shadow 0.2s' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '')}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <span className={`vx-badge ${tagColor}`}>{article.tag ?? 'General'}</span>
-                    {article.accessTier === 'premium' && (
-                      <span className="vx-badge vx-badge-warning" style={{ fontSize: 10 }}>PREMIUM</span>
+              <Link
+                key={article.slug}
+                href={`/dashboard/learn/${article.slug}`}
+                className="quiz-card"
+                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+              >
+                {/* Card header */}
+                <div style={{ padding: '20px 20px 14px', flex: 1 }}>
+                  {/* Top row: tag + premium badge on left, readTime on right */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <span className={`vx-badge ${tagColor}`}>{article.tag ?? 'General'}</span>
+                      {article.accessTier === 'premium' && (
+                        <span className="vx-badge vx-badge-warning">Premium</span>
+                      )}
+                    </div>
+                    {article.readTime && (
+                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{article.readTime}</span>
                     )}
                   </div>
-                  <h6 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.4, flex: 1 }}>
+                  {/* Tag avatar in the "icon" slot (mirrors quiz.icon) */}
+                  <div
+                    className={`vx-avatar ${avatarColor}`}
+                    style={{ width: 48, height: 48, borderRadius: 12, fontSize: 18, fontWeight: 700, marginBottom: 12 }}
+                  >
+                    {tagLetter}
+                  </div>
+                  <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 15, color: 'var(--text)', lineHeight: 1.4 }}>
                     {article.title}
                   </h6>
                   {article.excerpt && (
-                    <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    <p
+                      style={{
+                        margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6,
+                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                      }}
+                    >
                       {article.excerpt}
                     </p>
                   )}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 12, marginTop: 'auto' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div className={`vx-avatar ${avatarColor}`} style={{ width: 28, height: 28, fontSize: 11, fontWeight: 700 }}>
-                        {article.author?.charAt(0) ?? 'K'}
-                      </div>
-                      <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{article.author ?? 'LearnKloud Team'}</span>
-                    </div>
-                    {article.readTime && (
-                      <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        {article.readTime}
-                      </span>
-                    )}
+                </div>
+                {/* Card footer */}
+                <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: 'var(--text-secondary)' }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {article.author ?? 'LearnKloud Team'}
+                    </span>
+                    {article.publishedAt && <span>{formatDate(article.publishedAt)}</span>}
                   </div>
-                </article>
+                </div>
               </Link>
             );
           })}
