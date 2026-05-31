@@ -1,5 +1,4 @@
 'use client';
-export const dynamic = 'force-dynamic';
 /**
  * /reset-password/verify
  *
@@ -12,7 +11,7 @@ export const dynamic = 'force-dynamic';
  * Pre-fills email from ?email= query param (passed by /reset-password after
  * the OTP is sent).
  */
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +26,14 @@ function isValidPassword(p: string): string | null {
 }
 
 export default function ResetPasswordVerifyPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--bg)' }} />}>
+      <ResetPasswordVerifyContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordVerifyContent() {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
