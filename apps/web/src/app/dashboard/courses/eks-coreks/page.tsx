@@ -387,7 +387,7 @@ const EKS_MODULES = quizzes.filter(
 );
 
 export default function EKSCourseOverviewPage() {
-  const [activeTab, setActiveTab] = useState<'modules' | 'path' | 'flashcards' | 'ask'>('modules');
+  const [activeTab, setActiveTab] = useState<'modules' | 'path' | 'ask'>('modules');
 
   return (
     <div className="page-content">
@@ -441,7 +441,7 @@ export default function EKSCourseOverviewPage() {
       {/* ── Tab bar ── */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 20,
         borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
-        {(['modules', 'path', 'flashcards', 'ask'] as const).map((tab) => (
+        {(['modules', 'path', 'ask'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -454,12 +454,23 @@ export default function EKSCourseOverviewPage() {
               transition: 'color 0.15s',
             }}
           >
-            {tab === 'modules'    ? '📚 Modules'
-             : tab === 'path'     ? '🧭 Learning Path'
-             : tab === 'flashcards' ? '🃏 Flashcards'
+            {tab === 'modules' ? '📚 Modules'
+             : tab === 'path' ? '🧭 Learning Path'
              : '✦ Ask AI'}
           </button>
         ))}
+        {/* Flashcards now live in the dedicated /dashboard/flashcards section
+            (free for everyone). Deep-link below preserves discoverability. */}
+        <Link
+          href="/dashboard/flashcards"
+          style={{
+            marginLeft: 'auto', padding: '8px 16px', fontSize: 13, fontWeight: 600,
+            color: 'var(--muted)', textDecoration: 'none', marginBottom: -1,
+            borderBottom: '2px solid transparent',
+          }}
+        >
+          🃏 Flashcards →
+        </Link>
       </div>
 
       {/* ══════════ MODULES TAB ══════════ */}
@@ -506,12 +517,13 @@ export default function EKSCourseOverviewPage() {
                     </span>
                   )}
                   {deck && (
-                    <button
-                      onClick={() => setActiveTab('flashcards')}
+                    <Link
+                      href={`/dashboard/flashcards?deck=${deck.id}`}
                       className="vx-btn vx-btn-outline-secondary vx-btn-sm"
+                      style={{ textDecoration: 'none' }}
                     >
                       🃏 {deck.cardCount} cards
-                    </button>
+                    </Link>
                   )}
                 </div>
               </div>
@@ -551,61 +563,6 @@ export default function EKSCourseOverviewPage() {
 
       {/* ══════════ LEARNING PATH TAB ══════════ */}
       {activeTab === 'path' && <LearningPath />}
-
-      {/* ══════════ FLASHCARDS TAB ══════════ */}
-      {activeTab === 'flashcards' && (
-        <div>
-          <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 16 }}>
-            365 cards across all 9 modules. Click a deck to start — cards track your progress automatically.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {eksCoreksFlashcardDecks.map((deck) => (
-              <Link
-                key={deck.id}
-                href={`/dashboard/flashcards?deck=${deck.id}`}
-                style={{ textDecoration: 'none', display: 'block' }}
-              >
-                <div style={{
-                  background: 'var(--card-bg, #fff)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 12,
-                  padding: '16px 18px',
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s, box-shadow 0.15s',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-                    (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.transform = '';
-                    (e.currentTarget as HTMLElement).style.boxShadow = '';
-                  }}
-                >
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-                    background: deck.color }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 24 }}>{deck.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
-                        {deck.title}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                        {deck.cardCount} cards
-                      </div>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'var(--muted)', margin: 0, lineHeight: 1.5 }}>
-                    {deck.description}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ══════════ ASK AI TAB ══════════ */}
       {activeTab === 'ask' && (
