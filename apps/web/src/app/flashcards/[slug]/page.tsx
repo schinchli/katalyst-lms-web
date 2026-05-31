@@ -62,7 +62,7 @@ export default async function PublicDeckPage({ params }: PageProps) {
 
   const firstCard      = deck.cards[0];
   const totalCards     = deck.cardCount;
-  const next           = `/dashboard/flashcards?deck=${encodeURIComponent(deck.id)}`;
+  const next           = `/dashboard/flashcards/${deck.id}`;
   const jsonLd         = deckJsonLd(deck);
 
   return (

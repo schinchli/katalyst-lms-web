@@ -518,7 +518,7 @@ export default function EKSCourseOverviewPage() {
                   )}
                   {deck && (
                     <Link
-                      href={`/dashboard/flashcards?deck=${deck.id}`}
+                      href={`/dashboard/flashcards/${deck.id}`}
                       className="vx-btn vx-btn-outline-secondary vx-btn-sm"
                       style={{ textDecoration: 'none' }}
                     >
