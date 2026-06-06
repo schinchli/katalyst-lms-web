@@ -5,7 +5,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-001',
     quizId: 'aip-c01-rag-foundations',
-    text: 'Flipkart is building a RAG application using Amazon Bedrock Knowledge Bases to power its seller support portal. Their product manuals contain nested headers, sub-sections, and embedded code blocks. Retrieval must return complete, coherent sections rather than fragmented snippets. Which chunking strategy best meets this requirement?',
+    text: 'ShopNest is building a RAG application using Amazon Bedrock Knowledge Bases to power its seller support portal. Their product manuals contain nested headers, sub-sections, and embedded code blocks. Retrieval must return complete, coherent sections rather than fragmented snippets. Which chunking strategy best meets this requirement?',
     options: [
       { id: 'a', text: 'Hierarchical chunking — stores parent chunks for full section context and child chunks for retrieval, so the complete section is returned alongside the matched snippet' },
       { id: 'b', text: 'Fixed-size chunking with 512 tokens and 50% overlap' },
@@ -21,7 +21,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-002',
     quizId: 'aip-c01-rag-foundations',
-    text: 'Barclays deploys a Bedrock-powered virtual banking assistant. Compliance requires: (1) the model must never discuss competitor banks, (2) specific competitor brand names must be blocked in all responses, and (3) answers must be grounded exclusively in the approved Knowledge Base. Which combination of Amazon Bedrock Guardrails features addresses all three requirements?',
+    text: 'ClearVault Bank deploys a Bedrock-powered virtual banking assistant. Compliance requires: (1) the model must never discuss competitor banks, (2) specific competitor brand names must be blocked in all responses, and (3) answers must be grounded exclusively in the approved Knowledge Base. Which combination of Amazon Bedrock Guardrails features addresses all three requirements?',
     options: [
       { id: 'a', text: 'Denied Topics filter to block competitor bank discussions + Word Filters to block competitor brand names + Grounding check with a high threshold score to validate KB-based responses' },
       { id: 'b', text: 'Content filters set to STRICT level across all harmful categories' },
@@ -37,7 +37,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-003',
     quizId: 'aip-c01-rag-foundations',
-    text: "Amazon's customer support team is evaluating whether to use Retrieval-Augmented Generation (RAG) or fine-tuning for their product FAQ assistant. They have 50,000 FAQ documents updated weekly, and customers ask questions that are answered directly from those documents. Which approach is most appropriate and why?",
+    text: "A large e-commerce platform's customer support team is evaluating whether to use Retrieval-Augmented Generation (RAG) or fine-tuning for their product FAQ assistant. They have 50,000 FAQ documents updated weekly, and customers ask questions that are answered directly from those documents. Which approach is most appropriate and why?",
     options: [
       { id: 'a', text: 'RAG — because the knowledge is dynamic and external; RAG retrieves current documents at inference time without retraining' },
       { id: 'b', text: 'Fine-tuning — because 50,000 documents provide enough training data to embed knowledge into model weights' },
@@ -53,7 +53,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-004',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Goldman Sachs engineering team uses Amazon Bedrock Knowledge Bases with an OpenSearch Serverless vector store to power a financial research assistant. After ingestion, retrieval quality is poor — relevant chunks ranking below irrelevant ones. Which configuration change most directly improves retrieval accuracy?",
+    text: "A CapitalEdge Partners engineering team uses Amazon Bedrock Knowledge Bases with an OpenSearch Serverless vector store to power a financial research assistant. After ingestion, retrieval quality is poor — relevant chunks ranking below irrelevant ones. Which configuration change most directly improves retrieval accuracy?",
     options: [
       { id: 'a', text: 'Switch the retrieval strategy from SEMANTIC to HYBRID — combining vector similarity with keyword (BM25) scoring to surface precise financial terms' },
       { id: 'b', text: 'Increase the number of results returned (numberOfResults) from 5 to 20' },
@@ -69,7 +69,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-005',
     quizId: 'aip-c01-rag-foundations',
-    text: 'Amazon Logistics is building a Bedrock Agent that queries an internal shipment-tracking REST API. The API requires OAuth 2.0 authentication with client credentials. What is the correct approach using Bedrock Agents?',
+    text: 'SwiftRoute Logistics is building a Bedrock Agent that queries an internal shipment-tracking REST API. The API requires OAuth 2.0 authentication with client credentials. What is the correct approach using Bedrock Agents?',
     options: [
       { id: 'a', text: 'Define an OpenAPI schema for the REST API, create an action group with the schema and a Lambda function that handles OAuth token exchange before calling the shipment API' },
       { id: 'b', text: 'Use the Bedrock Agents built-in HTTP connector with OAuth credentials stored in the agent configuration' },
@@ -85,7 +85,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-006',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Goldman Sachs ML team needs to evaluate their RAG pipeline for answer accuracy and groundedness. They want metrics that measure (1) whether the generated answer is supported by the retrieved context and (2) whether the retrieved context actually contains the ground-truth answer. Which evaluation framework and metrics should they use?",
+    text: "A CapitalEdge Partners ML team needs to evaluate their RAG pipeline for answer accuracy and groundedness. They want metrics that measure (1) whether the generated answer is supported by the retrieved context and (2) whether the retrieved context actually contains the ground-truth answer. Which evaluation framework and metrics should they use?",
     options: [
       { id: 'a', text: 'RAGAS framework — use Faithfulness (answer supported by context) and Context Recall (context contains the ground truth answer)' },
       { id: 'b', text: 'BLEU score for answer accuracy and ROUGE-L for context coverage' },
@@ -101,7 +101,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-007',
     quizId: 'aip-c01-rag-foundations',
-    text: "A developer at Hotstar is using Amazon Bedrock to power a content recommendation assistant. The same 2,000-token system prompt describing platform content policies is reused across thousands of API calls per day. What feature should they enable to reduce latency and cost for repeated prompt prefixes?",
+    text: "A developer at StreamBay is using Amazon Bedrock to power a content recommendation assistant. The same 2,000-token system prompt describing platform content policies is reused across thousands of API calls per day. What feature should they enable to reduce latency and cost for repeated prompt prefixes?",
     options: [
       { id: 'a', text: 'Prompt caching — caches the KV (key-value) state of the prompt prefix so subsequent calls with the same prefix skip re-computation' },
       { id: 'b', text: 'Provisioned Throughput — reserves model capacity to reduce inference latency' },
@@ -117,7 +117,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-008',
     quizId: 'aip-c01-rag-foundations',
-    text: "Flipkart stores Bedrock Knowledge Base source documents — including product listings and policy guides — in Amazon S3. After updating 500 documents, the KB still returns outdated answers to customer queries. What must the team do to reflect the updated documents in retrieval results?",
+    text: "ShopNest stores Bedrock Knowledge Base source documents — including product listings and policy guides — in Amazon S3. After updating 500 documents, the KB still returns outdated answers to customer queries. What must the team do to reflect the updated documents in retrieval results?",
     options: [
       { id: 'a', text: 'Trigger a Knowledge Base sync (StartIngestionJob) — this re-chunks, re-embeds, and updates the vector store with the changed documents' },
       { id: 'b', text: 'Delete and recreate the Knowledge Base with the updated S3 bucket' },
@@ -133,7 +133,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-009',
     quizId: 'aip-c01-rag-foundations',
-    text: "A solution architect at Amazon is designing a multi-turn conversational AI system for the Alexa Shopping experience using Amazon Bedrock. Users expect the assistant to remember preferences and context from previous turns in long sessions — up to 50 exchanges. What is the recommended approach?",
+    text: "A solution architect at Amazon is designing a multi-turn conversational AI system for the voice commerce platform using Amazon Bedrock. Users expect the assistant to remember preferences and context from previous turns in long sessions — up to 50 exchanges. What is the recommended approach?",
     options: [
       { id: 'a', text: 'Use Bedrock AgentCore Memory — stores and retrieves conversation history across sessions; the agent automatically injects relevant memory into context' },
       { id: 'b', text: 'Append all previous turns to the messages array in every API call, up to the model\'s context window limit' },
@@ -149,7 +149,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-010',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Barclays developer uses the Amazon Bedrock RetrieveAndGenerate API to power a regulatory compliance assistant. Compliance auditors require the model to cite the exact source document and page number for every claim in its response. What configuration enables source attribution?",
+    text: "A ClearVault Bank developer uses the Amazon Bedrock RetrieveAndGenerate API to power a regulatory compliance assistant. Compliance auditors require the model to cite the exact source document and page number for every claim in its response. What configuration enables source attribution?",
     options: [
       { id: 'a', text: 'Set retrievalConfiguration.vectorSearchConfiguration.numberOfResults — the response will include a citations array with sourceUri and page location metadata from the KB' },
       { id: 'b', text: 'Add a system prompt instructing the model to include footnotes referencing source documents' },
@@ -181,7 +181,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-012',
     quizId: 'aip-c01-rag-foundations',
-    text: "Tata Steel requires that all Amazon Bedrock API calls from its industrial analytics platform never traverse the public internet. The platform runs entirely in a VPC-only environment. What is the correct AWS networking configuration?",
+    text: "IronCrest Industries requires that all Amazon Bedrock API calls from its industrial analytics platform never traverse the public internet. The platform runs entirely in a VPC-only environment. What is the correct AWS networking configuration?",
     options: [
       { id: 'a', text: 'Create a VPC endpoint (AWS PrivateLink) for Amazon Bedrock and configure endpoint policies to restrict access to specific IAM principals' },
       { id: 'b', text: 'Use a NAT Gateway in a private subnet to route Bedrock traffic through the VPC' },
@@ -197,7 +197,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-013',
     quizId: 'aip-c01-rag-foundations',
-    text: "Barclays must keep all AI inference within EU AWS Regions due to GDPR. They use Amazon Bedrock Cross-Region Inference (CRI) profiles to optimise latency. How should the team enforce the geographic restriction while still enabling CRI load balancing within the EU?",
+    text: "ClearVault Bank must keep all AI inference within EU AWS Regions due to GDPR. They use Amazon Bedrock Cross-Region Inference (CRI) profiles to optimise latency. How should the team enforce the geographic restriction while still enabling CRI load balancing within the EU?",
     options: [
       { id: 'a', text: 'Extend the SCP to allow only eu.* CRI ARN prefixes + validate IAM permissions restrict CRI to EU Region endpoints only' },
       { id: 'b', text: 'Disable CRI entirely and use single-region model access only within eu-west-1' },
@@ -213,7 +213,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-014',
     quizId: 'aip-c01-rag-foundations',
-    text: "An Apollo Hospitals data engineering team builds a Bedrock Agent that dynamically executes Python code to analyse patient lab-result CSV files uploaded by clinicians. The code must run in an isolated environment with no internet access. Which Bedrock Agent capability should they use?",
+    text: "An MediCore Health data engineering team builds a Bedrock Agent that dynamically executes Python code to analyse patient lab-result CSV files uploaded by clinicians. The code must run in an isolated environment with no internet access. Which Bedrock Agent capability should they use?",
     options: [
       { id: 'a', text: 'Code Interpreter action group — provides a managed, sandboxed Python execution environment built directly into Bedrock Agents' },
       { id: 'b', text: 'A Lambda function action group with a Python runtime and a restricted VPC security group' },
@@ -229,7 +229,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-015',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Goldman Sachs team uses Amazon Bedrock model evaluation. They have a golden dataset of 200 question-answer pairs from analyst reports and want to measure how often the model's answers match the expected answers semantically — not just lexically. Which evaluation metric should they configure?",
+    text: "A CapitalEdge Partners team uses Amazon Bedrock model evaluation. They have a golden dataset of 200 question-answer pairs from analyst reports and want to measure how often the model's answers match the expected answers semantically — not just lexically. Which evaluation metric should they configure?",
     options: [
       { id: 'a', text: 'BERTScore — uses contextual embeddings to measure semantic similarity between generated and reference answers' },
       { id: 'b', text: 'BLEU score — measures n-gram overlap between generated and reference text' },
@@ -261,7 +261,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-017',
     quizId: 'aip-c01-rag-foundations',
-    text: "Netflix wants to use Amazon Bedrock Intelligent Prompt Routing to dynamically select between Claude Haiku and Claude Sonnet for its content moderation pipeline — routing simple classification tasks to the faster model and complex nuanced decisions to the more capable one. What determines which model receives each request?",
+    text: "StreamVault wants to use Amazon Bedrock Intelligent Prompt Routing to dynamically select between Claude Haiku and Claude Sonnet for its content moderation pipeline — routing simple classification tasks to the faster model and complex nuanced decisions to the more capable one. What determines which model receives each request?",
     options: [
       { id: 'a', text: 'Bedrock analyses prompt complexity against routing rules you configure (e.g., route simple queries to the faster/cheaper model, complex queries to the more capable model) and selects the model automatically at inference time' },
       { id: 'b', text: 'A round-robin load balancer distributes requests evenly between both models regardless of query type' },
@@ -277,7 +277,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-018',
     quizId: 'aip-c01-rag-foundations',
-    text: "An Amazon search team is designing a vector store for a Bedrock Knowledge Base powering product discovery. The document corpus has 10 million chunks. They need sub-100ms retrieval latency at scale with no infrastructure management overhead. Which vector store option should they choose?",
+    text: "An A tech platform's search team is designing a vector store for a Bedrock Knowledge Base powering product discovery. The document corpus has 10 million chunks. They need sub-100ms retrieval latency at scale with no infrastructure management overhead. Which vector store option should they choose?",
     options: [
       { id: 'a', text: 'Amazon OpenSearch Serverless with vector engine — serverless, auto-scales, supports billion-scale ANN search with low latency, and requires no infrastructure provisioning' },
       { id: 'b', text: 'Amazon RDS PostgreSQL with pgvector extension — managed relational database with vector support' },
@@ -293,7 +293,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-019',
     quizId: 'aip-c01-rag-foundations',
-    text: "Apollo Hospitals fine-tunes an Amazon Bedrock foundation model for a specialised medical coding task, training on ICD-10 coding examples. After fine-tuning, they want to serve the custom model to multiple internal hospital teams with controlled access. What is the correct deployment path?",
+    text: "MediCore Health fine-tunes an Amazon Bedrock foundation model for a specialised medical coding task, training on ICD-10 coding examples. After fine-tuning, they want to serve the custom model to multiple internal hospital teams with controlled access. What is the correct deployment path?",
     options: [
       { id: 'a', text: 'Purchase Provisioned Throughput for the custom fine-tuned model — this creates a dedicated endpoint that can be accessed via IAM-controlled resource policies' },
       { id: 'b', text: 'Export the fine-tuned model weights to S3 and deploy on Amazon SageMaker real-time endpoints' },
@@ -309,7 +309,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-020',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Goldman Sachs machine learning engineer is using Amazon Bedrock to perform continued pre-training (CPT) on a large corpus of unlabelled financial filings, earnings transcripts, and regulatory documents. The goal is to adapt the base model to understand specialised financial terminology. What distinguishes CPT from instruction fine-tuning (IFT)?",
+    text: "A CapitalEdge Partners machine learning engineer is using Amazon Bedrock to perform continued pre-training (CPT) on a large corpus of unlabelled financial filings, earnings transcripts, and regulatory documents. The goal is to adapt the base model to understand specialised financial terminology. What distinguishes CPT from instruction fine-tuning (IFT)?",
     options: [
       { id: 'a', text: 'CPT trains on raw/unlabelled text using a language modelling objective (next-token prediction) to build domain knowledge; IFT uses labelled input-output pairs to teach the model to follow specific task instructions' },
       { id: 'b', text: 'CPT is only available for Amazon Titan models; IFT works with all Bedrock foundation models' },
@@ -325,7 +325,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-021',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Barclays developer uses Amazon Bedrock Flows to build a document processing pipeline for incoming client correspondence. The pipeline must route documents to different processing branches based on document type: invoice, contract, or compliance report. Which Flows node type enables this conditional routing?",
+    text: "A ClearVault Bank developer uses Amazon Bedrock Flows to build a document processing pipeline for incoming client correspondence. The pipeline must route documents to different processing branches based on document type: invoice, contract, or compliance report. Which Flows node type enables this conditional routing?",
     options: [
       { id: 'a', text: 'Condition node — evaluates boolean expressions on input data and routes to different downstream nodes based on which condition is true' },
       { id: 'b', text: 'Iterator node — loops over document arrays and routes each to a sub-flow' },
@@ -341,7 +341,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-022',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Netflix engineering team uses semantic chunking in Amazon Bedrock Knowledge Bases to index their internal content production wiki. They notice that some retrieved chunks break mid-sentence, reducing the quality of generated summaries. What is the likely cause and fix?",
+    text: "A StreamVault engineering team uses semantic chunking in Amazon Bedrock Knowledge Bases to index their internal content production wiki. They notice that some retrieved chunks break mid-sentence, reducing the quality of generated summaries. What is the likely cause and fix?",
     options: [
       { id: 'a', text: "Semantic chunking's similarity threshold is too high, forcing splits within semantically similar sentences; lower the threshold to allow larger coherent chunks" },
       { id: 'b', text: 'The embedding model has a token limit causing truncation; switch to a model with a larger context window' },
@@ -357,7 +357,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-023',
     quizId: 'aip-c01-rag-foundations',
-    text: "Hotstar's recommendation AI, built on Amazon Bedrock, handles millions of concurrent user requests during live sports events. The team observes ThrottlingException errors during peak broadcast hours. What is the first mitigation step they should implement?",
+    text: "StreamBay's recommendation AI, built on Amazon Bedrock, handles millions of concurrent user requests during live sports events. The team observes ThrottlingException errors during peak broadcast hours. What is the first mitigation step they should implement?",
     options: [
       { id: 'a', text: 'Purchase Provisioned Throughput — reserves dedicated Model Units with guaranteed throughput, eliminating throttling for allocated capacity' },
       { id: 'b', text: 'Implement exponential backoff with jitter in the application layer to retry throttled requests' },
@@ -405,7 +405,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-026',
     quizId: 'aip-c01-rag-foundations',
-    text: "A developer at Hotstar is calling Amazon Bedrock to summarise 120,000-token episode scripts for automated content tagging. The chosen model has a 200K token context window. Latency is critical because editors review summaries in real time. What approach minimises time-to-first-token?",
+    text: "A developer at StreamBay is calling Amazon Bedrock to summarise 120,000-token episode scripts for automated content tagging. The chosen model has a 200K token context window. Latency is critical because editors review summaries in real time. What approach minimises time-to-first-token?",
     options: [
       { id: 'a', text: 'Use InvokeModelWithResponseStream — streaming returns the first token as soon as generation begins, without waiting for the complete response' },
       { id: 'b', text: 'Use the Batch Inference API — batching multiple documents reduces per-document processing time' },
@@ -437,7 +437,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-028',
     quizId: 'aip-c01-rag-foundations',
-    text: "A Flipkart Bedrock Knowledge Base is configured with an Amazon Titan Embeddings model to index product descriptions in English. The team now wants to switch to a Cohere Embed model for improved multilingual retrieval across regional language catalogues. What must they do to complete the migration?",
+    text: "A ShopNest Bedrock Knowledge Base is configured with an Amazon Titan Embeddings model to index product descriptions in English. The team now wants to switch to a Cohere Embed model for improved multilingual retrieval across regional language catalogues. What must they do to complete the migration?",
     options: [
       { id: 'a', text: 'Delete the existing vector store index, update the KB embedding model configuration to Cohere Embed, then re-sync all documents to regenerate embeddings with the new model' },
       { id: 'b', text: 'Update the KB embedding model ARN in the console and click sync — Bedrock will automatically convert existing embeddings' },
@@ -469,7 +469,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-030',
     quizId: 'aip-c01-rag-foundations',
-    text: "Apollo Hospitals builds a RAG system to answer clinical queries using approved medical literature indexed in a Bedrock Knowledge Base. After deployment, clinicians report hallucinations — the model answers questions using fabricated information not present in the Knowledge Base. Which two changes most directly reduce hallucinations?",
+    text: "MediCore Health builds a RAG system to answer clinical queries using approved medical literature indexed in a Bedrock Knowledge Base. After deployment, clinicians report hallucinations — the model answers questions using fabricated information not present in the Knowledge Base. Which two changes most directly reduce hallucinations?",
     options: [
       { id: 'a', text: 'Improve retrieval precision with semantic chunking + enable Bedrock Guardrails Grounding check with a threshold of 0.7 to block responses not supported by retrieved context' },
       { id: 'b', text: 'Reduce the model temperature to 0.1 to make outputs more deterministic' },
@@ -489,7 +489,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-031',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays\' regulatory compliance AI team must ensure all Amazon Bedrock API invocations are logged for compliance auditing — specifically the model ID, user identity, and timestamp of every inference call made by their wealth management assistants. Which AWS service captures this automatically?',
+    text: 'ClearVault Bank\' regulatory compliance AI team must ensure all Amazon Bedrock API invocations are logged for compliance auditing — specifically the model ID, user identity, and timestamp of every inference call made by their wealth management assistants. Which AWS service captures this automatically?',
     options: [
       { id: 'a', text: 'AWS CloudTrail — records all Bedrock API calls (InvokeModel, InvokeModelWithResponseStream, etc.) with user identity, timestamp, source IP, and request parameters as standard data events' },
       { id: 'b', text: 'Amazon CloudWatch Logs — captures real-time inference logs including prompts and full response text' },
@@ -505,7 +505,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-032',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals\' clinical AI platform uses Amazon Bedrock to assist clinicians in summarising patient histories. Under HIPAA, the hospital must ensure patient information (PII) is never stored in model invocation logs or passed to the foundation model. Which Bedrock feature detects and masks PII in both inputs and outputs in real time?',
+    text: 'MediCore Health\' clinical AI platform uses Amazon Bedrock to assist clinicians in summarising patient histories. Under HIPAA, the hospital must ensure patient information (PII) is never stored in model invocation logs or passed to the foundation model. Which Bedrock feature detects and masks PII in both inputs and outputs in real time?',
     options: [
       { id: 'a', text: 'Bedrock Guardrails Sensitive Information Filters — detects PII types (SSN, phone, email, medical record ID) and either anonymizes (replaces with [ENTITY]) or blocks the message before it reaches or leaves the model' },
       { id: 'b', text: 'AWS Macie — scans S3 buckets containing Bedrock invocation logs for PII after the fact' },
@@ -521,7 +521,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-033',
     quizId: 'aip-c01-security-governance',
-    text: 'A Barclays security engineer needs to audit which IAM principals across the bank\'s AWS account have permissions to invoke Amazon Bedrock foundation models used in loan processing workflows. The account has hundreds of roles. What is the most efficient approach?',
+    text: 'A ClearVault Bank security engineer needs to audit which IAM principals across the bank\'s AWS account have permissions to invoke Amazon Bedrock foundation models used in loan processing workflows. The account has hundreds of roles. What is the most efficient approach?',
     options: [
       { id: 'a', text: 'Use IAM Access Analyzer to generate a report of policies granting bedrock:InvokeModel permissions, and query CloudTrail for InvokeModel events to identify principals that have actually called Bedrock in the last 90 days' },
       { id: 'b', text: 'Review all IAM user and role policies manually in the IAM console, policy by policy' },
@@ -537,7 +537,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-034',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals\' AI team builds a Bedrock model evaluation pipeline to validate their clinical summarisation model weekly. They need (1) a secure storage location for evaluation datasets with fine-grained IAM access control and (2) scheduled automated evaluation jobs that publish results to an operations dashboard. Which combination addresses both requirements?',
+    text: 'MediCore Health\' AI team builds a Bedrock model evaluation pipeline to validate their clinical summarisation model weekly. They need (1) a secure storage location for evaluation datasets with fine-grained IAM access control and (2) scheduled automated evaluation jobs that publish results to an operations dashboard. Which combination addresses both requirements?',
     options: [
       { id: 'a', text: 'Amazon S3 with IAM bucket policies for dataset storage + Lambda-triggered Bedrock evaluation jobs on a schedule with results published as custom metrics to Amazon CloudWatch dashboards' },
       { id: 'b', text: 'Amazon DynamoDB for dataset storage + EventBridge scheduled rules triggering Step Functions evaluation workflows' },
@@ -569,7 +569,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-036',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays\' loan processing team uses Amazon Bedrock to handle scanned loan application forms. The documents contain handwritten data, typed text, and sensitive PII fields. The compliance team requires (1) text extraction from scanned images, (2) human review and redaction of PII, and (3) logging with a data classification label per region. Which combination of services addresses all three?',
+    text: 'ClearVault Bank\' loan processing team uses Amazon Bedrock to handle scanned loan application forms. The documents contain handwritten data, typed text, and sensitive PII fields. The compliance team requires (1) text extraction from scanned images, (2) human review and redaction of PII, and (3) logging with a data classification label per region. Which combination of services addresses all three?',
     options: [
       { id: 'a', text: 'Amazon Textract for text extraction from scanned images + Amazon Augmented AI (A2I) for human PII review + Lambda applying Bedrock Guardrails PII redaction + S3 object tagging with region-based IAM condition keys for data classification' },
       { id: 'b', text: 'Amazon Rekognition Text for image extraction + Amazon Comprehend for PII detection + SageMaker Ground Truth for human review' },
@@ -601,7 +601,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-038',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays\' compliance officer requires that all Amazon Bedrock foundation model fine-tuning jobs encrypt training data — both in transit and at rest — using customer-managed keys under the bank\'s own KMS key policy. How is this configured in the Bedrock API?',
+    text: 'ClearVault Bank\' compliance officer requires that all Amazon Bedrock foundation model fine-tuning jobs encrypt training data — both in transit and at rest — using customer-managed keys under the bank\'s own KMS key policy. How is this configured in the Bedrock API?',
     options: [
       { id: 'a', text: 'Specify a customer-managed KMS key ARN in the CreateModelCustomizationJob API (outputDataConfig.kmsKeyId and vpcConfig) — this encrypts the training job output artifacts and ephemeral data volumes with the bank\'s CMK' },
       { id: 'b', text: 'Apply a KMS bucket policy on the S3 bucket storing training data — Bedrock will automatically inherit S3 encryption settings' },
@@ -633,7 +633,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-040',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals\' clinical governance committee implements a responsible AI framework for their Bedrock-powered diagnostic assistant. They need a centralised registry tracking which foundation models are approved for clinical use, their risk classification, intended diagnostic use cases, and which clinician team owns each deployment. Which AWS tool best supports this model governance catalog?',
+    text: 'MediCore Health\' clinical governance committee implements a responsible AI framework for their Bedrock-powered diagnostic assistant. They need a centralised registry tracking which foundation models are approved for clinical use, their risk classification, intended diagnostic use cases, and which clinician team owns each deployment. Which AWS tool best supports this model governance catalog?',
     options: [
       { id: 'a', text: 'Amazon SageMaker Model Cards — create documentation cards per model capturing intended use, risk ratings (low/medium/high), training data provenance, clinical evaluation results, and deployment owner' },
       { id: 'b', text: 'AWS Config custom rules to track Bedrock model access configurations per deployment' },
@@ -665,7 +665,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-042',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays deploys Amazon Q Business to allow relationship managers to query internal client files, compliance documents, and deal memos. A relationship manager queries a confidential file from a deal team they are not part of. How does Amazon Q Business enforce this access restriction automatically?',
+    text: 'ClearVault Bank deploys Amazon Q Business to allow relationship managers to query internal client files, compliance documents, and deal memos. A relationship manager queries a confidential file from a deal team they are not part of. How does Amazon Q Business enforce this access restriction automatically?',
     options: [
       { id: 'a', text: 'Q Business applies the authenticated user\'s ACLs (from IAM Identity Center + connector-level permissions) to filter retrieved documents at query time — the confidential file is excluded from the retrieval context and the response never surfaces its contents' },
       { id: 'b', text: 'Q Business returns a permission error whenever a document has a restricted metadata tag' },
@@ -713,7 +713,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-045',
     quizId: 'aip-c01-security-governance',
-    text: 'A startup building a Barclays-integrated wealth insights tool uses Amazon Bedrock on-demand pricing and wants to forecast and hard-cap monthly spending to protect against runaway costs from unexpected usage spikes. What is the most effective cost control mechanism?',
+    text: 'A startup building a ClearVault Bank-integrated wealth insights tool uses Amazon Bedrock on-demand pricing and wants to forecast and hard-cap monthly spending to protect against runaway costs from unexpected usage spikes. What is the most effective cost control mechanism?',
     options: [
       { id: 'a', text: 'Configure AWS Budgets with a Bedrock cost budget and SNS/email alert thresholds at 50%, 80%, and 100% of the monthly cap — then use an AWS Lambda budget action to apply an SCP denying Bedrock access when the cap is fully reached' },
       { id: 'b', text: 'Switch to Provisioned Throughput to get predictable monthly billing and eliminate on-demand variability' },
@@ -729,7 +729,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-046',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays implements a strict data residency policy for its EU AI operations: all model weights, fine-tuned models, and training artifacts must remain in eu-west-1 (Ireland) to comply with GDPR localisation requirements. How should the bank enforce this technically across all AWS accounts?',
+    text: 'ClearVault Bank implements a strict data residency policy for its EU AI operations: all model weights, fine-tuned models, and training artifacts must remain in eu-west-1 (Ireland) to comply with GDPR localisation requirements. How should the bank enforce this technically across all AWS accounts?',
     options: [
       { id: 'a', text: 'Use AWS Organizations SCP to deny all Bedrock actions except in eu-west-1, and apply bucket policies on training data S3 buckets to deny access from requests originating outside the EU region' },
       { id: 'b', text: 'Configure VPC endpoints for Bedrock in eu-west-1 and disable Bedrock in all other regions via the console' },
@@ -745,7 +745,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-047',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals\' AI engineering team discovers that their Bedrock-powered clinical assistant is generating responses containing hallucinated medical URLs and fabricated drug reference links that do not exist. Which Bedrock Guardrails feature specifically detects when a response contains unverified or fabricated factual claims?',
+    text: 'MediCore Health\' AI engineering team discovers that their Bedrock-powered clinical assistant is generating responses containing hallucinated medical URLs and fabricated drug reference links that do not exist. Which Bedrock Guardrails feature specifically detects when a response contains unverified or fabricated factual claims?',
     options: [
       { id: 'a', text: 'Grounding check — validates whether each claim in the response is supported by the retrieved Knowledge Base context; blocks responses that fall below the configured grounding score threshold and returns a safe fallback message' },
       { id: 'b', text: 'Content filters ACCURACY category — blocks factually incorrect statements before they reach the user' },
@@ -761,7 +761,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-048',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays uses Amazon Bedrock with AWS PrivateLink to ensure model inference for its trading desk AI never leaves the bank\'s private network. A security audit requires proof that Bedrock API calls never traverse the public internet. Which evidence should the team collect?',
+    text: 'ClearVault Bank uses Amazon Bedrock with AWS PrivateLink to ensure model inference for its trading desk AI never leaves the bank\'s private network. A security audit requires proof that Bedrock API calls never traverse the public internet. Which evidence should the team collect?',
     options: [
       { id: 'a', text: 'VPC Flow Logs showing traffic to the Bedrock VPC endpoint DNS name staying within private IP address space + CloudTrail records showing the request source IP matching the VPC endpoint ENI IP rather than a public IP' },
       { id: 'b', text: 'AWS Trusted Advisor security check confirming the Bedrock VPC endpoint is correctly configured' },
@@ -809,7 +809,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-051',
     quizId: 'aip-c01-security-governance',
-    text: 'Barclays\' responsible AI team wants to implement automated bias testing for a Bedrock model used in their personal loan approval assistant. Regulators require evidence that the model does not exhibit disparate impact across protected demographic groups such as age and gender. Which approach best identifies this?',
+    text: 'ClearVault Bank\' responsible AI team wants to implement automated bias testing for a Bedrock model used in their personal loan approval assistant. Regulators require evidence that the model does not exhibit disparate impact across protected demographic groups such as age and gender. Which approach best identifies this?',
     options: [
       { id: 'a', text: 'Amazon SageMaker Clarify fairness analysis — generates pre-training and post-training bias reports measuring metrics like Disparate Impact, Conditional Demographic Disparity, and Equal Opportunity across protected attributes in the loan dataset' },
       { id: 'b', text: 'Bedrock model evaluation with a diverse test dataset and human reviewers rating overall fairness qualitatively' },
@@ -873,7 +873,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-055',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals\' compliance team needs to demonstrate a complete auditable chain of custody for their Bedrock clinical AI: every model inference must be linkable to the clinician identity, the prompt (encrypted), the response (encrypted), and the guardrails evaluation outcome. Which combination of Bedrock features satisfies this requirement?',
+    text: 'MediCore Health\' compliance team needs to demonstrate a complete auditable chain of custody for their Bedrock clinical AI: every model inference must be linkable to the clinician identity, the prompt (encrypted), the response (encrypted), and the guardrails evaluation outcome. Which combination of Bedrock features satisfies this requirement?',
     options: [
       { id: 'a', text: 'Enable Bedrock Model Invocation Logging to S3 with SSE-KMS encryption — logs include the IAM caller ARN, full prompt/response, guardrails action taken, latency, token counts, and timestamp — providing complete chain-of-custody records' },
       { id: 'b', text: 'AWS CloudTrail data events for Bedrock combined with Amazon S3 access logs provide a sufficient audit trail for clinical governance' },
@@ -905,7 +905,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-057',
     quizId: 'aip-c01-security-governance',
-    text: 'Apollo Hospitals uses Amazon Bedrock for clinical summarisation and must comply with HIPAA. The hospital\'s cloud architect needs to confirm the minimum configuration requirements to use Bedrock in a HIPAA-eligible manner. Which of the following is a complete and correct set of requirements?',
+    text: 'MediCore Health uses Amazon Bedrock for clinical summarisation and must comply with HIPAA. The hospital\'s cloud architect needs to confirm the minimum configuration requirements to use Bedrock in a HIPAA-eligible manner. Which of the following is a complete and correct set of requirements?',
     options: [
       { id: 'a', text: 'Execute a Business Associate Agreement (BAA) with AWS, enable SSE-KMS encryption for model invocation logs, use VPC endpoints for all Bedrock API calls, and ensure no PHI is included in model customization job names or resource tags which may not be encrypted' },
       { id: 'b', text: 'Enable AWS Shield Advanced to protect Bedrock endpoints against DDoS attacks that could expose PHI in transit' },
@@ -1004,7 +1004,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-063',
     quizId: 'aip-c01-agents-ops',
-    text: 'Barclays\' wealth management AI team uses Amazon Bedrock for a document Q&A assistant that helps relationship managers retrieve client portfolio data. After analysing invocation logs, they find 40% of queries receive identical responses because relationship managers frequently ask the same regulatory questions. Which optimisation reduces redundant FM inference cost without degrading answer quality?',
+    text: 'ClearVault Bank\' wealth management AI team uses Amazon Bedrock for a document Q&A assistant that helps relationship managers retrieve client portfolio data. After analysing invocation logs, they find 40% of queries receive identical responses because relationship managers frequently ask the same regulatory questions. Which optimisation reduces redundant FM inference cost without degrading answer quality?',
     options: [
       { id: 'a', text: 'Implement semantic caching — cache responses keyed by embedding similarity of the input query; return cached responses for semantically equivalent questions without invoking the FM again' },
       { id: 'b', text: 'Enable Bedrock Prompt Caching to cache the system prompt prefix across all requests' },
@@ -1164,7 +1164,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-073',
     quizId: 'aip-c01-agents-ops',
-    text: 'Barclays\' wealth management AI team discovers that their Bedrock Agent returns inconsistent results for the same client query — sometimes using the knowledge base of regulatory documents, and sometimes calling an external market data API for what should be the same type of question. What is the root cause and how should it be fixed?',
+    text: 'ClearVault Bank\' wealth management AI team discovers that their Bedrock Agent returns inconsistent results for the same client query — sometimes using the knowledge base of regulatory documents, and sometimes calling an external market data API for what should be the same type of question. What is the root cause and how should it be fixed?',
     options: [
       { id: 'a', text: 'The orchestration prompt is ambiguous — agent tool selection is non-deterministic at higher temperatures. Fix by adding explicit tool-selection rules and few-shot examples (KB for regulations, API for live prices) in the orchestration prompt, and setting temperature to 0 for deterministic routing' },
       { id: 'b', text: 'The knowledge base sync is incomplete; some documents trigger KB retrieval while others fall through to the external API fallback' },
@@ -1196,7 +1196,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-075',
     quizId: 'aip-c01-agents-ops',
-    text: 'Barclays\' wealth management AI team builds a Bedrock application where their portfolio assistant must answer questions using live market prices that change every second. A static Knowledge Base cannot hold real-time prices. What architecture pattern handles this real-time data requirement?',
+    text: 'ClearVault Bank\' wealth management AI team builds a Bedrock application where their portfolio assistant must answer questions using live market prices that change every second. A static Knowledge Base cannot hold real-time prices. What architecture pattern handles this real-time data requirement?',
     options: [
       { id: 'a', text: 'Bedrock Agent with a Lambda action group — the agent calls the Lambda tool at inference time to fetch the current price from a real-time market data API whenever a client asks about live valuations' },
       { id: 'b', text: 'Bedrock Knowledge Base configured with a 1-second automatic sync interval from a streaming S3 data source containing live prices' },
@@ -1212,7 +1212,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-076',
     quizId: 'aip-c01-agents-ops',
-    text: 'Apollo Hospitals\' clinical AI team processes radiology reports using Amazon Bedrock with Claude\'s vision capability — analysing CT scan images alongside the accompanying radiologist\'s text notes. What is the correct Converse API structure for submitting this multi-modal clinical input?',
+    text: 'MediCore Health\' clinical AI team processes radiology reports using Amazon Bedrock with Claude\'s vision capability — analysing CT scan images alongside the accompanying radiologist\'s text notes. What is the correct Converse API structure for submitting this multi-modal clinical input?',
     options: [
       { id: 'a', text: 'Include both image bytes (base64-encoded) and text in the content array of the user message — the Converse API supports mixed content blocks: {type: "image", source: {bytes: ...}} alongside {type: "text", text: ...} in the same request' },
       { id: 'b', text: 'Send the CT scan image as a separate InvokeModel call using Amazon Rekognition, then combine the extracted findings with the text note in a follow-up Bedrock Converse call' },
@@ -1260,7 +1260,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-079',
     quizId: 'aip-c01-agents-ops',
-    text: 'Barclays\' AI infrastructure team uses Amazon MemoryDB for Redis as the vector store for their real-time portfolio RAG application, instead of OpenSearch Serverless. What specific advantage does MemoryDB provide for this latency-sensitive wealth management use case?',
+    text: 'ClearVault Bank\' AI infrastructure team uses Amazon MemoryDB for Redis as the vector store for their real-time portfolio RAG application, instead of OpenSearch Serverless. What specific advantage does MemoryDB provide for this latency-sensitive wealth management use case?',
     options: [
       { id: 'a', text: 'MemoryDB operates entirely in-memory with microsecond read latency — for RAG applications where retrieval speed is the critical bottleneck, MemoryDB delivers sub-millisecond vector search vs. OpenSearch Serverless single-digit milliseconds' },
       { id: 'b', text: 'MemoryDB automatically reindexes stored vectors whenever the embedding model is updated to a new version' },
@@ -1308,7 +1308,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-082',
     quizId: 'aip-c01-agents-ops',
-    text: 'Barclays\' platform team is optimising Amazon Bedrock costs for their wealth management assistant. The application sends a 5,000-token regulatory system prompt identical for all relationship managers, followed by a variable 100–500 token client query each turn. How much of the total token processing cost can Bedrock Prompt Caching eliminate on high-traffic days?',
+    text: 'ClearVault Bank\' platform team is optimising Amazon Bedrock costs for their wealth management assistant. The application sends a 5,000-token regulatory system prompt identical for all relationship managers, followed by a variable 100–500 token client query each turn. How much of the total token processing cost can Bedrock Prompt Caching eliminate on high-traffic days?',
     options: [
       { id: 'a', text: 'Approximately 90% of the system prompt token processing cost — the 5,000-token prefix is cached after the first call; subsequent calls pay only a small cache read fee (roughly 10% of full input token price) rather than full computation cost for the repeated prefix' },
       { id: 'b', text: 'Prompt caching eliminates 100% of input token costs for all requests that hit the cache' },

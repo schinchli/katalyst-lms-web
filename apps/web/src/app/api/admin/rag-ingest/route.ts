@@ -25,6 +25,7 @@ import type { Question } from '@/types';
 import type { FlashcardDeck, Flashcard } from '@/data/flashcards';
 import { flashcardDecks } from '@/data/flashcards';
 import { eksCoreksFlashcardDecks } from '@/data/eks-coreks-flashcards';
+import { LEARNING_PATHS, type LearningPath, type LearningStep } from '@/data/learningPaths';
 import {
   clf02CloudConceptsQuestions,
   clf02SecurityQuestions,
@@ -113,6 +114,36 @@ function flashcardChunk(corpus: string, deck: FlashcardDeck, card: Flashcard): C
   };
 }
 
+function learningPathChunk(path: LearningPath, step: LearningStep): ChunkRow {
+  const content = [
+    `Learning Path: ${path.certName}`,
+    `Certification: ${path.certCode} | Difficulty: ${path.difficulty} | Total: ${path.totalHours}h`,
+    `Tagline: ${path.tagline}`,
+    ``,
+    `Step: ${step.title}`,
+    `Type: ${step.type} | Duration: ${step.estimatedMinutes} min`,
+    `Description: ${step.subtitle}`,
+    `Why: ${step.why}`,
+  ].join('\n').slice(0, 4000);
+
+  const title = `${path.certCode}: ${step.title}`;
+  return {
+    corpus: 'learning-paths',
+    source_type: 'learning_step',
+    content_hash: sha256Hex(content),
+    title: title.length > 200 ? title.slice(0, 197) + '…' : title,
+    content,
+    metadata: {
+      path_id:    path.id,
+      cert_code:  path.certCode,
+      step_id:    step.id,
+      step_type:  step.type,
+      resource_id: step.resourceId,
+      difficulty: path.difficulty,
+    },
+  };
+}
+
 function buildCorpusChunks(): Record<string, ChunkRow[]> {
   // Question banks
   const clfQs: Question[] = [
@@ -141,8 +172,11 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
     'clf-c02':   clfQs.map((q) => questionChunk('clf-c02',   q)),
     'aip-c01':   aipQs.map((q) => questionChunk('aip-c01',   q)),
     'eks-coreks-questions': eksQs.map((q) => questionChunk('eks-coreks-questions', q)),
-    'flashcards':  genericDecks.flatMap((deck) =>
+    'flashcards': genericDecks.flatMap((deck) =>
       deck.cards.map((card) => flashcardChunk('flashcards', deck, card)),
+    ),
+    'learning-paths': LEARNING_PATHS.flatMap((path) =>
+      path.steps.map((step) => learningPathChunk(path, step)),
     ),
   };
   return out;

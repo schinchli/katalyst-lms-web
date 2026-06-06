@@ -20,7 +20,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-002',
-    text: "Netflix streams video to subscribers in over 190 countries. To ensure viewers in Mumbai, São Paulo, and Tokyo all experience fast load times, Netflix needs content served from locations physically close to each user. Which AWS service is designed specifically for this purpose?",
+    text: "StreamVault streams video to subscribers in over 190 countries. To ensure viewers in Mumbai, São Paulo, and Tokyo all experience fast load times, StreamVault needs content served from locations physically close to each user. Which AWS service is designed specifically for this purpose?",
     options: [
       { id: 'a', text: 'AWS Storage Gateway, which bridges on-premises storage with S3' },
       { id: 'b', text: 'Amazon CloudFront, which caches content at edge locations worldwide for low-latency delivery' },
@@ -36,15 +36,15 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-003',
-    text: "Barclays is modernising its core banking platform. Regulatory requirements prevent certain customer data from ever leaving the bank's own data centers, yet the trading analytics team wants to burst workloads into the public cloud during peak periods. Which cloud deployment model fits this requirement?",
+    text: "ClearVault Bank is modernising its core banking platform. Regulatory requirements prevent certain customer data from ever leaving the bank's own data centers, yet the trading analytics team wants to burst workloads into the public cloud during peak periods. Which cloud deployment model fits this requirement?",
     options: [
       { id: 'a', text: 'Public cloud, where all infrastructure is managed by a cloud provider and shared across customers' },
-      { id: 'b', text: 'Private cloud, where all infrastructure is dedicated exclusively to Barclays' },
-      { id: 'c', text: 'Hybrid cloud, which connects Barclays\'s on-premises environment to public cloud services' },
+      { id: 'b', text: 'Private cloud, where all infrastructure is dedicated exclusively to ClearVault Bank' },
+      { id: 'c', text: 'Hybrid cloud, which connects ClearVault Bank\'s on-premises environment to public cloud services' },
       { id: 'd', text: 'Community cloud, which is shared among several financial institutions with similar compliance needs' },
     ],
     correctOptionId: 'c',
-    explanation: "A hybrid cloud deployment combines on-premises (private) infrastructure with public cloud services, allowing data and applications to be shared between them. ✓ (c) Hybrid cloud lets Barclays keep regulated data on-premises while bursting analytics workloads to the public cloud during peak periods — satisfying both compliance and scalability requirements simultaneously. ✗ (a) Public cloud places all infrastructure in a shared, provider-managed environment, which violates the regulatory requirement to keep certain data within Barclays\'s own data centers. ✗ (b) Private cloud keeps everything on Barclays\'s dedicated infrastructure, which satisfies data residency but eliminates the ability to burst into the public cloud for peak analytics demand. ✗ (d) Community cloud is shared among organisations with similar compliance profiles — this still moves regulated data outside Barclays\'s own data centers, and does not provide the elastic public-cloud bursting the trading team needs.",
+    explanation: "A hybrid cloud deployment combines on-premises (private) infrastructure with public cloud services, allowing data and applications to be shared between them. ✓ (c) Hybrid cloud lets ClearVault Bank keep regulated data on-premises while bursting analytics workloads to the public cloud during peak periods — satisfying both compliance and scalability requirements simultaneously. ✗ (a) Public cloud places all infrastructure in a shared, provider-managed environment, which violates the regulatory requirement to keep certain data within ClearVault Bank\'s own data centers. ✗ (b) Private cloud keeps everything on ClearVault Bank\'s dedicated infrastructure, which satisfies data residency but eliminates the ability to burst into the public cloud for peak analytics demand. ✗ (d) Community cloud is shared among organisations with similar compliance profiles — this still moves regulated data outside ClearVault Bank\'s own data centers, and does not provide the elastic public-cloud bursting the trading team needs.",
     docUrl: 'https://docs.aws.amazon.com/whitepapers/latest/aws-overview/types-of-cloud-computing.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -100,7 +100,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-007',
-    text: "Netflix's architecture team is selecting an AWS Region to host a new content personalisation service. A junior engineer argues that some Regions only have two Availability Zones, making them acceptable for a non-critical workload. What is the actual minimum number of Availability Zones every AWS Region must have?",
+    text: "StreamVault's architecture team is selecting an AWS Region to host a new content personalisation service. A junior engineer argues that some Regions only have two Availability Zones, making them acceptable for a non-critical workload. What is the actual minimum number of Availability Zones every AWS Region must have?",
     options: [
       { id: 'a', text: '1' },
       { id: 'b', text: '2' },
@@ -148,7 +148,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-010',
-    text: "Barclays is conducting an AWS Well-Architected review of its payment processing platform. The review panel asks which pillar governs the practice of using CloudWatch dashboards, automating runbooks, and continuously improving incident response procedures. Which pillar are they describing?",
+    text: "ClearVault Bank is conducting an AWS Well-Architected review of its payment processing platform. The review panel asks which pillar governs the practice of using CloudWatch dashboards, automating runbooks, and continuously improving incident response procedures. Which pillar are they describing?",
     options: [
       { id: 'a', text: 'Security, which focuses on protecting data and workloads from threats' },
       { id: 'b', text: 'Reliability, which focuses on recovering from failures and meeting demand' },
@@ -212,7 +212,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-014',
-    text: "Netflix's microservices architecture has a transcoding service that must process video encoding jobs independently of the playback API. The team wants to place a durable message buffer between the two services so that a spike in encoding requests does not overwhelm the playback layer. Which AWS service should they use?",
+    text: "StreamVault's microservices architecture has a transcoding service that must process video encoding jobs independently of the playback API. The team wants to place a durable message buffer between the two services so that a spike in encoding requests does not overwhelm the playback layer. Which AWS service should they use?",
     options: [
       { id: 'a', text: 'Amazon SNS, which fans out messages to multiple subscribers simultaneously' },
       { id: 'b', text: 'Amazon EBS Snapshots, which creates point-in-time backups of block storage volumes' },
@@ -228,7 +228,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-015',
-    text: "Barclays is deploying a set of EC2 instances running its internal loan-processing application. The security team wants to restrict inbound traffic so that only port 443 is reachable from the corporate network, and all other inbound ports are blocked. Which AWS feature acts as a stateful virtual firewall at the instance level to enforce this rule?",
+    text: "ClearVault Bank is deploying a set of EC2 instances running its internal loan-processing application. The security team wants to restrict inbound traffic so that only port 443 is reachable from the corporate network, and all other inbound ports are blocked. Which AWS feature acts as a stateful virtual firewall at the instance level to enforce this rule?",
     options: [
       { id: 'a', text: 'Security Groups, which control inbound and outbound traffic at the instance level and are stateful' },
       { id: 'b', text: 'Network ACLs, which are stateless firewall rules applied at the subnet boundary' },
@@ -236,7 +236,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'IAM Policies, which control which AWS API actions users and roles are permitted to perform' },
     ],
     correctOptionId: 'a',
-    explanation: "Security Groups act as a virtual firewall at the instance level, controlling inbound and outbound traffic. They are stateful — return traffic is automatically allowed. ✓ (a) Security Groups operate at the EC2 instance level, are stateful (return traffic is implicitly permitted), and allow Barclays to create an allow rule for port 443 while all other inbound ports are denied by default. ✗ (b) Network ACLs are stateless firewall rules applied at the subnet boundary, not the instance level — they require explicit rules for both inbound and outbound traffic (including return traffic) and are a coarser-grained control than Security Groups. ✗ (c) AWS WAF is a web application firewall that filters HTTP/HTTPS requests at the application layer based on rules like SQL injection or XSS patterns — it does not control TCP port-level access to EC2 instances. ✗ (d) IAM Policies control which AWS API actions (e.g., ec2:StartInstances, s3:PutObject) are permitted for users and roles — they govern AWS management-plane permissions, not network traffic to or from running EC2 instances.",
+    explanation: "Security Groups act as a virtual firewall at the instance level, controlling inbound and outbound traffic. They are stateful — return traffic is automatically allowed. ✓ (a) Security Groups operate at the EC2 instance level, are stateful (return traffic is implicitly permitted), and allow ClearVault Bank to create an allow rule for port 443 while all other inbound ports are denied by default. ✗ (b) Network ACLs are stateless firewall rules applied at the subnet boundary, not the instance level — they require explicit rules for both inbound and outbound traffic (including return traffic) and are a coarser-grained control than Security Groups. ✗ (c) AWS WAF is a web application firewall that filters HTTP/HTTPS requests at the application layer based on rules like SQL injection or XSS patterns — it does not control TCP port-level access to EC2 instances. ✗ (d) IAM Policies control which AWS API actions (e.g., ec2:StartInstances, s3:PutObject) are permitted for users and roles — they govern AWS management-plane permissions, not network traffic to or from running EC2 instances.",
     docUrl: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -308,7 +308,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-020',
-    text: "Netflix's engineering leadership is conducting a Well-Architected review and asks which pillar ensures that the streaming platform can recover from a regional failure and continue serving subscribers without manual intervention. Which pillar of the AWS Well-Architected Framework are they referring to?",
+    text: "StreamVault's engineering leadership is conducting a Well-Architected review and asks which pillar ensures that the streaming platform can recover from a regional failure and continue serving subscribers without manual intervention. Which pillar of the AWS Well-Architected Framework are they referring to?",
     options: [
       { id: 'a', text: 'Performance Efficiency, which ensures the platform uses the most cost-effective instance types' },
       { id: 'b', text: 'Reliability, which ensures the platform can recover from failures and dynamically meet subscriber demand' },
@@ -316,7 +316,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'Security, which ensures subscriber data is protected from unauthorised access and breaches' },
     ],
     correctOptionId: 'b',
-    explanation: "The Reliability pillar of the Well-Architected Framework focuses on the ability of a workload to perform its intended function correctly and consistently when expected, including recovering from failures. ✓ (b) The Reliability pillar directly governs automatic recovery from failure — including regional failover, backups, redundancy, and change management — ensuring Netflix can continue serving subscribers even during a regional AWS outage. ✗ (a) Performance Efficiency focuses on selecting efficient resource types and sizes and adapting to technology evolution — it does not address recovery from failures or the platform\'s ability to continue operating after an outage. ✗ (c) Operational Excellence focuses on running and monitoring systems and improving processes — while it includes automated deployments and runbooks, it does not own the framework for recovering from infrastructure failures or regional outages. ✗ (d) The Security pillar focuses on protecting data confidentiality and integrity, managing access, and detecting threats — it does not govern recovery from hardware or regional failures or ensure service continuity under failure conditions.",
+    explanation: "The Reliability pillar of the Well-Architected Framework focuses on the ability of a workload to perform its intended function correctly and consistently when expected, including recovering from failures. ✓ (b) The Reliability pillar directly governs automatic recovery from failure — including regional failover, backups, redundancy, and change management — ensuring StreamVault can continue serving subscribers even during a regional AWS outage. ✗ (a) Performance Efficiency focuses on selecting efficient resource types and sizes and adapting to technology evolution — it does not address recovery from failures or the platform\'s ability to continue operating after an outage. ✗ (c) Operational Excellence focuses on running and monitoring systems and improving processes — while it includes automated deployments and runbooks, it does not own the framework for recovering from infrastructure failures or regional outages. ✗ (d) The Security pillar focuses on protecting data confidentiality and integrity, managing access, and detecting threats — it does not govern recovery from hardware or regional failures or ensure service continuity under failure conditions.",
     docUrl: 'https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -340,7 +340,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-022',
-    text: "Barclays is onboarding a new cohort of cloud engineers. During a foundational AWS training session, the instructor explains the relationship between Regions and Availability Zones. A trainee asks whether an AWS Region is a geographic area that contains multiple Availability Zones. Is that statement accurate?",
+    text: "ClearVault Bank is onboarding a new cohort of cloud engineers. During a foundational AWS training session, the instructor explains the relationship between Regions and Availability Zones. A trainee asks whether an AWS Region is a geographic area that contains multiple Availability Zones. Is that statement accurate?",
     options: [
       { id: 'a', text: 'Yes — an AWS Region is a geographic area containing three or more Availability Zones, each made up of one or more discrete data centers' },
       { id: 'b', text: 'No — a Region contains exactly one Availability Zone; additional AZs require separate Region subscriptions' },
@@ -356,7 +356,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-023',
-    text: "Netflix needs to serve cached movie thumbnails and preview clips to users in Lagos, Jakarta, and Buenos Aires with the absolute lowest latency possible. Rather than routing each request all the way to a full AWS Region, Netflix wants requests handled at locations physically nearest to each viewer. Which AWS infrastructure component fulfils this requirement?",
+    text: "StreamVault needs to serve cached movie thumbnails and preview clips to users in Lagos, Jakarta, and Buenos Aires with the absolute lowest latency possible. Rather than routing each request all the way to a full AWS Region, StreamVault wants requests handled at locations physically nearest to each viewer. Which AWS infrastructure component fulfils this requirement?",
     options: [
       { id: 'a', text: 'Availability Zones, which are isolated data centers within a single AWS Region' },
       { id: 'b', text: 'AWS Regions, which are large geographic areas where AWS runs its core services' },
@@ -364,7 +364,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'Local Zones, which extend AWS compute and storage to specific metropolitan areas' },
     ],
     correctOptionId: 'c',
-    explanation: "Edge Locations are AWS data centers used by CloudFront (CDN) and Route 53 to cache content and respond to DNS queries close to end users worldwide. ✓ (c) CloudFront Edge Locations are positioned in hundreds of cities globally — including in or near Lagos, Jakarta, and Buenos Aires — so cached thumbnails and preview clips are served from the location physically nearest to each viewer, minimising round-trip time. ✗ (a) Availability Zones are isolated data centers within a single AWS Region, used for running compute and storage workloads with fault isolation — they are not global caching nodes and do not serve CDN content to end users. ✗ (b) AWS Regions are large geographic clusters of AZs where core services run — routing every request to a full Region is exactly what Netflix wants to avoid, since it introduces higher latency than serving from an edge cache in the viewer\'s city. ✗ (d) AWS Local Zones extend compute, storage, and database services into specific metro areas for applications requiring single-digit millisecond latency for real-time processing — they run application workloads, not CDN caching, and are far fewer in number than the hundreds of CloudFront Edge Locations worldwide.",
+    explanation: "Edge Locations are AWS data centers used by CloudFront (CDN) and Route 53 to cache content and respond to DNS queries close to end users worldwide. ✓ (c) CloudFront Edge Locations are positioned in hundreds of cities globally — including in or near Lagos, Jakarta, and Buenos Aires — so cached thumbnails and preview clips are served from the location physically nearest to each viewer, minimising round-trip time. ✗ (a) Availability Zones are isolated data centers within a single AWS Region, used for running compute and storage workloads with fault isolation — they are not global caching nodes and do not serve CDN content to end users. ✗ (b) AWS Regions are large geographic clusters of AZs where core services run — routing every request to a full Region is exactly what StreamVault wants to avoid, since it introduces higher latency than serving from an edge cache in the viewer\'s city. ✗ (d) AWS Local Zones extend compute, storage, and database services into specific metro areas for applications requiring single-digit millisecond latency for real-time processing — they run application workloads, not CDN caching, and are far fewer in number than the hundreds of CloudFront Edge Locations worldwide.",
     docUrl: 'https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -452,15 +452,15 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-029',
-    text: "Barclays is evaluating cloud deployment models for a new regulatory reporting platform. Due to data residency laws, the platform cannot run on shared infrastructure used by other companies. Barclays wants a cloud environment exclusively dedicated to its own organisation, which may be hosted either in its own data centers or managed by a third-party provider. Which deployment model fits this requirement?",
+    text: "ClearVault Bank is evaluating cloud deployment models for a new regulatory reporting platform. Due to data residency laws, the platform cannot run on shared infrastructure used by other companies. ClearVault Bank wants a cloud environment exclusively dedicated to its own organisation, which may be hosted either in its own data centers or managed by a third-party provider. Which deployment model fits this requirement?",
     options: [
-      { id: 'a', text: 'Public cloud, where Barclays shares infrastructure with other AWS customers and pays for what it uses' },
-      { id: 'b', text: 'Hybrid cloud, which connects Barclays\'s on-premises environment with a public cloud service' },
-      { id: 'c', text: 'Private cloud, which is a cloud environment used exclusively by Barclays, hosted on-premises or by a third party' },
+      { id: 'a', text: 'Public cloud, where ClearVault Bank shares infrastructure with other AWS customers and pays for what it uses' },
+      { id: 'b', text: 'Hybrid cloud, which connects ClearVault Bank\'s on-premises environment with a public cloud service' },
+      { id: 'c', text: 'Private cloud, which is a cloud environment used exclusively by ClearVault Bank, hosted on-premises or by a third party' },
       { id: 'd', text: 'Community cloud, which is shared among several banks that have similar regulatory requirements' },
     ],
     correctOptionId: 'c',
-    explanation: "A private cloud is exclusively used by a single organization. It can be hosted on-premises in the company's data center or by a third-party provider, but the resources are not shared with other organizations. ✓ (c) A private cloud is dedicated exclusively to one organisation — Barclays gets isolated infrastructure that is not shared with other companies, satisfying data residency laws, and it can be hosted on-premises or by a managed service provider. ✗ (a) Public cloud shares underlying infrastructure (compute, storage, network) among many customers through multi-tenancy — this directly violates the regulatory requirement that the platform cannot run on shared infrastructure. ✗ (b) Hybrid cloud connects an on-premises environment to a public cloud service — this requires using shared public cloud infrastructure, which also violates the data residency requirement; hybrid is the correct model when bursting is needed, not when all workloads must stay off shared infrastructure. ✗ (d) Community cloud is shared among multiple organisations with similar compliance needs (e.g., several banks) — while it is more restricted than public cloud, it is still shared infrastructure and does not satisfy Barclays\'s requirement for an environment exclusively dedicated to its own organisation.",
+    explanation: "A private cloud is exclusively used by a single organization. It can be hosted on-premises in the company's data center or by a third-party provider, but the resources are not shared with other organizations. ✓ (c) A private cloud is dedicated exclusively to one organisation — ClearVault Bank gets isolated infrastructure that is not shared with other companies, satisfying data residency laws, and it can be hosted on-premises or by a managed service provider. ✗ (a) Public cloud shares underlying infrastructure (compute, storage, network) among many customers through multi-tenancy — this directly violates the regulatory requirement that the platform cannot run on shared infrastructure. ✗ (b) Hybrid cloud connects an on-premises environment to a public cloud service — this requires using shared public cloud infrastructure, which also violates the data residency requirement; hybrid is the correct model when bursting is needed, not when all workloads must stay off shared infrastructure. ✗ (d) Community cloud is shared among multiple organisations with similar compliance needs (e.g., several banks) — while it is more restricted than public cloud, it is still shared infrastructure and does not satisfy ClearVault Bank\'s requirement for an environment exclusively dedicated to its own organisation.",
     docUrl: 'https://docs.aws.amazon.com/whitepapers/latest/aws-overview/types-of-cloud-computing.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -472,7 +472,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
 export const clf02SecurityQuestions: Question[] = [
   {
     id: 'clf-c02-sec-001',
-    text: "Barclays' internal audit team is preparing for a compliance review and needs a complete log of every API call made across their AWS environment over the past six months — including who made the call, from where, and on which resource. Which AWS service should they rely on to retrieve this audit trail?",
+    text: "ClearVault Bank' internal audit team is preparing for a compliance review and needs a complete log of every API call made across their AWS environment over the past six months — including who made the call, from where, and on which resource. Which AWS service should they rely on to retrieve this audit trail?",
     options: [
       { id: 'a', text: 'AWS Trusted Advisor, which surfaces security and cost recommendations' },
       { id: 'b', text: 'Amazon CloudWatch, which captures performance metrics and application logs' },
@@ -536,7 +536,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-005',
-    text: "Flipkart's platform team encrypts sensitive customer data across DynamoDB, S3, and RDS. They need a single, centrally managed service to create, rotate, and control the lifecycle of the encryption keys used by all three services. Which AWS service provides this?",
+    text: "ShopNest's platform team encrypts sensitive customer data across DynamoDB, S3, and RDS. They need a single, centrally managed service to create, rotate, and control the lifecycle of the encryption keys used by all three services. Which AWS service provides this?",
     options: [
       { id: 'a', text: 'AWS Secrets Manager, which stores and rotates application secrets such as database passwords and API keys' },
       { id: 'b', text: 'AWS Key Management Service (KMS), which creates and controls encryption keys used to protect data across AWS services' },
@@ -552,7 +552,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-006',
-    text: "Barclays' cloud security team discovered that a developer accidentally committed AWS root account credentials to a public GitHub repository. The incident response team immediately rotated the credentials. To prevent similar incidents from escalating, the team wants to ensure that even if credentials are leaked in the future, an attacker cannot sign in with them alone. Which AWS security control directly addresses this?",
+    text: "ClearVault Bank' cloud security team discovered that a developer accidentally committed AWS root account credentials to a public GitHub repository. The incident response team immediately rotated the credentials. To prevent similar incidents from escalating, the team wants to ensure that even if credentials are leaked in the future, an attacker cannot sign in with them alone. Which AWS security control directly addresses this?",
     options: [
       { id: 'a', text: 'Enable S3 default encryption to protect data if the account is compromised' },
       { id: 'b', text: 'Enable Multi-Factor Authentication (MFA), which requires a second form of verification beyond the password before account access is granted' },
@@ -568,7 +568,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-007',
-    text: "Flipkart's security team noticed a spike in error logs showing SQL injection attempts and cross-site scripting payloads being sent to their product search API, which sits behind an Application Load Balancer. They need a service that can inspect incoming HTTP/HTTPS requests and block malicious patterns before they reach the application. Which AWS service should they deploy?",
+    text: "ShopNest's security team noticed a spike in error logs showing SQL injection attempts and cross-site scripting payloads being sent to their product search API, which sits behind an Application Load Balancer. They need a service that can inspect incoming HTTP/HTTPS requests and block malicious patterns before they reach the application. Which AWS service should they deploy?",
     options: [
       { id: 'a', text: 'AWS Shield, which protects against volumetric network-layer DDoS floods' },
       { id: 'b', text: 'Amazon GuardDuty, which analyses log data to detect threats inside the AWS environment' },
@@ -632,7 +632,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-011',
-    text: "Flipkart's cloud security team wants to automatically detect security vulnerabilities and unintended network exposure on their EC2 instances and container workloads running on ECR — without hiring a dedicated penetration testing firm for each release cycle. Which AWS service performs automated security assessments of these workloads against known CVEs and networking best practices?",
+    text: "ShopNest's cloud security team wants to automatically detect security vulnerabilities and unintended network exposure on their EC2 instances and container workloads running on ECR — without hiring a dedicated penetration testing firm for each release cycle. Which AWS service performs automated security assessments of these workloads against known CVEs and networking best practices?",
     options: [
       { id: 'a', text: 'AWS Config, which evaluates resource configurations against compliance rules but does not scan for software vulnerabilities' },
       { id: 'b', text: 'AWS Trusted Advisor, which provides high-level recommendations but does not perform deep vulnerability scanning' },
@@ -664,7 +664,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-013',
-    text: "Barclays is onboarding 200 developers onto AWS and their IAM administrator needs to assign permissions efficiently. The admin claims that IAM policies can only be attached directly to individual IAM users, not to groups or roles. A colleague disagrees. Which of the following statements correctly describes how IAM policies can be applied?",
+    text: "ClearVault Bank is onboarding 200 developers onto AWS and their IAM administrator needs to assign permissions efficiently. The admin claims that IAM policies can only be attached directly to individual IAM users, not to groups or roles. A colleague disagrees. Which of the following statements correctly describes how IAM policies can be applied?",
     options: [
       { id: 'a', text: 'The colleague is correct — IAM policies can be attached to IAM users, groups, and roles, and AWS evaluates all applicable policies together' },
       { id: 'b', text: 'The admin is correct — IAM policies can only be attached directly to individual users' },
@@ -696,7 +696,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-015',
-    text: "Flipkart's data privacy team suspects that several S3 buckets used by third-party analytics vendors contain customer PII — including Aadhaar numbers and phone numbers — that should not be stored in those locations. They need a service that can automatically discover and classify sensitive data across their S3 estate using machine learning, without manually reviewing each object. Which AWS service does this?",
+    text: "ShopNest's data privacy team suspects that several S3 buckets used by third-party analytics vendors contain customer PII — including Aadhaar numbers and phone numbers — that should not be stored in those locations. They need a service that can automatically discover and classify sensitive data across their S3 estate using machine learning, without manually reviewing each object. Which AWS service does this?",
     options: [
       { id: 'a', text: 'Amazon GuardDuty, which analyses CloudTrail and VPC Flow Logs for threats but does not classify data in S3' },
       { id: 'b', text: 'Amazon Macie, which uses machine learning to automatically discover, classify, and protect sensitive data such as PII stored in Amazon S3' },
@@ -776,7 +776,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-020',
-    text: "Flipkart is expanding into digital payments and its compliance officers need to confirm that AWS meets the security standard governing how payment card data must be handled. Which compliance programme is specifically relevant to organisations processing credit and debit card transactions?",
+    text: "ShopNest is expanding into digital payments and its compliance officers need to confirm that AWS meets the security standard governing how payment card data must be handled. Which compliance programme is specifically relevant to organisations processing credit and debit card transactions?",
     options: [
       { id: 'a', text: 'HIPAA, which governs the protection of patient health information in the healthcare industry' },
       { id: 'b', text: 'SOC 2, which evaluates cloud service providers on trust principles such as availability and confidentiality' },
@@ -784,7 +784,7 @@ export const clf02SecurityQuestions: Question[] = [
       { id: 'd', text: 'ISO 27001, which is a general information security management standard not specific to payment card data' },
     ],
     correctOptionId: 'c',
-    explanation: "PCI DSS (Payment Card Industry Data Security Standard) is the compliance standard for organizations that handle credit card information. AWS is PCI DSS compliant for many services. ✓ (c) PCI DSS is the industry-specific standard mandated by card networks (Visa, Mastercard, etc.) for any organisation that processes, stores, or transmits cardholder data — directly applicable to Flipkart\'s payments expansion. ✗ (a) HIPAA governs the security and privacy of protected health information (PHI) in the United States healthcare sector — it has no applicability to payment card transaction processing. ✗ (b) SOC 2 (System and Organization Controls 2) evaluates cloud service providers against trust service criteria like security and availability — it is a general service-provider attestation, not a payment card industry-specific mandate. ✗ (d) ISO 27001 is a broad international information security management system standard — while it is widely respected, it does not specifically mandate controls for payment card data handling the way PCI DSS does.",
+    explanation: "PCI DSS (Payment Card Industry Data Security Standard) is the compliance standard for organizations that handle credit card information. AWS is PCI DSS compliant for many services. ✓ (c) PCI DSS is the industry-specific standard mandated by card networks (Visa, Mastercard, etc.) for any organisation that processes, stores, or transmits cardholder data — directly applicable to ShopNest\'s payments expansion. ✗ (a) HIPAA governs the security and privacy of protected health information (PHI) in the United States healthcare sector — it has no applicability to payment card transaction processing. ✗ (b) SOC 2 (System and Organization Controls 2) evaluates cloud service providers against trust service criteria like security and availability — it is a general service-provider attestation, not a payment card industry-specific mandate. ✗ (d) ISO 27001 is a broad international information security management system standard — while it is widely respected, it does not specifically mandate controls for payment card data handling the way PCI DSS does.",
     docUrl: 'https://aws.amazon.com/compliance/pci-dss-level-1-faqs/',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -792,7 +792,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-021',
-    text: "Barclays is onboarding AWS as a cloud provider and their legal and compliance department needs to obtain AWS's SOC 2 Type II report and ISO 27001 certificate to satisfy their internal vendor risk management process. Where should they go to download these official AWS compliance documents on-demand?",
+    text: "ClearVault Bank is onboarding AWS as a cloud provider and their legal and compliance department needs to obtain AWS's SOC 2 Type II report and ISO 27001 certificate to satisfy their internal vendor risk management process. Where should they go to download these official AWS compliance documents on-demand?",
     options: [
       { id: 'a', text: 'AWS Trusted Advisor, which provides operational best-practice recommendations but not downloadable compliance certifications' },
       { id: 'b', text: 'AWS Artifact, the self-service portal that provides on-demand access to AWS compliance reports, certifications, and attestations including SOC, PCI, and ISO documents' },
@@ -856,7 +856,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-025',
-    text: "Barclays' security architecture team is evaluating encryption key management options. Certain regulatory frameworks require the bank to demonstrate sole custody of their encryption keys, meaning no AWS personnel should ever have access to the keys. AWS KMS does not satisfy this requirement because AWS manages the underlying hardware. Which AWS service provides dedicated, single-tenant hardware security modules where Barclays retains full exclusive control over their keys?",
+    text: "ClearVault Bank' security architecture team is evaluating encryption key management options. Certain regulatory frameworks require the bank to demonstrate sole custody of their encryption keys, meaning no AWS personnel should ever have access to the keys. AWS KMS does not satisfy this requirement because AWS manages the underlying hardware. Which AWS service provides dedicated, single-tenant hardware security modules where ClearVault Bank retains full exclusive control over their keys?",
     options: [
       { id: 'a', text: 'AWS KMS, which is a multi-tenant managed service where AWS controls the underlying key storage hardware' },
       { id: 'b', text: 'AWS Secrets Manager, which stores application secrets but does not provide dedicated HSM hardware' },
@@ -936,7 +936,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-030',
-    text: "Barclays is restructuring its AWS IAM setup. Currently, the team assigns permissions individually to each of its 800 cloud users, making it time-consuming to update access when job roles change. The IAM architect proposes organising users by job function and assigning permissions at that level, so all users with the same role automatically inherit the right policies. Which IAM construct enables this approach?",
+    text: "ClearVault Bank is restructuring its AWS IAM setup. Currently, the team assigns permissions individually to each of its 800 cloud users, making it time-consuming to update access when job roles change. The IAM architect proposes organising users by job function and assigning permissions at that level, so all users with the same role automatically inherit the right policies. Which IAM construct enables this approach?",
     options: [
       { id: 'a', text: 'An AWS Resource Group, which groups AWS resources by tag for operational management, not IAM users by role' },
       { id: 'b', text: 'An IAM Group, which is a collection of IAM users that all share the policies attached to the group, simplifying permission management at scale' },
@@ -952,7 +952,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-031',
-    text: "Flipkart's platform engineering team is deploying a new customer-facing API behind an Application Load Balancer and an Amazon CloudFront distribution. They need HTTPS enabled, which requires SSL/TLS certificates. Rather than purchasing certificates from a third-party CA and managing manual renewals, they want AWS to handle certificate provisioning and automatic renewal at no additional cost for public certificates. Which AWS service provides this?",
+    text: "ShopNest's platform engineering team is deploying a new customer-facing API behind an Application Load Balancer and an Amazon CloudFront distribution. They need HTTPS enabled, which requires SSL/TLS certificates. Rather than purchasing certificates from a third-party CA and managing manual renewals, they want AWS to handle certificate provisioning and automatic renewal at no additional cost for public certificates. Which AWS service provides this?",
     options: [
       { id: 'a', text: 'AWS KMS, which manages encryption keys for data at rest but does not provision SSL/TLS certificates' },
       { id: 'b', text: 'AWS CloudHSM, which provides dedicated hardware for key storage but does not manage certificate lifecycle automatically' },
@@ -1032,7 +1032,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-036',
-    text: "Flipkart's security operations team suspects that one of their EC2 instances has been compromised and is communicating with external servers using unusual ports. The team wants to use an AWS service that analyses their VPC Flow Logs with machine learning to detect port scanning activity, unusual protocols, and connections to known malicious IP addresses — without requiring them to write custom detection rules. Which service does this?",
+    text: "ShopNest's security operations team suspects that one of their EC2 instances has been compromised and is communicating with external servers using unusual ports. The team wants to use an AWS service that analyses their VPC Flow Logs with machine learning to detect port scanning activity, unusual protocols, and connections to known malicious IP addresses — without requiring them to write custom detection rules. Which service does this?",
     options: [
       { id: 'a', text: 'AWS WAF, which filters incoming HTTP/HTTPS application traffic based on rules but does not analyse raw VPC network traffic patterns' },
       { id: 'b', text: 'AWS Network Firewall, which provides stateful network traffic filtering but requires manual rule authoring rather than ML-based anomaly detection' },
@@ -1048,7 +1048,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-037',
-    text: "Barclays' IAM team is designing a permission model for its cloud engineering workforce. A team lead states that each IAM user can only have a single IAM policy attached at a time, and that if a user needs multiple permissions, those must all be combined into one policy document. A cloud architect on the team disagrees. Which of the following correctly describes IAM policy attachment rules?",
+    text: "ClearVault Bank' IAM team is designing a permission model for its cloud engineering workforce. A team lead states that each IAM user can only have a single IAM policy attached at a time, and that if a user needs multiple permissions, those must all be combined into one policy document. A cloud architect on the team disagrees. Which of the following correctly describes IAM policy attachment rules?",
     options: [
       { id: 'a', text: 'The cloud architect is right — multiple IAM policies can be attached to a single user, group, or role, and AWS evaluates the union of all attached policies when making access decisions' },
       { id: 'b', text: 'The team lead is right — each IAM user can only have one policy attached at a time; additional permissions require editing that single policy' },
@@ -1164,7 +1164,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-002',
-    text: "Barclays stores compliance audit logs in Amazon S3. These logs are accessed only during regulatory reviews — roughly once a quarter — but must be downloadable within milliseconds when requested. The storage team wants to cut costs without sacrificing instant availability. Which S3 storage class best fits this requirement?",
+    text: "ClearVault Bank stores compliance audit logs in Amazon S3. These logs are accessed only during regulatory reviews — roughly once a quarter — but must be downloadable within milliseconds when requested. The storage team wants to cut costs without sacrificing instant availability. Which S3 storage class best fits this requirement?",
     options: [
       { id: 'a', text: 'S3 Standard — high-throughput storage with no retrieval fees' },
       { id: 'b', text: 'S3 Standard-Infrequent Access (S3 Standard-IA) — lower storage cost with millisecond retrieval' },
@@ -1196,7 +1196,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-004',
-    text: "Netflix needs to automatically resize thumbnail images every time a new movie is uploaded to S3. The resizing job runs for under 200 milliseconds and is triggered only when an upload event occurs — sometimes thousands of times a day, sometimes none at all. The team wants to pay only for the actual compute time used. Which AWS service should they choose?",
+    text: "StreamVault needs to automatically resize thumbnail images every time a new movie is uploaded to S3. The resizing job runs for under 200 milliseconds and is triggered only when an upload event occurs — sometimes thousands of times a day, sometimes none at all. The team wants to pay only for the actual compute time used. Which AWS service should they choose?",
     options: [
       { id: 'a', text: 'Launch a fleet of Amazon EC2 On-Demand instances that poll S3 for new uploads every minute' },
       { id: 'b', text: 'Use AWS Elastic Beanstalk to deploy a thumbnail-resizing web application with auto scaling' },
@@ -1212,7 +1212,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-005',
-    text: "Barclays runs its core banking database on Amazon RDS for PostgreSQL. A database failure would be catastrophic, so the team needs the standby replica to take over automatically — with no manual steps — within two minutes. Which RDS feature provides a synchronous standby in a separate Availability Zone for automatic failover?",
+    text: "ClearVault Bank runs its core banking database on Amazon RDS for PostgreSQL. A database failure would be catastrophic, so the team needs the standby replica to take over automatically — with no manual steps — within two minutes. Which RDS feature provides a synchronous standby in a separate Availability Zone for automatic failover?",
     options: [
       { id: 'a', text: 'Read Replica — an asynchronous copy that offloads read traffic from the primary instance' },
       { id: 'b', text: 'Multi-AZ deployment — a synchronous standby in a different AZ with automatic failover' },
@@ -1244,7 +1244,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-007',
-    text: "Tata Steel is standardising its factory monitoring application deployment across 12 plants. The DevOps team wants to package the exact same operating system, application server, and monitoring agent configuration so every new EC2 instance boots with an identical setup. What is the AWS construct that contains this pre-configured software snapshot used to launch EC2 instances?",
+    text: "IronCrest Industries is standardising its factory monitoring application deployment across 12 plants. The DevOps team wants to package the exact same operating system, application server, and monitoring agent configuration so every new EC2 instance boots with an identical setup. What is the AWS construct that contains this pre-configured software snapshot used to launch EC2 instances?",
     options: [
       { id: 'a', text: 'An Amazon EBS volume snapshot — a persistent block storage backup of a running instance' },
       { id: 'b', text: 'An Amazon Machine Image (AMI) — a launch template containing the OS and software configuration for EC2 instances' },
@@ -1276,7 +1276,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-009',
-    text: "Netflix is migrating its streaming API to a microservices architecture. Different services handle authentication, recommendations, and playback. The team needs a load balancer that can examine the URL path — routing `/auth` requests to the Auth service and `/recommendations` requests to the Recommendations service — using a single entry point. Which type of Elastic Load Balancer supports this URL-path-based routing at Layer 7?",
+    text: "StreamVault is migrating its streaming API to a microservices architecture. Different services handle authentication, recommendations, and playback. The team needs a load balancer that can examine the URL path — routing `/auth` requests to the Auth service and `/recommendations` requests to the Recommendations service — using a single entry point. Which type of Elastic Load Balancer supports this URL-path-based routing at Layer 7?",
     options: [
       { id: 'a', text: 'Classic Load Balancer (CLB) — legacy Layer 4/7 balancer that routes traffic without content inspection' },
       { id: 'b', text: 'Network Load Balancer (NLB) — ultra-low latency Layer 4 balancer for TCP/UDP traffic' },
@@ -1292,7 +1292,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-010',
-    text: "Barclays is modernising its internal HR system, which currently runs on an on-premises Oracle database. The team wants to move to a fully managed cloud database that handles backups, patching, and replication automatically — and supports Oracle, while also giving the option to migrate to PostgreSQL later. Which AWS service provides managed relational databases supporting Oracle, PostgreSQL, MySQL, SQL Server, and MariaDB?",
+    text: "ClearVault Bank is modernising its internal HR system, which currently runs on an on-premises Oracle database. The team wants to move to a fully managed cloud database that handles backups, patching, and replication automatically — and supports Oracle, while also giving the option to migrate to PostgreSQL later. Which AWS service provides managed relational databases supporting Oracle, PostgreSQL, MySQL, SQL Server, and MariaDB?",
     options: [
       { id: 'a', text: 'Amazon DynamoDB — managed NoSQL key-value store optimised for millisecond latency at scale' },
       { id: 'b', text: 'Amazon Redshift — managed data warehouse for petabyte-scale analytics and BI reporting' },
@@ -1356,7 +1356,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-014',
-    text: "Tata Steel is consolidating 14 plant-level Oracle databases — totalling 800 TB — into a single Amazon Aurora PostgreSQL cluster. The migration must happen with zero downtime; production writes to the source databases must continue uninterrupted while data is transferred. Which AWS service is specifically designed for ongoing database replication and heterogeneous migrations with minimal downtime?",
+    text: "IronCrest Industries is consolidating 14 plant-level Oracle databases — totalling 800 TB — into a single Amazon Aurora PostgreSQL cluster. The migration must happen with zero downtime; production writes to the source databases must continue uninterrupted while data is transferred. Which AWS service is specifically designed for ongoing database replication and heterogeneous migrations with minimal downtime?",
     options: [
       { id: 'a', text: 'AWS Lambda — run custom migration scripts in response to database change events' },
       { id: 'b', text: 'Amazon S3 Batch Operations — process large volumes of S3 objects using bulk operations' },
@@ -1388,7 +1388,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-016',
-    text: "Netflix's encoding pipeline needs 500 EC2 instances during a major content drop on Friday evenings but only 20 instances on Tuesday mornings. Rather than running 500 instances 24/7, the engineering team wants the fleet to grow and shrink automatically based on CPU utilisation — and also scale up pre-emptively before the Friday spike. Which EC2 feature supports both dynamic (metric-based) and scheduled scaling?",
+    text: "StreamVault's encoding pipeline needs 500 EC2 instances during a major content drop on Friday evenings but only 20 instances on Tuesday mornings. Rather than running 500 instances 24/7, the engineering team wants the fleet to grow and shrink automatically based on CPU utilisation — and also scale up pre-emptively before the Friday spike. Which EC2 feature supports both dynamic (metric-based) and scheduled scaling?",
     options: [
       { id: 'a', text: 'Elastic Load Balancing — distributes incoming requests evenly across existing EC2 instances' },
       { id: 'b', text: 'Amazon EC2 Auto Scaling — automatically adds or removes instances based on policies or a schedule' },
@@ -1404,7 +1404,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-017',
-    text: "Barclays is running a risk-calculation application on EC2 that writes checkpoints to disk every 30 seconds. The team needs storage that persists even if the instance is stopped or restarted, can be snapshotted for backup, and behaves like a traditional hard drive attached to the server. Which AWS storage service provides persistent block-level volumes that survive instance stop and start?",
+    text: "ClearVault Bank is running a risk-calculation application on EC2 that writes checkpoints to disk every 30 seconds. The team needs storage that persists even if the instance is stopped or restarted, can be snapshotted for backup, and behaves like a traditional hard drive attached to the server. Which AWS storage service provides persistent block-level volumes that survive instance stop and start?",
     options: [
       { id: 'a', text: 'Amazon S3 — object store designed for browser or API access to files, not a local drive mount' },
       { id: 'b', text: 'Amazon EBS — persistent block-level storage volumes attached to EC2, surviving instance restarts' },
@@ -1420,7 +1420,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-018',
-    text: "Tata Steel's engineering team runs a simulation cluster where 200 EC2 instances simultaneously read and write shared input/output files during a manufacturing process optimisation run. The team needs a file system that all 200 instances can mount at the same time, scales automatically as data grows, and requires no capacity pre-provisioning. Which AWS storage service fits this requirement?",
+    text: "IronCrest Industries's engineering team runs a simulation cluster where 200 EC2 instances simultaneously read and write shared input/output files during a manufacturing process optimisation run. The team needs a file system that all 200 instances can mount at the same time, scales automatically as data grows, and requires no capacity pre-provisioning. Which AWS storage service fits this requirement?",
     options: [
       { id: 'a', text: 'Amazon EBS — block storage volumes that can only be attached to one EC2 instance at a time' },
       { id: 'b', text: 'Amazon S3 — object storage accessed via API calls, not directly mountable as a POSIX file system' },
@@ -1468,7 +1468,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-021',
-    text: "Netflix's SRE team needs a single dashboard showing CPU utilisation across 3,000 EC2 instances, average API latency from Application Load Balancers, and an alarm that pages on-call engineers when error rate exceeds 1% for more than five minutes. Which AWS service collects these metrics, stores log files, and fires alarms based on threshold breaches?",
+    text: "StreamVault's SRE team needs a single dashboard showing CPU utilisation across 3,000 EC2 instances, average API latency from Application Load Balancers, and an alarm that pages on-call engineers when error rate exceeds 1% for more than five minutes. Which AWS service collects these metrics, stores log files, and fires alarms based on threshold breaches?",
     options: [
       { id: 'a', text: 'AWS CloudTrail — records API calls made to AWS services for auditing and compliance purposes' },
       { id: 'b', text: 'Amazon CloudWatch — collects metrics and logs, sets alarms, and visualises operational data in real time' },
@@ -1484,7 +1484,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-022',
-    text: "Barclays needs a 10 Gbps private network connection between its London data center and AWS eu-west-2 to transfer large trading datasets without exposing them to the public internet. The network team requires consistent latency and guaranteed bandwidth that an internet-based VPN cannot provide. Which AWS service establishes this dedicated private circuit?",
+    text: "ClearVault Bank needs a 10 Gbps private network connection between its London data center and AWS eu-west-2 to transfer large trading datasets without exposing them to the public internet. The network team requires consistent latency and guaranteed bandwidth that an internet-based VPN cannot provide. Which AWS service establishes this dedicated private circuit?",
     options: [
       { id: 'a', text: 'AWS Site-to-Site VPN — encrypted tunnel over the public internet between on-premises and AWS' },
       { id: 'b', text: 'Amazon CloudFront — CDN that caches and serves content from edge locations close to users' },
@@ -1492,7 +1492,7 @@ const clf02TechPart1: Question[] = [
       { id: 'd', text: 'Amazon Route 53 — DNS service for routing internet traffic to AWS resources' },
     ],
     correctOptionId: 'c',
-    explanation: "AWS Direct Connect provides a dedicated private network connection from your on-premises location to AWS. It offers more consistent network performance, lower latency, and potentially lower costs than internet-based connections. ✓ (c) Direct Connect provides a physical 1 Gbps or 10 Gbps dedicated circuit between the Barclays London data center and AWS eu-west-2, bypassing the public internet entirely for consistent sub-millisecond latency and guaranteed bandwidth — meeting financial-grade network requirements. ✗ (a) AWS Site-to-Site VPN creates an IPSec-encrypted tunnel over the public internet — while secure, it is subject to internet congestion and variable latency, and bandwidth is limited by the underlying internet connection quality, which cannot guarantee the consistent 10 Gbps performance required for large trading dataset transfers. ✗ (b) Amazon CloudFront is a content delivery network that caches content at edge locations to reduce end-user latency — it is not a private network connectivity solution and cannot replace a dedicated physical circuit for bulk data transfer between a data center and AWS. ✗ (d) Amazon Route 53 is a DNS service that resolves domain names to IP addresses — it operates at the application layer for name resolution and has no capability to establish private network circuits or guarantee bandwidth between on-premises facilities and AWS.",
+    explanation: "AWS Direct Connect provides a dedicated private network connection from your on-premises location to AWS. It offers more consistent network performance, lower latency, and potentially lower costs than internet-based connections. ✓ (c) Direct Connect provides a physical 1 Gbps or 10 Gbps dedicated circuit between the ClearVault Bank London data center and AWS eu-west-2, bypassing the public internet entirely for consistent sub-millisecond latency and guaranteed bandwidth — meeting financial-grade network requirements. ✗ (a) AWS Site-to-Site VPN creates an IPSec-encrypted tunnel over the public internet — while secure, it is subject to internet congestion and variable latency, and bandwidth is limited by the underlying internet connection quality, which cannot guarantee the consistent 10 Gbps performance required for large trading dataset transfers. ✗ (b) Amazon CloudFront is a content delivery network that caches content at edge locations to reduce end-user latency — it is not a private network connectivity solution and cannot replace a dedicated physical circuit for bulk data transfer between a data center and AWS. ✗ (d) Amazon Route 53 is a DNS service that resolves domain names to IP addresses — it operates at the application layer for name resolution and has no capability to establish private network circuits or guarantee bandwidth between on-premises facilities and AWS.",
     docUrl: 'https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -1532,7 +1532,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-025',
-    text: "Netflix stores 60 TB of viewing history log files in S3 in Parquet format. The analytics team wants to run ad-hoc SQL queries to find which genres are most popular in each country — without loading the data into a separate database or managing any query servers. They should pay only per query. Which AWS service lets them query S3 data directly using standard SQL with no infrastructure to manage?",
+    text: "StreamVault stores 60 TB of viewing history log files in S3 in Parquet format. The analytics team wants to run ad-hoc SQL queries to find which genres are most popular in each country — without loading the data into a separate database or managing any query servers. They should pay only per query. Which AWS service lets them query S3 data directly using standard SQL with no infrastructure to manage?",
     options: [
       { id: 'a', text: 'Amazon Redshift — provision a cluster and load data before running SQL queries at petabyte scale' },
       { id: 'b', text: 'Amazon Athena — serverless query service that runs SQL directly against data in S3, pay per query' },
@@ -1580,7 +1580,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-028',
-    text: "Barclays records all customer service calls for regulatory compliance. The compliance team needs to convert hours of audio recordings into searchable text so they can quickly locate calls where certain words — like 'complaint' or 'fraud' — were spoken. Building a custom ASR model is out of scope. Which AWS managed service automatically converts speech audio into accurate written transcripts?",
+    text: "ClearVault Bank records all customer service calls for regulatory compliance. The compliance team needs to convert hours of audio recordings into searchable text so they can quickly locate calls where certain words — like 'complaint' or 'fraud' — were spoken. Building a custom ASR model is out of scope. Which AWS managed service automatically converts speech audio into accurate written transcripts?",
     options: [
       { id: 'a', text: 'Amazon Polly — converts written text into spoken audio using neural voice models' },
       { id: 'b', text: 'Amazon Transcribe — uses automatic speech recognition (ASR) to convert audio recordings to text' },
@@ -1612,7 +1612,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-030',
-    text: "Netflix's platform engineering team is migrating its microservices from self-managed Kubernetes clusters to AWS. The team has years of Kubernetes expertise and existing Helm charts, and wants a fully managed Kubernetes control plane — without patching or operating it — while keeping their existing kubectl workflows. Which AWS service runs a managed Kubernetes control plane on AWS?",
+    text: "StreamVault's platform engineering team is migrating its microservices from self-managed Kubernetes clusters to AWS. The team has years of Kubernetes expertise and existing Helm charts, and wants a fully managed Kubernetes control plane — without patching or operating it — while keeping their existing kubectl workflows. Which AWS service runs a managed Kubernetes control plane on AWS?",
     options: [
       { id: 'a', text: 'Amazon ECS — AWS-native container orchestration that uses Tasks and Services instead of Kubernetes' },
       { id: 'b', text: 'Amazon EKS — fully managed Kubernetes service that runs the Kubernetes control plane on AWS' },
@@ -1644,7 +1644,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-032',
-    text: "Netflix's 200-person engineering org builds dozens of containerised microservices. Each team produces Docker images that need to be stored securely, version-tagged, and pulled by ECS and EKS clusters during deployments — with fine-grained IAM access control on who can push or pull each image. Which AWS service provides a fully managed private Docker container registry?",
+    text: "StreamVault's 200-person engineering org builds dozens of containerised microservices. Each team produces Docker images that need to be stored securely, version-tagged, and pulled by ECS and EKS clusters during deployments — with fine-grained IAM access control on who can push or pull each image. Which AWS service provides a fully managed private Docker container registry?",
     options: [
       { id: 'a', text: 'Amazon ECS — AWS container orchestration service for running containerised applications' },
       { id: 'b', text: 'Amazon EKS — managed Kubernetes service for running Kubernetes workloads on AWS' },
@@ -1708,7 +1708,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-036',
-    text: "Barclays is building a new open banking platform that must expose secure REST APIs to third-party fintech partners — with rate limiting, API key authentication, request validation, and usage dashboards. The team needs a fully managed service to publish and manage these APIs without running gateway infrastructure. Which AWS service handles building, deploying, and managing REST, HTTP, and WebSocket APIs at scale?",
+    text: "ClearVault Bank is building a new open banking platform that must expose secure REST APIs to third-party fintech partners — with rate limiting, API key authentication, request validation, and usage dashboards. The team needs a fully managed service to publish and manage these APIs without running gateway infrastructure. Which AWS service handles building, deploying, and managing REST, HTTP, and WebSocket APIs at scale?",
     options: [
       { id: 'a', text: 'Amazon SQS — managed message queue for decoupling producers from consumers in async workflows' },
       { id: 'b', text: 'AWS App Mesh — service mesh for managing microservice-to-microservice communication' },
@@ -1716,7 +1716,7 @@ const clf02TechPart1: Question[] = [
       { id: 'd', text: 'AWS AppSync — managed GraphQL API service for building real-time and offline-capable apps' },
     ],
     correctOptionId: 'c',
-    explanation: "Amazon API Gateway is a fully managed service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket APIs at any scale. ✓ (c) API Gateway provides built-in throttling and rate limiting, API key issuance and validation, request/response transformation and validation, usage plans, and CloudWatch dashboards — all without running any gateway infrastructure, which is exactly what Barclays needs for its open banking platform. ✗ (a) Amazon SQS is a message queuing service for decoupling asynchronous producers and consumers — it does not expose REST APIs to external partners, cannot enforce rate limiting on HTTP requests, and has no API key authentication or usage dashboard capabilities. ✗ (b) AWS App Mesh is a service mesh that manages traffic between microservices within a VPC using Envoy proxies — it handles east-west service-to-service communication, not north-south REST API exposure to external third-party fintech partners. ✗ (d) AWS AppSync is a managed GraphQL API service — it supports real-time subscriptions and offline data sync for mobile apps, but it is designed for GraphQL (not REST) APIs and is best suited for app frontends rather than REST API gateways for B2B fintech partner integration.",
+    explanation: "Amazon API Gateway is a fully managed service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket APIs at any scale. ✓ (c) API Gateway provides built-in throttling and rate limiting, API key issuance and validation, request/response transformation and validation, usage plans, and CloudWatch dashboards — all without running any gateway infrastructure, which is exactly what ClearVault Bank needs for its open banking platform. ✗ (a) Amazon SQS is a message queuing service for decoupling asynchronous producers and consumers — it does not expose REST APIs to external partners, cannot enforce rate limiting on HTTP requests, and has no API key authentication or usage dashboard capabilities. ✗ (b) AWS App Mesh is a service mesh that manages traffic between microservices within a VPC using Envoy proxies — it handles east-west service-to-service communication, not north-south REST API exposure to external third-party fintech partners. ✗ (d) AWS AppSync is a managed GraphQL API service — it supports real-time subscriptions and offline data sync for mobile apps, but it is designed for GraphQL (not REST) APIs and is best suited for app frontends rather than REST API gateways for B2B fintech partner integration.",
     docUrl: 'https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -1772,7 +1772,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-040',
-    text: "Netflix's data science team needs to run Apache Spark jobs that process petabytes of raw viewing logs — normalising, deduplicating, and computing feature vectors for the recommendation engine. The jobs require thousands of CPU cores for 4–6 hours, and the team needs the flexibility to swap between Spark, Hive, and Presto depending on the analysis. Which AWS service provides a managed big data platform supporting multiple open-source frameworks on dynamically scaled EC2 clusters?",
+    text: "StreamVault's data science team needs to run Apache Spark jobs that process petabytes of raw viewing logs — normalising, deduplicating, and computing feature vectors for the recommendation engine. The jobs require thousands of CPU cores for 4–6 hours, and the team needs the flexibility to swap between Spark, Hive, and Presto depending on the analysis. Which AWS service provides a managed big data platform supporting multiple open-source frameworks on dynamically scaled EC2 clusters?",
     options: [
       { id: 'a', text: 'Amazon Redshift — fully managed data warehouse optimised for SQL analytics on structured data' },
       { id: 'b', text: 'Amazon Athena — serverless query service for running SQL on S3 data without a cluster' },
@@ -1820,7 +1820,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-043',
-    text: "Barclays wants to reduce call centre volume by deploying a chatbot that can handle routine customer queries — account balance enquiries, card block requests, and branch location lookups — via both the mobile app (voice) and website (text chat). The chatbot must understand natural language, not just keyword matching. Which AWS service builds conversational interfaces using voice and text powered by the same deep learning technology as Alexa?",
+    text: "ClearVault Bank wants to reduce call centre volume by deploying a chatbot that can handle routine customer queries — account balance enquiries, card block requests, and branch location lookups — via both the mobile app (voice) and website (text chat). The chatbot must understand natural language, not just keyword matching. Which AWS service builds conversational interfaces using voice and text powered by the same deep learning technology as Alexa?",
     options: [
       { id: 'a', text: 'Amazon Comprehend — NLP service for extracting sentiment and entities from written text' },
       { id: 'b', text: 'Amazon Lex — service for building conversational chatbots using voice and text with natural language understanding' },
@@ -1872,7 +1872,7 @@ const clf02TechPart1: Question[] = [
 const clf02TechPart2: Question[] = [
   {
     id: 'clf-c02-tech-046',
-    text: "Netflix's streaming infrastructure team is reviewing their Amazon VPC design. An engineer asks: what is the fundamental difference between a public subnet and a private subnet? Which answer is correct?",
+    text: "StreamVault's streaming infrastructure team is reviewing their Amazon VPC design. An engineer asks: what is the fundamental difference between a public subnet and a private subnet? Which answer is correct?",
     options: [
       { id: 'a', text: 'Public subnets have more IP address space than private subnets' },
       { id: 'b', text: 'Public subnets have a route to an Internet Gateway, giving resources direct internet access; private subnets have no such route' },
@@ -1888,7 +1888,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-047',
-    text: "Flipkart's engineering team needs their application servers — placed in a private subnet for security — to pull software updates and patches from the internet without exposing those instances to inbound traffic. Which AWS component should they deploy?",
+    text: "ShopNest's engineering team needs their application servers — placed in a private subnet for security — to pull software updates and patches from the internet without exposing those instances to inbound traffic. Which AWS component should they deploy?",
     options: [
       { id: 'a', text: 'Deploy an Internet Gateway attached to the private subnet' },
       { id: 'b', text: 'Set up a Virtual Private Gateway to route update traffic' },
@@ -1952,7 +1952,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-051',
-    text: "Barclays is deploying a new digital banking API across three AWS regions and wants to split traffic — 50% to eu-west-1, 30% to us-east-1, and 20% to ap-southeast-1 — using Route 53. Which routing policy supports this configuration?",
+    text: "ClearVault Bank is deploying a new digital banking API across three AWS regions and wants to split traffic — 50% to eu-west-1, 30% to us-east-1, and 20% to ap-southeast-1 — using Route 53. Which routing policy supports this configuration?",
     options: [
       { id: 'a', text: 'Use Latency routing to automatically direct users to the nearest region' },
       { id: 'b', text: 'Use Weighted routing and assign weights of 50, 30, and 20 to each regional endpoint' },
@@ -1984,7 +1984,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-053',
-    text: "Flipkart stores product images and media assets in Amazon S3. Access patterns are unpredictable — new uploads are frequently accessed, old ones rarely. The team wants automatic cost optimisation without manually moving objects between tiers. Which storage class should they use?",
+    text: "ShopNest stores product images and media assets in Amazon S3. Access patterns are unpredictable — new uploads are frequently accessed, old ones rarely. The team wants automatic cost optimisation without manually moving objects between tiers. Which storage class should they use?",
     options: [
       { id: 'a', text: 'Use S3 Standard-IA and set lifecycle rules to move objects after 30 days' },
       { id: 'b', text: 'Keep everything in S3 Glacier since most assets become cold over time' },
@@ -2000,7 +2000,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-054',
-    text: "Netflix needs newly launched EC2 instances to automatically install and configure their media transcoding agent — including setting environment variables and registering with their orchestration platform — every time a new instance boots. Which EC2 feature enables this bootstrap automation?",
+    text: "StreamVault needs newly launched EC2 instances to automatically install and configure their media transcoding agent — including setting environment variables and registering with their orchestration platform — every time a new instance boots. Which EC2 feature enables this bootstrap automation?",
     options: [
       { id: 'a', text: 'Attach an EC2 Instance Profile with permissions to run the configuration scripts' },
       { id: 'b', text: 'Pass a shell script as EC2 User Data, which runs automatically on the first boot of each instance' },
@@ -2016,7 +2016,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-055',
-    text: "Barclays is choosing a relational database for a new core banking application that needs MySQL compatibility, automatic failover across Availability Zones, and up to five times the throughput of standard MySQL at a lower price than commercial databases. Which AWS database service should they choose?",
+    text: "ClearVault Bank is choosing a relational database for a new core banking application that needs MySQL compatibility, automatic failover across Availability Zones, and up to five times the throughput of standard MySQL at a lower price than commercial databases. Which AWS database service should they choose?",
     options: [
       { id: 'a', text: 'Deploy Amazon RDS for MySQL with a Multi-AZ standby instance' },
       { id: 'b', text: 'Deploy Amazon Aurora (MySQL-compatible) for its cloud-native architecture, superior throughput, and built-in high availability' },
@@ -2080,7 +2080,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-059',
-    text: "Flipkart's product catalogue team needs to store billions of seller product listings as JSON documents with varying attributes — some listings have 10 fields, others have 200. They need single-digit millisecond reads at any scale. Which database type is most appropriate?",
+    text: "ShopNest's product catalogue team needs to store billions of seller product listings as JSON documents with varying attributes — some listings have 10 fields, others have 200. They need single-digit millisecond reads at any scale. Which database type is most appropriate?",
     options: [
       { id: 'a', text: 'Use a relational database like Amazon RDS with a wide schema to accommodate all possible attributes' },
       { id: 'b', text: 'Use a NoSQL database like Amazon DynamoDB, which handles flexible document schemas and scales horizontally with low latency' },
@@ -2112,7 +2112,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-061',
-    text: "Barclays is running a high-transaction core banking database on Amazon EC2 that requires sustained 64,000 IOPS with consistent sub-millisecond latency. The storage team is selecting the right EBS volume type. Which should they choose?",
+    text: "ClearVault Bank is running a high-transaction core banking database on Amazon EC2 that requires sustained 64,000 IOPS with consistent sub-millisecond latency. The storage team is selecting the right EBS volume type. Which should they choose?",
     options: [
       { id: 'a', text: 'Use gp2 (General Purpose SSD) volumes — they provide burstable IOPS suitable for most workloads' },
       { id: 'b', text: 'Use st1 (Throughput Optimized HDD) volumes for sequential I/O at lower cost' },
@@ -2128,7 +2128,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-062',
-    text: "Netflix's FinOps team noticed an unexpected $200,000 AWS bill spike last quarter that their standard Cost Explorer dashboards did not catch until weeks after it occurred. They want a service that uses machine learning to automatically detect unusual spending patterns and alert them in near-real time. Which service should they enable?",
+    text: "StreamVault's FinOps team noticed an unexpected $200,000 AWS bill spike last quarter that their standard Cost Explorer dashboards did not catch until weeks after it occurred. They want a service that uses machine learning to automatically detect unusual spending patterns and alert them in near-real time. Which service should they enable?",
     options: [
       { id: 'a', text: 'Create an AWS Budgets alert set to 120% of last month\'s spend' },
       { id: 'b', text: 'Enable AWS Cost Anomaly Detection to continuously monitor spend using ML and send alerts when anomalies are identified' },
@@ -2176,7 +2176,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-065',
-    text: "Flipkart's platform team runs a predictable fleet of EC2 instances for their warehouse management system — the same instance types run 24/7 year-round. Finance wants the maximum discount possible on a 3-year commitment. Which EC2 purchasing option provides the steepest discount for a specific instance type commitment?",
+    text: "ShopNest's platform team runs a predictable fleet of EC2 instances for their warehouse management system — the same instance types run 24/7 year-round. Finance wants the maximum discount possible on a 3-year commitment. Which EC2 purchasing option provides the steepest discount for a specific instance type commitment?",
     options: [
       { id: 'a', text: 'Use On-Demand Instances and negotiate an enterprise discount agreement' },
       { id: 'b', text: 'Use Spot Instances to bid for unused capacity at a deep discount' },
@@ -2192,7 +2192,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-066',
-    text: "Barclays must meet PCI-DSS Level 1 compliance, which requires cryptographic keys to be generated and stored in FIPS 140-2 Level 3 validated hardware that only Barclays controls — not shared with any other customer. Which AWS service provides this dedicated hardware?",
+    text: "ClearVault Bank must meet PCI-DSS Level 1 compliance, which requires cryptographic keys to be generated and stored in FIPS 140-2 Level 3 validated hardware that only ClearVault Bank controls — not shared with any other customer. Which AWS service provides this dedicated hardware?",
     options: [
       { id: 'a', text: 'Use AWS KMS with customer-managed keys for full key control' },
       { id: 'b', text: 'Use AWS CloudHSM, which provisions dedicated Hardware Security Modules (HSMs) exclusively for your account' },
@@ -2240,7 +2240,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-069',
-    text: "Netflix's infrastructure team is designing a new VPC for a streaming service. A junior engineer asks: what is the role of an Internet Gateway and why is one attached to the VPC? Which explanation is correct?",
+    text: "StreamVault's infrastructure team is designing a new VPC for a streaming service. A junior engineer asks: what is the role of an Internet Gateway and why is one attached to the VPC? Which explanation is correct?",
     options: [
       { id: 'a', text: 'An Internet Gateway connects two VPCs together to enable private communication between them' },
       { id: 'b', text: 'An Internet Gateway enables two-way communication between resources in the VPC and the public internet' },
@@ -2256,7 +2256,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-070',
-    text: "A Barclays DBA is evaluating Amazon RDS for a new application and asks the team: are automated backups enabled by default, and can the database be restored to any point in time within the backup window? What is the correct answer?",
+    text: "A ClearVault Bank DBA is evaluating Amazon RDS for a new application and asks the team: are automated backups enabled by default, and can the database be restored to any point in time within the backup window? What is the correct answer?",
     options: [
       { id: 'a', text: 'True — RDS enables automated backups by default with a 7-day retention period (up to 35 days) and supports point-in-time recovery' },
       { id: 'b', text: 'False — automated backups must be manually enabled and configured after the instance is created' },
@@ -2272,7 +2272,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-071',
-    text: "Flipkart's engineering team wants to build an order processing system where incoming orders trigger real-time inventory updates, fraud checks, and notification emails — all without provisioning servers. The function should run only when events occur and scale automatically to millions of events per day. Which compute service fits this model?",
+    text: "ShopNest's engineering team wants to build an order processing system where incoming orders trigger real-time inventory updates, fraud checks, and notification emails — all without provisioning servers. The function should run only when events occur and scale automatically to millions of events per day. Which compute service fits this model?",
     options: [
       { id: 'a', text: 'Set up EC2 Auto Scaling to grow and shrink the fleet based on incoming order volume' },
       { id: 'b', text: 'Use AWS Lambda — upload the order processing code and it runs and scales automatically in response to trigger events' },
@@ -2352,7 +2352,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-076',
-    text: "Barclays has an existing SFTP-based workflow where external partners deposit encrypted payment files nightly. The bank wants to migrate this workflow to AWS so files land directly in Amazon S3 — without requiring partners to change their SFTP clients or credentials. Which AWS service enables this?",
+    text: "ClearVault Bank has an existing SFTP-based workflow where external partners deposit encrypted payment files nightly. The bank wants to migrate this workflow to AWS so files land directly in Amazon S3 — without requiring partners to change their SFTP clients or credentials. Which AWS service enables this?",
     options: [
       { id: 'a', text: 'Use AWS DataSync to schedule nightly synchronisation from the on-premises SFTP server to S3' },
       { id: 'b', text: 'Use AWS Storage Gateway File Gateway to present S3 as an on-premises NFS/SMB share' },
@@ -2368,7 +2368,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-077',
-    text: "Netflix's security operations team received a GuardDuty alert about suspicious API calls originating from a compromised IAM role. They need to investigate the full chain of events — which services were called, from which IPs, and what resources were accessed — using graph-based analysis of VPC Flow Logs, CloudTrail, and DNS logs. Which AWS service is designed for exactly this kind of security investigation?",
+    text: "StreamVault's security operations team received a GuardDuty alert about suspicious API calls originating from a compromised IAM role. They need to investigate the full chain of events — which services were called, from which IPs, and what resources were accessed — using graph-based analysis of VPC Flow Logs, CloudTrail, and DNS logs. Which AWS service is designed for exactly this kind of security investigation?",
     options: [
       { id: 'a', text: "Use Amazon GuardDuty's threat intelligence feed to trace the attack chain" },
       { id: 'b', text: 'Use Amazon Detective, which automatically analyses logs and builds a graph model to accelerate security investigations' },
@@ -2400,7 +2400,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-079',
-    text: "Flipkart's mobile app team is building a real-time collaborative shopping list feature where changes made on one user's phone must instantly appear on their family members' devices. They need a managed GraphQL API that synchronises data across all connected clients in real time. Which AWS service is built for this?",
+    text: "ShopNest's mobile app team is building a real-time collaborative shopping list feature where changes made on one user's phone must instantly appear on their family members' devices. They need a managed GraphQL API that synchronises data across all connected clients in real time. Which AWS service is built for this?",
     options: [
       { id: 'a', text: 'Build a REST API with Amazon API Gateway and use long polling for updates' },
       { id: 'b', text: 'Use AWS AppSync, a managed GraphQL service with built-in real-time subscriptions and data synchronisation across clients' },
@@ -2432,15 +2432,15 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-081',
-    text: "Barclays must run certain workloads on physical servers dedicated exclusively to the bank — no sharing of the underlying hardware with other AWS customers — to satisfy their software licensing terms and internal compliance requirements. Which EC2 option provides a dedicated physical server with visibility into socket and core configuration?",
+    text: "ClearVault Bank must run certain workloads on physical servers dedicated exclusively to the bank — no sharing of the underlying hardware with other AWS customers — to satisfy their software licensing terms and internal compliance requirements. Which EC2 option provides a dedicated physical server with visibility into socket and core configuration?",
     options: [
       { id: 'a', text: 'Purchase EC2 Dedicated Instances to ensure physical hardware is not shared with other accounts' },
       { id: 'b', text: 'Purchase EC2 Dedicated Hosts, which give you a physical server dedicated to your use with full socket/core visibility for licence management' },
-      { id: 'c', text: 'Deploy workloads on AWS Outposts to run on Barclays-owned physical infrastructure' },
+      { id: 'c', text: 'Deploy workloads on AWS Outposts to run on ClearVault Bank-owned physical infrastructure' },
       { id: 'd', text: 'Use AWS Wavelength to run workloads on dedicated telecom infrastructure' },
     ],
     correctOptionId: 'b',
-    explanation: "EC2 Dedicated Hosts provide a physical server dedicated to your use. They allow you to use your existing server-bound software licenses and help you meet compliance requirements that restrict multi-tenant virtualization. ✓ (b) A Dedicated Host gives the customer a specific physical server with full visibility into the number of sockets, physical cores, and instance placement — the information required to comply with per-socket or per-core software licensing (e.g., Windows Server, SQL Server). ✗ (a) EC2 Dedicated Instances run on hardware dedicated to a single AWS account but do not provide visibility into the underlying physical server\'s socket and core topology; AWS may move Dedicated Instances to different physical hosts, making them unsuitable for per-socket licensing compliance. ✗ (c) AWS Outposts brings AWS-managed infrastructure to the customer\'s on-premises facility, but the hardware is still owned and managed by AWS, not by Barclays; the use case here is about physical server dedication and licence management in the AWS cloud, not on-premises deployment. ✗ (d) AWS Wavelength embeds AWS compute in telecommunications providers\' 5G networks for ultra-low mobile latency; it is unrelated to dedicated hardware tenancy or software licence management.",
+    explanation: "EC2 Dedicated Hosts provide a physical server dedicated to your use. They allow you to use your existing server-bound software licenses and help you meet compliance requirements that restrict multi-tenant virtualization. ✓ (b) A Dedicated Host gives the customer a specific physical server with full visibility into the number of sockets, physical cores, and instance placement — the information required to comply with per-socket or per-core software licensing (e.g., Windows Server, SQL Server). ✗ (a) EC2 Dedicated Instances run on hardware dedicated to a single AWS account but do not provide visibility into the underlying physical server\'s socket and core topology; AWS may move Dedicated Instances to different physical hosts, making them unsuitable for per-socket licensing compliance. ✗ (c) AWS Outposts brings AWS-managed infrastructure to the customer\'s on-premises facility, but the hardware is still owned and managed by AWS, not by ClearVault Bank; the use case here is about physical server dedication and licence management in the AWS cloud, not on-premises deployment. ✗ (d) AWS Wavelength embeds AWS compute in telecommunications providers\' 5G networks for ultra-low mobile latency; it is unrelated to dedicated hardware tenancy or software licence management.",
     docUrl: 'https://docs.aws.amazon.com/translate/latest/dg/what-is.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -2448,7 +2448,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-082',
-    text: "Netflix's network engineering team is running HPC workloads on a cluster of EC2 instances that need extremely high bandwidth and low latency between nodes for distributed rendering jobs. They need up to 100 Gbps network throughput. Which EC2 networking feature enables this?",
+    text: "StreamVault's network engineering team is running HPC workloads on a cluster of EC2 instances that need extremely high bandwidth and low latency between nodes for distributed rendering jobs. They need up to 100 Gbps network throughput. Which EC2 networking feature enables this?",
     options: [
       { id: 'a', text: 'Connect the cluster nodes via AWS Transit Gateway for low-latency inter-node routing' },
       { id: 'b', text: 'Provision an AWS Direct Connect connection to carry high-bandwidth intra-cluster traffic' },
@@ -2496,7 +2496,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-085',
-    text: "Barclays stores millions of customer documents in Amazon S3, including identity verification files, financial statements, and loan agreements. The compliance team needs automatic discovery and classification of any S3 objects that contain personally identifiable information (PII) or financial account data. Which AWS service provides this ML-driven data classification?",
+    text: "ClearVault Bank stores millions of customer documents in Amazon S3, including identity verification files, financial statements, and loan agreements. The compliance team needs automatic discovery and classification of any S3 objects that contain personally identifiable information (PII) or financial account data. Which AWS service provides this ML-driven data classification?",
     options: [
       { id: 'a', text: 'Use AWS Glue Data Catalog to catalogue all S3 objects and tag sensitive data manually' },
       { id: 'b', text: 'Enable Amazon Macie, which uses machine learning to automatically discover and classify sensitive data such as PII in S3' },
@@ -2512,7 +2512,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-086',
-    text: "Flipkart wants to add a \"Customers Also Bought\" recommendation engine to their product pages. The data science team does not have deep ML expertise but needs real-time personalised recommendations that improve as more purchase and browsing data is collected. Which AWS service is purpose-built for this use case?",
+    text: "ShopNest wants to add a \"Customers Also Bought\" recommendation engine to their product pages. The data science team does not have deep ML expertise but needs real-time personalised recommendations that improve as more purchase and browsing data is collected. Which AWS service is purpose-built for this use case?",
     options: [
       { id: 'a', text: 'Build a custom collaborative filtering model using Amazon SageMaker and deploy it as an endpoint' },
       { id: 'b', text: 'Use Amazon Comprehend to analyse product descriptions and find similar items using NLP' },
@@ -2560,7 +2560,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-089',
-    text: "Netflix's content planning team wants to predict subscriber demand for new content categories over the next 12 months to guide commissioning decisions. The team has historical viewing data in S3 but no data scientists on staff. Which AWS service can build accurate time-series forecasts from their historical data without requiring ML expertise?",
+    text: "StreamVault's content planning team wants to predict subscriber demand for new content categories over the next 12 months to guide commissioning decisions. The team has historical viewing data in S3 but no data scientists on staff. Which AWS service can build accurate time-series forecasts from their historical data without requiring ML expertise?",
     options: [
       { id: 'a', text: 'Use Amazon Comprehend to analyse viewer sentiment and extrapolate future demand' },
       { id: 'b', text: 'Use Amazon Forecast, a fully managed ML service that generates highly accurate demand forecasts from historical time-series data without requiring ML expertise' },
@@ -2576,7 +2576,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-090',
-    text: "Barclays' data analysts need to run ad-hoc SQL queries on terabytes of raw transaction logs stored in Amazon S3 — logs arrive daily and the team queries them infrequently for compliance investigations. They want zero infrastructure to manage and to pay only for the data scanned per query. Which AWS service fits this requirement?",
+    text: "ClearVault Bank' data analysts need to run ad-hoc SQL queries on terabytes of raw transaction logs stored in Amazon S3 — logs arrive daily and the team queries them infrequently for compliance investigations. They want zero infrastructure to manage and to pay only for the data scanned per query. Which AWS service fits this requirement?",
     options: [
       { id: 'a', text: 'Load the logs into Amazon Redshift and run SQL queries against the managed data warehouse' },
       { id: 'b', text: 'Process the logs with Amazon EMR Spark jobs and cache results in Amazon S3 for SQL access' },
@@ -2612,7 +2612,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-002',
-    text: "Barclays' FinOps team wants to set a monthly AWS spending cap of £50,000 for each business unit and receive an email notification when actual or forecast spend reaches 80% of that limit — before overspending occurs. Which AWS tool is designed for this purpose?",
+    text: "ClearVault Bank' FinOps team wants to set a monthly AWS spending cap of £50,000 for each business unit and receive an email notification when actual or forecast spend reaches 80% of that limit — before overspending occurs. Which AWS tool is designed for this purpose?",
     options: [
       { id: 'a', text: 'Use AWS Cost Explorer to set a spending threshold and configure email alerts' },
       { id: 'b', text: 'Use AWS Budgets to define a cost budget with alert thresholds that trigger SNS or email notifications' },
@@ -2628,7 +2628,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-003',
-    text: "Flipkart's engineering leadership wants to understand which AWS services drove the highest costs over the past 12 months and identify whether there are seasonal spend spikes correlated with sale events. Which AWS tool provides interactive charts and historical cost visualisation for this analysis?",
+    text: "ShopNest's engineering leadership wants to understand which AWS services drove the highest costs over the past 12 months and identify whether there are seasonal spend spikes correlated with sale events. Which AWS tool provides interactive charts and historical cost visualisation for this analysis?",
     options: [
       { id: 'a', text: 'Use AWS Budgets to review past spending and identify which budgets were exceeded' },
       { id: 'b', text: 'Use AWS Cost Explorer to visualise historical costs and usage with interactive filters by service, region, and time period' },
@@ -2660,7 +2660,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-005',
-    text: "Netflix is planning a major global content release and wants AWS to provide proactive architectural guidance, dedicated support, and a 15-minute response SLA for any business-critical outage during the launch window. Which AWS support plan includes a dedicated Technical Account Manager and this response time?",
+    text: "StreamVault is planning a major global content release and wants AWS to provide proactive architectural guidance, dedicated support, and a 15-minute response SLA for any business-critical outage during the launch window. Which AWS support plan includes a dedicated Technical Account Manager and this response time?",
     options: [
       { id: 'a', text: 'AWS Business Support — provides 1-hour response and access to Cloud Support Engineers' },
       { id: 'b', text: 'AWS Enterprise On-Ramp Support — provides a pool of TAMs and 30-minute response for critical issues' },
@@ -2668,7 +2668,7 @@ export const clf02BillingQuestions: Question[] = [
       { id: 'd', text: 'AWS Developer Support — provides architectural guidance through Trusted Advisor checks' },
     ],
     correctOptionId: 'c',
-    explanation: "AWS Enterprise Support includes a dedicated Technical Account Manager (TAM), 15-minute response for business-critical outages, and access to the AWS Support Concierge Service. ✓ (c) Only Enterprise Support provides a dedicated TAM (not a shared pool), the 15-minute critical response SLA, and Infrastructure Event Management for high-stakes launches. ✗ (a) Business Support provides 24/7 support with a 1-hour critical response SLA but does not include a dedicated TAM or the 15-minute SLA Netflix requires. ✗ (b) Enterprise On-Ramp offers a pool of TAMs (not dedicated) and a 30-minute critical response SLA, which falls short of the 15-minute requirement. ✗ (d) Developer Support is designed for development environments with business-hours email access and does not include proactive architectural guidance or fast critical response SLAs.",
+    explanation: "AWS Enterprise Support includes a dedicated Technical Account Manager (TAM), 15-minute response for business-critical outages, and access to the AWS Support Concierge Service. ✓ (c) Only Enterprise Support provides a dedicated TAM (not a shared pool), the 15-minute critical response SLA, and Infrastructure Event Management for high-stakes launches. ✗ (a) Business Support provides 24/7 support with a 1-hour critical response SLA but does not include a dedicated TAM or the 15-minute SLA StreamVault requires. ✗ (b) Enterprise On-Ramp offers a pool of TAMs (not dedicated) and a 30-minute critical response SLA, which falls short of the 15-minute requirement. ✗ (d) Developer Support is designed for development environments with business-hours email access and does not include proactive architectural guidance or fast critical response SLAs.",
     docUrl: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -2708,7 +2708,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-008',
-    text: "Barclays manages 15 separate AWS accounts — one per department — and wants to consolidate billing into a single monthly invoice. More importantly, they want aggregate usage across all accounts to qualify for volume pricing tiers on S3 and data transfer that no individual account would reach alone. Which AWS feature enables this?",
+    text: "ClearVault Bank manages 15 separate AWS accounts — one per department — and wants to consolidate billing into a single monthly invoice. More importantly, they want aggregate usage across all accounts to qualify for volume pricing tiers on S3 and data transfer that no individual account would reach alone. Which AWS feature enables this?",
     options: [
       { id: 'a', text: 'Enable AWS Organizations with Consolidated Billing so all member account usage is pooled for volume discounts and a single bill is generated' },
       { id: 'b', text: 'Set up AWS Budgets at the organisation level to merge all department spending into one view' },
@@ -2740,7 +2740,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-010',
-    text: "Flipkart's digital marketing team needs to spin up EC2 instances for a short-term A/B testing campaign that will run for exactly three weeks. The workload cannot be interrupted and the timeline is fixed. Which EC2 purchasing option provides the most flexibility for this type of short-term, uninterruptible workload?",
+    text: "ShopNest's digital marketing team needs to spin up EC2 instances for a short-term A/B testing campaign that will run for exactly three weeks. The workload cannot be interrupted and the timeline is fixed. Which EC2 purchasing option provides the most flexibility for this type of short-term, uninterruptible workload?",
     options: [
       { id: 'a', text: 'Purchase Reserved Instances for the campaign period to get discounted pricing' },
       { id: 'b', text: 'Use Spot Instances to take advantage of spare EC2 capacity at a lower cost' },
@@ -2756,7 +2756,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-011',
-    text: "Barclays' finance team needs to perform a detailed audit of AWS spending — broken down by individual resource, hour by hour, with tags identifying the business unit and project. The data must be deliverable to S3 for analysis in Amazon Athena. Which AWS cost tool provides this level of granularity?",
+    text: "ClearVault Bank' finance team needs to perform a detailed audit of AWS spending — broken down by individual resource, hour by hour, with tags identifying the business unit and project. The data must be deliverable to S3 for analysis in Amazon Athena. Which AWS cost tool provides this level of granularity?",
     options: [
       { id: 'a', text: 'Use AWS Cost Explorer with daily granularity and resource-level filtering' },
       { id: 'b', text: 'Use AWS Budgets reports to export spending data broken down by service and tag' },
@@ -2820,7 +2820,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-015',
-    text: "Flipkart's data engineering team is evaluating AWS data transfer costs. Their pipeline uploads 50 TB of product catalogue data per day from their on-premises systems into Amazon S3. A junior engineer asks whether inbound data transfers into AWS are charged. What is the correct answer?",
+    text: "ShopNest's data engineering team is evaluating AWS data transfer costs. Their pipeline uploads 50 TB of product catalogue data per day from their on-premises systems into Amazon S3. A junior engineer asks whether inbound data transfers into AWS are charged. What is the correct answer?",
     options: [
       { id: 'a', text: 'True — inbound data transfer (from the internet into AWS) is free for most AWS services; outbound transfers are charged based on volume' },
       { id: 'b', text: 'False — both inbound and outbound data transfer incur charges; inbound is just priced lower' },
@@ -2828,7 +2828,7 @@ export const clf02BillingQuestions: Question[] = [
       { id: 'd', text: 'True — but inbound transfer is only free for the first 10 GB per month; beyond that, standard rates apply' },
     ],
     correctOptionId: 'a',
-    explanation: "For most AWS services, inbound data transfer (from the internet into AWS) is free. Outbound data transfer (from AWS to the internet) is charged based on volume, with tiered pricing. ✓ (a) AWS does not charge for data transferred in from the internet to S3 or most services, regardless of volume — Flipkart\'s 50 TB/day upload incurs no inbound transfer fee. ✗ (b) Inbound data transfer from the internet into AWS is free, not just priced lower; only outbound transfers to the internet are charged. ✗ (c) Inbound transfer is not billed at a reduced rate — it is free for most services; this statement incorrectly implies a charge exists. ✗ (d) There is no 10 GB free-then-charged model for inbound internet-to-AWS data transfer; inbound is free without any cap for standard services like S3.",
+    explanation: "For most AWS services, inbound data transfer (from the internet into AWS) is free. Outbound data transfer (from AWS to the internet) is charged based on volume, with tiered pricing. ✓ (a) AWS does not charge for data transferred in from the internet to S3 or most services, regardless of volume — ShopNest\'s 50 TB/day upload incurs no inbound transfer fee. ✗ (b) Inbound data transfer from the internet into AWS is free, not just priced lower; only outbound transfers to the internet are charged. ✗ (c) Inbound transfer is not billed at a reduced rate — it is free for most services; this statement incorrectly implies a charge exists. ✗ (d) There is no 10 GB free-then-charged model for inbound internet-to-AWS data transfer; inbound is free without any cap for standard services like S3.",
     docUrl: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-managing-costs.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -2852,7 +2852,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-017',
-    text: "Barclays' FinOps team is comparing Reserved Instance payment options for a 3-year commitment on a production database fleet. They want to maximise savings and are comfortable paying the full cost upfront. Which RI payment option delivers the largest discount?",
+    text: "ClearVault Bank' FinOps team is comparing Reserved Instance payment options for a 3-year commitment on a production database fleet. They want to maximise savings and are comfortable paying the full cost upfront. Which RI payment option delivers the largest discount?",
     options: [
       { id: 'a', text: 'No Upfront — pay monthly with no initial cost, maximum flexibility' },
       { id: 'b', text: 'Partial Upfront — pay a portion upfront and the remainder monthly' },
@@ -2884,15 +2884,15 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-019',
-    text: "Flipkart stores petabytes of product images, seller videos, and customer review photos in Amazon S3. Their storage team notices that as monthly stored GBs increase, the per-GB rate on their bill decreases. Which AWS pricing principle explains this behaviour?",
+    text: "ShopNest stores petabytes of product images, seller videos, and customer review photos in Amazon S3. Their storage team notices that as monthly stored GBs increase, the per-GB rate on their bill decreases. Which AWS pricing principle explains this behaviour?",
     options: [
-      { id: 'a', text: 'Reserved pricing — Flipkart purchased storage capacity upfront at a discounted rate' },
+      { id: 'a', text: 'Reserved pricing — ShopNest purchased storage capacity upfront at a discounted rate' },
       { id: 'b', text: 'Volume-based tiered pricing — the per-unit cost decreases automatically as total usage crosses higher volume thresholds' },
       { id: 'c', text: 'Spot pricing — unused S3 capacity is offered at a discount when AWS has surplus storage' },
-      { id: 'd', text: 'Savings Plans — Flipkart committed to a consistent storage usage level and receives a discount' },
+      { id: 'd', text: 'Savings Plans — ShopNest committed to a consistent storage usage level and receives a discount' },
     ],
     correctOptionId: 'b',
-    explanation: "AWS uses tiered pricing for many services (like S3 storage and data transfer) where the per-unit price decreases as your usage volume increases — encouraging higher usage. ✓ (b) S3 Standard storage automatically applies tiered pricing: lower per-GB rates kick in at 50 TB/month and again at 500 TB/month — no action required from the customer. ✗ (a) Reserved pricing requires an explicit upfront commitment; S3 does not have a reserved capacity purchasing model — the tiered rate reduction is automatic with usage volume. ✗ (c) Spot pricing applies to unused EC2 compute capacity and does not exist for S3 storage; S3 pricing is not based on AWS surplus capacity. ✗ (d) Savings Plans apply to compute services (EC2, Lambda, Fargate) and not to S3 storage; no commitment is needed for Flipkart\'s S3 volume discount to apply.",
+    explanation: "AWS uses tiered pricing for many services (like S3 storage and data transfer) where the per-unit price decreases as your usage volume increases — encouraging higher usage. ✓ (b) S3 Standard storage automatically applies tiered pricing: lower per-GB rates kick in at 50 TB/month and again at 500 TB/month — no action required from the customer. ✗ (a) Reserved pricing requires an explicit upfront commitment; S3 does not have a reserved capacity purchasing model — the tiered rate reduction is automatic with usage volume. ✗ (c) Spot pricing applies to unused EC2 compute capacity and does not exist for S3 storage; S3 pricing is not based on AWS surplus capacity. ✗ (d) Savings Plans apply to compute services (EC2, Lambda, Fargate) and not to S3 storage; no commitment is needed for ShopNest\'s S3 volume discount to apply.",
     docUrl: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-limits.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -2900,11 +2900,11 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-020',
-    text: "During a Barclays cloud strategy presentation, an executive asks why AWS prices have consistently decreased over the years even as the bank's usage has grown. An AWS solutions architect explains this by referencing economies of scale. Which explanation best describes this concept in the context of AWS?",
+    text: "During a ClearVault Bank cloud strategy presentation, an executive asks why AWS prices have consistently decreased over the years even as the bank's usage has grown. An AWS solutions architect explains this by referencing economies of scale. Which explanation best describes this concept in the context of AWS?",
     options: [
       { id: 'a', text: 'AWS charges less in regions with lower infrastructure costs, so choosing cheaper regions reduces the bill' },
       { id: 'b', text: 'Because AWS operates at massive global scale, its per-unit infrastructure costs fall over time and those savings are passed on to customers through periodic price reductions' },
-      { id: 'c', text: 'Large enterprise customers like Barclays receive better pricing and support than small businesses due to their negotiating power' },
+      { id: 'c', text: 'Large enterprise customers like ClearVault Bank receive better pricing and support than small businesses due to their negotiating power' },
       { id: 'd', text: 'The longer a customer uses AWS, the more loyalty discounts they accumulate over time' },
     ],
     correctOptionId: 'b',
@@ -2932,7 +2932,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-022',
-    text: "Netflix's backend team deployed a new image processing feature using AWS Lambda. The finance team asks: how exactly is Lambda billed, since it has no servers running continuously? Which pricing model does Lambda use?",
+    text: "StreamVault's backend team deployed a new image processing feature using AWS Lambda. The finance team asks: how exactly is Lambda billed, since it has no servers running continuously? Which pricing model does Lambda use?",
     options: [
       { id: 'a', text: 'Lambda is billed per hour of execution, similar to EC2 On-Demand pricing but at a lower rate' },
       { id: 'b', text: 'Lambda is billed based on the number of function versions deployed and active in the account' },
@@ -2940,7 +2940,7 @@ export const clf02BillingQuestions: Question[] = [
       { id: 'd', text: 'Lambda charges a flat monthly fee per function regardless of how often it runs' },
     ],
     correctOptionId: 'c',
-    explanation: "AWS Lambda is billed based on two dimensions: the number of requests (first 1M free per month) and the duration of execution (measured in GB-seconds, first 400,000 GB-seconds free per month). ✓ (c) Lambda pricing has exactly two meters: invocation count ($/million requests after the free tier) and GB-seconds of duration (memory allocated × execution time in seconds), ensuring Netflix only pays when code actually runs. ✗ (a) Lambda is not billed by the hour like EC2; it is billed in millisecond increments of actual execution time — idle time between invocations costs nothing. ✗ (b) Lambda pricing is not based on the number of deployed function versions; you can have many versions published without incurring charges unless they are actually invoked. ✗ (d) Lambda does not charge a flat monthly fee per function; a function that is never invoked incurs zero cost (excluding any provisioned concurrency that may be configured).",
+    explanation: "AWS Lambda is billed based on two dimensions: the number of requests (first 1M free per month) and the duration of execution (measured in GB-seconds, first 400,000 GB-seconds free per month). ✓ (c) Lambda pricing has exactly two meters: invocation count ($/million requests after the free tier) and GB-seconds of duration (memory allocated × execution time in seconds), ensuring StreamVault only pays when code actually runs. ✗ (a) Lambda is not billed by the hour like EC2; it is billed in millisecond increments of actual execution time — idle time between invocations costs nothing. ✗ (b) Lambda pricing is not based on the number of deployed function versions; you can have many versions published without incurring charges unless they are actually invoked. ✗ (d) Lambda does not charge a flat monthly fee per function; a function that is never invoked incurs zero cost (excluding any provisioned concurrency that may be configured).",
     docUrl: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-managing-costs.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -2964,7 +2964,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-024',
-    text: "Barclays is reviewing AWS EC2 pricing for a budget forecast. A junior analyst lists several factors that affect instance cost: instance type, region, and operating system. They then add the account holder's personal profile to the list. Which item does NOT affect EC2 pricing?",
+    text: "ClearVault Bank is reviewing AWS EC2 pricing for a budget forecast. A junior analyst lists several factors that affect instance cost: instance type, region, and operating system. They then add the account holder's personal profile to the list. Which item does NOT affect EC2 pricing?",
     options: [
       { id: 'a', text: 'Instance type (the combination of vCPUs and memory, e.g. m5.large vs c5.2xlarge)' },
       { id: 'b', text: 'AWS Region where the instance is launched (e.g. us-east-1 vs ap-south-1)' },
@@ -3012,7 +3012,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-027',
-    text: "Flipkart stores seller catalogues, product images, and video assets in Amazon S3. The FinOps team is reviewing the S3 bill and wants to understand which factors actually drive S3 costs. A developer suggests that the number of IAM users with access to a bucket should be included. Which S3 pricing factor does NOT exist?",
+    text: "ShopNest stores seller catalogues, product images, and video assets in Amazon S3. The FinOps team is reviewing the S3 bill and wants to understand which factors actually drive S3 costs. A developer suggests that the number of IAM users with access to a bucket should be included. Which S3 pricing factor does NOT exist?",
     options: [
       { id: 'a', text: 'The total amount of data stored in GB per month across all storage classes' },
       { id: 'b', text: 'The volume of data transferred out of S3 to the internet or other AWS services' },
@@ -3028,7 +3028,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-028',
-    text: "Barclays uses AWS Organizations with 20 linked accounts. The central FinOps team purchased a large block of Reserved Instances in the management account. The team wants these RI discounts to automatically apply to matching instance usage across all linked accounts — not just the management account. Which configuration enables this?",
+    text: "ClearVault Bank uses AWS Organizations with 20 linked accounts. The central FinOps team purchased a large block of Reserved Instances in the management account. The team wants these RI discounts to automatically apply to matching instance usage across all linked accounts — not just the management account. Which configuration enables this?",
     options: [
       { id: 'a', text: 'Apply Service Control Policies (SCPs) that grant linked accounts the right to inherit RI pricing from the management account' },
       { id: 'b', text: 'Enable Consolidated Billing with RI sharing turned on in AWS Organizations — Reserved Instance benefits are then automatically shared across all member accounts' },
@@ -3044,7 +3044,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-029',
-    text: "Netflix is planning to launch a new global streaming service and expects extremely high traffic on the launch day. They want AWS to provide dedicated operational support, architectural reviews, and hands-on guidance during the launch event to minimise risk. Which AWS support plan includes Infrastructure Event Management (IEM) for high-stakes events like this?",
+    text: "StreamVault is planning to launch a new global streaming service and expects extremely high traffic on the launch day. They want AWS to provide dedicated operational support, architectural reviews, and hands-on guidance during the launch event to minimise risk. Which AWS support plan includes Infrastructure Event Management (IEM) for high-stakes events like this?",
     options: [
       { id: 'a', text: 'AWS Developer Support — provides architectural guidance via email during business hours' },
       { id: 'b', text: 'AWS Business Support — provides 24/7 support but IEM is available for an additional per-event fee' },
@@ -3052,7 +3052,7 @@ export const clf02BillingQuestions: Question[] = [
       { id: 'd', text: 'AWS Basic Support — AWS provides self-service runbooks for common high-traffic events' },
     ],
     correctOptionId: 'c',
-    explanation: "AWS Enterprise Support includes Infrastructure Event Management (IEM), where AWS provides architectural and operational guidance for high-stakes events like product launches, migrations, and live events. ✓ (c) Enterprise Support bundles IEM at no additional charge, giving Netflix access to a dedicated AWS team for architectural reviews, runbook preparation, and real-time operational support during the launch. ✗ (a) Developer Support offers business-hours email access for a single contact; it does not include proactive event management, architectural reviews, or hands-on launch support. ✗ (b) Business Support customers can purchase IEM as a paid add-on per event, but it is not included in the plan — the question asks which plan includes it, making Enterprise the correct answer. ✗ (d) Basic Support provides only self-service resources (documentation, forums, FAQs); there is no AWS-staffed proactive engagement or runbook assistance at this tier.",
+    explanation: "AWS Enterprise Support includes Infrastructure Event Management (IEM), where AWS provides architectural and operational guidance for high-stakes events like product launches, migrations, and live events. ✓ (c) Enterprise Support bundles IEM at no additional charge, giving StreamVault access to a dedicated AWS team for architectural reviews, runbook preparation, and real-time operational support during the launch. ✗ (a) Developer Support offers business-hours email access for a single contact; it does not include proactive event management, architectural reviews, or hands-on launch support. ✗ (b) Business Support customers can purchase IEM as a paid add-on per event, but it is not included in the plan — the question asks which plan includes it, making Enterprise the correct answer. ✗ (d) Basic Support provides only self-service resources (documentation, forums, FAQs); there is no AWS-staffed proactive engagement or runbook assistance at this tier.",
     docUrl: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-managing-costs.html',
     difficulty: 'advanced',
     category: 'clf-c02',
@@ -3092,7 +3092,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-032',
-    text: "Barclays is migrating their core trade settlement system to AWS. The workload requires a specific EC2 instance type (r6i.8xlarge) running 24/7 for the next three years, with no anticipated changes to instance family or region. Finance wants the absolute lowest total cost of ownership for this commitment. Which purchasing option should they choose?",
+    text: "ClearVault Bank is migrating their core trade settlement system to AWS. The workload requires a specific EC2 instance type (r6i.8xlarge) running 24/7 for the next three years, with no anticipated changes to instance family or region. Finance wants the absolute lowest total cost of ownership for this commitment. Which purchasing option should they choose?",
     options: [
       { id: 'a', text: 'Use On-Demand Instances to maintain flexibility in case business needs change over three years' },
       { id: 'b', text: 'Use Spot Instances with aggressive interruption handling to minimise costs for this critical workload' },
