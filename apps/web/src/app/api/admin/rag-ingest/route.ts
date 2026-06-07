@@ -27,6 +27,7 @@ import { flashcardDecks } from '@/data/flashcards';
 import { eksCoreksFlashcardDecks } from '@/data/eks-coreks-flashcards';
 import { LEARNING_PATHS, type LearningPath, type LearningStep } from '@/data/learningPaths';
 import { clfC02ModuleQuestions } from '@/data/clf-c02-module-questions';
+import { MODULE_NOTES, type ModuleNotes, type NoteSection } from '@/data/moduleNotes';
 import {
   clf02CloudConceptsQuestions,
   clf02SecurityQuestions,
@@ -145,6 +146,30 @@ function learningPathChunk(path: LearningPath, step: LearningStep): ChunkRow {
   };
 }
 
+function noteSectionChunk(notes: ModuleNotes, section: NoteSection, idx: number): ChunkRow {
+  const content = [
+    `Module: ${notes.title}`,
+    `Section: ${section.heading}`,
+    ``,
+    section.body,
+    section.keyPoints?.length ? `\nKey points:\n- ${section.keyPoints.join('\n- ')}` : '',
+  ].filter(Boolean).join('\n').slice(0, 4000);
+
+  return {
+    corpus: 'module-notes',
+    source_type: 'notes',
+    content_hash: sha256Hex(content),
+    title: `${notes.title}: ${section.heading}`.slice(0, 200),
+    content,
+    metadata: {
+      module_id: notes.moduleId,
+      module_title: notes.title,
+      section_index: idx,
+      has_diagram: Boolean(section.diagram),
+    },
+  };
+}
+
 function buildCorpusChunks(): Record<string, ChunkRow[]> {
   // Question banks
   const clfQs: Question[] = [
@@ -187,7 +212,11 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
     'learning-paths': LEARNING_PATHS.flatMap((path) =>
       path.steps.map((step) => learningPathChunk(path, step)),
     ),
-    // CLF-C02 module question banks (from AWS T&C 2025 Instructor Decks)
+    // Module reading notes — detailed study material per CLF-C02 module
+    'module-notes': Object.values(MODULE_NOTES).flatMap((notes) =>
+      notes.sections.map((section, i) => noteSectionChunk(notes, section, i)),
+    ),
+    // CLF-C02 module question banks (from the AWS Cloud Practitioner Essentials curriculum)
     ...Object.fromEntries(
       Object.entries(pptByModule).map(([mid, qs]) => [
         mid,

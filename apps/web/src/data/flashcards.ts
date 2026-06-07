@@ -200,7 +200,7 @@ export const flashcardDecks: FlashcardDeck[] = [
   },
 
 
-  // ── CLF-C02 Module Decks (AWS T&C 2025 Instructor Decks) ──
+  // ── CLF-C02 Module Decks (AWS Cloud Practitioner Essentials) ──
   {
     id: 'clf-c02-m01',
     title: 'CLF-C02: Introduction to AWS',

@@ -1,5 +1,5 @@
 /**
- * CLF-C02 Module Questions — generated from AWS T&C 2025 Instructor Decks
+ * CLF-C02 Module Questions — generated from the AWS Cloud Practitioner Essentials curriculum
  * 47 MCQ questions covering all CLF-C02 exam domains.
  */
 import type { Question } from '@/types';

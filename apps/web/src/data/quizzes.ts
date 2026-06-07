@@ -53,7 +53,7 @@ export const quizzes: Quiz[] = [
     examCode: 'CLF-C02',
   },
 
-  // ── CLF-C02 Module Quizzes (AWS T&C 2025 Instructor Decks) ──────────────────
+  // ── CLF-C02 Module Quizzes (AWS Cloud Practitioner Essentials) ──────────────────
   {
     id: 'aws-intro',
     title: 'Module 1: Introduction to AWS',
@@ -406,7 +406,7 @@ export const quizQuestions: Record<string, Question[]> = {
   'clf-c02-technology':     clf02TechnologyQuestions,
   'clf-c02-billing':        clf02BillingQuestions,
 
-  // ── CLF-C02 Module Quizzes (AWS T&C 2025 Instructor Decks) ──────────────────
+  // ── CLF-C02 Module Quizzes (AWS Cloud Practitioner Essentials) ──────────────────
   'aws-intro':             aws_introQuestions,
   'compute-cloud':         compute_cloudQuestions,
   'global-infra':          global_infraQuestions,

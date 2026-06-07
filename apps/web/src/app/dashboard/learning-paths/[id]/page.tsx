@@ -36,6 +36,9 @@ function stepHref(step: LearningStep): string | null {
     const deck = flashcardDecks.find((d) => d.id === step.resourceId);
     return deck ? `/dashboard/flashcards/${step.resourceId}` : null;
   }
+  if (step.type === 'notes') {
+    return `/dashboard/learning-paths/notes/${step.resourceId}`;
+  }
   return null;
 }
 
@@ -46,6 +49,7 @@ export default function LearningPathDetailPage() {
 
   const [results, setResults] = useState<QuizResult[]>([]);
   const [flashDone, setFlashDone] = useState<Set<string>>(new Set());
+  const [notesRead, setNotesRead] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -55,9 +59,11 @@ export default function LearningPathDetailPage() {
       if (remote.length > 0) setResults(remote);
     });
 
-    // Flashcard decks are "done" once at least one card is marked known
+    // Flashcard decks are "done" once at least one card is marked known;
+    // notes steps are "done" once the reading page has been opened.
     if (typeof window !== 'undefined' && path) {
       const done = new Set<string>();
+      const read = new Set<string>();
       for (const step of path.steps) {
         if (step.type === 'flashcard') {
           try {
@@ -65,8 +71,12 @@ export default function LearningPathDetailPage() {
             if (raw && (JSON.parse(raw) as string[]).length > 0) done.add(step.id);
           } catch { /* ignore */ }
         }
+        if (step.type === 'notes' && localStorage.getItem(`notes-read-${step.resourceId}`) === '1') {
+          read.add(step.id);
+        }
       }
       setFlashDone(done);
+      setNotesRead(read);
     }
   }, [id]);
 
@@ -76,9 +86,10 @@ export default function LearningPathDetailPage() {
     for (const step of path.steps) {
       if (step.type === 'quiz' && results.some((r) => r.quizId === step.resourceId)) done.add(step.id);
       if (step.type === 'flashcard' && flashDone.has(step.id)) done.add(step.id);
+      if (step.type === 'notes' && notesRead.has(step.id)) done.add(step.id);
     }
     return done;
-  }, [path, results, flashDone]);
+  }, [path, results, flashDone, notesRead]);
 
   if (!path) {
     return (
@@ -181,7 +192,7 @@ export default function LearningPathDetailPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 3 }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{step.title}</span>
                   <span className="vx-badge vx-badge-secondary" style={{ fontSize: 10 }}>
-                    {step.type === 'flashcard' ? '🃏 Flashcards' : '📝 Quiz'}
+                    {step.type === 'notes' ? '📖 Read' : step.type === 'flashcard' ? '🃏 Flashcards' : '📝 Quiz'}
                   </span>
                   {isNext && <span className="vx-badge" style={{ fontSize: 10, background: `${path.color}20`, color: path.color }}>Up next</span>}
                 </div>

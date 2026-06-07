@@ -7,7 +7,7 @@
  * estimated minutes to complete.
  */
 
-export type StepType = 'video' | 'flashcard' | 'quiz';
+export type StepType = 'video' | 'flashcard' | 'quiz' | 'notes';
 
 export interface LearningStep {
   id: string;
@@ -39,12 +39,22 @@ export const LEARNING_PATHS: LearningPath[] = [
     id: 'clf-c02',
     certCode: 'CLF-C02',
     certName: 'AWS Cloud Practitioner',
-    tagline: 'Official AWS T&C 2025 curriculum — 9 modules → domain consolidation → full exam. 55 flashcards, 47 MCQs, 82 diagrams.',
+    tagline: 'Official AWS Cloud Practitioner Essentials curriculum — read, drill, and test across 9 modules, then consolidate by domain before the full exam.',
     difficulty: 'Beginner',
-    totalHours: 10,
+    totalHours: 11,
     color: '#FF9F43',
     steps: [
       // ── Module 1: Introduction to AWS ──────────────────────────────────────
+      {
+        id: 'clf-m01-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m01',
+        title: 'Read: Introduction to AWS',
+        subtitle: 'Detailed notes · cloud models, 6 benefits, global infrastructure',
+        estimatedMinutes: 12,
+        icon: 'book-open',
+        why: 'Start here. Detailed reading with architecture diagrams builds the mental model the flashcards and quiz then reinforce.',
+      },
       {
         id: 'clf-m01-flash',
         type: 'flashcard',
@@ -66,6 +76,16 @@ export const LEARNING_PATHS: LearningPath[] = [
         why: 'Validate cloud fundamentals — these questions mirror the Domain 1 style of the actual CLF-C02 exam.',
       },
       // ── Module 2: Compute in the Cloud ─────────────────────────────────────
+      {
+        id: 'clf-m02-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m02',
+        title: 'Read: Compute in the Cloud',
+        subtitle: 'Detailed notes · EC2, pricing, scaling, containers, Lambda',
+        estimatedMinutes: 18,
+        icon: 'book-open',
+        why: 'Compute is the largest exam topic. Read the full breakdown — with load-balancing and compute-spectrum diagrams — before drilling.',
+      },
       {
         id: 'clf-m02-flash',
         type: 'flashcard',
