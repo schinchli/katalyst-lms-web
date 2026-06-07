@@ -26,6 +26,7 @@ import type { FlashcardDeck, Flashcard } from '@/data/flashcards';
 import { flashcardDecks } from '@/data/flashcards';
 import { eksCoreksFlashcardDecks } from '@/data/eks-coreks-flashcards';
 import { LEARNING_PATHS, type LearningPath, type LearningStep } from '@/data/learningPaths';
+import { clfC02ModuleQuestions } from '@/data/clf-c02-module-questions';
 import {
   clf02CloudConceptsQuestions,
   clf02SecurityQuestions,
@@ -168,6 +169,14 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
   const eksDeckIds = new Set(eksCoreksFlashcardDecks.map((d) => d.id));
   const genericDecks = flashcardDecks.filter((d) => !eksDeckIds.has(d.id));
 
+  // Group PPT module questions by module corpus
+  const pptByModule: Record<string, Question[]> = {};
+  for (const q of clfC02ModuleQuestions) {
+    const mid = q.id.split('-q')[0].replace('ppt-', '');
+    if (!pptByModule[mid]) pptByModule[mid] = [];
+    pptByModule[mid].push(q);
+  }
+
   const out: Record<string, ChunkRow[]> = {
     'clf-c02':   clfQs.map((q) => questionChunk('clf-c02',   q)),
     'aip-c01':   aipQs.map((q) => questionChunk('aip-c01',   q)),
@@ -177,6 +186,13 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
     ),
     'learning-paths': LEARNING_PATHS.flatMap((path) =>
       path.steps.map((step) => learningPathChunk(path, step)),
+    ),
+    // CLF-C02 module question banks (from AWS T&C 2025 Instructor Decks)
+    ...Object.fromEntries(
+      Object.entries(pptByModule).map(([mid, qs]) => [
+        mid,
+        qs.map((q) => questionChunk(mid, q)),
+      ])
     ),
   };
   return out;
