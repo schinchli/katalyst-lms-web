@@ -108,6 +108,16 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       // ── Module 3: Global Infrastructure ────────────────────────────────────
       {
+        id: 'clf-m03-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m03',
+        title: 'Read: Global Infrastructure & Reliability',
+        subtitle: 'Detailed notes · Regions, AZs, Edge Locations, provisioning',
+        estimatedMinutes: 14,
+        icon: 'book-open',
+        why: 'Regions and AZs underpin every high-availability design. Read this before drilling — the diagrams make the hierarchy click.',
+      },
+      {
         id: 'clf-m03-flash',
         type: 'flashcard',
         resourceId: 'clf-c02-m03',
@@ -128,6 +138,16 @@ export const LEARNING_PATHS: LearningPath[] = [
         why: 'Questions about Regions, AZs, and Edge Locations appear in multiple CLF-C02 domains.',
       },
       // ── Module 4: Networking ────────────────────────────────────────────────
+      {
+        id: 'clf-m04-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m04',
+        title: 'Read: Networking',
+        subtitle: 'Detailed notes · VPC, subnets, security groups vs NACLs, Route 53',
+        estimatedMinutes: 16,
+        icon: 'book-open',
+        why: 'VPC is where every workload runs. The VPC architecture diagram and the stateful-vs-stateless firewall section are exam gold.',
+      },
       {
         id: 'clf-m04-flash',
         type: 'flashcard',
@@ -150,6 +170,16 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       // ── Module 5: Storage & Databases ──────────────────────────────────────
       {
+        id: 'clf-m05-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m05',
+        title: 'Read: Storage & Databases',
+        subtitle: 'Detailed notes · EBS, S3 classes, EFS, RDS, DynamoDB, Redshift',
+        estimatedMinutes: 18,
+        icon: 'book-open',
+        why: 'Choosing the right storage type and database family is heavily tested. Read the comparisons before the drill.',
+      },
+      {
         id: 'clf-m05-flash',
         type: 'flashcard',
         resourceId: 'clf-c02-m05',
@@ -170,6 +200,16 @@ export const LEARNING_PATHS: LearningPath[] = [
         why: 'S3 storage classes and database selection (RDS vs DynamoDB vs Redshift) are heavily tested.',
       },
       // ── Module 6: Security ──────────────────────────────────────────────────
+      {
+        id: 'clf-m06-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m06',
+        title: 'Read: Security',
+        subtitle: 'Detailed notes · Shared Responsibility, IAM, Organizations, services',
+        estimatedMinutes: 18,
+        icon: 'book-open',
+        why: 'Security is ~30% of the exam — the largest domain. The Shared Responsibility Model diagram alone is worth several marks.',
+      },
       {
         id: 'clf-m06-flash',
         type: 'flashcard',
@@ -192,6 +232,16 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       // ── Module 7: Monitoring & Analytics ───────────────────────────────────
       {
+        id: 'clf-m07-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m07',
+        title: 'Read: Monitoring & Analytics',
+        subtitle: 'Detailed notes · CloudWatch, CloudTrail, Trusted Advisor',
+        estimatedMinutes: 10,
+        icon: 'book-open',
+        why: 'CloudWatch (performance) vs CloudTrail (audit) is a classic exam trap. The notes make the distinction stick.',
+      },
+      {
         id: 'clf-m07-flash',
         type: 'flashcard',
         resourceId: 'clf-c02-m07',
@@ -213,6 +263,16 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
       // ── Module 8: Pricing & Support ────────────────────────────────────────
       {
+        id: 'clf-m08-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m08',
+        title: 'Read: Pricing & Support',
+        subtitle: 'Detailed notes · pricing models, Free Tier, cost tools, support plans',
+        estimatedMinutes: 15,
+        icon: 'book-open',
+        why: 'Domain 4 (Billing & Pricing). Know the cost tools and the support tiers — including which plan includes a TAM.',
+      },
+      {
         id: 'clf-m08-flash',
         type: 'flashcard',
         resourceId: 'clf-c02-m08',
@@ -233,6 +293,16 @@ export const LEARNING_PATHS: LearningPath[] = [
         why: 'Savings Plans vs Reserved Instances and the TAM availability in Enterprise Support are reliable exam questions.',
       },
       // ── Module 9: Migration & Innovation ───────────────────────────────────
+      {
+        id: 'clf-m09-notes',
+        type: 'notes',
+        resourceId: 'clf-c02-m09',
+        title: 'Read: Migration & Innovation',
+        subtitle: 'Detailed notes · CAF, the 6 R’s, Snow Family, AI services',
+        estimatedMinutes: 15,
+        icon: 'book-open',
+        why: 'The CAF perspectives, the migration R’s, and the AI service line-up are specific recall items. Read before the final drills.',
+      },
       {
         id: 'clf-m09-flash',
         type: 'flashcard',
