@@ -35,8 +35,115 @@ import {
   pricing_supportQuestions,
   migration_innovationQuestions,
 } from './clf-c02-module-questions';
+import {
+  arch_quiz_m01Questions,
+  arch_quiz_m02Questions,
+  arch_quiz_m03Questions,
+  arch_quiz_m04Questions,
+  arch_quiz_m05Questions,
+  arch_quiz_m06Questions,
+  arch_quiz_m07Questions,
+  arch_quiz_m08Questions,
+  arch_quiz_m09Questions,
+  arch_quiz_m10Questions,
+  arch_quiz_m11Questions,
+  arch_quiz_m12Questions,
+  arch_quiz_m13Questions,
+} from './architect-questions';
 
 export const quizzes: Quiz[] = [
+  // ── Architecting on AWS (SAA-C03) module quizzes ──
+  {
+    id: 'arch-quiz-m01',
+    title: 'Architecting M1: Architecting Fundamentals',
+    description: 'Scenario questions on Architecting Fundamentals from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🏛️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m02',
+    title: 'Architecting M2: Account Security',
+    description: 'Scenario questions on Account Security from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🔐', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m03',
+    title: 'Architecting M3: Networking 1',
+    description: 'Scenario questions on Networking 1 from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🔗', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m04',
+    title: 'Architecting M4: Compute',
+    description: 'Scenario questions on Compute from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '💻', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m05',
+    title: 'Architecting M5: Storage',
+    description: 'Scenario questions on Storage from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🗄️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m06',
+    title: 'Architecting M6: Database Services',
+    description: 'Scenario questions on Database Services from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🗃️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m07',
+    title: 'Architecting M7: Monitoring & Scaling',
+    description: 'Scenario questions on Monitoring & Scaling from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '📊', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m08',
+    title: 'Architecting M8: Automation',
+    description: 'Scenario questions on Automation from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '⚙️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m09',
+    title: 'Architecting M9: Containers',
+    description: 'Scenario questions on Containers from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '📦', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m10',
+    title: 'Architecting M10: Networking 2',
+    description: 'Scenario questions on Networking 2 from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🌐', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m11',
+    title: 'Architecting M11: Serverless',
+    description: 'Scenario questions on Serverless from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '⚡', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m12',
+    title: 'Architecting M12: Edge Services',
+    description: 'Scenario questions on Edge Services from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '🛰️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
+  {
+    id: 'arch-quiz-m13',
+    title: 'Architecting M13: Backup & Recovery',
+    description: 'Scenario questions on Backup & Recovery from the Architecting on AWS course.',
+    category: 'architect', difficulty: 'intermediate', questionCount: 4, duration: 8,
+    isPremium: false, price: 0, icon: '♻️', certLevel: 'associate', examCode: 'SAA-C03',
+  },
   // ── AWS Quick Start — 5 free beginner questions ──────────────────────────────
   {
     id: 'aws-quick-start',
@@ -336,6 +443,20 @@ export const quizzes: Quiz[] = [
 ];
 
 export const quizQuestions: Record<string, Question[]> = {
+  // ── Architecting on AWS module quizzes ──
+  'arch-quiz-m01': arch_quiz_m01Questions,
+  'arch-quiz-m02': arch_quiz_m02Questions,
+  'arch-quiz-m03': arch_quiz_m03Questions,
+  'arch-quiz-m04': arch_quiz_m04Questions,
+  'arch-quiz-m05': arch_quiz_m05Questions,
+  'arch-quiz-m06': arch_quiz_m06Questions,
+  'arch-quiz-m07': arch_quiz_m07Questions,
+  'arch-quiz-m08': arch_quiz_m08Questions,
+  'arch-quiz-m09': arch_quiz_m09Questions,
+  'arch-quiz-m10': arch_quiz_m10Questions,
+  'arch-quiz-m11': arch_quiz_m11Questions,
+  'arch-quiz-m12': arch_quiz_m12Questions,
+  'arch-quiz-m13': arch_quiz_m13Questions,
   // ── AWS Quick Start (5 inline beginner questions) ────────────────────────────
   'aws-quick-start': [
     {

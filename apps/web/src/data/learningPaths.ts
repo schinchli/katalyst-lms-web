@@ -742,6 +742,267 @@ export const LEARNING_PATHS: LearningPath[] = [
       },
     ],
   },
+  // ─────────────────────────────────────────────────────────────
+  // Architecting on AWS — SAA-C03 (associate)
+  // ─────────────────────────────────────────────────────────────
+  {
+    id: 'architect',
+    certCode: 'SAA-C03',
+    certName: 'Architecting on AWS',
+    tagline: 'The full Architecting on AWS course — 13 modules from fundamentals to disaster recovery. Read, drill, and test with scenario questions grounded in the official curriculum.',
+    difficulty: 'Intermediate',
+    totalHours: 6,
+    color: '#00CFE8',
+    steps: [
+      // ── Module 1: Architecting Fundamentals ──
+      {
+        id: 'arch-m01-notes', type: 'notes', resourceId: 'arch-m01',
+        title: 'Read: Architecting Fundamentals', subtitle: 'Study notes · Architecting Fundamentals',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Architecting Fundamentals concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m01-flash', type: 'flashcard', resourceId: 'arch-m01',
+        title: 'Module 1: Architecting Fundamentals', subtitle: '8 cards · Architecting Fundamentals',
+        estimatedMinutes: 8, icon: 'home',
+        why: 'Lock in the Architecting Fundamentals terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m01-quiz', type: 'quiz', resourceId: 'arch-quiz-m01',
+        title: 'Quiz: Architecting Fundamentals', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Architecting Fundamentals with associate-level scenario questions.',
+      },
+      // ── Module 2: Account Security ──
+      {
+        id: 'arch-m02-notes', type: 'notes', resourceId: 'arch-m02',
+        title: 'Read: Account Security', subtitle: 'Study notes · Account Security',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Account Security concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m02-flash', type: 'flashcard', resourceId: 'arch-m02',
+        title: 'Module 2: Account Security', subtitle: '8 cards · Account Security',
+        estimatedMinutes: 8, icon: 'lock',
+        why: 'Lock in the Account Security terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m02-quiz', type: 'quiz', resourceId: 'arch-quiz-m02',
+        title: 'Quiz: Account Security', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Account Security with associate-level scenario questions.',
+      },
+      // ── Module 3: Networking 1 ──
+      {
+        id: 'arch-m03-notes', type: 'notes', resourceId: 'arch-m03',
+        title: 'Read: Networking 1', subtitle: 'Study notes · Networking 1',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Networking 1 concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m03-flash', type: 'flashcard', resourceId: 'arch-m03',
+        title: 'Module 3: Networking 1', subtitle: '8 cards · Networking 1',
+        estimatedMinutes: 8, icon: 'git-branch',
+        why: 'Lock in the Networking 1 terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m03-quiz', type: 'quiz', resourceId: 'arch-quiz-m03',
+        title: 'Quiz: Networking 1', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Networking 1 with associate-level scenario questions.',
+      },
+      // ── Module 4: Compute ──
+      {
+        id: 'arch-m04-notes', type: 'notes', resourceId: 'arch-m04',
+        title: 'Read: Compute', subtitle: 'Study notes · Compute',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Compute concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m04-flash', type: 'flashcard', resourceId: 'arch-m04',
+        title: 'Module 4: Compute', subtitle: '8 cards · Compute',
+        estimatedMinutes: 8, icon: 'cpu',
+        why: 'Lock in the Compute terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m04-quiz', type: 'quiz', resourceId: 'arch-quiz-m04',
+        title: 'Quiz: Compute', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Compute with associate-level scenario questions.',
+      },
+      // ── Module 5: Storage ──
+      {
+        id: 'arch-m05-notes', type: 'notes', resourceId: 'arch-m05',
+        title: 'Read: Storage', subtitle: 'Study notes · Storage',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Storage concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m05-flash', type: 'flashcard', resourceId: 'arch-m05',
+        title: 'Module 5: Storage', subtitle: '8 cards · Storage',
+        estimatedMinutes: 8, icon: 'hard-drive',
+        why: 'Lock in the Storage terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m05-quiz', type: 'quiz', resourceId: 'arch-quiz-m05',
+        title: 'Quiz: Storage', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Storage with associate-level scenario questions.',
+      },
+      // ── Module 6: Database Services ──
+      {
+        id: 'arch-m06-notes', type: 'notes', resourceId: 'arch-m06',
+        title: 'Read: Database Services', subtitle: 'Study notes · Database Services',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Database Services concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m06-flash', type: 'flashcard', resourceId: 'arch-m06',
+        title: 'Module 6: Database Services', subtitle: '8 cards · Database Services',
+        estimatedMinutes: 8, icon: 'database',
+        why: 'Lock in the Database Services terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m06-quiz', type: 'quiz', resourceId: 'arch-quiz-m06',
+        title: 'Quiz: Database Services', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Database Services with associate-level scenario questions.',
+      },
+      // ── Module 7: Monitoring & Scaling ──
+      {
+        id: 'arch-m07-notes', type: 'notes', resourceId: 'arch-m07',
+        title: 'Read: Monitoring & Scaling', subtitle: 'Study notes · Monitoring & Scaling',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Monitoring & Scaling concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m07-flash', type: 'flashcard', resourceId: 'arch-m07',
+        title: 'Module 7: Monitoring & Scaling', subtitle: '8 cards · Monitoring & Scaling',
+        estimatedMinutes: 8, icon: 'bar-chart-2',
+        why: 'Lock in the Monitoring & Scaling terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m07-quiz', type: 'quiz', resourceId: 'arch-quiz-m07',
+        title: 'Quiz: Monitoring & Scaling', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Monitoring & Scaling with associate-level scenario questions.',
+      },
+      // ── Module 8: Automation ──
+      {
+        id: 'arch-m08-notes', type: 'notes', resourceId: 'arch-m08',
+        title: 'Read: Automation', subtitle: 'Study notes · Automation',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Automation concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m08-flash', type: 'flashcard', resourceId: 'arch-m08',
+        title: 'Module 8: Automation', subtitle: '8 cards · Automation',
+        estimatedMinutes: 8, icon: 'settings',
+        why: 'Lock in the Automation terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m08-quiz', type: 'quiz', resourceId: 'arch-quiz-m08',
+        title: 'Quiz: Automation', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Automation with associate-level scenario questions.',
+      },
+      // ── Module 9: Containers ──
+      {
+        id: 'arch-m09-notes', type: 'notes', resourceId: 'arch-m09',
+        title: 'Read: Containers', subtitle: 'Study notes · Containers',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Containers concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m09-flash', type: 'flashcard', resourceId: 'arch-m09',
+        title: 'Module 9: Containers', subtitle: '8 cards · Containers',
+        estimatedMinutes: 8, icon: 'box',
+        why: 'Lock in the Containers terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m09-quiz', type: 'quiz', resourceId: 'arch-quiz-m09',
+        title: 'Quiz: Containers', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Containers with associate-level scenario questions.',
+      },
+      // ── Module 10: Networking 2 ──
+      {
+        id: 'arch-m10-notes', type: 'notes', resourceId: 'arch-m10',
+        title: 'Read: Networking 2', subtitle: 'Study notes · Networking 2',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Networking 2 concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m10-flash', type: 'flashcard', resourceId: 'arch-m10',
+        title: 'Module 10: Networking 2', subtitle: '8 cards · Networking 2',
+        estimatedMinutes: 8, icon: 'globe',
+        why: 'Lock in the Networking 2 terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m10-quiz', type: 'quiz', resourceId: 'arch-quiz-m10',
+        title: 'Quiz: Networking 2', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Networking 2 with associate-level scenario questions.',
+      },
+      // ── Module 11: Serverless ──
+      {
+        id: 'arch-m11-notes', type: 'notes', resourceId: 'arch-m11',
+        title: 'Read: Serverless', subtitle: 'Study notes · Serverless',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Serverless concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m11-flash', type: 'flashcard', resourceId: 'arch-m11',
+        title: 'Module 11: Serverless', subtitle: '8 cards · Serverless',
+        estimatedMinutes: 8, icon: 'zap',
+        why: 'Lock in the Serverless terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m11-quiz', type: 'quiz', resourceId: 'arch-quiz-m11',
+        title: 'Quiz: Serverless', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Serverless with associate-level scenario questions.',
+      },
+      // ── Module 12: Edge Services ──
+      {
+        id: 'arch-m12-notes', type: 'notes', resourceId: 'arch-m12',
+        title: 'Read: Edge Services', subtitle: 'Study notes · Edge Services',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Edge Services concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m12-flash', type: 'flashcard', resourceId: 'arch-m12',
+        title: 'Module 12: Edge Services', subtitle: '8 cards · Edge Services',
+        estimatedMinutes: 8, icon: 'radio',
+        why: 'Lock in the Edge Services terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m12-quiz', type: 'quiz', resourceId: 'arch-quiz-m12',
+        title: 'Quiz: Edge Services', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Edge Services with associate-level scenario questions.',
+      },
+      // ── Module 13: Backup & Recovery ──
+      {
+        id: 'arch-m13-notes', type: 'notes', resourceId: 'arch-m13',
+        title: 'Read: Backup & Recovery', subtitle: 'Study notes · Backup & Recovery',
+        estimatedMinutes: 8, icon: 'book-open',
+        why: 'Study the Backup & Recovery concepts and key services before drilling.',
+      },
+      {
+        id: 'arch-m13-flash', type: 'flashcard', resourceId: 'arch-m13',
+        title: 'Module 13: Backup & Recovery', subtitle: '8 cards · Backup & Recovery',
+        estimatedMinutes: 8, icon: 'refresh-cw',
+        why: 'Lock in the Backup & Recovery terms and services with spaced repetition.',
+      },
+      {
+        id: 'arch-m13-quiz', type: 'quiz', resourceId: 'arch-quiz-m13',
+        title: 'Quiz: Backup & Recovery', subtitle: 'Scenario questions · 10 min',
+        estimatedMinutes: 10, icon: 'check-square',
+        why: 'Test Backup & Recovery with associate-level scenario questions.',
+      },
+    ],
+  },
 ];
 
 export function getLearningPath(id: string): LearningPath | undefined {

@@ -654,6 +654,437 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
       'Use a pre-trained AI service when one fits; use SageMaker when you need a custom-trained model.',
     ],
   },
+
+  // ── Architecting on AWS modules ──
+  'arch-m01': {
+    moduleId: 'arch-m01',
+    title: 'Architecting Fundamentals',
+    subtitle: 'Architecting on AWS — Architecting Fundamentals',
+    readingMinutes: 8,
+    intro:
+      `Architecting on AWS starts with the fundamentals: what AWS offers, how its global infrastructure is organised, and the Well-Architected Framework you will use to evaluate every design decision in this course.`,
+    sections: [
+      {
+        heading: 'AWS Well-Architected Framework & more',
+        body: `**AWS Well-Architected Framework — 6 pillars.** Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability. A consistent way to evaluate architectures and implement designs that scale.
+
+**AWS Region vs Availability Zone.** A Region is an isolated geographic area; an Availability Zone (AZ) is one or more discrete data centres within a Region with redundant power and networking. Deploy across ≥2 AZs for high availability.
+
+**AWS Local Zones.** Place compute, storage, and select services closer to large population/industry centres, delivering single-digit-millisecond latency for demanding apps. An extension of a Region.
+
+**Edge locations.** Sites used by CloudFront and other edge services to cache content and terminate connections close to users — far more numerous than Regions.`,
+        keyPoints: ['AWS Well-Architected Framework — 6 pillars', 'AWS Region vs Availability Zone', 'AWS Local Zones', 'Edge locations'],
+      },
+      {
+        heading: 'Factors in Region selection & more',
+        body: `**Factors in Region selection.** Latency/proximity to users, cost (prices vary by Region), compliance/data-residency requirements, and service availability.
+
+**AWS Well-Architected Tool.** A free tool in the console that reviews your workloads against the six pillars and produces improvement recommendations.
+
+**AWS service categories.** AWS groups services into categories such as compute, storage, database, networking, security, and analytics — an architect composes these into a solution.
+
+**Architect responsibilities.** Translate business requirements into technical solutions, balance the six pillars, justify trade-offs, and present designs that meet cost, performance, and reliability goals.`,
+        keyPoints: ['Factors in Region selection', 'AWS Well-Architected Tool', 'AWS service categories', 'Architect responsibilities'],
+      }
+    ],
+    examTips: ['Memorise the six Well-Architected pillars.', 'Region = geographic area; AZ = data centre(s) within it; deploy across ≥2 AZs.', 'Local Zones reduce latency for nearby users; edge locations serve CloudFront.'],
+  },
+  'arch-m02': {
+    moduleId: 'arch-m02',
+    title: 'Account Security',
+    subtitle: 'Architecting on AWS — Account Security',
+    readingMinutes: 8,
+    intro:
+      `Security begins with identity. This module covers the account root user, IAM principals (users, groups, roles), and how policies are written and evaluated so you can build accounts on the principle of least privilege.`,
+    sections: [
+      {
+        heading: 'AWS account root user & more',
+        body: `**AWS account root user.** The identity created with the account; has full access to everything. Lock it down: enable MFA, do not use it for daily tasks, and create IAM identities instead.
+
+**IAM users vs roles.** A user is a persistent identity with long-term credentials for a person/app. A role provides temporary credentials that are assumed by users, services, or apps — preferred for workloads.
+
+**IAM user groups.** A collection of users; attach policies to the group and all members inherit them. The scalable way to manage permissions.
+
+**Assuming a role.** A principal calls AssumeRole (via STS) and receives temporary security credentials scoped to the role's permissions — no long-term keys stored on the resource.`,
+        keyPoints: ['AWS account root user', 'IAM users vs roles', 'IAM user groups', 'Assuming a role'],
+      },
+      {
+        heading: 'Identity-based vs resource-based policies & more',
+        body: `**Identity-based vs resource-based policies.** Identity-based policies attach to users/groups/roles. Resource-based policies attach to a resource (e.g. an S3 bucket policy) and specify who may access it.
+
+**How IAM evaluates policies.** By default everything is denied. An explicit Allow grants access; an explicit Deny always overrides any Allow. No matching Allow = implicit deny.
+
+**IAM policy elements.** A JSON document with Effect (Allow/Deny), Action, Resource, and optional Condition. Conditions enable fine-grained, context-aware control.
+
+**Least privilege.** Grant only the permissions required to perform a task. Start minimal and add as needed — a core Security-pillar best practice.`,
+        keyPoints: ['Identity-based vs resource-based policies', 'How IAM evaluates policies', 'IAM policy elements', 'Least privilege'],
+      }
+    ],
+    examTips: ['Explicit Deny always beats Allow; default is deny.', 'Use roles (temporary credentials) for apps/EC2 — never embed access keys.', 'Manage permissions via groups; protect the root user with MFA.'],
+  },
+  'arch-m03': {
+    moduleId: 'arch-m03',
+    title: 'Networking 1',
+    subtitle: 'Architecting on AWS — Networking 1',
+    readingMinutes: 8,
+    intro:
+      `Every workload runs inside a network. Module 3 covers IP addressing and CIDR, then the core VPC building blocks — subnets, gateways, route tables, and the two firewall layers that control traffic.`,
+    sections: [
+      {
+        heading: 'CIDR notation & more',
+        body: `**CIDR notation.** Classless Inter-Domain Routing expresses an IP range as address/prefix (e.g. 10.0.0.0/16). A smaller prefix number = more addresses. A VPC and its subnets are sized with CIDR blocks.
+
+**Amazon VPC.** A logically isolated virtual network you define in a Region. You control IP range (CIDR), subnets, route tables, and gateways.
+
+**Public vs private subnet.** A public subnet has a route to an internet gateway; a private subnet does not. Subnets live in a single AZ — spread them across AZs for resilience.
+
+**Internet gateway (IGW).** A horizontally-scaled, redundant VPC component that allows communication between the VPC and the internet. Required for public subnets.`,
+        keyPoints: ['CIDR notation', 'Amazon VPC', 'Public vs private subnet', 'Internet gateway (IGW)'],
+      },
+      {
+        heading: 'NAT gateway & more',
+        body: `**NAT gateway.** Lets instances in a private subnet make outbound connections to the internet (e.g. updates) while preventing the internet from initiating connections to them. Lives in a public subnet.
+
+**Route tables.** A set of rules (routes) that determine where network traffic is directed. Each subnet associates with one route table; the local route enables intra-VPC traffic.
+
+**Security group vs network ACL.** Security group = stateful, instance-level, allow-rules only. Network ACL = stateless, subnet-level, allow + deny rules evaluated in order.
+
+**Elastic IP address.** A static, public IPv4 address you can allocate and remap between instances/NAT gateways to mask failures.`,
+        keyPoints: ['NAT gateway', 'Route tables', 'Security group vs network ACL', 'Elastic IP address'],
+      }
+    ],
+    examTips: ['Security groups = stateful/instance; network ACLs = stateless/subnet.', 'Public subnet routes to an IGW; private subnets use a NAT gateway for outbound.', 'Subnets live in one AZ — spread across AZs for resilience.'],
+  },
+  'arch-m04': {
+    moduleId: 'arch-m04',
+    title: 'Compute',
+    subtitle: 'Architecting on AWS — Compute',
+    readingMinutes: 8,
+    intro:
+      `Compute is the engine of most architectures. This module goes deep on Amazon EC2 — AMIs, instance families and sizing, purchasing options, key pairs, tenancy, and placement groups.`,
+    sections: [
+      {
+        heading: 'Amazon EC2 & more',
+        body: `**Amazon EC2.** Resizable virtual servers (instances). You select an AMI, instance type, network, and storage, and pay for what you run.
+
+**Amazon Machine Image (AMI).** A template containing the OS, configuration, and software used to launch an instance. Use AWS, Marketplace, community, or custom 'golden' AMIs.
+
+**EC2 instance families.** Families optimised for a workload profile: general purpose, compute optimised, memory optimised, storage optimised, and accelerated (GPU) computing.
+
+**Instance type naming.** e.g. m5.large — family (m), generation (5), optional capability, then size. Newer generations usually offer better price/performance.`,
+        keyPoints: ['Amazon EC2', 'Amazon Machine Image (AMI)', 'EC2 instance families', 'Instance type naming'],
+      },
+      {
+        heading: 'EC2 purchasing options & more',
+        body: `**EC2 purchasing options.** On-Demand (no commitment), Reserved/Savings Plans (1–3 yr, up to ~72% off), Spot (spare capacity, up to ~90% off, interruptible), Dedicated Hosts (compliance/licensing).
+
+**Placement groups.** Control instance placement: Cluster (low-latency, same AZ, HPC), Spread (each on distinct hardware, max availability), Partition (grouped racks for big distributed systems).
+
+**EC2 key pairs.** Public/private key used to securely access an instance (SSH for Linux, password decryption for Windows). AWS stores the public key; you keep the private key.
+
+**AWS Compute Optimizer.** Uses ML on utilisation metrics to recommend optimal EC2 instance types and sizes, reducing cost and improving performance.`,
+        keyPoints: ['EC2 purchasing options', 'Placement groups', 'EC2 key pairs', 'AWS Compute Optimizer'],
+      }
+    ],
+    examTips: ['Spot = cheap & interruptible; Reserved/Savings Plans = steady; On-Demand = spiky.', 'Cluster placement group = low latency; Spread = max availability.', 'Custom AMIs make launches fast and consistent.'],
+  },
+  'arch-m05': {
+    moduleId: 'arch-m05',
+    title: 'Storage',
+    subtitle: 'Architecting on AWS — Storage',
+    readingMinutes: 8,
+    intro:
+      `Storage choices shape cost and performance. Module 5 focuses on Amazon S3 — buckets and objects, the layered access controls, encryption, the storage classes, versioning, and lifecycle automation.`,
+    sections: [
+      {
+        heading: 'Amazon S3 & more',
+        body: `**Amazon S3.** Object storage in buckets, accessed over HTTPS, with 11 nines of durability and virtually unlimited capacity. For backups, data lakes, static sites, and media.
+
+**S3 storage classes.** Standard, Intelligent-Tiering (auto-tiers), Standard-IA / One Zone-IA (infrequent), and Glacier Instant/Flexible/Deep Archive (archival, lowest cost).
+
+**S3 Intelligent-Tiering.** Automatically moves objects between access tiers based on usage, optimising cost with no retrieval fees — best for unknown or changing access patterns.
+
+**S3 lifecycle policies.** Rules that automatically transition objects to cheaper classes or expire them as they age (e.g. Standard → IA → Glacier after N days).`,
+        keyPoints: ['Amazon S3', 'S3 storage classes', 'S3 Intelligent-Tiering', 'S3 lifecycle policies'],
+      },
+      {
+        heading: 'S3 Versioning & more',
+        body: `**S3 Versioning.** Keeps multiple versions of an object so you can recover from accidental overwrites or deletes. Combine with MFA Delete for extra protection.
+
+**S3 access control.** Layered: IAM policies, bucket policies (resource-based), ACLs (legacy), Block Public Access (account/bucket guardrail), and Access Points for shared datasets.
+
+**S3 Block Public Access.** An account- and bucket-level safety setting that overrides permissive policies/ACLs to prevent accidental public exposure of objects.
+
+**Server-side encryption (SSE).** S3 encrypts objects at rest: SSE-S3 (S3-managed keys), SSE-KMS (AWS KMS keys, audited), or SSE-C (customer-provided keys).`,
+        keyPoints: ['S3 Versioning', 'S3 access control', 'S3 Block Public Access', 'Server-side encryption (SSE)'],
+      }
+    ],
+    examTips: ['Glacier Deep Archive = lowest cost; Intelligent-Tiering = unknown access.', 'Block Public Access overrides permissive policies/ACLs.', 'Versioning protects against accidental overwrite/delete; lifecycle rules automate tiering.'],
+  },
+  'arch-m06': {
+    moduleId: 'arch-m06',
+    title: 'Database Services',
+    subtitle: 'Architecting on AWS — Database Services',
+    readingMinutes: 8,
+    intro:
+      `Pick the right database for the access pattern. This module covers relational options (RDS and Aurora, including Multi-AZ and read replicas) and the serverless NoSQL option, DynamoDB.`,
+    sections: [
+      {
+        heading: 'Choosing the right database & more',
+        body: `**Choosing the right database.** Match the data model and access pattern: relational (RDS/Aurora), key-value (DynamoDB), in-memory (ElastiCache), document, graph (Neptune), etc. Purpose-built beats one-size-fits-all.
+
+**Amazon RDS.** Managed relational database supporting MySQL, PostgreSQL, MariaDB, Oracle, SQL Server, and Aurora — AWS handles patching, backups, and failover.
+
+**RDS Multi-AZ.** A synchronous standby replica in another AZ that fails over automatically. For high availability — NOT for scaling reads.
+
+**RDS read replicas.** Asynchronous read-only copies that scale read traffic and can be promoted to standalone databases. For read scaling, not automatic failover.`,
+        keyPoints: ['Choosing the right database', 'Amazon RDS', 'RDS Multi-AZ', 'RDS read replicas'],
+      },
+      {
+        heading: 'Amazon Aurora & more',
+        body: `**Amazon Aurora.** AWS's cloud-native MySQL/PostgreSQL-compatible engine: up to 5×/3× faster, storage auto-scales, and data is replicated six ways across three AZs.
+
+**Aurora Serverless v2.** On-demand, auto-scaling Aurora capacity that adjusts in fine-grained increments to match load — for variable or unpredictable workloads.
+
+**Amazon DynamoDB.** Fully managed, serverless NoSQL key-value and document database with single-digit-millisecond latency at any scale and automatic scaling.
+
+**Data encryption at rest.** RDS and Aurora encrypt storage, snapshots, and replicas using AWS KMS keys; enable at creation for compliance.`,
+        keyPoints: ['Amazon Aurora', 'Aurora Serverless v2', 'Amazon DynamoDB', 'Data encryption at rest'],
+      }
+    ],
+    examTips: ['Multi-AZ = high availability (failover); read replicas = read scaling.', 'DynamoDB = serverless NoSQL, single-digit-ms; Aurora = MySQL/PostgreSQL-compatible.', 'Encrypt at rest with KMS at creation.'],
+  },
+  'arch-m07': {
+    moduleId: 'arch-m07',
+    title: 'Monitoring & Scaling',
+    subtitle: 'Architecting on AWS — Monitoring & Scaling',
+    readingMinutes: 8,
+    intro:
+      `You cannot operate what you cannot see. Module 7 covers observability with CloudWatch, CloudTrail, and VPC Flow Logs, then load balancing and EC2 Auto Scaling to keep workloads healthy and right-sized.`,
+    sections: [
+      {
+        heading: 'Amazon CloudWatch & more',
+        body: `**Amazon CloudWatch.** Collects metrics, logs, and events from AWS resources; supports dashboards and alarms. Answers 'how is my system performing?'.
+
+**CloudWatch alarms.** Watch a metric against a threshold and act: notify via SNS, trigger Auto Scaling, or invoke automation. States: OK, ALARM, INSUFFICIENT_DATA.
+
+**AWS CloudTrail.** Records API activity (who did what, when, from where) for audit, security, and compliance. Different from CloudWatch's performance focus.
+
+**VPC Flow Logs.** Capture metadata about IP traffic to/from network interfaces in a VPC — used for troubleshooting connectivity and security analysis.`,
+        keyPoints: ['Amazon CloudWatch', 'CloudWatch alarms', 'AWS CloudTrail', 'VPC Flow Logs'],
+      },
+      {
+        heading: 'Amazon EventBridge & more',
+        body: `**Amazon EventBridge.** A serverless event bus that routes events from AWS services and apps to targets (Lambda, SNS, etc.) using rules — enables event-driven automation.
+
+**Elastic Load Balancing types.** ALB (Layer 7, HTTP/S, content-based routing), NLB (Layer 4, TCP/UDP, ultra-low latency, static IP), and Gateway LB (third-party appliances).
+
+**EC2 Auto Scaling.** Maintains the desired number of instances by adding/removing capacity based on demand metrics and a min/desired/max configuration.
+
+**Scaling policies.** Target tracking (keep a metric at a target, e.g. 50% CPU), step scaling (adjust by steps as a threshold is breached), and scheduled scaling (predictable load).`,
+        keyPoints: ['Amazon EventBridge', 'Elastic Load Balancing types', 'EC2 Auto Scaling', 'Scaling policies'],
+      }
+    ],
+    examTips: ['CloudWatch = performance; CloudTrail = who-did-what audit.', 'A CloudWatch alarm can trigger Auto Scaling or SNS.', 'ALB = Layer 7 routing; NLB = Layer 4 ultra-low latency.'],
+  },
+  'arch-m08': {
+    moduleId: 'arch-m08',
+    title: 'Automation',
+    subtitle: 'Architecting on AWS — Automation',
+    readingMinutes: 8,
+    intro:
+      `Automate everything. This module covers Infrastructure as Code with CloudFormation (stacks, change sets, template anatomy) and managed deployment with Elastic Beanstalk.`,
+    sections: [
+      {
+        heading: 'Infrastructure as Code & more',
+        body: `**Infrastructure as Code (IaC).** Define and provision infrastructure from machine-readable templates, making environments repeatable, version-controlled, and consistent.
+
+**AWS CloudFormation.** AWS's IaC service: declare resources in a JSON/YAML template; CloudFormation provisions and manages them as a stack.
+
+**CloudFormation stacks.** A collection of AWS resources managed as a single unit — create, update, or delete them together from one template.
+
+**Change sets.** A preview of how a proposed CloudFormation update will affect running resources before you execute it — reduces risky surprises.`,
+        keyPoints: ['Infrastructure as Code (IaC)', 'AWS CloudFormation', 'CloudFormation stacks', 'Change sets'],
+      },
+      {
+        heading: 'CloudFormation template anatomy & more',
+        body: `**CloudFormation template anatomy.** Sections include Parameters (inputs), Conditions, Resources (required), Mappings, and Outputs (returned values).
+
+**AWS Elastic Beanstalk.** A PaaS that deploys and manages your application (capacity, load balancing, scaling, health) from uploaded code — you focus on the app.
+
+**Beanstalk web vs worker environment.** Web server environment handles HTTP requests; worker environment processes background jobs from an SQS queue.
+
+**Benefits of IaC.** Reusability, repeatability, version control, and safe automated updates — eliminating manual, error-prone configuration.`,
+        keyPoints: ['CloudFormation template anatomy', 'AWS Elastic Beanstalk', 'Beanstalk web vs worker environment', 'Benefits of IaC'],
+      }
+    ],
+    examTips: ['CloudFormation = IaC; preview updates with change sets.', 'Elastic Beanstalk = managed app deploy (PaaS).', 'Template sections: Parameters, Resources (required), Outputs.'],
+  },
+  'arch-m09': {
+    moduleId: 'arch-m09',
+    title: 'Containers',
+    subtitle: 'Architecting on AWS — Containers',
+    readingMinutes: 8,
+    intro:
+      `Containers and microservices enable agility. Module 9 explains containers vs VMs and the AWS container stack — ECR, ECS, EKS, and the serverless Fargate launch type.`,
+    sections: [
+      {
+        heading: 'Microservices & more',
+        body: `**Microservices.** An architecture that decomposes an application into small, independently deployable, loosely-coupled services — improving agility and resilience.
+
+**Containers.** A standardised unit that packages code with its dependencies so it runs consistently across environments; lighter-weight than VMs.
+
+**Amazon ECR.** Elastic Container Registry — a fully managed registry to store, scan, and version container images.
+
+**Amazon ECS.** AWS-native container orchestration to run and scale containers; integrates tightly with AWS and runs on EC2 or Fargate.`,
+        keyPoints: ['Microservices', 'Containers', 'Amazon ECR', 'Amazon ECS'],
+      },
+      {
+        heading: 'Amazon EKS & more',
+        body: `**Amazon EKS.** Managed Kubernetes — runs the upstream Kubernetes control plane for portability; runs on EC2 or Fargate.
+
+**AWS Fargate.** Serverless compute for containers (ECS/EKS): you specify CPU/memory and Fargate provisions and manages the infrastructure — no EC2 to operate.
+
+**Choosing ECS vs EKS.** ECS for simpler, AWS-integrated orchestration; EKS when you need Kubernetes portability/ecosystem. Both can use Fargate to remove server management.
+
+**Containers vs VMs.** Containers virtualise the OS and share the host kernel (fast, lightweight); VMs virtualise hardware with a full guest OS (stronger isolation, heavier).`,
+        keyPoints: ['Amazon EKS', 'AWS Fargate', 'Choosing ECS vs EKS', 'Containers vs VMs'],
+      }
+    ],
+    examTips: ['Fargate removes server management for ECS/EKS.', 'EKS = Kubernetes portability; ECS = simpler AWS-native.', 'Containers share the host kernel; VMs run a full guest OS.'],
+  },
+  'arch-m10': {
+    moduleId: 'arch-m10',
+    title: 'Networking 2',
+    subtitle: 'Architecting on AWS — Networking 2',
+    readingMinutes: 8,
+    intro:
+      `Connect networks privately and at scale. This module covers VPC endpoints, VPC peering and its limits, hybrid connectivity (Site-to-Site VPN and Direct Connect), and Transit Gateway.`,
+    sections: [
+      {
+        heading: 'VPC endpoints & more',
+        body: `**VPC endpoints.** Privately connect a VPC to AWS services without an internet gateway, NAT, or public IPs — traffic stays on the AWS network.
+
+**Interface vs Gateway endpoint.** Interface endpoint = an ENI with a private IP (PrivateLink) for most services. Gateway endpoint = a route-table target for S3 and DynamoDB only.
+
+**VPC peering.** A one-to-one private connection between two VPCs. It is non-transitive — A↔B and B↔C does not give A↔C; a full mesh needs n(n-1)/2 connections.
+
+**AWS Transit Gateway.** A hub that connects many VPCs and on-premises networks through a single gateway, replacing complex peering meshes with hub-and-spoke routing.`,
+        keyPoints: ['VPC endpoints', 'Interface vs Gateway endpoint', 'VPC peering', 'AWS Transit Gateway'],
+      },
+      {
+        heading: 'AWS Site-to-Site VPN & more',
+        body: `**AWS Site-to-Site VPN.** An encrypted IPsec tunnel between your network and AWS over the public internet — quick to set up, variable performance.
+
+**AWS Direct Connect.** A dedicated private physical connection from your data centre to AWS — consistent performance and lower data-transfer cost; not over the internet.
+
+**VPN vs Direct Connect.** VPN: fast to deploy, encrypted, internet-dependent. Direct Connect: dedicated, consistent, higher bandwidth; combine the two for encrypted private links.
+
+**Full-mesh peering math.** Connecting n VPCs in a full mesh needs n(n-1)/2 peering connections — growth is why Transit Gateway is preferred at scale.`,
+        keyPoints: ['AWS Site-to-Site VPN', 'AWS Direct Connect', 'VPN vs Direct Connect', 'Full-mesh peering math'],
+      }
+    ],
+    examTips: ['Gateway endpoints = S3 & DynamoDB only; interface endpoints = most others.', 'VPC peering is non-transitive; full mesh = n(n-1)/2 connections.', 'Transit Gateway = hub for many VPCs; Direct Connect = dedicated, not internet.'],
+  },
+  'arch-m11': {
+    moduleId: 'arch-m11',
+    title: 'Serverless',
+    subtitle: 'Architecting on AWS — Serverless',
+    readingMinutes: 8,
+    intro:
+      `Build without managing servers. Module 11 covers the serverless portfolio — API Gateway as the front door, and the decoupling services SQS (queues) and SNS (pub/sub).`,
+    sections: [
+      {
+        heading: 'Serverless & more',
+        body: `**Serverless.** Build and run applications without managing servers — automatic scaling, pay-for-use, and built-in availability. Lambda and Fargate are core.
+
+**Amazon API Gateway.** A fully managed service to create, publish, and secure REST, HTTP, and WebSocket APIs at scale — often the front door to Lambda.
+
+**Amazon SQS.** A fully managed message queue that decouples components. Standard (at-least-once, best-effort order) and FIFO (exactly-once, ordered) queue types.
+
+**Amazon SNS.** A managed pub/sub service: publish one message to a topic and fan it out to many subscribers (SQS, Lambda, email, HTTP).`,
+        keyPoints: ['Serverless', 'Amazon API Gateway', 'Amazon SQS', 'Amazon SNS'],
+      },
+      {
+        heading: 'SNS + SQS fan-out & more',
+        body: `**SNS + SQS fan-out.** Publish an event to an SNS topic subscribed by multiple SQS queues so several consumers each get a copy to process independently.
+
+**SQS queue types.** Standard = high throughput, at-least-once delivery, best-effort ordering. FIFO = strict ordering and exactly-once processing at lower throughput.
+
+**Loose coupling with queues.** Placing a queue between producer and consumer lets each scale and fail independently, absorbing spikes and improving resilience.
+
+**When to use a message queue.** To buffer bursts, decouple services, smooth load, and ensure work is not lost if a consumer is slow or temporarily down.`,
+        keyPoints: ['SNS + SQS fan-out', 'SQS queue types', 'Loose coupling with queues', 'When to use a message queue'],
+      }
+    ],
+    examTips: ['SQS = queue (decouple, one consumer); SNS = pub/sub (fan-out).', 'FIFO = ordered + exactly-once; Standard = high throughput, best-effort order.', 'API Gateway is the serverless API front door.'],
+  },
+  'arch-m12': {
+    moduleId: 'arch-m12',
+    title: 'Edge Services',
+    subtitle: 'Architecting on AWS — Edge Services',
+    readingMinutes: 8,
+    intro:
+      `Bring the cloud to the edge. This module covers Amazon Route 53 DNS and its routing policies, and Amazon CloudFront for global content delivery via edge caching.`,
+    sections: [
+      {
+        heading: 'Amazon Route 53 & more',
+        body: `**Amazon Route 53.** A highly available, scalable DNS and domain-registration service with health checks and traffic-routing policies.
+
+**Route 53 routing policies.** Simple, Failover, Geolocation, Geoproximity, Latency-based, Multivalue answer, and Weighted — each routes DNS responses differently.
+
+**Latency-based routing.** Routes users to the Region that gives them the lowest network latency, improving performance for global applications.
+
+**Geolocation vs Geoproximity.** Geolocation routes by the user's location; Geoproximity routes by the geographic distance between users and resources (with an adjustable bias).`,
+        keyPoints: ['Amazon Route 53', 'Route 53 routing policies', 'Latency-based routing', 'Geolocation vs Geoproximity'],
+      },
+      {
+        heading: 'Weighted routing & more',
+        body: `**Weighted routing.** Splits traffic across resources by assigned weights — useful for A/B testing and phased rollouts.
+
+**Amazon CloudFront.** A global content delivery network (CDN) that caches content at edge locations to reduce latency and offload origins.
+
+**CloudFront edge caching.** On a cache miss the edge fetches from the origin and caches it; later requests are served from the edge — lower latency and origin load.
+
+**Route 53 public vs private DNS.** Public hosted zones resolve names on the internet; private hosted zones resolve names within one or more VPCs.`,
+        keyPoints: ['Weighted routing', 'Amazon CloudFront', 'CloudFront edge caching', 'Route 53 public vs private DNS'],
+      }
+    ],
+    examTips: ['Latency routing = lowest latency; geolocation = by user location; weighted = % split.', 'CloudFront caches at edge locations to cut latency and origin load.', 'Route 53 = DNS + health checks + routing policies.'],
+  },
+  'arch-m13': {
+    moduleId: 'arch-m13',
+    title: 'Backup & Recovery',
+    subtitle: 'Architecting on AWS — Backup & Recovery',
+    readingMinutes: 8,
+    intro:
+      `Plan for failure. Module 13 covers availability concepts, RPO and RTO, the four disaster-recovery strategies, and AWS Backup for centralised, policy-based protection.`,
+    sections: [
+      {
+        heading: 'RPO vs RTO & more',
+        body: `**RPO vs RTO.** Recovery Point Objective = maximum acceptable data loss (how far back). Recovery Time Objective = maximum acceptable downtime (how long to recover).
+
+**DR strategies (lowest→highest cost/readiness).** Backup & Restore, Pilot Light, Warm Standby, and Multi-Site Active/Active — faster recovery costs more.
+
+**Backup & Restore.** Cheapest DR: back up data and restore into a new environment on disaster. Highest RTO/RPO of the four strategies.
+
+**Pilot light.** Core services (e.g. a replicated database) run minimally in the recovery Region; the rest is provisioned on failover. Lower RTO than backup & restore.`,
+        keyPoints: ['RPO vs RTO', 'DR strategies (lowest→highest cost/readiness)', 'Backup & Restore', 'Pilot light'],
+      },
+      {
+        heading: 'Warm standby & more',
+        body: `**Warm standby.** A scaled-down but always-running copy of the full stack in the recovery Region, scaled up on failover. Lower RTO than pilot light.
+
+**Multi-site active/active.** The workload runs in multiple Regions simultaneously serving traffic; near-zero RTO/RPO at the highest cost and complexity.
+
+**AWS Backup.** A centralised, policy-based service to automate and manage backups across AWS services (and on-premises via Storage Gateway).
+
+**Failover and Regions.** Designing across Regions (with Route 53 failover, cross-Region replicas/backups) protects against Region-wide events.`,
+        keyPoints: ['Warm standby', 'Multi-site active/active', 'AWS Backup', 'Failover and Regions'],
+      }
+    ],
+    examTips: ['RPO = data loss tolerance; RTO = downtime tolerance.', 'DR by cost/readiness: Backup&Restore → Pilot Light → Warm Standby → Multi-Site.', 'AWS Backup centralises policy-based backups across services.'],
+  },
 };
 
 export function getModuleNotes(moduleId: string): ModuleNotes | undefined {
