@@ -24,6 +24,17 @@ import {
   eksCoreksM09Questions,
   eksCoreksFullExamQuestions,
 } from './eks-coreks-questions';
+import {
+  aws_introQuestions,
+  compute_cloudQuestions,
+  global_infraQuestions,
+  networking_clfQuestions,
+  storage_databasesQuestions,
+  security_clf_m06Questions,
+  monitoring_analyticsQuestions,
+  pricing_supportQuestions,
+  migration_innovationQuestions,
+} from './clf-c02-module-questions';
 
 export const quizzes: Quiz[] = [
   // ── AWS Quick Start — 5 free beginner questions ──────────────────────────────
@@ -40,6 +51,71 @@ export const quizzes: Quiz[] = [
     icon: '🚀',
     certLevel: 'foundational',
     examCode: 'CLF-C02',
+  },
+
+  // ── CLF-C02 Module Quizzes (AWS T&C 2025 Instructor Decks) ──────────────────
+  {
+    id: 'aws-intro',
+    title: 'Module 1: Introduction to AWS',
+    description: 'Cloud computing models, the six benefits of cloud, and the client-server model. From the official AWS Cloud Practitioner Essentials curriculum.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 5, duration: 10,
+    isPremium: false, price: 0, icon: '☁️', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'compute-cloud',
+    title: 'Module 2: Compute in the Cloud',
+    description: 'Amazon EC2 instance types and pricing, Auto Scaling, Elastic Load Balancing, AWS Lambda, and container services (ECS, EKS, Fargate).',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 7, duration: 12,
+    isPremium: false, price: 0, icon: '💻', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'global-infra',
+    title: 'Module 3: Global Infrastructure & Reliability',
+    description: 'AWS Regions, Availability Zones, Edge Locations, and ways to interact with AWS services (Console, CLI, SDKs).',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 5, duration: 10,
+    isPremium: false, price: 0, icon: '🌍', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'networking-clf',
+    title: 'Module 4: Networking',
+    description: 'Amazon VPC, subnets, Security Groups vs Network ACLs, Route 53, CloudFront, and AWS Direct Connect.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 5, duration: 10,
+    isPremium: false, price: 0, icon: '🔗', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'storage-databases',
+    title: 'Module 5: Storage & Databases',
+    description: 'Amazon S3 storage classes, EBS, EFS, Amazon RDS, DynamoDB, Redshift, and database migration services.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 6, duration: 12,
+    isPremium: false, price: 0, icon: '🗄️', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'security-clf-m06',
+    title: 'Module 6: Security',
+    description: 'The Shared Responsibility Model, AWS IAM, Organizations, WAF, Shield, GuardDuty, KMS, and AWS Artifact.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 6, duration: 12,
+    isPremium: false, price: 0, icon: '🔒', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'monitoring-analytics',
+    title: 'Module 7: Monitoring & Analytics',
+    description: 'Amazon CloudWatch metrics and alarms, AWS CloudTrail audit logging, and AWS Trusted Advisor recommendations.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 3, duration: 8,
+    isPremium: false, price: 0, icon: '📊', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'pricing-support',
+    title: 'Module 8: Pricing & Support',
+    description: 'AWS pricing models, Free Tier, Savings Plans, Cost Explorer, Budgets, the AWS Support plans, and AWS Marketplace.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 5, duration: 10,
+    isPremium: false, price: 0, icon: '💰', certLevel: 'foundational', examCode: 'CLF-C02',
+  },
+  {
+    id: 'migration-innovation',
+    title: 'Module 9: Migration & Innovation',
+    description: 'AWS Cloud Adoption Framework (CAF), the 7 Rs migration strategies, AWS Snow Family, SageMaker, and innovation services.',
+    category: 'clf-c02', difficulty: 'beginner', questionCount: 5, duration: 10,
+    isPremium: false, price: 0, icon: '🚀', certLevel: 'foundational', examCode: 'CLF-C02',
   },
 
   // ── AWS Cloud Practitioner — CLF-C02 ────────────────────────────────────────
@@ -329,6 +405,17 @@ export const quizQuestions: Record<string, Question[]> = {
   'clf-c02-security':       clf02SecurityQuestions,
   'clf-c02-technology':     clf02TechnologyQuestions,
   'clf-c02-billing':        clf02BillingQuestions,
+
+  // ── CLF-C02 Module Quizzes (AWS T&C 2025 Instructor Decks) ──────────────────
+  'aws-intro':             aws_introQuestions,
+  'compute-cloud':         compute_cloudQuestions,
+  'global-infra':          global_infraQuestions,
+  'networking-clf':        networking_clfQuestions,
+  'storage-databases':     storage_databasesQuestions,
+  'security-clf-m06':      security_clf_m06Questions,
+  'monitoring-analytics':  monitoring_analyticsQuestions,
+  'pricing-support':       pricing_supportQuestions,
+  'migration-innovation':  migration_innovationQuestions,
 
   // ── AIP-C01 ──────────────────────────────────────────────────────────────────
   'aip-c01-rag-foundations':   aipC01RagFoundationsQuestions,

@@ -25,12 +25,13 @@ import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/comp
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 const NAV = [
-  { href: '/dashboard',              label: 'Home',        icon: HomeIcon },
-  { href: '/dashboard/quizzes',      label: 'Courses',     icon: BookIcon },
-  { href: '/dashboard/learn',        label: 'Learn',       icon: PlayNavIcon },
-  { href: '/dashboard/flashcards',   label: 'Flashcards',  icon: FlashcardIcon },
-  { href: '/dashboard/leaderboard',  label: 'Leaderboard', icon: TrophyIcon },
-  { href: '/dashboard/profile',      label: 'Profile',     icon: UserIcon },
+  { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
+  { href: '/dashboard/learning-paths', label: 'Learning Paths', icon: PathIcon },
+  { href: '/dashboard/quizzes',        label: 'Courses',        icon: BookIcon },
+  { href: '/dashboard/learn',          label: 'Learn',          icon: PlayNavIcon },
+  { href: '/dashboard/flashcards',     label: 'Flashcards',     icon: FlashcardIcon },
+  { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
+  { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
 ];
 
 const ADMIN_NAV  = { href: '/dashboard/admin',    label: 'Admin',    icon: AdminIcon };
@@ -54,6 +55,13 @@ function TrendIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+function PathIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6" cy="19" r="3" /><circle cx="18" cy="5" r="3" /><path d="M6 16V8a4 4 0 0 1 4-4h4M18 8v8a4 4 0 0 1-4 4h-4" />
     </svg>
   );
 }
