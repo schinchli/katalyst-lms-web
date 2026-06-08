@@ -13,6 +13,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { getModuleNotes } from '@/data/moduleNotes';
+import { SourceReferences } from '@/components/SourceReferences';
 
 /** Minimal inline-markdown: **bold** → <strong>. */
 function renderInline(text: string) {
@@ -124,6 +125,9 @@ export default function ModuleNotesPage() {
           </ul>
         </div>
       )}
+
+      {/* Official AWS references — traceable, source-backed (Phase 11/12) */}
+      <SourceReferences moduleId={notes.moduleId} />
 
       {/* Footer nav */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
