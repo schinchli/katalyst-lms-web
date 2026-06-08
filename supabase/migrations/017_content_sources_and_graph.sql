@@ -74,6 +74,13 @@ alter table public.lms_recommendations enable row level security;
 drop policy if exists lms_recommendations_owner_read on public.lms_recommendations;
 create policy lms_recommendations_owner_read on public.lms_recommendations
   for select using (auth.uid() = user_id);
+-- Owners persist/refresh their own recommendation snapshot via their JWT.
+drop policy if exists lms_recommendations_owner_insert on public.lms_recommendations;
+create policy lms_recommendations_owner_insert on public.lms_recommendations
+  for insert with check (auth.uid() = user_id);
+drop policy if exists lms_recommendations_owner_delete on public.lms_recommendations;
+create policy lms_recommendations_owner_delete on public.lms_recommendations
+  for delete using (auth.uid() = user_id);
 
 -- ── lms_topic_graph ─────────────────────────────────────────────────────────
 -- Knowledge graph: prerequisite/related/next edges per topic, with AWS service,

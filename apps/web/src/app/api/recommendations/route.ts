@@ -60,11 +60,15 @@ export async function POST(req: NextRequest) {
   const quizPct = new Map<string, number>();
   const flashConfidence = new Map<string, { known: number; total: number }>();
 
+  // Authed Supabase client (the user's JWT — RLS scopes all reads/writes to them).
+  const sb = user
+    ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+        global: { headers: { Authorization: `Bearer ${token}` } },
+      })
+    : null;
+
   // Server-side progress (authed users only; guests get path-order recs).
-  if (user) {
-    const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
+  if (user && sb) {
     const [{ data: quizzes }, { data: flash }] = await Promise.all([
       sb.from('quiz_results').select('quiz_id, score, total_questions').eq('user_id', user.id),
       sb.from('flashcard_progress').select('deck_id, known_ids').eq('user_id', user.id),
@@ -134,9 +138,38 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── Persist the recommendation snapshot for the signed-in user ────────────
+  // Replace the user's stored set with the latest (RLS scopes to auth.uid()).
+  let persisted = false;
+  if (user && sb && recs.length > 0) {
+    try {
+      const ITEM_TYPE: Record<string, string> = {
+        take_quiz: 'quiz', review: 'quiz', practice_flashcards: 'flashcard',
+        aws_reading: 'aws_reading', lab: 'lab', related: 'related',
+        continue: 'lesson', study_next: 'lesson', deep_dive: 'lesson',
+      };
+      const rows = recs.slice(0, 60).map((r) => ({
+        user_id: user.id,
+        item_type: ITEM_TYPE[r.category] ?? 'lesson',
+        item_id: r.moduleId ?? r.link,
+        title: r.title,
+        reason: r.reason ?? null,
+        score: r.score,
+        difficulty: r.difficulty ?? null,
+        estimated_time: r.estimatedMinutes ?? null,
+        source_reference: r.sourceUrl ?? null,
+        category: r.category,
+      }));
+      await sb.from('lms_recommendations').delete().eq('user_id', user.id);
+      const { error } = await sb.from('lms_recommendations').insert(rows);
+      persisted = !error;
+    } catch { persisted = false; }
+  }
+
   return NextResponse.json({
     ok: true,
     authenticated: Boolean(user),
+    persisted,
     counts: { quizzesTaken: quizPct.size, decksPracticed: flashConfidence.size, modulesRead: notesRead.size },
     recommendations: recs,
   });
