@@ -23,7 +23,9 @@ function fromEnvFile(name) {
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL || fromEnvFile('NEXT_PUBLIC_SUPABASE_URL');
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || fromEnvFile('SUPABASE_SERVICE_ROLE_KEY');
+// Prefer the new-format secret key (sb_secret_…); fall back to the service_role JWT.
+const SERVICE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+  || fromEnvFile('SUPABASE_SECRET_KEY') || fromEnvFile('SUPABASE_SERVICE_ROLE_KEY');
 if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error('Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
   process.exit(1);
