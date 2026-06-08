@@ -86,7 +86,7 @@ export default function ModuleNotesPage() {
           {section.diagram && (
             <figure style={{ margin: '20px 0', textAlign: 'center', background: 'var(--bg)', borderRadius: 12, border: '1px solid var(--border)', padding: 18 }}>
               <Image
-                src={`/clf-c02/notes/${section.diagram}.png`}
+                src={`/${section.diagram.startsWith('arch-') ? 'architect' : 'clf-c02'}/notes/${section.diagram}.png`}
                 alt={section.diagramCaption ?? section.heading}
                 width={680}
                 height={520}

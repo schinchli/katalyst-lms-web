@@ -19,7 +19,8 @@ export const architectQuestions: Question[] = [
     explanation: `The Well-Architected Framework defines six pillars — Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability — used to evaluate and improve architectures.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://aws.amazon.com/architecture/well-architected/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m01-q02',
@@ -35,7 +36,8 @@ export const architectQuestions: Question[] = [
     explanation: `AWS Local Zones place compute and storage closer to large population centres for single-digit-millisecond latency, extending a parent Region.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://aws.amazon.com/architecture/well-architected/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m01-q03',
@@ -51,7 +53,8 @@ export const architectQuestions: Question[] = [
     explanation: `A Region is an isolated geographic area containing multiple AZs. Spreading resources across at least two AZs protects against a single data-centre failure.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://aws.amazon.com/architecture/well-architected/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m01-q04',
@@ -67,7 +70,8 @@ export const architectQuestions: Question[] = [
     explanation: `The Well-Architected Tool is a free console tool that evaluates workloads against the pillars and generates an improvement plan.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://aws.amazon.com/architecture/well-architected/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m02-q01',
@@ -83,7 +87,8 @@ export const architectQuestions: Question[] = [
     explanation: `IAM roles provide temporary, automatically-rotated credentials to the instance with no long-term keys stored — the best-practice approach.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m02-q02',
@@ -99,7 +104,8 @@ export const architectQuestions: Question[] = [
     explanation: `IAM evaluation: default deny, an Allow grants access, but an explicit Deny always wins over any Allow.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m02-q03',
@@ -115,7 +121,8 @@ export const architectQuestions: Question[] = [
     explanation: `Groups let you manage permissions once and have all members inherit them — scalable and consistent.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m02-q04',
@@ -131,7 +138,8 @@ export const architectQuestions: Question[] = [
     explanation: `The root user has unrestricted access; secure it with MFA and use least-privilege IAM identities for routine work.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m03-q01',
@@ -147,7 +155,8 @@ export const architectQuestions: Question[] = [
     explanation: `A NAT gateway allows outbound-only internet access for private instances while blocking inbound connections from the internet.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/userguide/',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m03-q02',
@@ -163,7 +172,8 @@ export const architectQuestions: Question[] = [
     explanation: `Security groups are stateful (return traffic auto-allowed) at the instance level; network ACLs are stateless (rules needed both ways) at the subnet level.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/userguide/',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m03-q03',
@@ -179,7 +189,8 @@ export const architectQuestions: Question[] = [
     explanation: `A subnet is public when its route table sends internet-bound traffic to an internet gateway. Subnets always live in a single AZ.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/userguide/',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m03-q04',
@@ -195,7 +206,8 @@ export const architectQuestions: Question[] = [
     explanation: `In CIDR, the prefix length is the number of fixed network bits; /16 leaves 16 host bits (~65,536 addresses).`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/userguide/',
+    wellArchitectedPillar: 'Security',
   },
   {
     id: 'arch-m04-q01',
@@ -211,7 +223,8 @@ export const architectQuestions: Question[] = [
     explanation: `Spot Instances use spare capacity at up to ~90% off and are ideal for interruption-tolerant workloads like batch processing.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/ec2/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m04-q02',
@@ -227,7 +240,8 @@ export const architectQuestions: Question[] = [
     explanation: `A custom AMI captures the OS, configuration, and software so new instances launch pre-configured and consistent.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/ec2/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m04-q03',
@@ -243,7 +257,8 @@ export const architectQuestions: Question[] = [
     explanation: `A cluster placement group packs instances close together in one AZ for low-latency, high-throughput networking — ideal for HPC.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/ec2/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m04-q04',
@@ -259,7 +274,8 @@ export const architectQuestions: Question[] = [
     explanation: `Compute Optimizer analyses utilisation metrics with ML to recommend right-sized, cost-effective instance types.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/ec2/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m05-q01',
@@ -275,7 +291,8 @@ export const architectQuestions: Question[] = [
     explanation: `Intelligent-Tiering automatically moves objects between access tiers based on usage with no retrieval fees — ideal for unknown/changing patterns.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m05-q02',
@@ -291,7 +308,8 @@ export const architectQuestions: Question[] = [
     explanation: `Block Public Access is an account/bucket guardrail that overrides permissive ACLs and policies to prevent public exposure.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m05-q03',
@@ -307,7 +325,8 @@ export const architectQuestions: Question[] = [
     explanation: `Glacier Deep Archive is the lowest-cost S3 class, designed for long-term archives that are rarely accessed and tolerate multi-hour retrieval.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m05-q04',
@@ -323,7 +342,8 @@ export const architectQuestions: Question[] = [
     explanation: `Versioning retains multiple versions of an object so you can restore a previous one after an accidental change or delete.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m06-q01',
@@ -339,7 +359,8 @@ export const architectQuestions: Question[] = [
     explanation: `Multi-AZ maintains a synchronous standby in another AZ and fails over automatically — for high availability, not read scaling.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m06-q02',
@@ -355,7 +376,8 @@ export const architectQuestions: Question[] = [
     explanation: `Read replicas are asynchronous read-only copies that scale read throughput; Multi-AZ is for failover, not read scaling.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m06-q03',
@@ -371,7 +393,8 @@ export const architectQuestions: Question[] = [
     explanation: `DynamoDB is a serverless key-value/document NoSQL database delivering single-digit-millisecond latency at any scale.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m06-q04',
@@ -387,7 +410,8 @@ export const architectQuestions: Question[] = [
     explanation: `Aurora is AWS's cloud-native relational engine, compatible with MySQL/PostgreSQL, with auto-scaling storage and six-way replication across three AZs.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m07-q01',
@@ -403,7 +427,8 @@ export const architectQuestions: Question[] = [
     explanation: `CloudTrail records API activity — who made each call, what action, when, and from where — the audit trail for such investigations.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m07-q02',
@@ -419,7 +444,8 @@ export const architectQuestions: Question[] = [
     explanation: `A CloudWatch alarm on the CPU metric can trigger an Auto Scaling policy to scale out when the threshold is breached.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m07-q03',
@@ -435,7 +461,8 @@ export const architectQuestions: Question[] = [
     explanation: `The ALB operates at Layer 7 and supports content-based routing (e.g. path- and host-based rules).`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m07-q04',
@@ -451,7 +478,8 @@ export const architectQuestions: Question[] = [
     explanation: `Target tracking adjusts capacity to keep a chosen metric at the target value, like a thermostat.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m08-q01',
@@ -467,7 +495,8 @@ export const architectQuestions: Question[] = [
     explanation: `CloudFormation is AWS's Infrastructure-as-Code service: declare resources in a template and provision them consistently as a stack.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m08-q02',
@@ -483,7 +512,8 @@ export const architectQuestions: Question[] = [
     explanation: `A change set previews how a proposed update will affect resources before you execute it.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m08-q03',
@@ -499,7 +529,8 @@ export const architectQuestions: Question[] = [
     explanation: `Elastic Beanstalk is a PaaS that handles provisioning, load balancing, scaling, and health monitoring from your uploaded code.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m08-q04',
@@ -515,7 +546,8 @@ export const architectQuestions: Question[] = [
     explanation: `Outputs declare values returned by the stack (e.g. an endpoint or bucket name); Parameters are inputs, Conditions control creation.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/',
+    wellArchitectedPillar: 'Operational Excellence',
   },
   {
     id: 'arch-m09-q01',
@@ -531,7 +563,8 @@ export const architectQuestions: Question[] = [
     explanation: `EKS runs upstream Kubernetes, giving portability and access to the Kubernetes ecosystem; ECS is the simpler AWS-native alternative.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m09-q02',
@@ -547,7 +580,8 @@ export const architectQuestions: Question[] = [
     explanation: `Fargate is serverless compute for containers — you specify CPU/memory and AWS manages the underlying infrastructure.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m09-q03',
@@ -563,7 +597,8 @@ export const architectQuestions: Question[] = [
     explanation: `ECR is the managed container image registry, with image scanning and versioning, integrated with ECS and EKS.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m09-q04',
@@ -579,7 +614,8 @@ export const architectQuestions: Question[] = [
     explanation: `Containers virtualise at the OS level and share the host kernel, making them lighter and faster to start than full VMs.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m10-q01',
@@ -595,7 +631,8 @@ export const architectQuestions: Question[] = [
     explanation: `Gateway VPC endpoints (for S3 and DynamoDB) add a route so traffic to the service stays on the AWS network — no internet path needed.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/tgw/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m10-q02',
@@ -611,7 +648,8 @@ export const architectQuestions: Question[] = [
     explanation: `Transit Gateway provides hub-and-spoke connectivity for many VPCs/on-prem networks, avoiding the n(n-1)/2 peering explosion (45 for 10 VPCs).`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/tgw/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m10-q03',
@@ -627,7 +665,8 @@ export const architectQuestions: Question[] = [
     explanation: `Direct Connect is a dedicated physical link offering consistent performance and lower data-transfer costs; a VPN runs over the internet.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/tgw/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m10-q04',
@@ -643,7 +682,8 @@ export const architectQuestions: Question[] = [
     explanation: `Peering is one-to-one and non-transitive; reaching all VPCs requires a full mesh or a Transit Gateway.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/vpc/latest/tgw/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m11-q01',
@@ -659,7 +699,8 @@ export const architectQuestions: Question[] = [
     explanation: `An SQS queue buffers requests so producer and consumer scale independently; messages persist until processed, absorbing spikes.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/lambda/latest/dg/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m11-q02',
@@ -675,7 +716,8 @@ export const architectQuestions: Question[] = [
     explanation: `SNS pub/sub fans a message out to many subscribers; the SNS-to-multiple-SQS pattern gives each consumer its own copy.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/lambda/latest/dg/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m11-q03',
@@ -691,7 +733,8 @@ export const architectQuestions: Question[] = [
     explanation: `FIFO queues guarantee ordering and exactly-once processing; standard queues offer higher throughput but only best-effort ordering.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/lambda/latest/dg/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m11-q04',
@@ -707,7 +750,8 @@ export const architectQuestions: Question[] = [
     explanation: `API Gateway creates, publishes, secures, and scales APIs and commonly fronts Lambda functions in serverless designs.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/lambda/latest/dg/',
+    wellArchitectedPillar: 'Cost Optimization',
   },
   {
     id: 'arch-m12-q01',
@@ -723,7 +767,8 @@ export const architectQuestions: Question[] = [
     explanation: `Latency-based routing directs users to the Region/endpoint that provides the lowest network latency for them.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m12-q02',
@@ -739,7 +784,8 @@ export const architectQuestions: Question[] = [
     explanation: `Weighted routing splits traffic across endpoints by assigned weights, ideal for A/B testing and canary rollouts.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m12-q03',
@@ -755,7 +801,8 @@ export const architectQuestions: Question[] = [
     explanation: `CloudFront is a CDN: on a cache miss it fetches from the origin and caches at the edge so subsequent requests are served locally.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m12-q04',
@@ -771,7 +818,8 @@ export const architectQuestions: Question[] = [
     explanation: `Geolocation routing returns answers based on the user's geographic location — useful for compliance and localisation.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/',
+    wellArchitectedPillar: 'Performance Efficiency',
   },
   {
     id: 'arch-m13-q01',
@@ -787,7 +835,8 @@ export const architectQuestions: Question[] = [
     explanation: `RPO is the maximum acceptable amount of data loss measured in time; RTO is the maximum acceptable downtime.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/aws-backup/latest/devguide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m13-q02',
@@ -803,7 +852,8 @@ export const architectQuestions: Question[] = [
     explanation: `Backup and Restore is the cheapest DR strategy but has the highest RTO/RPO; readiness increases (and cost rises) with pilot light, warm standby, then multi-site.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/aws-backup/latest/devguide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m13-q03',
@@ -819,7 +869,8 @@ export const architectQuestions: Question[] = [
     explanation: `Warm standby keeps a smaller always-on copy of the full stack that is scaled up on failover — lower RTO than pilot light.`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/aws-backup/latest/devguide/',
+    wellArchitectedPillar: 'Reliability',
   },
   {
     id: 'arch-m13-q04',
@@ -835,7 +886,8 @@ export const architectQuestions: Question[] = [
     explanation: `AWS Backup provides centralised, policy-based backup across AWS services (and on-premises via Storage Gateway).`,
     difficulty: 'intermediate',
     category: 'architect',
-    docUrl: undefined,
+    docUrl: 'https://docs.aws.amazon.com/aws-backup/latest/devguide/',
+    wellArchitectedPillar: 'Reliability',
   }
 ];
 

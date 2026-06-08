@@ -1614,11 +1614,18 @@ export default function QuizPage() {
               {feedback && currentQ.explanation && (!isExamMode || examReviewAllowed) && !isFunAndLearnMode && (
                 <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: isCorrect ? 'var(--success-tint)' : 'var(--error-tint)', border: `1px solid ${isCorrect ? '#28C76F44' : '#FF4C5144'}`, fontSize: 13, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', lineHeight: 1.6 }}>
                   <strong>{isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}</strong>{currentQ.explanation}
-                  {currentQ.docUrl && (
-                    <div style={{ marginTop: 10 }}>
-                      <a href={currentQ.docUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 600, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', textDecoration: 'underline', opacity: 0.85 }}>
-                        📖 View on AWS Docs →
-                      </a>
+                  {(currentQ.wellArchitectedPillar || currentQ.docUrl) && (
+                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      {currentQ.wellArchitectedPillar && (
+                        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 20, background: 'rgba(255,153,0,0.15)', color: '#B36A00' }}>
+                          🏛 {currentQ.wellArchitectedPillar}
+                        </span>
+                      )}
+                      {currentQ.docUrl && (
+                        <a href={currentQ.docUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 600, color: isCorrect ? 'var(--success-on-tint)' : 'var(--error-on-tint)', textDecoration: 'underline', opacity: 0.85 }}>
+                          📖 View on AWS Docs →
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>

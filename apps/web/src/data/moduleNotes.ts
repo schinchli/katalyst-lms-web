@@ -673,6 +673,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **AWS Local Zones.** Place compute, storage, and select services closer to large population/industry centres, delivering single-digit-millisecond latency for demanding apps. An extension of a Region.
 
 **Edge locations.** Sites used by CloudFront and other edge services to cache content and terminate connections close to users — far more numerous than Regions.`,
+        diagram: 'arch-m01',
+        diagramCaption: 'The six Well-Architected pillars — the lens an architect uses to evaluate every design decision.',
         keyPoints: ['AWS Well-Architected Framework — 6 pillars', 'AWS Region vs Availability Zone', 'AWS Local Zones', 'Edge locations'],
       },
       {
@@ -706,6 +708,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **IAM user groups.** A collection of users; attach policies to the group and all members inherit them. The scalable way to manage permissions.
 
 **Assuming a role.** A principal calls AssumeRole (via STS) and receives temporary security credentials scoped to the role's permissions — no long-term keys stored on the resource.`,
+        diagram: 'arch-m02',
+        diagramCaption: 'IAM building blocks: policies on groups, users inheriting them, and roles granting temporary, key-free access to applications.',
         keyPoints: ['AWS account root user', 'IAM users vs roles', 'IAM user groups', 'Assuming a role'],
       },
       {
@@ -739,6 +743,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **Public vs private subnet.** A public subnet has a route to an internet gateway; a private subnet does not. Subnets live in a single AZ — spread them across AZs for resilience.
 
 **Internet gateway (IGW).** A horizontally-scaled, redundant VPC component that allows communication between the VPC and the internet. Required for public subnets.`,
+        diagram: 'arch-m03',
+        diagramCaption: 'A VPC with a public subnet (load balancer, NAT) and a private subnet (app, database). The Internet Gateway is the only path to the internet.',
         keyPoints: ['CIDR notation', 'Amazon VPC', 'Public vs private subnet', 'Internet gateway (IGW)'],
       },
       {
@@ -772,6 +778,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **EC2 instance families.** Families optimised for a workload profile: general purpose, compute optimised, memory optimised, storage optimised, and accelerated (GPU) computing.
 
 **Instance type naming.** e.g. m5.large — family (m), generation (5), optional capability, then size. Newer generations usually offer better price/performance.`,
+        diagram: 'arch-m04',
+        diagramCaption: 'An Application Load Balancer spreads traffic across an Auto Scaling group spanning AZs; CloudWatch metrics drive scale-out and scale-in.',
         keyPoints: ['Amazon EC2', 'Amazon Machine Image (AMI)', 'EC2 instance families', 'Instance type naming'],
       },
       {
@@ -805,6 +813,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **S3 Intelligent-Tiering.** Automatically moves objects between access tiers based on usage, optimising cost with no retrieval fees — best for unknown or changing access patterns.
 
 **S3 lifecycle policies.** Rules that automatically transition objects to cheaper classes or expire them as they age (e.g. Standard → IA → Glacier after N days).`,
+        diagram: 'arch-m05',
+        diagramCaption: 'Three storage shapes: EBS (block, one instance), EFS (file, many instances), and S3 (object, accessed over HTTPS).',
         keyPoints: ['Amazon S3', 'S3 storage classes', 'S3 Intelligent-Tiering', 'S3 lifecycle policies'],
       },
       {
@@ -838,6 +848,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **RDS Multi-AZ.** A synchronous standby replica in another AZ that fails over automatically. For high availability — NOT for scaling reads.
 
 **RDS read replicas.** Asynchronous read-only copies that scale read traffic and can be promoted to standalone databases. For read scaling, not automatic failover.`,
+        diagram: 'arch-m06',
+        diagramCaption: 'RDS Multi-AZ keeps a synchronous standby for failover and async read replicas for scale; DynamoDB serves NoSQL key-value workloads.',
         keyPoints: ['Choosing the right database', 'Amazon RDS', 'RDS Multi-AZ', 'RDS read replicas'],
       },
       {
@@ -871,6 +883,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **AWS CloudTrail.** Records API activity (who did what, when, from where) for audit, security, and compliance. Different from CloudWatch's performance focus.
 
 **VPC Flow Logs.** Capture metadata about IP traffic to/from network interfaces in a VPC — used for troubleshooting connectivity and security analysis.`,
+        diagram: 'arch-m07',
+        diagramCaption: 'CloudWatch alarms trigger Auto Scaling; CloudTrail captures the API audit trail; EventBridge routes events for automation.',
         keyPoints: ['Amazon CloudWatch', 'CloudWatch alarms', 'AWS CloudTrail', 'VPC Flow Logs'],
       },
       {
@@ -904,6 +918,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **CloudFormation stacks.** A collection of AWS resources managed as a single unit — create, update, or delete them together from one template.
 
 **Change sets.** A preview of how a proposed CloudFormation update will affect running resources before you execute it — reduces risky surprises.`,
+        diagram: 'arch-m08',
+        diagramCaption: 'CloudFormation provisions a whole stack of resources from one declarative template — repeatable, version-controlled infrastructure.',
         keyPoints: ['Infrastructure as Code (IaC)', 'AWS CloudFormation', 'CloudFormation stacks', 'Change sets'],
       },
       {
@@ -937,6 +953,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **Amazon ECR.** Elastic Container Registry — a fully managed registry to store, scan, and version container images.
 
 **Amazon ECS.** AWS-native container orchestration to run and scale containers; integrates tightly with AWS and runs on EC2 or Fargate.`,
+        diagram: 'arch-m09',
+        diagramCaption: 'Push an image to ECR, orchestrate with ECS or EKS, and run it serverlessly on Fargate — no EC2 to manage.',
         keyPoints: ['Microservices', 'Containers', 'Amazon ECR', 'Amazon ECS'],
       },
       {
@@ -970,6 +988,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **VPC peering.** A one-to-one private connection between two VPCs. It is non-transitive — A↔B and B↔C does not give A↔C; a full mesh needs n(n-1)/2 connections.
 
 **AWS Transit Gateway.** A hub that connects many VPCs and on-premises networks through a single gateway, replacing complex peering meshes with hub-and-spoke routing.`,
+        diagram: 'arch-m10',
+        diagramCaption: 'Transit Gateway is the hub connecting VPCs and on-premises (via Direct Connect); gateway endpoints reach S3 privately.',
         keyPoints: ['VPC endpoints', 'Interface vs Gateway endpoint', 'VPC peering', 'AWS Transit Gateway'],
       },
       {
@@ -1003,6 +1023,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **Amazon SQS.** A fully managed message queue that decouples components. Standard (at-least-once, best-effort order) and FIFO (exactly-once, ordered) queue types.
 
 **Amazon SNS.** A managed pub/sub service: publish one message to a topic and fan it out to many subscribers (SQS, Lambda, email, HTTP).`,
+        diagram: 'arch-m11',
+        diagramCaption: 'A serverless request flow: API Gateway → Lambda → DynamoDB, with SQS and SNS for decoupling and fan-out.',
         keyPoints: ['Serverless', 'Amazon API Gateway', 'Amazon SQS', 'Amazon SNS'],
       },
       {
@@ -1036,6 +1058,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **Latency-based routing.** Routes users to the Region that gives them the lowest network latency, improving performance for global applications.
 
 **Geolocation vs Geoproximity.** Geolocation routes by the user's location; Geoproximity routes by the geographic distance between users and resources (with an adjustable bias).`,
+        diagram: 'arch-m12',
+        diagramCaption: 'Route 53 resolves and routes users to CloudFront edge caches, which front the origin Region — low latency worldwide.',
         keyPoints: ['Amazon Route 53', 'Route 53 routing policies', 'Latency-based routing', 'Geolocation vs Geoproximity'],
       },
       {
@@ -1069,6 +1093,8 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
 **Backup & Restore.** Cheapest DR: back up data and restore into a new environment on disaster. Highest RTO/RPO of the four strategies.
 
 **Pilot light.** Core services (e.g. a replicated database) run minimally in the recovery Region; the rest is provisioned on failover. Lower RTO than backup & restore.`,
+        diagram: 'arch-m13',
+        diagramCaption: 'AWS Backup protects the primary Region while cross-Region replication stands up a recovery Region for disaster recovery.',
         keyPoints: ['RPO vs RTO', 'DR strategies (lowest→highest cost/readiness)', 'Backup & Restore', 'Pilot light'],
       },
       {

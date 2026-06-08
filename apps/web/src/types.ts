@@ -72,6 +72,7 @@ export interface Question {
   options: Option[];
   explanation?: string;
   docUrl?: string;
+  wellArchitectedPillar?: string;  // Well-Architected pillar this question maps to
   correctOptionId: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   category?: string;
