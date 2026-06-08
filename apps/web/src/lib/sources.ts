@@ -172,16 +172,24 @@ export const webProvider: SourceProvider = {
 };
 
 /**
- * MCP provider stub. When the AWS Documentation MCP server is wired up, call
- * its search/read tools here and map the result onto a TrustedSource with
- * sourceType 'mcp', trustLevel 100, and the official URL it returns.
+ * MCP provider. The AWS Documentation MCP server (awslabs.aws-documentation-mcp-server,
+ * configured in .mcp.json) is integrated at INGEST time, not request time:
+ *   scripts/mcp-client.mjs      — stdio client for the MCP server
+ *   scripts/ingest-aws-docs.mjs — fetches official docs via MCP → embeds → RAG
+ *                                 (corpus 'aws-docs', with source_url + retrieved_at)
+ *
+ * The deployed app (Vercel) cannot spawn the uvx MCP process per request, so at
+ * runtime official AWS doc content is served from the ingested 'aws-docs' RAG
+ * corpus (Ask-AI / search already include it). This provider therefore resolves
+ * the canonical curated URL synchronously and lets RAG supply the live content.
  */
 export const mcpProvider: SourceProvider = {
   name: 'mcp',
-  async resolve(_query: string) {
-    // Not connected in this environment. Returning null makes resolveBestSource
-    // fall through to the curated/web provider.
-    return null;
+  async resolve(query: string) {
+    // Map a topic query to the curated official doc URL that the MCP ingest used.
+    const hits = getSourcesByTopic(query.split(/\s+/), 1);
+    const s = hits[0];
+    return s && s.sourceType === 'aws_docs' ? { ...s, sourceType: 'mcp', trustLevel: 100 } : null;
   },
 };
 
