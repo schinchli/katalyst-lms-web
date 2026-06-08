@@ -212,7 +212,7 @@ export function buildRecommendations(ctx: ProgressContext, maxPerCategory = 4): 
         title: isActive ? `Continue: ${firstIncomplete.title}` : `Start: ${path.certName}`,
         reason: isActive
           ? `Pick up where you left off in ${path.certName}.`
-          : `${path.certName} — ${path.steps.length} steps across ${units.length} modules.`,
+          : `${path.certName} — ${path.steps.length} steps across ${units.length} module${units.length === 1 ? '' : 's'}.`,
         link: firstIncomplete.notesStepId ? notesLink(firstIncomplete.moduleId)
           : firstIncomplete.quizId ? quizLink(firstIncomplete.quizId) : flashLink(firstIncomplete.moduleId),
         cta: isActive ? 'Continue' : 'Start path',
