@@ -1,0 +1,118 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m05-detect-unintended-access" name="Detect unintended access">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1020" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Use case: Detect unintended access" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="30" y="16" width="700" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- IAM Access Analyzer for S3 -->
+        <mxCell id="iaa" value="IAM Access&lt;br&gt;Analyzer for S3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="120" width="96" height="48" as="geometry" />
+        </mxCell>
+        <!-- Amazon EventBridge -->
+        <mxCell id="eb1" value="Amazon&lt;br&gt;EventBridge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CD2264;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="120" width="96" height="48" as="geometry" />
+        </mxCell>
+        <!-- AWS Lambda function (top) -->
+        <mxCell id="lam_top" value="AWS Lambda&lt;br&gt;function" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ED7100;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="120" width="96" height="48" as="geometry" />
+        </mxCell>
+        <!-- Amazon DynamoDB -->
+        <mxCell id="ddb" value="Amazon DynamoDB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4053D6;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="120" width="120" height="48" as="geometry" />
+        </mxCell>
+        <!-- S3 bucket shared externally -->
+        <mxCell id="s3" value="S3 bucket" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" vertex="1" parent="1">
+          <mxGeometry x="700" y="116" width="52" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="shared" value="Shared&lt;br&gt;externally" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#DD344C;" vertex="1" parent="1">
+          <mxGeometry x="800" y="116" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Step Functions container -->
+        <mxCell id="sfn" value="AWS Step Functions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#CD2264;dashed=0;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fontSize=12;fontStyle=1;fontColor=#CD2264;" vertex="1" parent="1">
+          <mxGeometry x="330" y="210" width="320" height="270" as="geometry" />
+        </mxCell>
+
+        <!-- Submit scan lambda -->
+        <mxCell id="lam_submit" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ED7100;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="234" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lab_submit" value="Submit scan" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="348" y="246" width="110" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Check status lambda -->
+        <mxCell id="lam_check" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ED7100;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="314" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lab_check" value="Check status" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="348" y="326" width="110" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Create findings lambda -->
+        <mxCell id="lam_find" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ED7100;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="404" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lab_find" value="Create findings" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="438" y="452" width="110" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Amazon Macie -->
+        <mxCell id="macie" value="Amazon Macie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="304" width="110" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- Scheduled EventBridge event -->
+        <mxCell id="sched" value="Scheduled&lt;br&gt;EventBridge&lt;br&gt;event" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CD2264;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="300" width="96" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Security Hub -->
+        <mxCell id="shub" value="AWS Security&lt;br&gt;Hub" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="410" width="96" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="a_iaa_eb" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="iaa" target="eb1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a_eb_lam" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="eb1" target="lam_top"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a_lam_ddb" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="lam_top" target="ddb"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- 2 scheduled -> submit scan -->
+        <mxCell id="a_sched_submit" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sched" target="lam_submit"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- 3 submit scan -> macie -->
+        <mxCell id="a_submit_macie" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" source="lam_submit" target="macie"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- 4 macie -> s3 -->
+        <mxCell id="a_macie_s3" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="macie" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- 5 macie -> check status -->
+        <mxCell id="a_macie_check" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="macie" target="lam_check"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- 6 check status -> create findings -->
+        <mxCell id="a_check_find" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="lam_check" target="lam_find"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- 7 create findings -> dynamodb (up right side) -->
+        <mxCell id="a_find_ddb" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="lam_find" target="ddb">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="600" y="426" /><mxPoint x="600" y="190" /><mxPoint x="510" y="190" /></Array></mxGeometry>
+        </mxCell>
+        <!-- 8 create findings -> security hub -->
+        <mxCell id="a_find_shub" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="lam_find" target="shub">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="300" y="426" /></Array></mxGeometry>
+        </mxCell>
+
+        <!-- step badges -->
+        <mxCell id="bad1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="356" y="92" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="244" y="270" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="608" y="244" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="800" y="246" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad5" value="5" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="600" y="324" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad6" value="6" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="430" y="370" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad7" value="7" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="560" y="404" width="24" height="24" as="geometry" /></mxCell>
+        <mxCell id="bad8" value="8" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="280" y="404" width="24" height="24" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

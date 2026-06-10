@@ -475,6 +475,7 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
       'Shield Standard is free and automatic for all customers; Shield Advanced is paid.',
       'SCPs in AWS Organizations set the maximum permissions for an account — guardrails, not grants.',
       'WAF = web application firewall (layer 7); Shield = DDoS protection.',
+      'Going deeper? Once you are comfortable here, the Security Engineering on AWS (SCS-C03) path covers IAM in depth, data protection and KMS, infrastructure and edge protection, logging and monitoring, and incident response.',
     ],
   },
 

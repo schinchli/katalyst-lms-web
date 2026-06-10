@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m07-athena" name="Athena automated integration">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Athena automated integration" style="text;html=1;align=left;verticalAlign=middle;fontColor=#16191F;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="18" width="700" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Bullet text -->
+        <mxCell id="lead" value="Some predefined queries that can be useful in security monitoring include the following:" style="text;html=1;align=left;verticalAlign=top;fontColor=#16191F;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="40" y="74" width="900" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="&lt;b&gt;VpcFlowLogsRejectedTCPTraffic:&lt;/b&gt; Identifies rejected TCP connections based on your security groups or network ACLs" style="text;html=1;align=left;verticalAlign=top;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="108" width="900" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b1d" value="&#8226;" style="text;html=1;align=left;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="44" y="108" width="14" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="&lt;b&gt;VpcFlowLogsRejectedTraffic:&lt;/b&gt; Identifies all traffic rejected by security groups or network ACLs" style="text;html=1;align=left;verticalAlign=top;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="900" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b2d" value="&#8226;" style="text;html=1;align=left;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="44" y="150" width="14" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="&lt;b&gt;VpcFlowLogsSshRdpTraffic:&lt;/b&gt; Identifies all SSH and RDP traffic" style="text;html=1;align=left;verticalAlign=top;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="192" width="900" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b3d" value="&#8226;" style="text;html=1;align=left;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="44" y="192" width="14" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Athena icon -->
+        <mxCell id="athena" value="Amazon Athena" style="sketch=0;fontColor=#16191F;fillColor=#8C4FFF;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.athena;" vertex="1" parent="1">
+          <mxGeometry x="120" y="300" width="90" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- CloudFormation template -->
+        <mxCell id="cfn" value="AWS CloudFormation&lt;br&gt;template" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudformation;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="90" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Start to query (magnifier drawn from ellipse + handle) -->
+        <mxCell id="queryRing" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="760" y="305" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="queryHandle" value="" style="endArrow=none;html=1;strokeColor=#16191F;strokeWidth=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="811" y="356" as="sourcePoint" />
+            <mxPoint x="834" y="379" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="queryLbl" value="Start to query" style="text;html=1;align=center;fontColor=#16191F;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="730" y="386" width="130" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="ar1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="athena" target="cfn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ar2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="cfn" target="queryRing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

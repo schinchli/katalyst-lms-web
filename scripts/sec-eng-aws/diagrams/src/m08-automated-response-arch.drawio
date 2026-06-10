@@ -1,0 +1,260 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m08-asr-arch" name="ASR architecture">
+    <mxGraphModel dx="1200" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Security Hub Automated Response and Remediation architecture" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="1100" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="rule" value="" style="endArrow=none;html=1;strokeColor=#7C3AED;strokeWidth=3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="62" as="sourcePoint" />
+            <mxPoint x="1670" y="62" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Administrator account container ===== -->
+        <mxCell id="adminacct" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="900" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="adminacct_badge" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="44" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="adminacct_aws" value="aws" style="text;html=1;align=center;verticalAlign=middle;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="92" width="44" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="adminacct_lbl" value="Administrator account" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="96" y="92" width="300" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Left grey strip (Config / Security Hub / Findings) -->
+        <mxCell id="leftstrip" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="270" height="680" as="geometry" />
+        </mxCell>
+
+        <mxCell id="config" value="AWS Config" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.config;" vertex="1" parent="1">
+          <mxGeometry x="135" y="180" width="72" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="shub" value="AWS Security Hub" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.security_hub;" vertex="1" parent="1">
+          <mxGeometry x="135" y="360" width="72" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="findings" value="Findings" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.detective;" vertex="1" parent="1">
+          <mxGeometry x="135" y="560" width="72" height="72" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_config_shub" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;" edge="1" parent="1" source="config" target="shub">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_shub_find" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;" edge="1" parent="1" source="shub" target="findings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ASR Administrator Stack dashed container -->
+        <mxCell id="asradminstack" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9090A8;strokeWidth=1.5;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="350" y="150" width="570" height="680" as="geometry" />
+        </mxCell>
+        <mxCell id="asradminstack_lbl" value="ASR Administrator Stack" style="text;html=1;align=center;verticalAlign=middle;fontColor=#232F3E;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="500" y="158" width="270" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Security Hub Custom action -->
+        <mxCell id="customaction" value="Security Hub&lt;br&gt;Custom action" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.config;" vertex="1" parent="1">
+          <mxGeometry x="380" y="280" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Default EventBridge Bus -->
+        <mxCell id="defbus" value="Default&lt;br&gt;EventBridge&lt;br&gt;Bus" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.eventbridge;" vertex="1" parent="1">
+          <mxGeometry x="560" y="430" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Manual Remediation EventBridge Rule (top) -->
+        <mxCell id="rule_top" value="Manual Remediation&lt;br&gt;EventBridge Rule" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=top;verticalAlign=bottom;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.eventbridge;" vertex="1" parent="1">
+          <mxGeometry x="650" y="290" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Manual Remediation EventBridge Rule (bottom) -->
+        <mxCell id="rule_bot" value="Manual Remediation&lt;br&gt;EventBridge Rule" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.eventbridge;" vertex="1" parent="1">
+          <mxGeometry x="650" y="560" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Orchestrator admin IAM Role (top right of admin stack) -->
+        <mxCell id="orch_role_admin" value="Orchestrator&lt;br&gt;admin IAM Role" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="820" y="190" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Orchestrator Workflow (Step Functions) -->
+        <mxCell id="orch_wf" value="Orchestrator&lt;br&gt;Workflow" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.step_functions;" vertex="1" parent="1">
+          <mxGeometry x="822" y="400" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Amazon SNS Topic -->
+        <mxCell id="sns" value="Amazon SNS&lt;br&gt;Topic" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.simple_notification_service;" vertex="1" parent="1">
+          <mxGeometry x="822" y="600" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Member Account container ===== -->
+        <mxCell id="memberacct" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="970" y="90" width="700" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="memberacct_badge" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="970" y="90" width="44" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="memberacct_aws" value="aws" style="text;html=1;align=center;verticalAlign=middle;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="970" y="92" width="44" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="memberacct_lbl" value="Member Account (admin account can also be member)" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="1026" y="92" width="500" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ASR Member Stack dashed container -->
+        <mxCell id="asrmemstack" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9090A8;strokeWidth=1.5;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="990" y="150" width="490" height="680" as="geometry" />
+        </mxCell>
+        <mxCell id="asrmemstack_lbl" value="ASR Member Stack" style="text;html=1;align=center;verticalAlign=middle;fontColor=#232F3E;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="158" width="270" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- two Orchestrator admin IAM roles in member stack -->
+        <mxCell id="mem_role1" value="Orchestrator&lt;br&gt;admin IAM Role" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="190" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="mem_role2" value="Orchestrator&lt;br&gt;admin IAM Role" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="190" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- two Control Runbook SSM Documents -->
+        <mxCell id="ssm1" value="Control Runbook&lt;br&gt;SSM Document" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.documents;" vertex="1" parent="1">
+          <mxGeometry x="1022" y="400" width="60" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="ssm2" value="Control Runbook&lt;br&gt;SSM Document" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.documents;" vertex="1" parent="1">
+          <mxGeometry x="1242" y="400" width="60" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Remediation KMS Key -->
+        <mxCell id="kms" value="Remediation KMS&lt;br&gt;Key" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.key_management_service;" vertex="1" parent="1">
+          <mxGeometry x="1242" y="600" width="60" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Customer resources grey strip -->
+        <mxCell id="custstrip" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F0F0F0;strokeColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="150" width="160" height="680" as="geometry" />
+        </mxCell>
+        <mxCell id="cust_lbl" value="Customer&lt;br&gt;resources" style="text;html=1;align=center;verticalAlign=middle;fontColor=#232F3E;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="160" width="160" height="44" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lambda" value="AWS Lambda&lt;br&gt;Function" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.lambda;" vertex="1" parent="1">
+          <mxGeometry x="1535" y="220" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="Amazon S3" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.simple_storage_service;" vertex="1" parent="1">
+          <mxGeometry x="1535" y="400" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="other" value="Other&lt;br&gt;resources" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.generic_database;" vertex="1" parent="1">
+          <mxGeometry x="1535" y="580" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EDGES ===== -->
+        <!-- Findings -> custom action (up) and -> default bus -->
+        <mxCell id="e_find_custom" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="findings" target="customaction">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="355" y="596" /><mxPoint x="355" y="312" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_find_bus" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="findings" target="defbus">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="490" y="596" /><mxPoint x="490" y="462" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- custom action -> top rule (down/right) via implied; default bus -> top rule and bottom rule -->
+        <mxCell id="e_bus_toprule" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="defbus" target="rule_top">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="592" y="322" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_bus_botrule" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="defbus" target="rule_bot">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="592" y="592" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- top rule -> orchestrator admin role (right) -->
+        <mxCell id="e_toprule_role" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="rule_top" target="orch_role_admin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="322" /><mxPoint x="770" y="222" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- bottom rule -> orchestrator workflow (right) -->
+        <mxCell id="e_botrule_wf" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=1;" edge="1" parent="1" source="rule_bot" target="orch_wf">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="790" y="592" /><mxPoint x="790" y="432" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- orchestrator admin role -> workflow (down) -->
+        <mxCell id="e_role_wf" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="orch_role_admin" target="orch_wf">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- workflow -> sns (down) -->
+        <mxCell id="e_wf_sns" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="orch_wf" target="sns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- admin orchestrator role -> member role1 (cross account, right) -->
+        <mxCell id="e_admin_mem" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="orch_role_admin" target="mem_role1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- member role1 -> member role2 -->
+        <mxCell id="e_mem1_mem2" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="mem_role1" target="mem_role2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- role1 -> ssm1, role2 -> ssm2 -->
+        <mxCell id="e_mem1_ssm1" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mem_role1" target="ssm1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mem2_ssm2" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mem_role2" target="ssm2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- ssm1 -> ssm2 -->
+        <mxCell id="e_ssm1_ssm2" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ssm1" target="ssm2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- ssm2 -> kms (down) -->
+        <mxCell id="e_ssm2_kms" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ssm2" target="kms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- ssm2 -> S3 (right into customer resources) -->
+        <mxCell id="e_ssm2_s3" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ssm2" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- lambda -> S3 and S3 -> other (customer resources internal arrows in original) -->
+        <mxCell id="e_lambda_s3" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="lambda" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s3_other" value="" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="s3" target="other">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Step badges ===== -->
+        <mxCell id="b1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="232" y="270" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="476" y="582" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="280" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="392" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" value="5" style="ellipse;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="582" width="28" height="28" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

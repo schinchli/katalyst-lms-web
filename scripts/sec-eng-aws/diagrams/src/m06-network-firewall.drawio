@@ -1,0 +1,108 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m06-network-firewall" name="Network Firewall">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1020" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Network Firewall overview" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="30" y="16" width="600" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Manage Multiple Firewall Deployments heading -->
+        <mxCell id="mngtitle" value="Manage Multiple Firewall Deployments" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="300" y="60" width="420" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Left gateway stack box -->
+        <mxCell id="leftbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="100" width="180" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="tgw" value="AWS Transit Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="116" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="vpngw" value="VPN Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="206" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="dx" value="AWS Direct Connect" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="296" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="igw" value="Internet gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="386" width="42" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Organizations / Firewall Manager -->
+        <mxCell id="orgs" value="AWS Organizations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="96" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="fwm" value="Firewall Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="96" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- VPC green container -->
+        <mxCell id="vpc" value="VPC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1B660F;verticalAlign=top;align=left;spacingLeft=24;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#1B660F;" vertex="1" parent="1">
+          <mxGeometry x="300" y="170" width="560" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- Firewall endpoint label -->
+        <mxCell id="fwep" value="Firewall&lt;br&gt;endpoint" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="300" y="250" width="70" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Inner dashed box: policy/block/monitor -->
+        <mxCell id="innerbox" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1B660F;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="196" width="370" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="policy" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="408" y="222" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="policylab" value="Create a policy" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="388" y="270" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="block" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="528" y="222" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="blocklab" value="Block and filter" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="506" y="270" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#759C3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="648" y="222" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="monitorlab" value="Monitor" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="626" y="270" width="90" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Private subnet / Public subnet -->
+        <mxCell id="priv" value="Private&lt;br&gt;subnet" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D6EAF8;strokeColor=#1F6FB2;fontColor=#1F6FB2;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="196" width="64" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pub" value="Public&lt;br&gt;subnet" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DFF0D8;strokeColor=#1B660F;fontColor=#1B660F;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="264" width="64" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Publish firewall activity heading -->
+        <mxCell id="pubtitle" value="Publish firewall activity" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="400" y="412" width="360" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- bottom row: S3, CloudWatch, partner -->
+        <mxCell id="s3" value="Amazon Simple Storage&lt;br&gt;Service (Amazon S3)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" vertex="1" parent="1">
+          <mxGeometry x="380" y="440" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="cw" value="Amazon CloudWatch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="440" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="partner" value="Integrated&lt;br&gt;Partner Solutions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="440" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="a_left_vpc" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="leftbox" target="fwep"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a_vpc_subnet" style="endArrow=block;startArrow=block;html=1;strokeColor=#232F3E;strokeWidth=2;exitX=1;exitY=0.45;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="innerbox" target="priv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- monitor -> publish (down) -->
+        <mxCell id="a_mon_s3" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="monitor" target="cw"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="670" y="430" /><mxPoint x="564" y="430" /></Array></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

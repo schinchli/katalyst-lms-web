@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m07-secmon" name="Security monitoring example architecture">
+    <mxGraphModel dx="1200" dy="680" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Security monitoring example architecture" style="text;html=1;align=left;verticalAlign=middle;fontColor=#16191F;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="14" width="800" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Detective services box -->
+        <mxCell id="detBox" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ta" value="AWS Trusted&lt;br&gt;Advisor" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.trusted_advisor;" vertex="1" parent="1">
+          <mxGeometry x="58" y="96" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="sh" value="AWS Security&lt;br&gt;Hub" style="sketch=0;fontColor=#16191F;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.security_hub;" vertex="1" parent="1">
+          <mxGeometry x="160" y="96" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="gd" value="Amazon GuardDuty" style="sketch=0;fontColor=#16191F;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.guardduty;" vertex="1" parent="1">
+          <mxGeometry x="108" y="160" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="detLbl" value="Investigative and&lt;br&gt;Detective services" style="text;html=1;align=center;fontColor=#16191F;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="236" width="210" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Top flow icons -->
+        <mxCell id="ebEvent" value="Amazon&lt;br&gt;EventBridge&lt;br&gt;event" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eventbridge;" vertex="1" parent="1">
+          <mxGeometry x="330" y="96" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="ebRule" value="Amazon&lt;br&gt;EventBridge&lt;br&gt;rule" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eventbridge;" vertex="1" parent="1">
+          <mxGeometry x="470" y="96" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="lambda" value="Lambda&lt;br&gt;function" style="sketch=0;fontColor=#16191F;fillColor=#ED7100;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="1">
+          <mxGeometry x="610" y="96" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="firehose" value="Amazon Data&lt;br&gt;Firehose" style="sketch=0;fontColor=#16191F;fillColor=#8C4FFF;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.kinesis_data_firehose;" vertex="1" parent="1">
+          <mxGeometry x="745" y="96" width="56" height="56" as="geometry" />
+        </mxCell>
+        <!-- Insights tools (laptop-ish box) -->
+        <mxCell id="toolsIcon" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="884" y="96" width="74" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="tools" value="Insights, analytics,&lt;br&gt;and threat&lt;br&gt;intelligence tools" style="text;html=1;align=center;fontColor=#16191F;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="850" y="150" width="150" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Top flow arrows -->
+        <mxCell id="fa1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;dashed=1;" edge="1" parent="1" source="detBox" target="ebEvent">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="250" y="124" as="sourcePoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="fa2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;dashed=1;" edge="1" parent="1" source="ebEvent" target="ebRule">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fa3" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="ebRule" target="lambda">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fa4" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="lambda" target="firehose">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fa5" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="firehose" target="toolsIcon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- CloudTrail (cloud icon) -->
+        <mxCell id="cloudtrail" value="AWS CloudTrail" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudtrail;" vertex="1" parent="1">
+          <mxGeometry x="290" y="290" width="56" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- CloudWatch pink box -->
+        <mxCell id="cwBox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#CD2264;strokeWidth=2;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="500" y="280" width="320" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="cloudwatch" value="Amazon CloudWatch" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch;" vertex="1" parent="1">
+          <mxGeometry x="560" y="296" width="56" height="56" as="geometry" />
+        </mxCell>
+        <!-- CloudWatch Logs entries (3 log-search icons) -->
+        <mxCell id="cwl1" value="" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.cloudwatch_logs;" vertex="1" parent="1">
+          <mxGeometry x="560" y="378" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="cwl2" value="" style="sketch=0;fontColor=#16191F;fillColor=#E7157B;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.cloudwatch_logs;" vertex="1" parent="1">
+          <mxGeometry x="560" y="428" width="44" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="cwlLbl" value="CloudWatch Logs" style="text;html=1;align=center;fontColor=#16191F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="620" y="466" width="160" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- VPC Flow Logs source -->
+        <mxCell id="vflLbl" value="VPC Flow&lt;br&gt;Logs" style="text;html=1;align=right;verticalAlign=middle;fontColor=#16191F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="378" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="vflIcon" value="" style="sketch=0;fontColor=#16191F;fillColor=#8C4FFF;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.cloudwatch_logs;" vertex="1" parent="1">
+          <mxGeometry x="400" y="378" width="44" height="44" as="geometry" />
+        </mxCell>
+        <!-- Application logs source -->
+        <mxCell id="appLbl" value="Application logs" style="text;html=1;align=right;verticalAlign=middle;fontColor=#16191F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="438" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="appIcon" value="" style="sketch=0;fillColor=#16191F;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.gear;" vertex="1" parent="1">
+          <mxGeometry x="400" y="436" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- source arrows into CloudWatch Logs -->
+        <mxCell id="sa1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="vflIcon" target="cwl1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sa2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="appIcon" target="cwl2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- CloudTrail -> EventBridge event (up) -->
+        <mxCell id="ca1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.4;entryY=1;" edge="1" parent="1" source="cloudtrail" target="ebEvent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- CloudWatch box -> EventBridge rule (up) -->
+        <mxCell id="ca2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="cwBox" target="ebRule">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

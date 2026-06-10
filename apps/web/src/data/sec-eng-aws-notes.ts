@@ -14,16 +14,22 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Security in the AWS Cloud",
         body: "Security in the AWS Cloud involves understanding how to protect data and infrastructure while complying with regulations and standards. Security engineers, like Nikki, play a crucial role in building and maintaining the security architecture of cloud environments. They must balance tactical tasks with strategic security planning to ensure robust protection against threats.\n\nThe AWS Cloud offers various services that shift the responsibility of security between AWS and the customer. Understanding where these responsibilities lie is essential for effective security management.",
+        diagram: "m01-data-flow-diagram",
+        diagramCaption: "Example data-flow diagram with trust boundaries used in threat modeling.",
         keyPoints: ["Security engineers are responsible for protecting data and infrastructure.", "The AWS Cloud shifts security responsibilities between AWS and the customer.", "Regulations and standards must be considered in security planning."],
       },
       {
         heading: "AWS Shared Responsibility Model",
         body: "The **shared responsibility model** delineates the security responsibilities of AWS and the customer. AWS is responsible for the security of the cloud infrastructure, including hardware and global infrastructure. Conversely, customers are responsible for securing their data, applications, and configurations.\n\nFor example, when using Amazon EC2, customers must manage the operating system, network configurations, and data encryption, while AWS manages the underlying infrastructure. This model allows for customization but increases customer responsibility, necessitating a clear understanding of roles.",
+        diagram: "m01-shared-responsibility-ec2",
+        diagramCaption: "AWS shared responsibility model for Amazon EC2 - what AWS secures versus what the customer secures.",
         keyPoints: ["AWS manages the security of the cloud infrastructure.", "Customers manage security for their data and applications.", "Understanding the shared responsibility model is crucial for effective security."],
       },
       {
         heading: "Threat Modeling in AWS",
         body: "Threat modeling is a proactive approach to identifying and mitigating potential security threats in the AWS Cloud. It involves analyzing the architecture of applications and identifying vulnerabilities that could be exploited by attackers.\n\nSecurity engineers should regularly conduct threat modeling exercises to stay ahead of potential threats. This process helps in designing secure applications and implementing appropriate security controls, ensuring that security measures are integrated into the development lifecycle.",
+        diagram: "m01-threat-modeling-process",
+        diagramCaption: "The AWS threat modeling process.",
         keyPoints: ["Threat modeling identifies potential security threats.", "Regular threat modeling is essential for proactive security.", "Integrating security into the development lifecycle enhances application security."],
       },
       {
@@ -152,21 +158,29 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "The Challenge of Key Management",
         body: "Key management is vital for the protection of an organization’s data. As workloads evolve, organizations may find themselves spending more time on tasks such as importing and rotating keys, defining usage policies, and maintaining physical security for compliance. AWS services can help streamline these efforts, reducing the workload on security teams.\n\nAs the number of encrypted keys increases, so does the management overhead. This includes the complexities of storing and protecting keys, which can lead to a cumbersome key hierarchy. AWS services like AWS KMS and Secrets Manager address these challenges effectively, allowing organizations to focus on their core business functions while ensuring data security.",
+        diagram: "m04-cloudhsm",
+        diagramCaption: "Using AWS CloudHSM for dedicated key storage.",
         keyPoints: ["Key management is essential for data protection.", "Increased workload can lead to management complexities.", "AWS services streamline key management processes."],
       },
       {
         heading: "Encryption Primer",
         body: "Encryption typically involves a symmetric data key generated from software or hardware. Symmetric keys are preferred for bulk data encryption due to their efficiency. The data key encrypts plaintext data using an algorithm like AES, resulting in ciphertext.\n\nTo protect the data key, it should be encrypted with another key, often a KMS key. This ensures that both the encrypted data and the encrypted data key are stored securely. When selecting an encryption solution, consider where the keys will be stored, how they will be used, and who will manage them. AWS offers both server-side encryption (SSE) and client-side encryption (CSE), each with unique advantages.",
+        diagram: "m04-kms-architecture-example",
+        diagramCaption: "An AWS KMS architecture example.",
         keyPoints: ["Symmetric keys are ideal for bulk data encryption.", "Data keys must be securely stored and protected.", "AWS offers both SSE and CSE for encryption."],
       },
       {
         heading: "AWS KMS Overview",
         body: "AWS Key Management Service (KMS) is a managed service that allows users to create and control encryption keys. It employs FIPS 140-2 validated hardware security modules (HSMs) to protect keys. AWS KMS supports a two-tiered key hierarchy using envelope encryption, which enhances key management.\n\nWith AWS KMS, you can centrally manage keys, set usage policies, and ensure that keys never leave the service unencrypted. KMS keys can be customer managed or AWS managed, providing flexibility based on organizational needs. Additionally, AWS KMS integrates with other AWS services to facilitate secure data encryption.",
+        diagram: "m04-envelope-encryption",
+        diagramCaption: "Envelope encryption in AWS: a data key protected by a KMS key.",
         keyPoints: ["AWS KMS provides managed key storage and management.", "It uses envelope encryption for enhanced security.", "KMS keys can be customer managed or AWS managed."],
       },
       {
         heading: "KMS Key Types",
         body: "AWS KMS supports several key types, including symmetric keys, asymmetric keys, and HMAC keys. Symmetric keys are the default and are primarily used for encrypting and decrypting data. Asymmetric keys consist of a public and private key pair, useful for signing and verifying data.\n\nHMAC keys are symmetric keys used for generating and verifying message authentication codes. Each key type serves specific use cases, and understanding their functions is essential for effective key management within AWS.",
+        diagram: "m04-kms-ebs",
+        diagramCaption: "Encrypting an Amazon EBS volume with AWS KMS.",
         keyPoints: ["Symmetric keys are ideal for most encryption tasks.", "Asymmetric keys are used for signing and verification.", "HMAC keys ensure data integrity and authenticity."],
       },
       {
@@ -177,6 +191,8 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Using AWS Secrets Manager",
         body: "AWS Secrets Manager is designed to securely store and manage sensitive information such as API keys, passwords, and database credentials. It integrates with AWS KMS to encrypt secrets at rest and in transit, ensuring that sensitive data is protected.\n\nWith AWS Secrets Manager, you can automate the rotation of secrets, manage access policies, and audit secret usage. This service simplifies the management of secrets and enhances security by reducing the risk of hard-coded credentials in applications.",
+        diagram: "m04-secrets-manager",
+        diagramCaption: "Retrieving and rotating secrets with AWS Secrets Manager.",
         keyPoints: ["AWS Secrets Manager securely stores sensitive information.", "It automates secret rotation and manages access policies.", "Integration with AWS KMS enhances security."],
       },
     ],
@@ -192,21 +208,29 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Data Protection Strategies",
         body: "**Data protection strategies** are essential for mitigating risks associated with information disclosure, data integrity compromise, accidental deletion, and system availability. Each threat requires a tailored approach to ensure data security. For instance, limiting user access and implementing encryption can significantly reduce the risk of unauthorized data access.\n\nUsing **AWS Identity and Access Management (IAM)** resource-based policies can help manage access effectively. Additionally, employing **encryption** and **replication** strategies can safeguard data integrity and availability, ensuring that data can be restored in case of loss or corruption.",
+        diagram: "m05-dynamodb-sse",
+        diagramCaption: "Server-side encryption for Amazon DynamoDB.",
         keyPoints: ["Implement access controls to limit user access.", "Use encryption to protect confidential data.", "Employ replication strategies for data integrity."],
       },
       {
         heading: "Amazon S3 Security Best Practices",
         body: "When securing data in **Amazon S3**, several best practices should be followed. These include using **encryption** for data at rest, blocking public access, enabling **Amazon S3 Object Lock**, and turning on versioning. Implementing **least privilege access** is crucial to ensure that users only have access to the data they need.\n\nAdditionally, using **Amazon S3 access points** can help manage access to shared datasets more efficiently. These practices serve as guidelines to enhance the security posture of your S3 buckets and should be adapted to fit your specific environment.",
+        diagram: "m05-s3-access-points",
+        diagramCaption: "Controlling bucket access using Amazon S3 access points.",
         keyPoints: ["Use encryption for data at rest in S3.", "Block public access to S3 buckets.", "Enable versioning and Object Lock for data protection."],
       },
       {
         heading: "Discovering Sensitive Data with Amazon Macie",
         body: "**Amazon Macie** is a powerful tool for identifying and protecting sensitive data stored in S3. It automatically discovers and classifies sensitive information such as personally identifiable information (PII) and financial data. By scheduling sensitive data discovery jobs, you can analyze S3 buckets for compliance and security risks.\n\nMacie continuously monitors buckets and generates findings for any that are publicly accessible, unencrypted, or shared outside your organization. This proactive monitoring helps organizations maintain visibility over their sensitive data and respond to potential threats quickly.",
+        diagram: "m05-detect-unintended-access",
+        diagramCaption: "Detecting unintended access to data.",
         keyPoints: ["Macie classifies sensitive data in S3 buckets.", "It generates findings for policy violations.", "Continuous monitoring helps maintain data visibility."],
       },
       {
         heading: "Encryption Options for Amazon S3",
         body: "Amazon S3 offers several **server-side encryption (SSE)** options to protect your data. The default option, **SSE-S3**, is managed by AWS and encrypts data using strong encryption algorithms. For users who prefer to manage their own keys, **SSE-C** allows customers to provide their encryption keys, while **SSE-KMS** uses AWS Key Management Service for added security and audit capabilities.\n\nEach option has its own use cases, and understanding these can help you choose the right method for your data protection needs. For example, SSE-KMS provides an audit trail of key usage, which can be crucial for compliance requirements.",
+        diagram: "m05-sse-kms",
+        diagramCaption: "Amazon S3 server-side encryption with AWS KMS.",
         keyPoints: ["SSE-S3 is the default encryption option managed by AWS.", "SSE-C allows customers to manage their own encryption keys.", "SSE-KMS provides additional security and audit capabilities."],
       },
       {
@@ -232,11 +256,15 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "AWS Security Features Overview",
         body: "AWS provides several features to build a secure infrastructure. These include services that help create resiliency during attacks and protect workloads from external threats. Understanding these features is crucial for cloud security engineers to effectively safeguard their environments.\n\nKey AWS services include AWS Shield, AWS Firewall Manager, and AWS Network Firewall, each designed to mitigate specific security risks and enhance overall security posture. By leveraging these services, organizations can better defend against DDoS attacks and other vulnerabilities.",
+        diagram: "m06-network-firewall",
+        diagramCaption: "AWS Network Firewall protecting a VPC.",
         keyPoints: ["AWS offers features to build secure infrastructure.", "Key services include AWS Shield and AWS Firewall Manager.", "Resiliency during attacks is a critical aspect of security."],
       },
       {
         heading: "Security Groups vs. Network ACLs",
         body: "Security Groups and Network Access Control Lists (ACLs) are essential components of AWS security. Security Groups are associated with elastic network interfaces and are stateful, meaning they track the state of connections. In contrast, Network ACLs are associated with subnets and are stateless, processing rules in order.\n\nSecurity Groups only support Allow rules, while Network ACLs can support both Allow and Deny rules. Understanding the differences between these two helps in designing an effective security architecture within your VPC.",
+        diagram: "m06-vpc-endpoint",
+        diagramCaption: "Reaching an AWS service privately via a VPC endpoint.",
         keyPoints: ["Security Groups are stateful, while Network ACLs are stateless.", "Security Groups support only Allow rules; Network ACLs support both Allow and Deny.", "Security Groups are associated with network interfaces, ACLs with subnets."],
       },
       {
@@ -252,11 +280,15 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "VPC Peering and Security",
         body: "VPC peering allows for private IP communication between two VPCs, enabling efficient data transfer without traversing the public internet. However, it is important to note that VPC peering connections are not transitive; traffic cannot flow directly between two peered VPCs through a third VPC.\n\nThis limitation enhances security by preventing unintended traffic routes, thus reducing exposure to potential threats. When designing VPC architectures, understanding these peering rules is vital for maintaining secure and efficient network communication.",
+        diagram: "m06-vpc-peering",
+        diagramCaption: "VPC peering between two VPCs.",
         keyPoints: ["VPC peering allows private IP communication between VPCs.", "Peering connections are not transitive, enhancing security.", "Understanding peering rules is essential for secure network design."],
       },
       {
         heading: "Inter-Region VPC Peering",
         body: "Inter-Region VPC peering enables secure communication between VPCs in different AWS regions. Traffic in this setup is encrypted and remains on the AWS global network backbone, ensuring that it never traverses the public internet.\n\nThis feature is particularly useful for organizations with a global presence, as it allows for secure data transfer across regions while maintaining compliance with security standards. Understanding the implications of inter-region peering is crucial for cloud security engineers tasked with managing multi-region architectures.",
+        diagram: "m06-edge-routing-vpn",
+        diagramCaption: "Edge-to-edge routing through a VPN connection.",
         keyPoints: ["Inter-Region VPC peering allows secure communication between VPCs in different regions.", "Traffic is encrypted and stays on the AWS global network backbone.", "Essential for organizations with a global presence."],
       },
     ],
@@ -272,6 +304,8 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Importance of Security Monitoring",
         body: "**Security monitoring** is vital for protecting an organization's data from cyber threats. Security engineers implement controls to **identify**, **protect**, **detect**, **respond**, and **recover** from incidents. Tools like **AWS Config**, **AWS CloudTrail**, and **Amazon CloudWatch** are essential for governance, compliance, and investigations. Continuous monitoring helps ensure that security controls are effective and can alert teams to potential threats.",
+        diagram: "m07-security-monitoring-arch",
+        diagramCaption: "A security monitoring architecture on AWS.",
         keyPoints: ["Security monitoring involves multiple functions: identify, protect, detect, respond, and recover.", "AWS services play a crucial role in monitoring for compliance and incident response.", "Effective monitoring can help identify vulnerabilities and improve security posture."],
       },
       {
@@ -282,6 +316,8 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Defining a Baseline",
         body: "A **baseline** is essential for effective monitoring, as it defines the normal operational behavior of your workload. It includes metrics such as resource configurations, peak network times, and user access patterns. Without a baseline, detecting anomalies becomes challenging. Establishing a baseline allows security engineers to identify deviations that may indicate security incidents, making it a critical component of monitoring strategies.",
+        diagram: "m07-vpc-flow-logs-cloudwatch",
+        diagramCaption: "Publishing VPC Flow Logs to Amazon CloudWatch Logs.",
         keyPoints: ["A baseline defines normal operational conditions for effective anomaly detection.", "Common baseline components include resource configurations and user access patterns.", "Anomalies are easier to detect when a clear baseline is established."],
       },
       {
@@ -292,11 +328,15 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "AWS Config for Continuous Monitoring",
         body: "AWS Config is a powerful service that continuously monitors and records configuration changes of AWS resources. It provides insights into compliance and security analysis by sending notifications when changes occur. By maintaining an inventory of resources and their configurations, AWS Config enables security engineers to troubleshoot issues and assess the impact of changes on related resources.",
+        diagram: "m07-athena-integration",
+        diagramCaption: "Automated log analysis with Amazon Athena.",
         keyPoints: ["AWS Config continuously monitors resource configurations and changes.", "It helps in compliance monitoring and security analysis.", "Historical configurations assist in troubleshooting and incident response."],
       },
       {
         heading: "AWS Config Rules",
         body: "AWS Config allows for the creation of **managed rules** and **custom rules** to enforce compliance. Managed rules are predefined by AWS and require minimal configuration, while custom rules can be created using AWS Lambda functions. These rules help ensure that resources are configured according to security best practices, such as ensuring that all EBS volumes are encrypted or that CloudTrail is activated.",
+        diagram: "m07-opensearch-workflow",
+        diagramCaption: "Log analytics workflow with Amazon OpenSearch Service.",
         keyPoints: ["AWS Config rules help enforce compliance and best practices.", "Managed rules require minimal configuration and are maintained by AWS.", "Custom rules provide flexibility and can be tailored to specific organizational needs."],
       },
     ],
@@ -317,26 +357,36 @@ export const SEC_ENG_AWS_NOTES: Record<string, ModuleNotes> = {
       {
         heading: "Types of Security Incidents",
         body: "Common types of security incidents in cloud environments include **unauthorized access**, **compliance variance**, **service disruption**, and **privilege escalation**. Each of these incidents presents unique challenges that require specific responses.\n\nFor instance, unauthorized access may involve an IP address or user gaining access to resources without permission, while compliance variance refers to configurations that violate established policies. Understanding these types of incidents helps organizations prepare and respond appropriately.",
+        diagram: "m08-infected-instance-isolation",
+        diagramCaption: "Isolating a compromised EC2 instance for forensics.",
         keyPoints: ["Unauthorized access and compliance variance are common incidents.", "Service disruption affects user access to resources.", "Privilege escalation involves attempts to gain elevated access."],
       },
       {
         heading: "Preparation for Incident Response",
         body: "Preparation is crucial to minimize the impact of security incidents. Key principles include establishing clear goals, knowing your resources, and automating responses to common incidents. Organizations should work with legal counsel to define incident response goals, such as containment and recovery.\n\nAdditionally, maintaining a centralized security account for logs and evidence is essential. Automation can help streamline responses, allowing teams to focus on unique incidents while ensuring that repetitive tasks are handled efficiently.",
+        diagram: "m08-automated-response-arch",
+        diagramCaption: "Automated response and remediation with Security Hub, EventBridge, and Lambda.",
         keyPoints: ["Establish clear goals for incident response.", "Maintain a centralized account for logs and evidence.", "Automate responses to common incidents for efficiency."],
       },
       {
         heading: "Incident Response Workflows",
         body: "An effective incident response workflow begins with establishing control over the incident to limit its impact. Once control is established, the next step is to assess the incident's scope and determine recovery metrics. For example, understanding whether the incident is confined to a single Amazon EC2 instance or involves compromised user access keys is critical.\n\nFollowing recovery, identifying the root cause of the incident is essential for preventing future occurrences. Continuous improvement based on lessons learned from incidents is a vital part of the incident response process.",
+        diagram: "m08-incident-response-workflow",
+        diagramCaption: "Incident response workflow phases.",
         keyPoints: ["Establish control to limit the impact of incidents.", "Assess the scope of the incident for effective recovery.", "Continuous improvement is key to preventing future incidents."],
       },
       {
         heading: "Indicators of Potential Incidents",
         body: "Identifying indicators of potential security incidents is crucial for proactive incident response. Common indicators include unusual logs from AWS services like CloudTrail and GuardDuty, sudden changes in billing activity, and alerts from threat intelligence feeds.\n\nAdditionally, organizations should have a well-publicized mechanism for receiving notifications from staff or customers about unusual activities. This can include ticketing systems or contact emails, ensuring that potential incidents are reported promptly.",
+        diagram: "m08-forensics-orchestrator",
+        diagramCaption: "Automated Forensics Orchestrator for Amazon EC2.",
         keyPoints: ["Monitor AWS logs for unusual activities.", "Sudden billing changes can indicate security events.", "Establish a mechanism for reporting unusual activities."],
       },
       {
         heading: "Incident Response in the Cloud",
         body: "Incident response in the cloud differs significantly from traditional on-premises environments. The cloud introduces a dynamic control plane and offers scalable methods for response. While the fundamental process of incident response remains the same, the ephemeral nature of cloud resources requires a different approach to tracking and analyzing incidents.\n\nFor example, in AWS, you can modify security groups to isolate compromised instances quickly, whereas traditional methods may involve more manual processes. Understanding these differences is crucial for effective incident management in AWS.",
+        diagram: "m08-security-hub-integration",
+        diagramCaption: "AWS Security Hub integration and findings flow.",
         keyPoints: ["Cloud incident response is faster and more scalable.", "The control plane adds complexity to incident management.", "AWS allows for quicker isolation of compromised resources."],
       },
     ],
