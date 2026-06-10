@@ -50,6 +50,10 @@ import {
   eksCoreksM08Questions,
   eksCoreksM09Questions,
 } from '@/data/eks-coreks-questions';
+import {
+  secEngM01Questions, secEngM02Questions, secEngM03Questions, secEngM04Questions,
+  secEngM05Questions, secEngM06Questions, secEngM07Questions, secEngM08Questions,
+} from '@/data/sec-eng-aws-questions';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -202,10 +206,16 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
     pptByModule[mid].push(q);
   }
 
+  const secEngQs: Question[] = [
+    ...secEngM01Questions, ...secEngM02Questions, ...secEngM03Questions, ...secEngM04Questions,
+    ...secEngM05Questions, ...secEngM06Questions, ...secEngM07Questions, ...secEngM08Questions,
+  ];
+
   const out: Record<string, ChunkRow[]> = {
     'clf-c02':   clfQs.map((q) => questionChunk('clf-c02',   q)),
     'aip-c01':   aipQs.map((q) => questionChunk('aip-c01',   q)),
     'eks-coreks-questions': eksQs.map((q) => questionChunk('eks-coreks-questions', q)),
+    'sec-eng-aws-questions': secEngQs.map((q) => questionChunk('sec-eng-aws-questions', q)),
     'flashcards': genericDecks.flatMap((deck) =>
       deck.cards.map((card) => flashcardChunk('flashcards', deck, card)),
     ),

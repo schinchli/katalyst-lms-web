@@ -1,0 +1,159 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-ic-adconnector" name="Identity Center AD Connector">
+    <mxGraphModel dx="1000" dy="640" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1340" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Corporate data center ===== -->
+        <mxCell id="dc" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#5A6B86;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="20" y="150" width="360" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="dcicon" value="" style="shape=mxgraph.aws4.corporate_data_center;html=1;fillColor=#5A6B86;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="34" y="162" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dctitle" value="Corporate data center" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="72" y="162" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- on-prem users/groups -->
+        <mxCell id="users" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.users;" vertex="1" parent="1">
+          <mxGeometry x="80" y="270" width="80" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="userslbl" value="On-premises&#10;users and&#10;groups" style="text;html=1;align=center;verticalAlign=top;fontSize=15;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="60" y="340" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Active Directory server -->
+        <mxCell id="ad" value="" style="shape=mxgraph.aws4.traditional_server;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="240" y="265" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="adlbl" value="Active&#10;Directory&#10;server" style="text;html=1;align=center;verticalAlign=top;fontSize=15;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="212" y="335" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== AWS Cloud ===== -->
+        <mxCell id="cloud" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="440" y="20" width="480" height="600" as="geometry" />
+        </mxCell>
+        <mxCell id="cloudicon" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.aws_cloud_alt;" vertex="1" parent="1">
+          <mxGeometry x="454" y="32" width="34" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="cloudtitle" value="AWS Cloud" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="496" y="32" width="200" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- Organizations OU rounded container -->
+        <mxCell id="org" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="540" y="80" width="340" height="240" as="geometry" />
+        </mxCell>
+        <!-- OU=Dev : stacked orange account squares -->
+        <mxCell id="oudev_b" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="612" y="132" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="oudev_f" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="598" y="118" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="oudev_i" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#ED7100;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="608" y="128" width="26" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="oudevlbl" value="OU=Dev" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="562" y="200" width="120" height="26" as="geometry" />
+        </mxCell>
+        <!-- OU=Prod : stacked orange account squares -->
+        <mxCell id="ouprod_b" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="762" y="132" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="ouprod_f" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="748" y="118" width="46" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="ouprod_i" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#ED7100;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="758" y="128" width="26" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ouprodlbl" value="OU=Prod" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="712" y="200" width="120" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="orglbl" value="AWS accounts managed&#10;in AWS Organizations" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="560" y="236" width="300" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- managed permissions label -->
+        <mxCell id="mplbl" value="Managed&#10;permissions to&#10;AWS accounts" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="500" y="360" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- AD Connector -->
+        <mxCell id="adc" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.ad_connector;" vertex="1" parent="1">
+          <mxGeometry x="490" y="470" width="74" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="adclbl" value="AD&#10;Connector" style="text;html=1;align=center;verticalAlign=top;fontSize=16;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="467" y="548" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- IAM Identity Center -->
+        <mxCell id="ic" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.single_sign_on;" vertex="1" parent="1">
+          <mxGeometry x="700" y="470" width="84" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="iclbl" value="IAM Identity&#10;Center" style="text;html=1;align=center;verticalAlign=top;fontSize=16;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="682" y="558" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Right side apps ===== -->
+        <mxCell id="biz" value="Business cloud applications" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2;arcSize=14;fontSize=16;fontColor=#16191F;align=center;" vertex="1" parent="1">
+          <mxGeometry x="990" y="210" width="320" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="saml" value="Customer SAML-available&#10;applications" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2;arcSize=14;fontSize=16;fontColor=#16191F;align=center;" vertex="1" parent="1">
+          <mxGeometry x="990" y="400" width="320" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Numbered badges ===== -->
+        <mxCell id="b1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="80" width="34" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="956" y="224" width="34" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="956" y="414" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Arrows ===== -->
+        <!-- AD server -> AD Connector (diagonal across boundary) -->
+        <mxCell id="ar1" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="300" as="sourcePoint" />
+            <mxPoint x="487" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- AD Connector -> IAM Identity Center -->
+        <mxCell id="ar2" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="566" y="507" as="sourcePoint" />
+            <mxPoint x="698" y="507" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- IC -> Organizations (up) -->
+        <mxCell id="ar3" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="745" y="468" as="sourcePoint" />
+            <mxPoint x="720" y="322" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- IC -> Business cloud apps -->
+        <mxCell id="ar4" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="784" y="500" as="sourcePoint" />
+            <mxPoint x="988" y="258" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- IC -> SAML apps -->
+        <mxCell id="ar5" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="784" y="512" as="sourcePoint" />
+            <mxPoint x="988" y="437" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

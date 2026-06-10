@@ -51,7 +51,73 @@ import {
   arch_quiz_m13Questions,
 } from './architect-questions';
 
+import { secEngM01Questions, secEngM02Questions, secEngM03Questions, secEngM04Questions, secEngM05Questions, secEngM06Questions, secEngM07Questions, secEngM08Questions, secEngFullExamQuestions } from './sec-eng-aws-questions';
+
 export const quizzes: Quiz[] = [
+  // ── Security Engineering on AWS (SCS-C03) module quizzes ──
+  {
+    id: 'sec-eng-aws-m01',
+    title: 'Security Engineering M1: Security Overview',
+    description: 'Understanding security fundamentals in the AWS Cloud',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🛡️', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m02',
+    title: 'Security Engineering M2: Access and Authorizations on AWS',
+    description: 'Understanding IAM and API security on AWS',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🔑', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m03',
+    title: 'Security Engineering M3: Account Management and Provisioning on AWS',
+    description: 'Understanding multi-account management and security on AWS.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🏢', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m04',
+    title: 'Security Engineering M4: Managing Keys and Secrets on AWS',
+    description: 'Learn to manage keys, certificates, and secrets using AWS services.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🤫', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m05',
+    title: 'Security Engineering M5: Data Security',
+    description: 'Protecting data at rest and after use in AWS.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🔒', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m06',
+    title: 'Security Engineering M6: Infrastructure and Edge Protection',
+    description: 'Understanding AWS services for securing infrastructure and edge environments.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🌐', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m07',
+    title: 'Security Engineering M7: Monitoring and Collecting Logs on AWS',
+    description: 'Understanding AWS log management and monitoring techniques.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '📊', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-m08',
+    title: 'Security Engineering M8: Responding to Threats',
+    description: 'Understanding incident response in AWS',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 8, duration: 16,
+    isPremium: false, icon: '🚨', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true,
+  },
+  {
+    id: 'sec-eng-aws-full-exam',
+    title: 'Security Engineering on AWS — Full Practice Exam',
+    description: 'Comprehensive 64-question exam across all eight Security Engineering on AWS modules.',
+    category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 64, duration: 120,
+    isPremium: true, icon: '🛡️', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true, mode: 'exam', examReviewAllowed: true,
+  },
   // ── Architecting on AWS (SAA-C03) module quizzes ──
   {
     id: 'arch-quiz-m01',
@@ -443,6 +509,16 @@ export const quizzes: Quiz[] = [
 ];
 
 export const quizQuestions: Record<string, Question[]> = {
+  // ── Security Engineering on AWS module quizzes ──
+  'sec-eng-aws-m01': secEngM01Questions,
+  'sec-eng-aws-m02': secEngM02Questions,
+  'sec-eng-aws-m03': secEngM03Questions,
+  'sec-eng-aws-m04': secEngM04Questions,
+  'sec-eng-aws-m05': secEngM05Questions,
+  'sec-eng-aws-m06': secEngM06Questions,
+  'sec-eng-aws-m07': secEngM07Questions,
+  'sec-eng-aws-m08': secEngM08Questions,
+  'sec-eng-aws-full-exam': secEngFullExamQuestions,
   // ── Architecting on AWS module quizzes ──
   'arch-quiz-m01': arch_quiz_m01Questions,
   'arch-quiz-m02': arch_quiz_m02Questions,

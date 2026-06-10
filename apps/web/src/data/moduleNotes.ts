@@ -30,7 +30,12 @@ export interface ModuleNotes {
   examTips: string[];
 }
 
+import { SEC_ENG_AWS_NOTES } from './sec-eng-aws-notes';
+
 export const MODULE_NOTES: Record<string, ModuleNotes> = {
+  // ── Security Engineering on AWS (SCS-C03) — 8 modules ──
+  ...SEC_ENG_AWS_NOTES,
+
   // ═══════════════════════════════════════════════════════════════════════════
   // MODULE 1 — Introduction to AWS
   // ═══════════════════════════════════════════════════════════════════════════

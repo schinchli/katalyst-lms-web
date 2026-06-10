@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m02-authz-flow" name="IAM authorization flow">
+    <mxGraphModel dx="1100" dy="720" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Top row: User -> Authentication -> Request doc -> Send access request ===== -->
+        <mxCell id="user" value="User" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=18;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="180" y="80" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- arrow user -> auth -->
+        <mxCell id="a_ua" value="" style="endArrow=block;html=1;strokeColor=#7B2D5E;strokeWidth=8;endFill=1;" edge="1" parent="1" source="user" target="auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Authentication (key icon) -->
+        <mxCell id="auth" value="Authentication" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=18;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.key_management_service;" vertex="1" parent="1">
+          <mxGeometry x="320" y="78" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- arrow auth -> doc -->
+        <mxCell id="a_ad" value="" style="endArrow=block;html=1;strokeColor=#7B2D5E;strokeWidth=8;endFill=1;" edge="1" parent="1" source="auth" target="reqdoc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Request doc -->
+        <mxCell id="reqdoc" value="Actions&lt;br&gt;- - - - -&lt;br&gt;Resources&lt;br&gt;- - - - -&lt;br&gt;Request info" style="shape=document;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=3;fontSize=17;fontColor=#232F3E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="470" y="50" width="170" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sendlbl" value="Send&lt;br&gt;access&lt;br&gt;request" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="650" y="90" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Authorization row ===== -->
+        <mxCell id="authzlbl" value="Authorization" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="20" y="245" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="authzbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9E9E9E;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="240" y="225" width="660" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ibpol" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=18;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="270" y="240" width="48" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ibpollbl" value="Identity-&lt;br&gt;based policies" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="330" y="245" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rbpol" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=18;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="540" y="240" width="48" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rbpollbl" value="Resource-&lt;br&gt;based policies" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="600" y="245" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dots1" value="..." style="text;html=1;align=center;verticalAlign=middle;fontSize=28;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="800" y="250" width="60" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Actions row ===== -->
+        <mxCell id="actlbl" value="Actions (console) or&lt;br&gt;operations (CLI, API)" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="20" y="360" width="290" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9E9E9E;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="320" y="360" width="640" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="act1" value="RunInstances" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="350" y="385" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="act2" value="CreateRole" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="540" y="385" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="act3" value="CreateBucket" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="740" y="385" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Resources row ===== -->
+        <mxCell id="reslbl" value="Resources" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="320" y="485" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="resbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9E9E9E;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="480" y="480" width="520" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="resinst" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;" vertex="1" parent="1">
+          <mxGeometry x="510" y="495" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="resinstlbl" value="Instance" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="572" y="505" width="110" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="resrole" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="700" y="495" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="resrolelbl" value="Role" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="762" y="505" width="80" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="ress3" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" vertex="1" parent="1">
+          <mxGeometry x="850" y="495" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="ress3lbl" value="S3 bucket" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="908" y="505" width="100" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Effect row ===== -->
+        <mxCell id="efflbl" value="Effect" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="560" y="615" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="effbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9E9E9E;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="690" y="610" width="430" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="allow" value="ALLOW" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="730" y="625" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="deny" value="DENY" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="930" y="625" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== pink cascading curved arrows (right side) ===== -->
+        <mxCell id="c1" value="" style="endArrow=block;html=1;strokeColor=#C2185B;strokeWidth=14;endFill=1;curved=1;rounded=1;endSize=3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="170" as="sourcePoint" />
+            <mxPoint x="910" y="265" as="targetPoint" />
+            <Array as="points"><mxPoint x="970" y="180" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c2" value="" style="endArrow=block;html=1;strokeColor=#C2185B;strokeWidth=14;endFill=1;curved=1;rounded=1;endSize=3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="905" y="270" as="sourcePoint" />
+            <mxPoint x="960" y="395" as="targetPoint" />
+            <Array as="points"><mxPoint x="1040" y="300" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3" value="" style="endArrow=block;html=1;strokeColor=#C2185B;strokeWidth=14;endFill=1;curved=1;rounded=1;endSize=3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="965" y="400" as="sourcePoint" />
+            <mxPoint x="1005" y="520" as="targetPoint" />
+            <Array as="points"><mxPoint x="1090" y="430" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c4" value="" style="endArrow=block;html=1;strokeColor=#C2185B;strokeWidth=14;endFill=1;curved=1;rounded=1;endSize=3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1010" y="525" as="sourcePoint" />
+            <mxPoint x="1115" y="640" as="targetPoint" />
+            <Array as="points"><mxPoint x="1160" y="560" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

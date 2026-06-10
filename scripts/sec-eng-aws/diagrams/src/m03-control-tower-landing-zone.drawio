@@ -1,0 +1,119 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-ct-landing-zone" name="Control Tower landing zone">
+    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- outer red boundary -->
+        <mxCell id="bound" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="960" height="680" as="geometry" />
+        </mxCell>
+
+        <!-- Unified management account (top left) -->
+        <mxCell id="mgmt" value="Unified&lt;br&gt;management account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=14;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="46" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Control Tower (top center) -->
+        <mxCell id="ct" value="AWS Control Tower" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.control_tower;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=14;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="450" y="40" width="52" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Organizations (left) -->
+        <mxCell id="org" value="AWS Organizations" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="200" y="150" width="52" height="52" as="geometry" />
+        </mxCell>
+        <!-- IAM Identity Center (right) -->
+        <mxCell id="idc" value="IAM Identity Center" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.single_sign_on;sketch=0;outlineConnect=0;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="760" y="150" width="52" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- Security OU (left) -->
+        <mxCell id="secou" value="Security OU" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="48" height="48" as="geometry" />
+        </mxCell>
+        <!-- Workload OU (center) -->
+        <mxCell id="wlou" value="Workload&lt;br&gt;OU" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=14;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="430" y="300" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- OU AnyCompany (left child of workload) -->
+        <mxCell id="ouany" value="OU AnyCompany" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="340" y="420" width="46" height="46" as="geometry" />
+        </mxCell>
+        <!-- OU Example Corp (right child of workload) -->
+        <mxCell id="ouex" value="OU Example Corp" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=14;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="630" y="420" width="46" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- bottom accounts row -->
+        <mxCell id="a_log" value="Logging&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="50" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="a_audit" value="Audit&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="160" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="a_np1" value="Non-prod&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="320" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="a_pr1" value="Prod&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="420" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="a_np2" value="Non-prod&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="610" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="a_pr2" value="Prod&lt;br&gt;account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="710" y="560" width="42" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- edges -->
+        <!-- CT -> Org -->
+        <mxCell id="e_ct_org" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ct" target="org">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="476" y="120"/><mxPoint x="226" y="120"/></Array></mxGeometry>
+        </mxCell>
+        <!-- CT -> IDC -->
+        <mxCell id="e_ct_idc" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ct" target="idc">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="476" y="120"/><mxPoint x="786" y="120"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Org -> Security OU -->
+        <mxCell id="e_org_sec" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="org" target="secou">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="226" y="270"/><mxPoint x="104" y="270"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Org -> Workload OU -->
+        <mxCell id="e_org_wl" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="org" target="wlou">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="226" y="270"/><mxPoint x="454" y="270"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Workload OU -> OU AnyCompany -->
+        <mxCell id="e_wl_any" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="wlou" target="ouany">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="454" y="390"/><mxPoint x="363" y="390"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Workload OU -> OU Example Corp -->
+        <mxCell id="e_wl_ex" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="wlou" target="ouex">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="454" y="390"/><mxPoint x="653" y="390"/></Array></mxGeometry>
+        </mxCell>
+        <!-- Security OU -> Logging / Audit -->
+        <mxCell id="e_sec_log" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="secou" target="a_log">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="104" y="530"/><mxPoint x="71" y="530"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e_sec_audit" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="secou" target="a_audit">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="104" y="530"/><mxPoint x="181" y="530"/></Array></mxGeometry>
+        </mxCell>
+        <!-- OU AnyCompany -> np1 / pr1 -->
+        <mxCell id="e_any_np" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ouany" target="a_np1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="363" y="530"/><mxPoint x="341" y="530"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e_any_pr" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ouany" target="a_pr1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="363" y="530"/><mxPoint x="441" y="530"/></Array></mxGeometry>
+        </mxCell>
+        <!-- OU Example Corp -> np2 / pr2 -->
+        <mxCell id="e_ex_np" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ouex" target="a_np2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="653" y="530"/><mxPoint x="631" y="530"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e_ex_pr" style="endArrow=block;html=1;strokeColor=#444444;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ouex" target="a_pr2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="653" y="530"/><mxPoint x="731" y="530"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

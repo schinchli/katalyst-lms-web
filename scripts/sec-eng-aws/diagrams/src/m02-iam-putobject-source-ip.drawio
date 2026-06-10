@@ -1,0 +1,45 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m02-putobject" name="IAM PutObject source IP">
+    <mxGraphModel dx="700" dy="500" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="660" pageHeight="450" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- IAM identity: user -->
+        <mxCell id="user" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="70" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- laptop -->
+        <mxCell id="laptop" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.client;" vertex="1" parent="1">
+          <mxGeometry x="110" y="180" width="90" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- labels under -->
+        <mxCell id="lbl" value="IAM identity&lt;br&gt;Source: 198.51.100.1" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="30" y="290" width="320" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- L-shaped purple arrow: from laptop right then up -->
+        <mxCell id="arrowH" value="" style="endArrow=none;html=1;strokeColor=#4B0082;strokeWidth=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="240" as="sourcePoint" />
+            <mxPoint x="510" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrowV" value="" style="endArrow=block;html=1;strokeColor=#4B0082;strokeWidth=10;endFill=1;endSize=4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="245" as="sourcePoint" />
+            <mxPoint x="510" y="40" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- s3:PutObject label -->
+        <mxCell id="putlbl" value="s3:PutObject" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#4B0082;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="285" y="252" width="210" height="34" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

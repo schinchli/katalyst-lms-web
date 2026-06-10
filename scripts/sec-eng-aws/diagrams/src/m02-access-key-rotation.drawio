@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m02-key-rotation" name="Access key rotation">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- IAM user -->
+        <mxCell id="user" value="IAM user" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#8C7AE6;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=18;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="190" y="60" width="80" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- arrow user -> tools -->
+        <mxCell id="a_user_tools" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=10;endFill=1;" edge="1" parent="1" source="user" target="cli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- CLI circle -->
+        <mxCell id="cli" value="C:\" style="ellipse;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=#D6336C;strokeWidth=3;fontColor=#FFFFFF;fontSize=28;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="50" width="100" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- SDK hexagon circle -->
+        <mxCell id="sdk" value="SDK" style="ellipse;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=#D6336C;strokeWidth=3;fontColor=#FFFFFF;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="50" width="100" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- big down arrow -->
+        <mxCell id="downarrow" value="" style="shape=singleArrow;direction=south;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=none;arrowWidth=0.6;arrowSize=0.4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="200" width="50" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Key #1 label -->
+        <mxCell id="key1lbl" value="Key #1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="240" y="320" width="200" height="26" as="geometry" />
+        </mxCell>
+        <!-- Key #1 box (dashed purple) -->
+        <mxCell id="key1box" value="Access Key ID: A2IAI5EXAMPLE&lt;br&gt;&lt;br&gt;Secret Access Key: wJalrFE/KbEKxE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#4B0082;strokeWidth=3;dashed=1;dashPattern=8 6;fontSize=15;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="170" y="355" width="430" height="130" as="geometry" />
+        </mxCell>
+        <!-- Key #1 key icon (unicode) -->
+        <mxCell id="key1icon" value="&#128273;" style="text;html=1;align=center;verticalAlign=middle;fontSize=58;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="120" y="390" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="key1status" value="Status: &lt;b&gt;INACTIVE&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="190" y="500" width="380" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- Key #2 label -->
+        <mxCell id="key2lbl" value="Key #2" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="740" y="320" width="200" height="26" as="geometry" />
+        </mxCell>
+        <!-- Key #2 box -->
+        <mxCell id="key2box" value="Access Key ID: AEEAI4EXAMPLE&lt;br&gt;&lt;br&gt;Secret Access Key: Kma7FEKbE87/EY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#4B0082;strokeWidth=3;dashed=1;dashPattern=8 6;fontSize=15;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="670" y="355" width="430" height="130" as="geometry" />
+        </mxCell>
+        <!-- Key #2 key icon (unicode) -->
+        <mxCell id="key2icon" value="&#128273;" style="text;html=1;align=center;verticalAlign=middle;fontSize=58;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="620" y="390" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="key2status" value="Status: &lt;b&gt;ACTIVE&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="690" y="500" width="380" height="26" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

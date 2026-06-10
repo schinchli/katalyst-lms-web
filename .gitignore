@@ -83,3 +83,9 @@ apps/web/e2e-screenshots/
 test-results/
 backend/test-results/
 nikto_*.txt
+
+# Python venvs for tooling scripts
+.venv/
+scripts/**/.venv/
+__pycache__/
+*.pyc

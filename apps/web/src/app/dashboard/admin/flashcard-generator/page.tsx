@@ -37,6 +37,8 @@ const CORPORA: Array<{ id: string; label: string; color: string }> = [
   { id: 'aip-c01',              label: 'AIP-C01',            color: '#F39C12' },
   { id: 'flashcards',           label: 'Generic flashcards', color: '#9B59B6' },
   { id: 'eks-coreks-questions', label: 'EKS Questions',      color: '#1ABC9C' },
+  { id: 'sec-eng-aws',          label: 'Security Eng (SCS)', color: '#DD344C' },
+  { id: 'sec-eng-aws-questions',label: 'Security Eng Qs',    color: '#C7263E' },
   { id: 'generated-flashcards', label: 'Prior generated',    color: '#E74C3C' },
 ];
 
