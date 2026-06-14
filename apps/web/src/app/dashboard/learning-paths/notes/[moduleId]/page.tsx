@@ -30,6 +30,12 @@ export default function ModuleNotesPage() {
   const params = useParams();
   const moduleId = (Array.isArray(params.moduleId) ? params.moduleId[0] : params.moduleId) ?? '';
   const notes = getModuleNotes(moduleId);
+  // Which course this module belongs to — drives diagram folder + breadcrumb path.
+  const isSecEng = moduleId.startsWith('sec-eng');
+  const pathHref = isSecEng ? '/dashboard/learning-paths/sec-eng-aws' : '/dashboard/learning-paths/clf-c02';
+  const pathLabel = isSecEng ? 'Security Engineering on AWS path' : 'CLF-C02 path';
+  const noteFolder = (diagram: string) =>
+    isSecEng ? 'sec-eng-aws' : diagram.startsWith('arch-') ? 'architect' : 'clf-c02';
 
   // Mark this module's notes as read so the learning path tracks progress.
   useEffect(() => {
@@ -47,8 +53,8 @@ export default function ModuleNotesPage() {
           <p style={{ margin: '0 0 16px', color: 'var(--text-secondary)', fontSize: 14 }}>
             Detailed reading notes for this module are being written.
           </p>
-          <Link href="/dashboard/learning-paths/clf-c02" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>
-            Back to the CLF-C02 path
+          <Link href={pathHref} className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>
+            Back to the {pathLabel}
           </Link>
         </div>
       </div>
@@ -58,8 +64,8 @@ export default function ModuleNotesPage() {
   return (
     <div className="page-content" style={{ maxWidth: 820, margin: '0 auto' }}>
       {/* Breadcrumb */}
-      <Link href="/dashboard/learning-paths/clf-c02" style={{ fontSize: 13, color: 'var(--text-secondary)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-        ← Back to CLF-C02 path
+      <Link href={pathHref} style={{ fontSize: 13, color: 'var(--text-secondary)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+        ← Back to {pathLabel}
       </Link>
 
       {/* Header */}
@@ -86,7 +92,7 @@ export default function ModuleNotesPage() {
           {section.diagram && (
             <figure style={{ margin: '20px 0', textAlign: 'center', background: 'var(--bg)', borderRadius: 12, border: '1px solid var(--border)', padding: 18 }}>
               <Image
-                src={`/${section.diagram.startsWith('arch-') ? 'architect' : 'clf-c02'}/notes/${section.diagram}.png`}
+                src={`/${noteFolder(section.diagram)}/notes/${section.diagram}.png`}
                 alt={section.diagramCaption ?? section.heading}
                 width={680}
                 height={520}

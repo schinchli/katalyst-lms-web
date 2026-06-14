@@ -1,0 +1,46 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-policy-eval" name="Policy evaluation order">
+    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="540" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Deny evaluation diamond -->
+        <mxCell id="deny" value="Deny&lt;br&gt;evaluation" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E6DEFA;strokeColor=#7C3AED;fontColor=#232F3E;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="240" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- chevron 1 SCPs -->
+        <mxCell id="c1" value="Organizations&lt;br&gt;SCPs" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3B0E66;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=18;size=30;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="230" height="120" as="geometry" />
+        </mxCell>
+        <!-- chevron 2 Resource-based -->
+        <mxCell id="c2" value="Resource-&lt;br&gt;based&lt;br&gt;policies" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3B0E66;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=18;size=30;" vertex="1" parent="1">
+          <mxGeometry x="260" y="330" width="220" height="120" as="geometry" />
+        </mxCell>
+        <!-- chevron 3 Identity-based -->
+        <mxCell id="c3" value="Identity-&lt;br&gt;based&lt;br&gt;policies" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3B0E66;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=18;size=30;" vertex="1" parent="1">
+          <mxGeometry x="480" y="330" width="220" height="120" as="geometry" />
+        </mxCell>
+        <!-- chevron 4 IAM permission boundaries -->
+        <mxCell id="c4" value="IAM&lt;br&gt;permission&lt;br&gt;boundaries" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3B0E66;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=18;size=30;" vertex="1" parent="1">
+          <mxGeometry x="700" y="330" width="230" height="120" as="geometry" />
+        </mxCell>
+        <!-- chevron 5 Session policies -->
+        <mxCell id="c5" value="Session&lt;br&gt;policies" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#3B0E66;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=18;size=30;" vertex="1" parent="1">
+          <mxGeometry x="930" y="330" width="230" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- arrow from diamond down to chevron 1 -->
+        <mxCell id="e_deny" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=3;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.32;entryY=0;entryDx=0;entryDy=0;rounded=0;" edge="1" parent="1" source="deny" target="c1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="240" />
+              <mxPoint x="103" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

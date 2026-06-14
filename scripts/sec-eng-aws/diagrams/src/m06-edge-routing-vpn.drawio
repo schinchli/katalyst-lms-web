@@ -1,0 +1,93 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m06-edge-routing-vpn" name="Edge-to-edge routing VPN">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="580" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Edge-to-edge routing through VPN connection" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="30" y="16" width="800" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Question box -->
+        <mxCell id="qbox" value="Can VPC A&lt;br&gt;communicate with&lt;br&gt;corporate through&lt;br&gt;VPC B?" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECECEC;strokeColor=#999999;fontSize=18;fontStyle=1;fontColor=#232F3E;align=left;spacingLeft=14;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="300" height="170" as="geometry" />
+        </mxCell>
+        <!-- No -->
+        <mxCell id="no" value="No" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="120" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="nobul" value="•   Edge-to-edge routing&lt;br&gt;     is not supported." style="text;html=1;align=left;verticalAlign=top;fontSize=16;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="300" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Cloud box -->
+        <mxCell id="aws" value="AWS Cloud" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;verticalAlign=top;align=left;spacingLeft=30;spacingTop=8;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="400" y="100" width="450" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="awslbl" value="aws" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="408" y="108" width="22" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- VPC A -->
+        <mxCell id="vpcA" value="VPC" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1B660F;verticalAlign=top;align=left;spacingLeft=24;spacingTop=6;fontSize=12;fontColor=#1B660F;" vertex="1" parent="1">
+          <mxGeometry x="420" y="140" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="vpcAbig" value="VPC A" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=0;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="450" y="195" width="140" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- VPC B -->
+        <mxCell id="vpcB" value="VPC" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1B660F;verticalAlign=top;align=left;spacingLeft=24;spacingTop=6;fontSize=12;fontColor=#1B660F;" vertex="1" parent="1">
+          <mxGeometry x="560" y="360" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="vpcBbig" value="VPC B" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=0;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="590" y="415" width="140" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- VPC peer -->
+        <mxCell id="peer" value="VPC&lt;br&gt;peer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=12;verticalLabelPosition=left;verticalAlign=middle;align=right;spacingRight=6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="320" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Virtual private gateway -->
+        <mxCell id="vgw" value="Virtual private&lt;br&gt;gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="740" y="360" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Customer gateway -->
+        <mxCell id="cgw" value="Customer&lt;br&gt;gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8C4FFF;strokeColor=none;fontColor=#232F3E;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="870" y="230" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Corporate data center -->
+        <mxCell id="corp" value="Corporate&lt;br&gt;data center" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#5A6B86;verticalAlign=top;align=left;spacingLeft=30;spacingTop=8;fontSize=13;fontColor=#5A6B86;" vertex="1" parent="1">
+          <mxGeometry x="900" y="120" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="corplbl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#5A6B86;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="908" y="128" width="22" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ? dashed arrow VPC A <-> corporate -->
+        <mxCell id="qmark" value="?" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="740" y="150" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="adash" value="" style="endArrow=block;startArrow=block;html=1;strokeColor=#232F3E;strokeWidth=3;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="625" y="200" as="sourcePoint" /><mxPoint x="895" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+
+        <!-- VPC A -> peer (structural) -->
+        <mxCell id="a_vpcA_peer" style="endArrow=none;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="vpcAbig" target="peer"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="502" y="342" /></Array></mxGeometry></mxCell>
+        <!-- peer -> VPC B (structural) -->
+        <mxCell id="a_peer_vpcB" style="endArrow=none;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" source="peer" target="vpcB"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="502" y="420" /></Array></mxGeometry></mxCell>
+        <!-- VPC B -> vgw -->
+        <mxCell id="a_vpcB_vgw" style="endArrow=none;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="vpcB" target="vgw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <!-- vgw -> cgw (VPN) -->
+        <mxCell id="a_vgw_cgw" style="endArrow=none;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="vgw" target="cgw"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="830" y="340" /><mxPoint x="892" y="340" /></Array></mxGeometry></mxCell>
+        <!-- cgw -> corporate -->
+        <mxCell id="a_cgw_corp" style="endArrow=none;html=1;strokeColor=#232F3E;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.6;entryDx=0;entryDy=0;" edge="1" parent="1" source="cgw" target="corp"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

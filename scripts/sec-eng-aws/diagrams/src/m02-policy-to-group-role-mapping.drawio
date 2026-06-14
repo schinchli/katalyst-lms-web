@@ -1,0 +1,96 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m02-policy-mapping" name="Policy to group role mapping">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- AWS Cloud outer box -->
+        <mxCell id="awscloud" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="10" y="10" width="880" height="740" as="geometry" />
+        </mxCell>
+        <mxCell id="awsicon" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.aws_cloud_alt;" vertex="1" parent="1">
+          <mxGeometry x="22" y="22" width="34" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="awscloudlbl" value="AWS Cloud" style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="66" y="22" width="180" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- Account A dashed boundary (right side) -->
+        <mxCell id="acctbox" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;dashed=1;dashPattern=4 4;" vertex="1" parent="1">
+          <mxGeometry x="430" y="50" width="300" height="660" as="geometry" />
+        </mxCell>
+        <mxCell id="acctlbl" value="AWS&lt;br&gt;Account A" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="745" y="350" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Policies (left, checklist boxes) ===== -->
+        <mxCell id="pol1" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=22;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="90" width="56" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pol1lbl" value="LtdAdmin-mfa" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="70" y="170" width="160" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pol2" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=22;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="250" width="56" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pol2lbl" value="AcctAdmin-mfa" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="70" y="330" width="160" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pol3" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=22;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="420" width="56" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pol3lbl" value="EC2Access" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="70" y="500" width="160" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pol4" value="&#10003;&#10003;&#10007;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=2.5;fontSize=22;fontColor=#DD344C;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="590" width="56" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="pol4lbl" value="DynamoDBAccess" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="60" y="670" width="180" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Groups / Roles (right) ===== -->
+        <mxCell id="grp1" value="LtdAdmin&lt;br&gt;Group" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=17;aspect=fixed;shape=mxgraph.aws4.users;" vertex="1" parent="1">
+          <mxGeometry x="495" y="80" width="74" height="62" as="geometry" />
+        </mxCell>
+
+        <mxCell id="grp2" value="Admin Group" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=17;aspect=fixed;shape=mxgraph.aws4.users;" vertex="1" parent="1">
+          <mxGeometry x="495" y="250" width="74" height="62" as="geometry" />
+        </mxCell>
+
+        <mxCell id="role1" value="Role&lt;br&gt;books-app" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=17;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="500" y="420" width="62" height="62" as="geometry" />
+        </mxCell>
+
+        <mxCell id="role2" value="Role EC2-app" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=17;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="500" y="600" width="62" height="62" as="geometry" />
+        </mxCell>
+
+        <!-- ===== mapping arrows (gray) ===== -->
+        <mxCell id="m1" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=2;endFill=1;" edge="1" parent="1" source="pol1" target="grp1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=2;endFill=1;" edge="1" parent="1" source="pol2" target="grp2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- EC2Access -> Role books-app -->
+        <mxCell id="m3" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=2;endFill=1;" edge="1" parent="1" source="pol3" target="role1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- DynamoDBAccess -> Role books-app -->
+        <mxCell id="m4" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=2;endFill=1;exitX=1;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="pol4" target="role1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- DynamoDBAccess -> Role EC2-app -->
+        <mxCell id="m5" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=2;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pol4" target="role2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

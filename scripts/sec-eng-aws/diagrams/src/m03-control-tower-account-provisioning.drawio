@@ -1,0 +1,109 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-ct-provisioning" name="Control Tower account provisioning">
+    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="540" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Nikki, security engineer (single user) -->
+        <mxCell id="nikki" value="Nikki,&lt;br&gt;security engineer" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7C3AED;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="62" height="62" as="geometry" />
+        </mxCell>
+
+        <!-- AWSAccountFactory group (users) -->
+        <mxCell id="aafgroup" value="AWSAccountFactory&lt;br&gt;group" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;aspect=fixed;shape=mxgraph.aws4.users;" vertex="1" parent="1">
+          <mxGeometry x="30" y="280" width="66" height="62" as="geometry" />
+        </mxCell>
+
+        <!-- IAM Identity Center -->
+        <mxCell id="idc" value="IAM Identity&lt;br&gt;Center" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.single_sign_on;sketch=0;outlineConnect=0;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="270" y="150" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Control Tower -->
+        <mxCell id="ct" value="AWS Control&lt;br&gt;Tower" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.control_tower;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="510" y="40" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Service Catalog -->
+        <mxCell id="sc" value="AWS Service&lt;br&gt;Catalog" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.service_catalog;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=13;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="510" y="280" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Organizations container -->
+        <mxCell id="orgbox" value="AWS Organizations" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232F3E;verticalAlign=top;align=right;fontColor=#232F3E;fontSize=13;spacingTop=4;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="820" y="30" width="330" height="380" as="geometry" />
+        </mxCell>
+        <!-- Organizations icon in top-right of container -->
+        <mxCell id="orgicon" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1095" y="45" width="42" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- New OU -->
+        <mxCell id="newou" value="New OU" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=13;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="60" width="44" height="44" as="geometry" />
+        </mxCell>
+        <!-- AWS Control Tower controls -->
+        <mxCell id="ctrls" value="AWS Control&lt;br&gt;Tower controls" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.documents;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=13;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="852" y="170" width="40" height="44" as="geometry" />
+        </mxCell>
+        <!-- Account -->
+        <mxCell id="acct" value="Account" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=13;fontColor=#232F3E;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="852" y="300" width="44" height="44" as="geometry" />
+        </mxCell>
+        <!-- internal org chain edges -->
+        <mxCell id="e_newou_ctrls" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="newou" target="ctrls">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_ctrls_acct" style="endArrow=block;html=1;strokeColor=#232F3E;strokeWidth=1.5;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ctrls" target="acct">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== flow edges ===== -->
+        <!-- 1: Nikki -> IAM Identity Center -->
+        <mxCell id="e1" style="endArrow=block;html=1;strokeColor=#7C3AED;strokeWidth=3;rounded=0;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" edge="1" parent="1" source="nikki" target="idc">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="299" y="71"/></Array></mxGeometry>
+        </mxCell>
+        <!-- 3: AWSAccountFactory group -> IAM Identity Center -->
+        <mxCell id="e3" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=3;rounded=0;exitX=1;exitY=0.5;entryX=0.5;entryY=1;" edge="1" parent="1" source="aafgroup" target="idc">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="299" y="311"/></Array></mxGeometry>
+        </mxCell>
+        <!-- IDC -> Control Tower -->
+        <mxCell id="e_idc_ct" style="endArrow=block;html=1;strokeColor=#9B6FE0;strokeWidth=3;rounded=0;exitX=1;exitY=0.3;entryX=0;entryY=0.6;" edge="1" parent="1" source="idc" target="ct">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- IDC -> Service Catalog -->
+        <mxCell id="e_idc_sc" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=3;rounded=0;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" parent="1" source="idc" target="sc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Control Tower -> Service Catalog (Account Factory, dashed down) -->
+        <mxCell id="e_ct_sc" value="Account&lt;br&gt;Factory" style="endArrow=block;html=1;strokeColor=#CD2264;strokeWidth=2;dashed=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#232F3E;fontSize=12;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ct" target="sc">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="18" y="0" as="offset"/></mxGeometry>
+        </mxCell>
+        <!-- 2: Control Tower -> Organizations (New OU) -->
+        <mxCell id="e2" style="endArrow=block;html=1;strokeColor=#9B6FE0;strokeWidth=3;rounded=0;exitX=1;exitY=0.4;entryX=0;entryY=0.2;" edge="1" parent="1" source="ct" target="orgbox">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- CT -> controls (second purple arrow) -->
+        <mxCell id="e2b" style="endArrow=block;html=1;strokeColor=#9B6FE0;strokeWidth=3;rounded=0;exitX=1;exitY=0.7;entryX=0;entryY=0.45;" edge="1" parent="1" source="ct" target="orgbox">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Service Catalog -> Account (dark arrow into org) -->
+        <mxCell id="e_sc_acct" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=3;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.82;" edge="1" parent="1" source="sc" target="orgbox">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== step badges ===== -->
+        <mxCell id="b1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="55" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="55" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="295" width="30" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

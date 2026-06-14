@@ -1,0 +1,152 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-cognito-seq" name="Cognito web identity sequence">
+    <mxGraphModel dx="1000" dy="640" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Actor headers + icons ===== -->
+        <!-- Device -->
+        <mxCell id="device" value="" style="shape=mxgraph.aws4.mobile_client;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="devicelbl" value="Device" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="0" y="108" width="130" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Web IdPs : cloud with up/down arrows -->
+        <mxCell id="idp" value="" style="shape=mxgraph.aws4.cloud;html=1;fillColor=none;strokeColor=#16191F;strokeWidth=2.5;" vertex="1" parent="1">
+          <mxGeometry x="350" y="22" width="90" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="idp_ar" value="&#8593;&#8595;" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="370" y="34" width="50" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="idplbl" value="Web IdPs" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="330" y="108" width="130" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Cognito identity pools -->
+        <mxCell id="cognito" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" vertex="1" parent="1">
+          <mxGeometry x="770" y="14" width="90" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cognitolbl" value="Amazon Cognito&#10;identity pools" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="710" y="108" width="210" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- AWS STS : red-outline box with clock + STS -->
+        <mxCell id="sts" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D6242D;strokeWidth=3;arcSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1185" y="14" width="72" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="sts_clock" value="&#128336;" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontColor=#D6242D;" vertex="1" parent="1">
+          <mxGeometry x="1198" y="20" width="46" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sts_txt" value="STS" style="text;html=1;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#D6242D;" vertex="1" parent="1">
+          <mxGeometry x="1185" y="56" width="72" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="stslbl" value="AWS STS" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#16191F;" vertex="1" parent="1">
+          <mxGeometry x="1155" y="108" width="130" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Lifelines ===== -->
+        <mxCell id="ll_device" value="" style="endArrow=none;html=1;strokeColor=#9AA4B2;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="150" as="sourcePoint" />
+            <mxPoint x="65" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ll_idp" value="" style="endArrow=none;html=1;strokeColor=#9AA4B2;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="395" y="150" as="sourcePoint" />
+            <mxPoint x="395" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ll_cognito" value="" style="endArrow=none;html=1;strokeColor=#9AA4B2;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="150" as="sourcePoint" />
+            <mxPoint x="815" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ll_sts" value="" style="endArrow=none;html=1;strokeColor=#9AA4B2;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1220" y="150" as="sourcePoint" />
+            <mxPoint x="1220" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Messages ===== -->
+        <!-- Login: Device -> IdP (blue) -->
+        <mxCell id="m_login" value="Login" style="endArrow=block;html=1;strokeColor=#1F6FCF;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="200" as="sourcePoint" />
+            <mxPoint x="395" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- IdP -> Device (blue return) -->
+        <mxCell id="m_login_r" value="" style="endArrow=block;html=1;strokeColor=#1F6FCF;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="395" y="240" as="sourcePoint" />
+            <mxPoint x="65" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- GetID: Device -> Cognito (red) -->
+        <mxCell id="m_getid" value="GetID" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="320" as="sourcePoint" />
+            <mxPoint x="815" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Validation: Cognito -> IdP (red) -->
+        <mxCell id="m_val1" value="Validation" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="360" as="sourcePoint" />
+            <mxPoint x="395" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Cognito -> Device (red return) -->
+        <mxCell id="m_id_r" value="" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="400" as="sourcePoint" />
+            <mxPoint x="65" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- GetCredentialsForIdentity: Device -> Cognito (red) -->
+        <mxCell id="m_getcred" value="GetCredentialsForIdentity" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="65" y="490" as="sourcePoint" />
+            <mxPoint x="815" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Validation: Cognito -> IdP (red) -->
+        <mxCell id="m_val2" value="Validation" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="530" as="sourcePoint" />
+            <mxPoint x="395" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- AssumeRoleWithWebIdentity: Cognito -> STS (black) -->
+        <mxCell id="m_assume" value="AssumeRoleWithWebIdentity" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;fontColor=#16191F;fontSize=16;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="570" as="sourcePoint" />
+            <mxPoint x="1220" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- STS -> Cognito (black return) -->
+        <mxCell id="m_assume_r" value="" style="endArrow=block;html=1;strokeColor=#16191F;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1220" y="610" as="sourcePoint" />
+            <mxPoint x="815" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Cognito -> Device (red return, final) -->
+        <mxCell id="m_final_r" value="" style="endArrow=block;html=1;strokeColor=#D6242D;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="650" as="sourcePoint" />
+            <mxPoint x="65" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

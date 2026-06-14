@@ -30,7 +30,12 @@ export interface ModuleNotes {
   examTips: string[];
 }
 
+import { SEC_ENG_AWS_NOTES } from './sec-eng-aws-notes';
+
 export const MODULE_NOTES: Record<string, ModuleNotes> = {
+  // ── Security Engineering on AWS (SCS-C03) — 8 modules ──
+  ...SEC_ENG_AWS_NOTES,
+
   // ═══════════════════════════════════════════════════════════════════════════
   // MODULE 1 — Introduction to AWS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -470,6 +475,7 @@ export const MODULE_NOTES: Record<string, ModuleNotes> = {
       'Shield Standard is free and automatic for all customers; Shield Advanced is paid.',
       'SCPs in AWS Organizations set the maximum permissions for an account — guardrails, not grants.',
       'WAF = web application firewall (layer 7); Shield = DDoS protection.',
+      'Going deeper? Once you are comfortable here, the Security Engineering on AWS (SCS-C03) path covers IAM in depth, data protection and KMS, infrastructure and edge protection, logging and monitoring, and incident response.',
     ],
   },
 

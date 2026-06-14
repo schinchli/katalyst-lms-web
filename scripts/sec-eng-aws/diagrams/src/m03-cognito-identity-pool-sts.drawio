@@ -1,0 +1,75 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-cognito-sts" name="Cognito identity pool STS">
+    <mxGraphModel dx="1000" dy="480" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="380" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- User -->
+        <mxCell id="user" style="sketch=0;outlineConnect=0;fontColor=#16191F;gradientColor=none;fillColor=#16191F;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.user;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=15;" value="User" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="80" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Cognito identity pools icon -->
+        <mxCell id="cognito" style="sketch=0;outlineConnect=0;fontColor=#16191F;gradientColor=none;fillColor=#DD344C;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" vertex="1" parent="1">
+          <mxGeometry x="560" y="20" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="cognitolbl" value="Amazon Cognito&#10;identity pools" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- AWS cloud (dark box with logo) -->
+        <mxCell id="aws" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="150" width="130" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="awslogo" value="" style="sketch=0;outlineConnect=0;fontColor=#FFFFFF;gradientColor=none;fillColor=#FFFFFF;strokeColor=none;html=1;aspect=fixed;shape=mxgraph.aws4.aws_cloud;" vertex="1" parent="1">
+          <mxGeometry x="1035" y="185" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Step labels -->
+        <mxCell id="l1" value="Sign-in with&#10;IdP credentials." style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="200" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="Permissions received by&#10;AWS Security Token&#10;Service (AWS STS) role." style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="190" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" value="Access to AWS&#10;services" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#16191F;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="720" y="220" width="200" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 1: User -> Cognito (up-right) -->
+        <mxCell id="arr1" style="endArrow=block;html=1;strokeColor=#3C4452;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="210" as="sourcePoint" />
+            <mxPoint x="555" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Arrow 2: Cognito -> User (down-left) -->
+        <mxCell id="arr2" style="endArrow=block;html=1;strokeColor=#3C4452;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="110" as="sourcePoint" />
+            <mxPoint x="120" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Arrow 3: User -> AWS (horizontal) -->
+        <mxCell id="arr3" style="endArrow=block;html=1;strokeColor=#3C4452;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="280" as="sourcePoint" />
+            <mxPoint x="1005" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step badges -->
+        <mxCell id="b1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=17;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="192" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=17;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="158" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=17;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="262" width="36" height="36" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

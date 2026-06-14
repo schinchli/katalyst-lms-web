@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m02-assumerole" name="Cross-account AssumeRole">
+    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="480" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- AnyCompany central box -->
+        <mxCell id="anyco" value="AnyCompany" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#7C3AED;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="200" width="160" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- Development account user: Maria -->
+        <mxCell id="maria" value="Development account&lt;br&gt;user: Mar&#237;a" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="520" y="64" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Production account user: John -->
+        <mxCell id="john" value="Production account&lt;br&gt;user: John" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="520" y="338" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- AWS STS -->
+        <mxCell id="sts" value="AWS STS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DD344C;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="704" y="146" width="92" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Temporary security credentials (key) -->
+        <mxCell id="creds" value="Temporary security&lt;br&gt;credentials" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.key_management_service;" vertex="1" parent="1">
+          <mxGeometry x="876" y="54" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- DevOnlyRole -->
+        <mxCell id="role" value="DevOnlyRole" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.role;" vertex="1" parent="1">
+          <mxGeometry x="770" y="338" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- John's S3 bucket -->
+        <mxCell id="s3" value="John&#39;s S3 bucket" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="338" width="58" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- structural lines AnyCompany -> users -->
+        <mxCell id="e_anyco_maria" style="endArrow=none;html=1;strokeColor=#7C3AED;strokeWidth=2;exitX=0.85;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="anyco" target="maria">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_anyco_john" style="endArrow=none;html=1;strokeColor=#7C3AED;strokeWidth=2;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="anyco" target="john">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 1 CreateRole: John -> DevOnlyRole -->
+        <mxCell id="e1" value="CreateRole" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;fontColor=#232F3E;fontSize=12;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" edge="1" parent="1" source="john" target="role">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-16" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <!-- 2 AssumeRole: Maria -> STS -->
+        <mxCell id="e2" value="AssumeRole" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;fontColor=#232F3E;fontSize=12;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;exitX=1;exitY=0.6;exitDx=0;exitDy=0;" edge="1" parent="1" source="maria" target="sts">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-6" y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <!-- STS -> creds (issues) -->
+        <mxCell id="e_sts_creds" style="endArrow=block;html=1;strokeColor=#9E9E9E;strokeWidth=1.5;dashed=1;" edge="1" parent="1" source="sts" target="creds">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- 3 creds -> Maria -->
+        <mxCell id="e3" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;" edge="1" parent="1" source="creds" target="maria">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- 4 Maria -> S3 (dashed, long left) -->
+        <mxCell id="e4" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="maria" target="s3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="549" y="20" />
+              <mxPoint x="69" y="20" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- step badges -->
+        <mxCell id="b1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="612" y="354" width="26" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="636" y="150" width="26" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="724" y="70" width="26" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#3B1E66;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="96" y="8" width="26" height="26" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

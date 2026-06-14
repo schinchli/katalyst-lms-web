@@ -3,6 +3,7 @@
  * Each deck has a set of cards with a front (term/concept) and back (definition/explanation).
  */
 import { eksCoreksFlashcardDecks } from './eks-coreks-flashcards';
+import { secEngAwsFlashcardDecks } from './sec-eng-aws-flashcards';
 
 export interface Flashcard {
   id: string;
@@ -24,6 +25,9 @@ export interface FlashcardDeck {
 export const flashcardDecks: FlashcardDeck[] = [
   // ── EKS Course (200-COREKS) — 9 decks, 365 cards ──────────────────────────
   ...eksCoreksFlashcardDecks,
+
+  // ── Security Engineering on AWS — 8 decks, 112 cards ──────────────────────
+  ...secEngAwsFlashcardDecks,
 
   {
     id: 'aws-core-services',

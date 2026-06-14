@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="m03-org-scp-inherit" name="Organizations OU SCP inheritance">
+    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- AWS Organizations title icon -->
+        <mxCell id="orgicon" value="AWS Organizations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CD2264;strokeColor=none;fontColor=#FFFFFF;fontSize=12;fontStyle=1;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- Organization root management account icon (top right of root) -->
+        <mxCell id="rooticon" value="Organization root&lt;br&gt;management account" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CD2264;strokeColor=none;fontColor=#232F3E;fontSize=12;fontStyle=0;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="20" width="34" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- Organization-level boundary (dashed red) -->
+        <mxCell id="orgbound" value="Organization-level boundary" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;dashed=1;dashPattern=6 4;verticalAlign=top;align=left;fontColor=#232F3E;fontSize=12;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="30" y="60" width="540" height="610" as="geometry" />
+        </mxCell>
+
+        <!-- SCP note -->
+        <mxCell id="scpnote" value="SCPs are inherited by OUs&lt;br&gt;and member accounts" style="text;html=1;align=left;verticalAlign=middle;fontColor=#CD2264;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="190" height="34" as="geometry" />
+        </mxCell>
+        <!-- SCP checklist icon near note -->
+        <mxCell id="scpicon1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="44" y="100" width="26" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- OU icons row: OU A, OU B, OU C -->
+        <mxCell id="oua" value="OU A" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="180" y="95" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="oub" value="OU B" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="660" y="95" width="42" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="ouc" value="OU C" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=12;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="950" y="95" width="42" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- Nested OUs band -->
+        <mxCell id="nestedband" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F4FB;strokeColor=#90CAF9;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="330" width="1080" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="nestedlbl" value="Nested&lt;br&gt;OUs" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="372" width="50" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Member accounts band -->
+        <mxCell id="memberband" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F4FB;strokeColor=#90CAF9;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="500" width="1080" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="memberlbl" value="Member&lt;br&gt;accounts" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="542" width="60" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Nested OU icons under OU A (2) -->
+        <mxCell id="na1" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="na2" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <!-- dashed nested OU placeholder under OU A (left, lighter) -->
+        <mxCell id="na0" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#F2C4D6;strokeColor=#CD2264;dashed=1;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <!-- SCP icon on nested OU under A -->
+        <mxCell id="scpicon2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;strokeWidth=2;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="72" y="362" width="22" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Nested OU icons under OU B (2) -->
+        <mxCell id="nb1" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nb2" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Nested OU icons under OU C (2) -->
+        <mxCell id="nc1" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nc2" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Member account icon under nested A -->
+        <mxCell id="ma1" value="" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_account;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="535" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="scpicon3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;strokeWidth=2;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="540" width="22" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== arrows: root -> OU A/B/C ===== -->
+        <mxCell id="e_root_a" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="rooticon" target="oua">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="201" y="80" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_root_b" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="rooticon" target="oub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="681" y="80" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_root_c" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="rooticon" target="ouc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="971" y="80" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- OU A -> nested A icons -->
+        <mxCell id="e_a_na1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="oua" target="na1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a_na2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="oua" target="na2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- dashed to na0 -->
+        <mxCell id="e_a_na0" style="endArrow=block;html=1;strokeColor=#CD2264;strokeWidth=1.5;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="oua" target="na0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- OU B -> nested B icons -->
+        <mxCell id="e_b_nb1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="oub" target="nb1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_b_nb2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="oub" target="nb2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- OU C -> nested C icons -->
+        <mxCell id="e_c_nc1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="ouc" target="nc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_c_nc2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="ouc" target="nc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- nested A -> member account -->
+        <mxCell id="e_na1_ma1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="na1" target="ma1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_na0_scp3" style="endArrow=block;html=1;strokeColor=#CD2264;strokeWidth=1.5;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="na0" target="ma1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

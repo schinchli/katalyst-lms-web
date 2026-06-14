@@ -32,6 +32,193 @@ export interface LearningPath {
 }
 
 export const LEARNING_PATHS: LearningPath[] = [
+  {
+    id: 'sec-eng-aws',
+    certCode: 'SCS-C03',
+    certName: 'Security Engineering on AWS',
+    tagline: 'Official Security Engineering on AWS curriculum — read, drill, and test across eight modules covering identity, data protection, infrastructure, monitoring, and incident response.',
+    difficulty: 'Advanced',
+    totalHours: 14,
+    color: '#DD344C',
+    steps: [
+      // ── Module 1: Security Overview ──
+      {
+        id: 'seceng-m01-notes', type: 'notes', resourceId: "sec-eng-m01",
+        title: "Read: Security Overview",
+        subtitle: "Detailed notes · Understanding security fundamentals in the AWS Cloud",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m01-flash', type: 'flashcard', resourceId: "sec-eng-m01",
+        title: "Module 1: Security Overview",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m01-quiz', type: 'quiz', resourceId: "sec-eng-aws-m01",
+        title: "Quiz: Security Overview",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 2: Access and Authorizations on AWS ──
+      {
+        id: 'seceng-m02-notes', type: 'notes', resourceId: "sec-eng-m02",
+        title: "Read: Access and Authorizations on AWS",
+        subtitle: "Detailed notes · Understanding IAM and API security on AWS",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m02-flash', type: 'flashcard', resourceId: "sec-eng-m02",
+        title: "Module 2: Access and Authorizations on AWS",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m02-quiz', type: 'quiz', resourceId: "sec-eng-aws-m02",
+        title: "Quiz: Access and Authorizations on AWS",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 3: Account Management and Provisioning on AWS ──
+      {
+        id: 'seceng-m03-notes', type: 'notes', resourceId: "sec-eng-m03",
+        title: "Read: Account Management and Provisioning on AWS",
+        subtitle: "Detailed notes · Understanding multi-account management and security on AWS.",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m03-flash', type: 'flashcard', resourceId: "sec-eng-m03",
+        title: "Module 3: Account Management and Provisioning on AWS",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m03-quiz', type: 'quiz', resourceId: "sec-eng-aws-m03",
+        title: "Quiz: Account Management and Provisioning on AWS",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 4: Managing Keys and Secrets on AWS ──
+      {
+        id: 'seceng-m04-notes', type: 'notes', resourceId: "sec-eng-m04",
+        title: "Read: Managing Keys and Secrets on AWS",
+        subtitle: "Detailed notes · Learn to manage keys, certificates, and secrets using AWS se",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m04-flash', type: 'flashcard', resourceId: "sec-eng-m04",
+        title: "Module 4: Managing Keys and Secrets on AWS",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m04-quiz', type: 'quiz', resourceId: "sec-eng-aws-m04",
+        title: "Quiz: Managing Keys and Secrets on AWS",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 5: Data Security ──
+      {
+        id: 'seceng-m05-notes', type: 'notes', resourceId: "sec-eng-m05",
+        title: "Read: Data Security",
+        subtitle: "Detailed notes · Protecting data at rest and after use in AWS.",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m05-flash', type: 'flashcard', resourceId: "sec-eng-m05",
+        title: "Module 5: Data Security",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m05-quiz', type: 'quiz', resourceId: "sec-eng-aws-m05",
+        title: "Quiz: Data Security",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 6: Infrastructure and Edge Protection ──
+      {
+        id: 'seceng-m06-notes', type: 'notes', resourceId: "sec-eng-m06",
+        title: "Read: Infrastructure and Edge Protection",
+        subtitle: "Detailed notes · Understanding AWS services for securing infrastructure and e",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m06-flash', type: 'flashcard', resourceId: "sec-eng-m06",
+        title: "Module 6: Infrastructure and Edge Protection",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m06-quiz', type: 'quiz', resourceId: "sec-eng-aws-m06",
+        title: "Quiz: Infrastructure and Edge Protection",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 7: Monitoring and Collecting Logs on AWS ──
+      {
+        id: 'seceng-m07-notes', type: 'notes', resourceId: "sec-eng-m07",
+        title: "Read: Monitoring and Collecting Logs on AWS",
+        subtitle: "Detailed notes · Understanding AWS log management and monitoring techniques.",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m07-flash', type: 'flashcard', resourceId: "sec-eng-m07",
+        title: "Module 7: Monitoring and Collecting Logs on AWS",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m07-quiz', type: 'quiz', resourceId: "sec-eng-aws-m07",
+        title: "Quiz: Monitoring and Collecting Logs on AWS",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+      // ── Module 8: Responding to Threats ──
+      {
+        id: 'seceng-m08-notes', type: 'notes', resourceId: "sec-eng-m08",
+        title: "Read: Responding to Threats",
+        subtitle: "Detailed notes · Understanding incident response in AWS",
+        estimatedMinutes: 15, icon: 'book-open',
+        why: 'Read the grounded module notes with architecture diagrams before drilling and testing.',
+      },
+      {
+        id: 'seceng-m08-flash', type: 'flashcard', resourceId: "sec-eng-m08",
+        title: "Module 8: Responding to Threats",
+        subtitle: "14 cards · key terms and services",
+        estimatedMinutes: 12, icon: 'layers',
+        why: 'Reinforce the module\u2019s core terms and AWS services with spaced repetition.',
+      },
+      {
+        id: 'seceng-m08-quiz', type: 'quiz', resourceId: "sec-eng-aws-m08",
+        title: "Quiz: Responding to Threats",
+        subtitle: '8 questions · 16 min',
+        estimatedMinutes: 16, icon: 'check-square',
+        why: 'Validate the module with scenario questions in the SCS-C03 exam style.',
+      },
+    ],
+  },
   // ─────────────────────────────────────────────────────────────
   // AWS Cloud Practitioner — CLF-C02
   // ─────────────────────────────────────────────────────────────
