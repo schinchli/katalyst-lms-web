@@ -647,9 +647,17 @@ test.describe('Security', () => {
   });
 
   test('/api/sync-user rejects unauthenticated POST', async ({ request }) => {
+    // Schema-valid payload (valid UUID + ≥10-char token) so it passes Zod
+    // validation and reaches the JWT auth check — proving auth is enforced,
+    // not just input validation. A bogus token must be rejected with 401.
     const res = await request.post('/api/sync-user', {
       headers: { 'Content-Type': 'application/json' },
-      data: { supabaseId: 'attacker-id', email: 'bad@evil.com', name: 'Hacker' },
+      data: {
+        supabaseId: '00000000-0000-0000-0000-000000000000',
+        email: 'bad@evil.com',
+        name: 'Hacker',
+        accessToken: 'invalid-token-1234567890',
+      },
     });
     expect([401, 403]).toContain(res.status());
   });

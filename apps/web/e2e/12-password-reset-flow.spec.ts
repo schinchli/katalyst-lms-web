@@ -109,8 +109,8 @@ test.describe('Password reset — full UI flow', () => {
   test('verify OTP-based password reset works end-to-end', async ({ page }) => {
 
     test.skip(
-      !SUPABASE_URL || !SERVICE_KEY,
-      'requires NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY — skipping gracefully',
+      !!process.env.SKIP_LIVE_AUTH || !SUPABASE_URL || !SERVICE_KEY,
+      'requires live Supabase auth harness (NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY); set SKIP_LIVE_AUTH to skip in CI',
     );
 
     // ── 1. Create user via admin API (auto-confirmed email) ────────────

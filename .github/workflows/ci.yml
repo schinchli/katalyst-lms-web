@@ -190,6 +190,11 @@ jobs:
         run: npx playwright test --reporter=list
         env:
           CI: 'true'
+          # Live-auth journeys (signup OTP, password-reset, authenticated
+          # session via stored auth-state.json) require a full Supabase auth
+          # harness that CI does not provision. They self-skip on this flag so
+          # CI stays deterministic; developers with the local harness omit it.
+          SKIP_LIVE_AUTH: '1'
           # Supabase + app config (set these as GitHub Actions secrets)
           NEXT_PUBLIC_SUPABASE_URL:       ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY:  ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
