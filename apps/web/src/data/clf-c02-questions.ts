@@ -52,7 +52,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-004',
-    text: "Adani Enterprises runs an e-commerce portal for industrial equipment. Order volumes spike sharply during government infrastructure tender seasons and drop to near zero during off-peak months. A cloud architect says the company should take advantage of cloud \"elasticity.\" What does elasticity mean in this context?",
+    text: "AnyCompany Industries runs an e-commerce portal for industrial equipment. Order volumes spike sharply during government infrastructure tender seasons and drop to near zero during off-peak months. A cloud architect says the company should take advantage of cloud \"elasticity.\" What does elasticity mean in this context?",
     options: [
       { id: 'a', text: 'The ability to run the application simultaneously in multiple AWS Regions' },
       { id: 'b', text: 'The ability to automatically add compute resources when orders surge and release them when demand drops' },
@@ -60,7 +60,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'The ability to replace On-Demand Instances with Spot Instances to cut costs' },
     ],
     correctOptionId: 'b',
-    explanation: "Elasticity refers to the ability to automatically acquire resources when needed and release them when no longer required — scaling with demand. ✓ (b) Elasticity is specifically about dynamic, bidirectional scaling — adding instances during tender-season spikes and releasing them during off-peak months so Adani pays only for what it actually uses. ✗ (a) Running the application across multiple AWS Regions describes geographic distribution or global reach, which improves latency and disaster recovery but is not the definition of elasticity. ✗ (c) Replicating data across Availability Zones is a durability and high-availability pattern (Multi-AZ), not an elasticity concept — it does not change resource capacity in response to demand. ✗ (d) Replacing On-Demand Instances with Spot Instances is a cost-optimisation purchasing strategy, not elasticity — it changes how compute is purchased, not how capacity is dynamically scaled.",
+    explanation: "Elasticity refers to the ability to automatically acquire resources when needed and release them when no longer required — scaling with demand. ✓ (b) Elasticity is specifically about dynamic, bidirectional scaling — adding instances during tender-season spikes and releasing them during off-peak months so AnyCompany Industries pays only for what it actually uses. ✗ (a) Running the application across multiple AWS Regions describes geographic distribution or global reach, which improves latency and disaster recovery but is not the definition of elasticity. ✗ (c) Replicating data across Availability Zones is a durability and high-availability pattern (Multi-AZ), not an elasticity concept — it does not change resource capacity in response to demand. ✗ (d) Replacing On-Demand Instances with Spot Instances is a cost-optimisation purchasing strategy, not elasticity — it changes how compute is purchased, not how capacity is dynamically scaled.",
     docUrl: 'https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -68,7 +68,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-005',
-    text: "HDFC Bank's infrastructure team is classifying AWS services for a compliance audit. The audit distinguishes between services where the bank manages the operating system and middleware versus services where the cloud provider manages those layers. Which AWS service would be classified as Infrastructure as a Service (IaaS)?",
+    text: "AnyCompany Bank's infrastructure team is classifying AWS services for a compliance audit. The audit distinguishes between services where the bank manages the operating system and middleware versus services where the cloud provider manages those layers. Which AWS service would be classified as Infrastructure as a Service (IaaS)?",
     options: [
       { id: 'a', text: 'Amazon RDS, where AWS manages the database engine, patching, and backups' },
       { id: 'b', text: 'AWS Elastic Beanstalk, where AWS manages the runtime and deployment platform' },
@@ -76,7 +76,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'Amazon Rekognition, which provides a ready-to-call image recognition API' },
     ],
     correctOptionId: 'c',
-    explanation: "IaaS provides virtualized computing resources over the internet. Amazon EC2 is IaaS — you manage the OS, middleware, and applications, while AWS manages the physical hardware. ✓ (c) EC2 gives HDFC Bank raw virtual machines where the bank installs and manages the OS, patches, middleware, and application stack — the defining characteristic of IaaS. ✗ (a) Amazon RDS is a managed database service (closer to PaaS) — AWS handles the database engine installation, patching, backups, and failover, leaving the bank responsible only for schema and queries. ✗ (b) AWS Elastic Beanstalk is a PaaS offering — it provisions and manages the underlying runtime environment, web server, and deployment pipeline so developers only push application code. ✗ (d) Amazon Rekognition is a SaaS-style API service — the bank makes HTTP calls to a fully managed AI function and never touches any infrastructure, OS, or middleware layer.",
+    explanation: "IaaS provides virtualized computing resources over the internet. Amazon EC2 is IaaS — you manage the OS, middleware, and applications, while AWS manages the physical hardware. ✓ (c) EC2 gives AnyCompany Bank raw virtual machines where the bank installs and manages the OS, patches, middleware, and application stack — the defining characteristic of IaaS. ✗ (a) Amazon RDS is a managed database service (closer to PaaS) — AWS handles the database engine installation, patching, backups, and failover, leaving the bank responsible only for schema and queries. ✗ (b) AWS Elastic Beanstalk is a PaaS offering — it provisions and manages the underlying runtime environment, web server, and deployment pipeline so developers only push application code. ✗ (d) Amazon Rekognition is a SaaS-style API service — the bank makes HTTP calls to a fully managed AI function and never touches any infrastructure, OS, or middleware layer.",
     docUrl: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -84,7 +84,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-006',
-    text: "Tata Motors is designing a high-availability architecture for its vehicle telematics platform on AWS. A solutions architect explains that AWS infrastructure is built from components that each consist of one or more discrete data centers with independent power, cooling, and networking. What is this component called?",
+    text: "AnyCompany Motors is designing a high-availability architecture for its vehicle telematics platform on AWS. A solutions architect explains that AWS infrastructure is built from components that each consist of one or more discrete data centers with independent power, cooling, and networking. What is this component called?",
     options: [
       { id: 'a', text: 'An AWS Region, which is a broad geographic area containing multiple independent locations' },
       { id: 'b', text: 'An AWS Edge Location, which is a small caching node used by CloudFront' },
@@ -132,7 +132,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-009',
-    text: "Adani Enterprises has a legacy ERP system running on physical servers in its Mumbai data center. Leadership has approved a cloud migration and wants the system running on AWS within six weeks with the smallest possible code changes. Which migration strategy best describes this approach?",
+    text: "AnyCompany Industries has a legacy ERP system running on physical servers in its Mumbai data center. Leadership has approved a cloud migration and wants the system running on AWS within six weeks with the smallest possible code changes. Which migration strategy best describes this approach?",
     options: [
       { id: 'a', text: 'Re-architect (Re-build), which redesigns the application as cloud-native microservices from scratch' },
       { id: 'b', text: 'Re-platform, which makes targeted optimizations to take advantage of managed cloud services' },
@@ -164,7 +164,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-011',
-    text: "Tata Motors is running a connected-vehicle data processing workload on AWS. As more vehicles come online, the architecture team wants to ensure the right instance types are selected and that the choice remains optimal as AWS releases newer generation hardware. Which AWS Well-Architected Framework pillar directly guides this decision?",
+    text: "AnyCompany Motors is running a connected-vehicle data processing workload on AWS. As more vehicles come online, the architecture team wants to ensure the right instance types are selected and that the choice remains optimal as AWS releases newer generation hardware. Which AWS Well-Architected Framework pillar directly guides this decision?",
     options: [
       { id: 'a', text: 'Cost Optimization, which focuses on eliminating unnecessary spending' },
       { id: 'b', text: 'Sustainability, which focuses on reducing environmental impact' },
@@ -180,15 +180,15 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-012',
-    text: "During an AWS training session at HDFC Bank, an architect explains the Shared Responsibility Model. She states that AWS secures the physical facilities, networking hardware, and hypervisor layer, while the bank is accountable for its data classification, IAM configurations, and application-level controls. Which statement accurately captures this model?",
+    text: "During an AWS training session at AnyCompany Bank, an architect explains the Shared Responsibility Model. She states that AWS secures the physical facilities, networking hardware, and hypervisor layer, while the bank is accountable for its data classification, IAM configurations, and application-level controls. Which statement accurately captures this model?",
     options: [
-      { id: 'a', text: 'AWS is responsible for security OF the cloud; HDFC Bank is responsible for security IN the cloud' },
-      { id: 'b', text: 'HDFC Bank is responsible for all security, including the physical data centers and networking hardware' },
+      { id: 'a', text: 'AWS is responsible for security OF the cloud; AnyCompany Bank is responsible for security IN the cloud' },
+      { id: 'b', text: 'AnyCompany Bank is responsible for all security, including the physical data centers and networking hardware' },
       { id: 'c', text: 'AWS is responsible for all security, including the bank\'s data, IAM policies, and application controls' },
       { id: 'd', text: 'Security responsibility is split exactly 50/50 between AWS and the bank for every layer of the stack' },
     ],
     correctOptionId: 'a',
-    explanation: "This is the AWS Shared Responsibility Model. AWS secures the underlying cloud infrastructure, while customers are responsible for securing their data, applications, and configurations within the cloud. ✓ (a) \"Security OF the cloud\" (physical facilities, hardware, hypervisor) belongs to AWS; \"security IN the cloud\" (data, IAM, OS patches, application controls) belongs to the customer — this is AWS\'s own canonical phrasing of the Shared Responsibility Model. ✗ (b) HDFC Bank is never responsible for physical data center security or networking hardware — those layers are entirely within AWS\'s scope as the infrastructure provider. ✗ (c) AWS is never responsible for the bank\'s data classification decisions, IAM policy configurations, or application-level access controls — those remain firmly in the customer\'s domain regardless of which cloud services are used. ✗ (d) The 50/50 framing is incorrect; the boundary is not fixed by percentage but by layer — AWS owns the global infrastructure layer entirely, and the customer owns everything they place on top of it, with the split varying by service type (IaaS vs. PaaS vs. SaaS).",
+    explanation: "This is the AWS Shared Responsibility Model. AWS secures the underlying cloud infrastructure, while customers are responsible for securing their data, applications, and configurations within the cloud. ✓ (a) \"Security OF the cloud\" (physical facilities, hardware, hypervisor) belongs to AWS; \"security IN the cloud\" (data, IAM, OS patches, application controls) belongs to the customer — this is AWS\'s own canonical phrasing of the Shared Responsibility Model. ✗ (b) AnyCompany Bank is never responsible for physical data center security or networking hardware — those layers are entirely within AWS\'s scope as the infrastructure provider. ✗ (c) AWS is never responsible for the bank\'s data classification decisions, IAM policy configurations, or application-level access controls — those remain firmly in the customer\'s domain regardless of which cloud services are used. ✗ (d) The 50/50 framing is incorrect; the boundary is not fixed by percentage but by layer — AWS owns the global infrastructure layer entirely, and the customer owns everything they place on top of it, with the split varying by service type (IaaS vs. PaaS vs. SaaS).",
     docUrl: 'https://aws.amazon.com/compliance/shared-responsibility-model/',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -244,7 +244,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-016',
-    text: "Adani Enterprises operates a power grid monitoring system that cannot afford even brief outages. The platform architect says the system must be \"fault tolerant,\" not merely \"highly available.\" Which description best captures what fault tolerance means in cloud architecture?",
+    text: "AnyCompany Industries operates a power grid monitoring system that cannot afford even brief outages. The platform architect says the system must be \"fault tolerant,\" not merely \"highly available.\" Which description best captures what fault tolerance means in cloud architecture?",
     options: [
       { id: 'a', text: 'The system automatically adds EC2 instances when CPU utilisation exceeds a threshold' },
       { id: 'b', text: 'The system continues operating without any interruption or user impact, even when one or more components completely fail' },
@@ -260,7 +260,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-017',
-    text: "HDFC Bank is launching a new mobile banking backend on AWS. The solutions architect proposes deploying EC2 instances and RDS databases across two Availability Zones in the ap-south-1 Region. A product manager asks what the primary advantage of this Multi-AZ design is. What should the architect say?",
+    text: "AnyCompany Bank is launching a new mobile banking backend on AWS. The solutions architect proposes deploying EC2 instances and RDS databases across two Availability Zones in the ap-south-1 Region. A product manager asks what the primary advantage of this Multi-AZ design is. What should the architect say?",
     options: [
       { id: 'a', text: 'It reduces infrastructure cost by sharing resources between the two Availability Zones' },
       { id: 'b', text: 'It reduces response latency for customers in other countries by placing compute closer to them' },
@@ -276,15 +276,15 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-018',
-    text: "Tata Motors is preparing a business case for migrating its dealer management system to AWS. The CFO asks the IT director to name the single most impactful economic benefit of moving to AWS cloud infrastructure. Which answer best represents that benefit?",
+    text: "AnyCompany Motors is preparing a business case for migrating its dealer management system to AWS. The CFO asks the IT director to name the single most impactful economic benefit of moving to AWS cloud infrastructure. Which answer best represents that benefit?",
     options: [
       { id: 'a', text: 'AWS bills a fixed monthly fee regardless of how much compute and storage the dealer system actually uses' },
-      { id: 'b', text: 'Tata Motors pays only for the resources it actually uses, eliminating the cost of idle on-premises capacity' },
+      { id: 'b', text: 'AnyCompany Motors pays only for the resources it actually uses, eliminating the cost of idle on-premises capacity' },
       { id: 'c', text: 'Migrating to AWS eliminates the need for any IT staff, removing salary expenses entirely' },
       { id: 'd', text: 'AWS guarantees identical application performance regardless of traffic spikes or workload type' },
     ],
     correctOptionId: 'b',
-    explanation: "AWS pay-as-you-go pricing means you only pay for the resources you actually use, eliminating the waste of paying for idle capacity that is common with on-premises infrastructure. ✓ (b) Pay-as-you-go is the most impactful economic shift — Tata Motors stops buying and maintaining servers for peak capacity and instead pays only for actual consumption, eliminating idle hardware costs that can represent 30–70% of on-premises infrastructure spend. ✗ (a) AWS does not bill a fixed monthly fee regardless of usage — the entire premise of AWS pricing is consumption-based; fixed-fee billing describes a reserved capacity model and is the opposite of the pay-as-you-go advantage being cited. ✗ (c) Migrating to AWS does not eliminate the need for IT staff — cloud migration typically retrains staff to manage cloud services rather than physical hardware; eliminating all IT salaries is an unrealistic and incorrect claim. ✗ (d) AWS does not guarantee identical application performance regardless of workload type — performance depends on selecting the right instance types, optimising code, and configuring appropriate services; AWS provides the tools, not a blanket performance guarantee.",
+    explanation: "AWS pay-as-you-go pricing means you only pay for the resources you actually use, eliminating the waste of paying for idle capacity that is common with on-premises infrastructure. ✓ (b) Pay-as-you-go is the most impactful economic shift — AnyCompany Motors stops buying and maintaining servers for peak capacity and instead pays only for actual consumption, eliminating idle hardware costs that can represent 30–70% of on-premises infrastructure spend. ✗ (a) AWS does not bill a fixed monthly fee regardless of usage — the entire premise of AWS pricing is consumption-based; fixed-fee billing describes a reserved capacity model and is the opposite of the pay-as-you-go advantage being cited. ✗ (c) Migrating to AWS does not eliminate the need for IT staff — cloud migration typically retrains staff to manage cloud services rather than physical hardware; eliminating all IT salaries is an unrealistic and incorrect claim. ✗ (d) AWS does not guarantee identical application performance regardless of workload type — performance depends on selecting the right instance types, optimising code, and configuring appropriate services; AWS provides the tools, not a blanket performance guarantee.",
     docUrl: 'https://aws.amazon.com/pricing/',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -372,15 +372,15 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-024',
-    text: "Adani Enterprises previously purchased data center hardware 12 months in advance based on peak demand forecasts. Half the time the forecast was wrong and servers sat idle; the other half, the team ran out of capacity during surges. A cloud architect argues that moving to AWS eliminates this problem entirely. Which cloud advantage is the architect describing?",
+    text: "AnyCompany Industries previously purchased data center hardware 12 months in advance based on peak demand forecasts. Half the time the forecast was wrong and servers sat idle; the other half, the team ran out of capacity during surges. A cloud architect argues that moving to AWS eliminates this problem entirely. Which cloud advantage is the architect describing?",
     options: [
-      { id: 'a', text: 'Adani must still submit capacity forecasts to AWS six to twelve months before the resources are needed' },
-      { id: 'b', text: 'AWS eliminates the need to guess at capacity because Adani can scale up or down on demand and pay only for what it uses' },
-      { id: 'c', text: 'Moving to AWS requires Adani to make a larger initial capital investment than buying its own hardware' },
-      { id: 'd', text: 'AWS allows Adani to scale compute up during surges but not scale down after demand subsides' },
+      { id: 'a', text: 'AnyCompany Industries must still submit capacity forecasts to AWS six to twelve months before the resources are needed' },
+      { id: 'b', text: 'AWS eliminates the need to guess at capacity because AnyCompany Industries can scale up or down on demand and pay only for what it uses' },
+      { id: 'c', text: 'Moving to AWS requires AnyCompany Industries to make a larger initial capital investment than buying its own hardware' },
+      { id: 'd', text: 'AWS allows AnyCompany Industries to scale compute up during surges but not scale down after demand subsides' },
     ],
     correctOptionId: 'b',
-    explanation: "One of the key advantages of cloud computing is stopping the guessing game around capacity needs. You can scale up or down on demand rather than provisioning for peak loads. ✓ (b) AWS eliminates the 12-month capacity forecasting cycle — Adani can provision resources in minutes when demand surges and release them immediately when demand drops, paying only for actual usage and ending both idle-capacity waste and under-provisioning. ✗ (a) AWS does not require capacity forecasts 6–12 months in advance — this describes the on-premises hardware procurement problem; cloud resources are provisioned on-demand in minutes with no advance reservation required (though Reserved Instances are optional for cost savings, not mandatory). ✗ (c) Moving to AWS replaces large upfront capital expenditure (buying servers) with lower operational spending — the initial investment is far smaller than purchasing hardware, not larger. ✗ (d) AWS supports bidirectional elasticity — Adani can scale both up during surges and scale down after demand subsides; one-way scaling would negate the cost advantage and is not how AWS Auto Scaling works.",
+    explanation: "One of the key advantages of cloud computing is stopping the guessing game around capacity needs. You can scale up or down on demand rather than provisioning for peak loads. ✓ (b) AWS eliminates the 12-month capacity forecasting cycle — AnyCompany Industries can provision resources in minutes when demand surges and release them immediately when demand drops, paying only for actual usage and ending both idle-capacity waste and under-provisioning. ✗ (a) AWS does not require capacity forecasts 6–12 months in advance — this describes the on-premises hardware procurement problem; cloud resources are provisioned on-demand in minutes with no advance reservation required (though Reserved Instances are optional for cost savings, not mandatory). ✗ (c) Moving to AWS replaces large upfront capital expenditure (buying servers) with lower operational spending — the initial investment is far smaller than purchasing hardware, not larger. ✗ (d) AWS supports bidirectional elasticity — AnyCompany Industries can scale both up during surges and scale down after demand subsides; one-way scaling would negate the cost advantage and is not how AWS Auto Scaling works.",
     docUrl: 'https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -388,7 +388,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-025',
-    text: "Tata Motors runs a vehicle simulation workload on a single large EC2 instance. As the simulation models become more complex, the performance engineer decides to move from a compute-optimised instance to a memory-optimised instance with significantly more vCPUs and RAM — without adding any additional instances. Which scaling strategy does this describe?",
+    text: "AnyCompany Motors runs a vehicle simulation workload on a single large EC2 instance. As the simulation models become more complex, the performance engineer decides to move from a compute-optimised instance to a memory-optimised instance with significantly more vCPUs and RAM — without adding any additional instances. Which scaling strategy does this describe?",
     options: [
       { id: 'a', text: 'Horizontal scaling (scaling out), which adds more instances to distribute the simulation workload' },
       { id: 'b', text: 'Vertical scaling (scaling up), which increases the vCPU and RAM of the existing simulation instance' },
@@ -420,7 +420,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-027',
-    text: "Adani Enterprises is preparing a cloud strategy report for its board. A board member asks which AWS Well-Architected Framework pillar addresses the company's commitment to reducing the carbon footprint of its IT operations and minimising energy consumption from cloud workloads. Which pillar should the team cite?",
+    text: "AnyCompany Industries is preparing a cloud strategy report for its board. A board member asks which AWS Well-Architected Framework pillar addresses the company's commitment to reducing the carbon footprint of its IT operations and minimising energy consumption from cloud workloads. Which pillar should the team cite?",
     options: [
       { id: 'a', text: 'Cost Optimization, which focuses on removing unnecessary spending and choosing right-sized resources' },
       { id: 'b', text: 'Reliability, which focuses on the system\'s ability to recover from failures and meet demand consistently' },
@@ -428,7 +428,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'Operational Excellence, which focuses on automating operations and continually improving processes' },
     ],
     correctOptionId: 'c',
-    explanation: "The Sustainability pillar (added in 2021) focuses on minimising the environmental impacts of running cloud workloads, including energy consumption and carbon footprint. ✓ (c) The Sustainability pillar, added as the sixth pillar of the AWS Well-Architected Framework in 2021, directly addresses minimising energy consumption, reducing waste, and cutting the carbon footprint of cloud workloads — exactly what Adani\'s board is asking about. ✗ (a) Cost Optimization focuses on eliminating unnecessary spending and right-sizing resources for financial efficiency — while reducing resources can indirectly lower energy use, the pillar\'s lens is cost, not environmental impact or carbon footprint. ✗ (b) Reliability focuses on the ability to recover from failures and dynamically meet demand through redundancy and fault tolerance — it has no sustainability or environmental mandate. ✗ (d) Operational Excellence focuses on automating and improving processes, running and monitoring systems, and refining operational procedures — it addresses how teams operate, not the environmental sustainability of the underlying workloads.",
+    explanation: "The Sustainability pillar (added in 2021) focuses on minimising the environmental impacts of running cloud workloads, including energy consumption and carbon footprint. ✓ (c) The Sustainability pillar, added as the sixth pillar of the AWS Well-Architected Framework in 2021, directly addresses minimising energy consumption, reducing waste, and cutting the carbon footprint of cloud workloads — exactly what AnyCompany Industries\' board is asking about. ✗ (a) Cost Optimization focuses on eliminating unnecessary spending and right-sizing resources for financial efficiency — while reducing resources can indirectly lower energy use, the pillar\'s lens is cost, not environmental impact or carbon footprint. ✗ (b) Reliability focuses on the ability to recover from failures and dynamically meet demand through redundancy and fault tolerance — it has no sustainability or environmental mandate. ✗ (d) Operational Excellence focuses on automating and improving processes, running and monitoring systems, and refining operational procedures — it addresses how teams operate, not the environmental sustainability of the underlying workloads.",
     docUrl: 'https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/welcome.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -436,7 +436,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
   },
   {
     id: 'clf-c02-cc-028',
-    text: "HDFC Bank's digital innovation lab wants to shorten the time from idea to production deployment. Previously, spinning up a test environment for a new mobile banking feature took six weeks due to hardware procurement. After migrating to AWS, a developer can provision a complete environment in minutes. Which cloud benefit most directly enabled this change?",
+    text: "AnyCompany Bank's digital innovation lab wants to shorten the time from idea to production deployment. Previously, spinning up a test environment for a new mobile banking feature took six weeks due to hardware procurement. After migrating to AWS, a developer can provision a complete environment in minutes. Which cloud benefit most directly enabled this change?",
     options: [
       { id: 'a', text: 'Massive economies of scale, which lower the per-unit cost of compute as AWS grows its global infrastructure' },
       { id: 'b', text: 'Increased speed and agility, which lets teams access new IT resources in minutes rather than weeks and iterate faster' },
@@ -444,7 +444,7 @@ export const clf02CloudConceptsQuestions: Question[] = [
       { id: 'd', text: 'Go global in minutes, which allows the bank to deploy the feature to AWS Regions around the world instantly' },
     ],
     correctOptionId: 'b',
-    explanation: "Cloud computing increases speed and agility — new IT resources are available in minutes rather than weeks, allowing teams to experiment and innovate faster. ✓ (b) Speed and agility is the direct benefit — AWS allows HDFC Bank\'s developers to provision a complete test environment in minutes instead of waiting six weeks for hardware procurement, dramatically accelerating the idea-to-production cycle. ✗ (a) Economies of scale lower the per-unit cost of AWS services as AWS grows — this is a cost benefit, not the explanation for why environment provisioning dropped from six weeks to minutes. ✗ (c) Eliminating data center management costs frees the team from physical hardware operations — this is a financial and operational benefit, but it does not directly explain the time reduction from six weeks to minutes; on-premises teams can still provision slowly even without data center costs. ✗ (d) \"Go global in minutes\" refers to the ability to deploy to AWS Regions worldwide for geographic reach and latency reduction — the scenario describes a domestic test environment provisioning speed improvement, not international multi-Region deployment.",
+    explanation: "Cloud computing increases speed and agility — new IT resources are available in minutes rather than weeks, allowing teams to experiment and innovate faster. ✓ (b) Speed and agility is the direct benefit — AWS allows AnyCompany Bank\'s developers to provision a complete test environment in minutes instead of waiting six weeks for hardware procurement, dramatically accelerating the idea-to-production cycle. ✗ (a) Economies of scale lower the per-unit cost of AWS services as AWS grows — this is a cost benefit, not the explanation for why environment provisioning dropped from six weeks to minutes. ✗ (c) Eliminating data center management costs frees the team from physical hardware operations — this is a financial and operational benefit, but it does not directly explain the time reduction from six weeks to minutes; on-premises teams can still provision slowly even without data center costs. ✗ (d) \"Go global in minutes\" refers to the ability to deploy to AWS Regions worldwide for geographic reach and latency reduction — the scenario describes a domestic test environment provisioning speed improvement, not international multi-Region deployment.",
     docUrl: 'https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -504,7 +504,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-003',
-    text: "HDFC Bank's cloud operations team is concerned about unauthorised access attempts and unusual activity within their AWS environment. They want a service that continuously analyses CloudTrail logs, VPC Flow Logs, and DNS logs using machine learning — without requiring them to build or maintain the detection infrastructure themselves. Which AWS service fits this need?",
+    text: "AnyCompany Bank's cloud operations team is concerned about unauthorised access attempts and unusual activity within their AWS environment. They want a service that continuously analyses CloudTrail logs, VPC Flow Logs, and DNS logs using machine learning — without requiring them to build or maintain the detection infrastructure themselves. Which AWS service fits this need?",
     options: [
       { id: 'a', text: 'Amazon Inspector, which scans EC2 instances and container images for software vulnerabilities' },
       { id: 'b', text: 'AWS Shield, which defends against volumetric DDoS attacks at the network edge' },
@@ -520,12 +520,12 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-004',
-    text: "Adani Enterprises is migrating industrial workloads to AWS and their CISO wants to understand the division of security duties. Under the AWS Shared Responsibility Model, which of the following tasks does AWS — not Adani — own?",
+    text: "AnyCompany Industries is migrating industrial workloads to AWS and their CISO wants to understand the division of security duties. Under the AWS Shared Responsibility Model, which of the following tasks does AWS — not AnyCompany Industries — own?",
     options: [
-      { id: 'a', text: 'Creating and managing IAM users, passwords, and access key rotation for Adani employees' },
-      { id: 'b', text: 'Choosing whether to enable server-side encryption on Adani\'s S3 buckets' },
+      { id: 'a', text: 'Creating and managing IAM users, passwords, and access key rotation for AnyCompany Industries employees' },
+      { id: 'b', text: 'Choosing whether to enable server-side encryption on AnyCompany Industries\' S3 buckets' },
       { id: 'c', text: 'Physical security of the data centres, hardware, and global network infrastructure that underpin all AWS services' },
-      { id: 'd', text: 'Configuring security groups and NACLs to protect Adani\'s workloads inside their VPC' },
+      { id: 'd', text: 'Configuring security groups and NACLs to protect AnyCompany Industries\' workloads inside their VPC' },
     ],
     correctOptionId: 'c',
     explanation: "AWS is responsible for \"security of the cloud\" — this includes physical security of data centers, hardware, network infrastructure, and the hypervisor. Customers manage their data, access control, and application security. ✓ (c) AWS owns the physical data centre facilities, hardware lifecycle, and the global network fabric — customers have no access or responsibility for these layers. ✗ (a) Creating and managing IAM users, passwords, and access key rotation falls entirely under the customer\'s responsibility as part of managing \"security in the cloud.\" ✗ (b) Choosing whether to enable server-side encryption on S3 buckets is a customer configuration decision — AWS provides the capability but does not make that choice for the customer. ✗ (d) Configuring security groups and NACLs to control traffic within a VPC is explicitly the customer\'s responsibility for protecting their workloads.",
@@ -600,7 +600,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-009',
-    text: "Tata Motors recently launched a connected-car platform on AWS. Their cloud architect wants to understand what baseline DDoS protection AWS provides to all customers on services like Elastic Load Balancing and Amazon CloudFront — without any additional configuration or cost. Which service delivers this protection automatically?",
+    text: "AnyCompany Motors recently launched a connected-car platform on AWS. Their cloud architect wants to understand what baseline DDoS protection AWS provides to all customers on services like Elastic Load Balancing and Amazon CloudFront — without any additional configuration or cost. Which service delivers this protection automatically?",
     options: [
       { id: 'a', text: 'AWS WAF, which requires customers to write rules and is billed separately' },
       { id: 'b', text: 'AWS Shield Standard, which is automatically applied to all AWS customers at no additional charge and defends against the most common network and transport layer DDoS attacks' },
@@ -616,7 +616,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-010',
-    text: "HDFC Bank's DevOps team manages dozens of microservices, each connecting to a separate RDS instance with unique credentials. The security team has flagged that these database passwords are hardcoded in application config files and have not been rotated in over a year. The team needs a solution that stores these credentials securely and automatically rotates them on a schedule without any application downtime. Which AWS service is designed for this?",
+    text: "AnyCompany Bank's DevOps team manages dozens of microservices, each connecting to a separate RDS instance with unique credentials. The security team has flagged that these database passwords are hardcoded in application config files and have not been rotated in over a year. The team needs a solution that stores these credentials securely and automatically rotates them on a schedule without any application downtime. Which AWS service is designed for this?",
     options: [
       { id: 'a', text: 'AWS KMS, which manages encryption keys but does not store or rotate application credentials' },
       { id: 'b', text: 'AWS Secrets Manager, which stores, manages, and automatically rotates secrets like database passwords on a configurable schedule' },
@@ -648,7 +648,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-012',
-    text: "Adani Enterprises' compliance team needs to prove to regulators that their AWS S3 buckets and EC2 security groups have maintained approved configurations over the past 12 months, and that any drift from those approved states triggered an alert at the time. Which AWS service continuously records resource configuration changes and evaluates them against defined rules?",
+    text: "AnyCompany Industries' compliance team needs to prove to regulators that their AWS S3 buckets and EC2 security groups have maintained approved configurations over the past 12 months, and that any drift from those approved states triggered an alert at the time. Which AWS service continuously records resource configuration changes and evaluates them against defined rules?",
     options: [
       { id: 'a', text: 'AWS CloudTrail, which records API calls but does not evaluate configurations against compliance rules' },
       { id: 'b', text: 'Amazon CloudWatch, which monitors performance metrics and logs but does not assess resource configurations' },
@@ -728,7 +728,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-017',
-    text: "HDFC Bank runs its core banking database on Amazon RDS. The bank's cloud team is mapping responsibilities for their compliance review. Their vendor management team asks which security tasks remain the bank's responsibility even though RDS is a managed service. Under the AWS Shared Responsibility Model, which of the following does HDFC Bank remain responsible for when using Amazon RDS?",
+    text: "AnyCompany Bank runs its core banking database on Amazon RDS. The bank's cloud team is mapping responsibilities for their compliance review. Their vendor management team asks which security tasks remain the bank's responsibility even though RDS is a managed service. Under the AWS Shared Responsibility Model, which of the following does AnyCompany Bank remain responsible for when using Amazon RDS?",
     options: [
       { id: 'a', text: 'Applying database engine patches and minor version upgrades, which AWS handles automatically for managed RDS' },
       { id: 'b', text: 'Provisioning and maintaining the physical EC2 hosts that RDS instances run on, which AWS manages entirely' },
@@ -744,7 +744,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-018',
-    text: "Tata Motors' cloud security team recently discovered that an S3 bucket containing supplier contracts had been accidentally made accessible to a third-party AWS account outside their organisation. They want a service that proactively identifies which of their AWS resources — S3 buckets, IAM roles, KMS keys — are currently shared with external entities outside their account or AWS Organisation. Which IAM feature does this?",
+    text: "AnyCompany Motors' cloud security team recently discovered that an S3 bucket containing supplier contracts had been accidentally made accessible to a third-party AWS account outside their organisation. They want a service that proactively identifies which of their AWS resources — S3 buckets, IAM roles, KMS keys — are currently shared with external entities outside their account or AWS Organisation. Which IAM feature does this?",
     options: [
       { id: 'a', text: 'CloudWatch Metrics, which monitors resource utilisation but does not identify cross-account access policies' },
       { id: 'b', text: 'IAM Access Analyzer, which continuously analyses resource policies and identifies resources accessible to external principals outside your account or organisation' },
@@ -760,7 +760,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-019',
-    text: "Adani Enterprises' network security team is designing a multi-tier VPC for a power plant monitoring application. They want a firewall control at the subnet level that explicitly evaluates both inbound and outbound traffic and does not automatically allow return traffic from permitted sessions. Which AWS VPC security control matches these requirements?",
+    text: "AnyCompany Industries' network security team is designing a multi-tier VPC for a power plant monitoring application. They want a firewall control at the subnet level that explicitly evaluates both inbound and outbound traffic and does not automatically allow return traffic from permitted sessions. Which AWS VPC security control matches these requirements?",
     options: [
       { id: 'a', text: 'Security Groups, which are stateful — they automatically allow return traffic for permitted connections and operate at the instance level' },
       { id: 'b', text: 'Network Access Control Lists (NACLs), which are stateless subnet-level firewalls that require explicit rules for both inbound and outbound traffic' },
@@ -824,7 +824,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-023',
-    text: "Tata Motors' platform team maintains a shared S3 bucket that multiple AWS accounts — including a supplier account — need to read from. Rather than managing permissions in each account separately, they want to attach a policy directly to the S3 bucket itself that specifies exactly which principals from which accounts are allowed access. What type of IAM policy enables this approach?",
+    text: "AnyCompany Motors' platform team maintains a shared S3 bucket that multiple AWS accounts — including a supplier account — need to read from. Rather than managing permissions in each account separately, they want to attach a policy directly to the S3 bucket itself that specifies exactly which principals from which accounts are allowed access. What type of IAM policy enables this approach?",
     options: [
       { id: 'a', text: 'An identity-based policy, which is attached to IAM principals (users, groups, roles) and specifies what actions they can take' },
       { id: 'b', text: 'A resource-based policy, which is attached directly to a resource like an S3 bucket and specifies which principals can access it — supporting cross-account access' },
@@ -840,7 +840,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-024',
-    text: "Adani Enterprises manages a large AWS Organisation with separate accounts for production, development, and shared services. Their CISO wants to ensure that no team in any account — even those with AdministratorAccess — can enable services in unapproved AWS regions or launch resources prohibited by corporate policy. Which AWS feature gives the CISO the ability to set these organisation-wide permission guardrails?",
+    text: "AnyCompany Industries manages a large AWS Organisation with separate accounts for production, development, and shared services. Their CISO wants to ensure that no team in any account — even those with AdministratorAccess — can enable services in unapproved AWS regions or launch resources prohibited by corporate policy. Which AWS feature gives the CISO the ability to set these organisation-wide permission guardrails?",
     options: [
       { id: 'a', text: 'IAM Permission Boundaries, which cap permissions for individual IAM entities but only within a single account' },
       { id: 'b', text: 'Service Control Policies (SCPs), which can be applied to AWS Organisation accounts or OUs to define the maximum available permissions across the entire organisation' },
@@ -872,7 +872,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-026',
-    text: "HDFC Bank's security operations centre wants to receive immediate alerts on their Slack channel and email whenever Amazon GuardDuty raises a high-severity finding — such as a compromised EC2 instance communicating with a known command-and-control server. Which combination of AWS services enables GuardDuty to send these real-time notifications?",
+    text: "AnyCompany Bank's security operations centre wants to receive immediate alerts on their Slack channel and email whenever Amazon GuardDuty raises a high-severity finding — such as a compromised EC2 instance communicating with a known command-and-control server. Which combination of AWS services enables GuardDuty to send these real-time notifications?",
     options: [
       { id: 'a', text: 'AWS Config publishes rule violations to an SNS topic, which can then route notifications to email or a webhook' },
       { id: 'b', text: 'Amazon CloudWatch Events (EventBridge) can be configured separately to poll for GuardDuty findings' },
@@ -904,7 +904,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-028',
-    text: "Tata Motors is exploring a partnership with a US-based hospital chain to build a connected health monitoring platform for employees. The hospital's legal team flags that any application storing or transmitting patient health records must comply with a specific US federal regulation governing the protection of protected health information (PHI). Which compliance standard applies to this use case, and for which AWS is a compliance-eligible environment available?",
+    text: "AnyCompany Motors is exploring a partnership with a US-based hospital chain to build a connected health monitoring platform for employees. The hospital's legal team flags that any application storing or transmitting patient health records must comply with a specific US federal regulation governing the protection of protected health information (PHI). Which compliance standard applies to this use case, and for which AWS is a compliance-eligible environment available?",
     options: [
       { id: 'a', text: 'PCI DSS, which governs the secure handling of payment card data, not patient health information' },
       { id: 'b', text: 'HIPAA (Health Insurance Portability and Accountability Act), which governs the protection of PHI; AWS provides a list of HIPAA-eligible services and will sign a Business Associate Agreement (BAA)' },
@@ -968,7 +968,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-032',
-    text: "Adani Enterprises' information security policy requires that all S3 buckets across their AWS Organisation must have server-side encryption enabled at all times. After a recent audit, the team discovered several buckets created by development teams without encryption. The CISO wants a solution that continuously checks every S3 bucket and flags non-compliant ones automatically — not just at the time of creation. Which AWS service should they use?",
+    text: "AnyCompany Industries' information security policy requires that all S3 buckets across their AWS Organisation must have server-side encryption enabled at all times. After a recent audit, the team discovered several buckets created by development teams without encryption. The CISO wants a solution that continuously checks every S3 bucket and flags non-compliant ones automatically — not just at the time of creation. Which AWS service should they use?",
     options: [
       { id: 'a', text: 'AWS CloudTrail, which records the API call when a bucket is created but does not continuously evaluate whether encryption remains enabled' },
       { id: 'b', text: 'Amazon GuardDuty, which analyses threat patterns in logs but does not evaluate resource configuration compliance rules' },
@@ -1000,7 +1000,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-034',
-    text: "Tata Motors runs a large fleet of EC2 instances for real-time vehicle telemetry processing. Their cloud security team is mapping responsibilities under the AWS Shared Responsibility Model. A vendor audit asks them to confirm which security tasks remain Tata Motors' responsibility for these EC2 instances — even though AWS manages the underlying hardware, hypervisor, and network infrastructure. Which of the following is Tata Motors' responsibility?",
+    text: "AnyCompany Motors runs a large fleet of EC2 instances for real-time vehicle telemetry processing. Their cloud security team is mapping responsibilities under the AWS Shared Responsibility Model. A vendor audit asks them to confirm which security tasks remain AnyCompany Motors' responsibility for these EC2 instances — even though AWS manages the underlying hardware, hypervisor, and network infrastructure. Which of the following is AnyCompany Motors' responsibility?",
     options: [
       { id: 'a', text: 'Replacing failed physical host hardware in the AWS data centre, which AWS handles entirely as part of infrastructure management' },
       { id: 'b', text: 'Patching and securing the hypervisor layer that isolates EC2 instances from one another, which AWS manages as part of the virtualisation layer' },
@@ -1008,7 +1008,7 @@ export const clf02SecurityQuestions: Question[] = [
       { id: 'd', text: 'Securing the physical network cabling and switches inside the AWS data centre, which AWS owns and manages' },
     ],
     correctOptionId: 'c',
-    explanation: "For EC2, customers are responsible for the guest OS (including patches), application software, security groups, firewalls, and data. AWS manages everything below the hypervisor. ✓ (c) For EC2, Tata Motors owns the guest operating system layer and above — including OS patches, security group rules, application configuration, IAM policies, and data encryption decisions — while AWS owns everything from the hypervisor down. ✗ (a) Physical host hardware replacement and data centre operations are entirely AWS\'s responsibility — customers have no physical access to or responsibility for the hardware their EC2 instances run on. ✗ (b) AWS manages and patches the hypervisor (Nitro system) that provides isolation between EC2 instances — customers have no access to or responsibility for the virtualisation layer beneath the guest OS. ✗ (d) The physical network infrastructure inside AWS data centres — cabling, switches, routers — is exclusively AWS\'s responsibility as part of \"security of the cloud\" in the Shared Responsibility Model.",
+    explanation: "For EC2, customers are responsible for the guest OS (including patches), application software, security groups, firewalls, and data. AWS manages everything below the hypervisor. ✓ (c) For EC2, AnyCompany Motors owns the guest operating system layer and above — including OS patches, security group rules, application configuration, IAM policies, and data encryption decisions — while AWS owns everything from the hypervisor down. ✗ (a) Physical host hardware replacement and data centre operations are entirely AWS\'s responsibility — customers have no physical access to or responsibility for the hardware their EC2 instances run on. ✗ (b) AWS manages and patches the hypervisor (Nitro system) that provides isolation between EC2 instances — customers have no access to or responsibility for the virtualisation layer beneath the guest OS. ✗ (d) The physical network infrastructure inside AWS data centres — cabling, switches, routers — is exclusively AWS\'s responsibility as part of \"security of the cloud\" in the Shared Responsibility Model.",
     docUrl: 'https://aws.amazon.com/compliance/shared-responsibility-model/',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -1016,7 +1016,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-035',
-    text: "HDFC Bank operates a large AWS Organisation with accounts for retail banking, corporate banking, and technology operations. Their cloud governance team wants to apply a single Service Control Policy (SCP) to all retail banking accounts simultaneously and a separate SCP to all technology accounts, without affecting accounts in other divisions. Which AWS Organisations feature allows them to group accounts for targeted policy application?",
+    text: "AnyCompany Bank operates a large AWS Organisation with accounts for retail banking, corporate banking, and technology operations. Their cloud governance team wants to apply a single Service Control Policy (SCP) to all retail banking accounts simultaneously and a separate SCP to all technology accounts, without affecting accounts in other divisions. Which AWS Organisations feature allows them to group accounts for targeted policy application?",
     options: [
       { id: 'a', text: 'AWS Resource Groups, which organise resources by tag within a single account rather than grouping accounts within an organisation' },
       { id: 'b', text: 'Organizational Units (OUs), which allow accounts to be grouped in a hierarchy within AWS Organizations so that SCPs can be applied to the entire OU at once' },
@@ -1024,7 +1024,7 @@ export const clf02SecurityQuestions: Question[] = [
       { id: 'd', text: 'AWS Landing Zone, which is a framework for setting up a multi-account environment but is not a grouping mechanism within AWS Organizations' },
     ],
     correctOptionId: 'b',
-    explanation: "Organizational Units (OUs) allow you to group AWS accounts in a hierarchy within AWS Organizations. You can apply Service Control Policies (SCPs) to OUs to manage permissions across multiple accounts. ✓ (b) OUs are the native account grouping construct in AWS Organizations — HDFC Bank can create a \"Retail Banking\" OU and a \"Technology\" OU, then apply targeted SCPs to each OU independently without affecting other divisions. ✗ (a) AWS Resource Groups organise AWS resources (EC2 instances, RDS databases, etc.) within a single account using tags — they are an operational management tool, not a mechanism for grouping accounts within an AWS Organisation hierarchy. ✗ (c) AWS Control Tower uses OUs internally to set up its landing zone and apply guardrails, but Control Tower itself is the automation layer — the underlying account grouping mechanism that SCPs target is the OU, not Control Tower. ✗ (d) AWS Landing Zone is a solution framework (now largely superseded by Control Tower) for setting up a multi-account environment — it is not a native AWS Organizations construct that can be targeted with SCPs.",
+    explanation: "Organizational Units (OUs) allow you to group AWS accounts in a hierarchy within AWS Organizations. You can apply Service Control Policies (SCPs) to OUs to manage permissions across multiple accounts. ✓ (b) OUs are the native account grouping construct in AWS Organizations — AnyCompany Bank can create a \"Retail Banking\" OU and a \"Technology\" OU, then apply targeted SCPs to each OU independently without affecting other divisions. ✗ (a) AWS Resource Groups organise AWS resources (EC2 instances, RDS databases, etc.) within a single account using tags — they are an operational management tool, not a mechanism for grouping accounts within an AWS Organisation hierarchy. ✗ (c) AWS Control Tower uses OUs internally to set up its landing zone and apply guardrails, but Control Tower itself is the automation layer — the underlying account grouping mechanism that SCPs target is the OU, not Control Tower. ✗ (d) AWS Landing Zone is a solution framework (now largely superseded by Control Tower) for setting up a multi-account environment — it is not a native AWS Organizations construct that can be targeted with SCPs.",
     docUrl: 'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -1064,7 +1064,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-038',
-    text: "Adani Enterprises is setting up a new multi-account AWS environment for 15 business units. Their cloud governance team wants a service that automates the creation of a secure, compliant multi-account landing zone — complete with pre-configured guardrails, account vending, and a centralised log archive — so that every new account starts from a security-approved baseline. Which AWS service is specifically designed for this automated landing zone setup?",
+    text: "AnyCompany Industries is setting up a new multi-account AWS environment for 15 business units. Their cloud governance team wants a service that automates the creation of a secure, compliant multi-account landing zone — complete with pre-configured guardrails, account vending, and a centralised log archive — so that every new account starts from a security-approved baseline. Which AWS service is specifically designed for this automated landing zone setup?",
     options: [
       { id: 'a', text: 'AWS Security Hub, which aggregates security findings across accounts but does not automate multi-account environment provisioning' },
       { id: 'b', text: 'AWS Organizations, which provides the underlying account hierarchy and billing consolidation but does not automate landing zone setup or guardrail configuration' },
@@ -1080,7 +1080,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-039',
-    text: "Tata Motors is deploying a connected vehicle platform where sensor data from cars is transmitted to AWS over public internet connections. Their security team wants to ensure that all data moving between the vehicles' edge devices and AWS services cannot be intercepted or tampered with during transmission. Which type of encryption protects data in this scenario?",
+    text: "AnyCompany Motors is deploying a connected vehicle platform where sensor data from cars is transmitted to AWS over public internet connections. Their security team wants to ensure that all data moving between the vehicles' edge devices and AWS services cannot be intercepted or tampered with during transmission. Which type of encryption protects data in this scenario?",
     options: [
       { id: 'a', text: 'Encryption at rest, which protects data stored on disk in services like S3 or RDS but does not protect data actively moving over a network' },
       { id: 'b', text: 'Encryption in transit, which uses SSL/TLS to protect data as it travels between clients and servers or between AWS services over a network' },
@@ -1112,7 +1112,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-041',
-    text: "HDFC Bank's SOC team is reviewing CloudTrail logs and notices that API calls are being made from IP addresses in a geography where the bank has no employees, at times outside business hours, using valid IAM credentials. They want an AWS service that automatically analyses these patterns — including unusual login locations, API calls from known malicious IPs, and potential credential theft — and raises a finding without requiring the SOC team to write detection logic. Which service does this?",
+    text: "AnyCompany Bank's SOC team is reviewing CloudTrail logs and notices that API calls are being made from IP addresses in a geography where the bank has no employees, at times outside business hours, using valid IAM credentials. They want an AWS service that automatically analyses these patterns — including unusual login locations, API calls from known malicious IPs, and potential credential theft — and raises a finding without requiring the SOC team to write detection logic. Which service does this?",
     options: [
       { id: 'a', text: 'Amazon Inspector, which scans EC2 instances for software vulnerabilities rather than analysing IAM activity patterns for credential compromise' },
       { id: 'b', text: 'Amazon GuardDuty, which continuously analyses CloudTrail logs to detect anomalous IAM activity such as logins from unusual locations, API calls from malicious IPs, and credential theft patterns' },
@@ -1128,7 +1128,7 @@ export const clf02SecurityQuestions: Question[] = [
   },
   {
     id: 'clf-c02-sec-042',
-    text: "Adani Enterprises has 3,000 employees across multiple business units, each needing access to a mix of AWS accounts and SaaS applications like Salesforce and Workday. Managing separate credentials for each system has become operationally unsustainable. The IT team wants to implement a solution where each employee logs in once using their corporate Active Directory credentials and gains access to all authorised AWS accounts and business applications from a single dashboard. Which AWS service enables this?",
+    text: "AnyCompany Industries has 3,000 employees across multiple business units, each needing access to a mix of AWS accounts and SaaS applications like Salesforce and Workday. Managing separate credentials for each system has become operationally unsustainable. The IT team wants to implement a solution where each employee logs in once using their corporate Active Directory credentials and gains access to all authorised AWS accounts and business applications from a single dashboard. Which AWS service enables this?",
     options: [
       { id: 'a', text: 'Amazon Cognito, which manages identity for customer-facing applications and mobile apps, not internal workforce single sign-on across AWS accounts' },
       { id: 'b', text: 'AWS IAM Identity Center (formerly AWS Single Sign-On), which provides centralised SSO access to multiple AWS accounts and cloud applications from a single portal, integrating with Active Directory or other identity providers' },
@@ -1180,7 +1180,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-003',
-    text: "Zomato's food delivery platform processes millions of order status updates per day. Each order record is a JSON document with a flexible schema (different fields for restaurants vs. cloud kitchens), and the system must respond to queries in single-digit milliseconds regardless of traffic spikes. Which AWS database service is purpose-built for this workload?",
+    text: "AnyCompany Eats's food delivery platform processes millions of order status updates per day. Each order record is a JSON document with a flexible schema (different fields for restaurants vs. cloud kitchens), and the system must respond to queries in single-digit milliseconds regardless of traffic spikes. Which AWS database service is purpose-built for this workload?",
     options: [
       { id: 'a', text: 'Amazon DynamoDB — fully managed NoSQL database delivering single-digit millisecond latency at any scale' },
       { id: 'b', text: 'Amazon RDS for MySQL — managed relational database with strong consistency guarantees' },
@@ -1260,7 +1260,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-008',
-    text: "Zomato's restaurant search API runs across six EC2 instances spread across two Availability Zones. During the dinner rush, any single instance receiving 100% of the traffic would time out. The team needs incoming HTTP requests automatically spread across all healthy instances. Which AWS service distributes incoming traffic across multiple EC2 instances to ensure high availability?",
+    text: "AnyCompany Eats's restaurant search API runs across six EC2 instances spread across two Availability Zones. During the dinner rush, any single instance receiving 100% of the traffic would time out. The team needs incoming HTTP requests automatically spread across all healthy instances. Which AWS service distributes incoming traffic across multiple EC2 instances to ensure high availability?",
     options: [
       { id: 'a', text: 'Amazon Route 53 — DNS service that routes users to different endpoints based on routing policies' },
       { id: 'b', text: 'Elastic Load Balancing (ELB) — automatically distributes incoming traffic across multiple targets' },
@@ -1308,7 +1308,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-011',
-    text: "Adani Enterprises stores environmental compliance reports in S3. A junior engineer accidentally deleted a critical report that was overwritten by a newer version. The team needs a way to recover previous versions of any object, preventing permanent loss from accidental deletes or overwrites. Which S3 feature keeps every version of an object in the same bucket and uses delete markers to allow recovery?",
+    text: "AnyCompany Industries stores environmental compliance reports in S3. A junior engineer accidentally deleted a critical report that was overwritten by a newer version. The team needs a way to recover previous versions of any object, preventing permanent loss from accidental deletes or overwrites. Which S3 feature keeps every version of an object in the same bucket and uses delete markers to allow recovery?",
     options: [
       { id: 'a', text: 'S3 Replication — copies objects to a destination bucket in the same or different region' },
       { id: 'b', text: 'S3 Versioning — preserves all versions of an object so any previous state can be restored' },
@@ -1324,7 +1324,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-012',
-    text: "Zomato is launching operations in three new countries and needs to register new domain names, route users to the nearest regional API endpoint, and automatically stop sending traffic to any endpoint that fails health checks. Which AWS service provides all three capabilities — domain registration, DNS routing, and health checking?",
+    text: "AnyCompany Eats is launching operations in three new countries and needs to register new domain names, route users to the nearest regional API endpoint, and automatically stop sending traffic to any endpoint that fails health checks. Which AWS service provides all three capabilities — domain registration, DNS routing, and health checking?",
     options: [
       { id: 'a', text: 'Amazon CloudFront — CDN that caches content at edge locations to reduce latency for end users' },
       { id: 'b', text: 'AWS Direct Connect — dedicated private network connection from on-premises to AWS' },
@@ -1332,7 +1332,7 @@ const clf02TechPart1: Question[] = [
       { id: 'd', text: 'Amazon VPC — logically isolated virtual network for securely running AWS resources' },
     ],
     correctOptionId: 'c',
-    explanation: "Amazon Route 53 is a highly available and scalable cloud DNS service. It provides domain registration, DNS routing, and health checking of resources. ✓ (c) Route 53 allows Zomato to register new country-specific domains, apply latency-based routing policies to direct users to the nearest regional endpoint, and automatically remove unhealthy endpoints from DNS resolution using health checks. ✗ (a) CloudFront is a content delivery network that caches and serves content from edge locations close to users — it does not provide domain registration or DNS routing policies, and it relies on Route 53 or another DNS service for name resolution. ✗ (b) AWS Direct Connect establishes a dedicated private network circuit between an on-premises data center and AWS — it is a network connectivity service and has no capabilities related to domain registration, DNS routing policies, or endpoint health checks. ✗ (d) Amazon VPC creates a logically isolated virtual network for AWS resources — it handles IP addressing and routing within AWS but does not provide public domain registration, global DNS routing, or endpoint health checking.",
+    explanation: "Amazon Route 53 is a highly available and scalable cloud DNS service. It provides domain registration, DNS routing, and health checking of resources. ✓ (c) Route 53 allows AnyCompany Eats to register new country-specific domains, apply latency-based routing policies to direct users to the nearest regional endpoint, and automatically remove unhealthy endpoints from DNS resolution using health checks. ✗ (a) CloudFront is a content delivery network that caches and serves content from edge locations close to users — it does not provide domain registration or DNS routing policies, and it relies on Route 53 or another DNS service for name resolution. ✗ (b) AWS Direct Connect establishes a dedicated private network circuit between an on-premises data center and AWS — it is a network connectivity service and has no capabilities related to domain registration, DNS routing policies, or endpoint health checks. ✗ (d) Amazon VPC creates a logically isolated virtual network for AWS resources — it handles IP addressing and routing within AWS but does not provide public domain registration, global DNS routing, or endpoint health checking.",
     docUrl: 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html',
     difficulty: 'beginner',
     category: 'clf-c02',
@@ -1372,7 +1372,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-015',
-    text: "Adani Enterprises is deploying a new industrial IoT platform on AWS. The security team requires that all EC2 instances, databases, and internal services run in a logically isolated network — with complete control over IP address ranges, subnets, and routing — so they are never reachable from the public internet unless explicitly allowed. Which AWS service provisions this isolated virtual network?",
+    text: "AnyCompany Industries is deploying a new industrial IoT platform on AWS. The security team requires that all EC2 instances, databases, and internal services run in a logically isolated network — with complete control over IP address ranges, subnets, and routing — so they are never reachable from the public internet unless explicitly allowed. Which AWS service provisions this isolated virtual network?",
     options: [
       { id: 'a', text: 'AWS Direct Connect — dedicated private network link between an on-premises data center and AWS' },
       { id: 'b', text: 'Amazon VPC (Virtual Private Cloud) — logically isolated virtual network with full control over networking' },
@@ -1436,7 +1436,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-019',
-    text: "Adani Enterprises wants to build a predictive maintenance model that forecasts equipment failures at its power plants. The data science team needs a managed platform to prepare training data in Jupyter notebooks, train the model on GPU instances, and then deploy it as a real-time inference endpoint — all without managing the underlying infrastructure. Which AWS service provides this end-to-end machine learning platform?",
+    text: "AnyCompany Industries wants to build a predictive maintenance model that forecasts equipment failures at its power plants. The data science team needs a managed platform to prepare training data in Jupyter notebooks, train the model on GPU instances, and then deploy it as a real-time inference endpoint — all without managing the underlying infrastructure. Which AWS service provides this end-to-end machine learning platform?",
     options: [
       { id: 'a', text: 'Amazon Rekognition — pre-built computer vision API for image and video analysis' },
       { id: 'b', text: 'Amazon Comprehend — managed NLP service for extracting insights from text documents' },
@@ -1452,7 +1452,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-020',
-    text: "Zomato wants to alert its operations team by SMS whenever a restaurant's order acceptance rate drops below 80%, and simultaneously notify the restaurant's mobile app via push notification. The alerting system must fan out a single event to multiple subscriber types — email, SMS, and mobile push — in parallel. Which AWS service enables this publish/subscribe fan-out notification pattern?",
+    text: "AnyCompany Eats wants to alert its operations team by SMS whenever a restaurant's order acceptance rate drops below 80%, and simultaneously notify the restaurant's mobile app via push notification. The alerting system must fan out a single event to multiple subscriber types — email, SMS, and mobile push — in parallel. Which AWS service enables this publish/subscribe fan-out notification pattern?",
     options: [
       { id: 'a', text: 'Amazon SQS — managed message queue for decoupling producer and consumer services' },
       { id: 'b', text: 'Amazon SNS (Simple Notification Service) — managed pub/sub service delivering messages to email, SMS, push, and more' },
@@ -1500,7 +1500,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-023',
-    text: "Zomato's backend team wants to ship a new restaurant analytics web application in two weeks. The developers are comfortable writing Python code but do not want to configure load balancers, set up auto scaling groups, manage OS patches, or monitor server health. They just want to upload their code and have it run. Which AWS service handles all the underlying infrastructure automatically so they can focus only on their code?",
+    text: "AnyCompany Eats's backend team wants to ship a new restaurant analytics web application in two weeks. The developers are comfortable writing Python code but do not want to configure load balancers, set up auto scaling groups, manage OS patches, or monitor server health. They just want to upload their code and have it run. Which AWS service handles all the underlying infrastructure automatically so they can focus only on their code?",
     options: [
       { id: 'a', text: 'Launch an Amazon EC2 instance and manually install the Python application and web server' },
       { id: 'b', text: 'Deploy via AWS Elastic Beanstalk — upload code and the service provisions EC2, load balancers, and auto scaling automatically' },
@@ -1516,7 +1516,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-024',
-    text: "Adani Enterprises collects sensor readings from 500 industrial machines every second. After 90 days, this raw data is moved to a data warehouse where analysts run complex SQL queries joining years of production data to identify efficiency trends. The warehouse holds 3 petabytes and must handle queries that scan hundreds of billions of rows. Which AWS service is designed for this petabyte-scale analytical workload?",
+    text: "AnyCompany Industries collects sensor readings from 500 industrial machines every second. After 90 days, this raw data is moved to a data warehouse where analysts run complex SQL queries joining years of production data to identify efficiency trends. The warehouse holds 3 petabytes and must handle queries that scan hundreds of billions of rows. Which AWS service is designed for this petabyte-scale analytical workload?",
     options: [
       { id: 'a', text: 'Amazon RDS for PostgreSQL — managed relational database for transactional OLTP workloads' },
       { id: 'b', text: 'Amazon DynamoDB — NoSQL key-value store optimised for single-digit millisecond reads and writes' },
@@ -1564,7 +1564,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-027',
-    text: "Zomato wants to add a voice-over feature to its restaurant menu pages — converting the chef's written descriptions into audio so visually impaired users can listen to dish details in multiple languages and regional accents. The team needs a managed service that turns text into natural-sounding speech without building a custom TTS model. Which AWS service converts text to lifelike speech using deep learning?",
+    text: "AnyCompany Eats wants to add a voice-over feature to its restaurant menu pages — converting the chef's written descriptions into audio so visually impaired users can listen to dish details in multiple languages and regional accents. The team needs a managed service that turns text into natural-sounding speech without building a custom TTS model. Which AWS service converts text to lifelike speech using deep learning?",
     options: [
       { id: 'a', text: 'Amazon Transcribe — converts audio speech into written text for transcription use cases' },
       { id: 'b', text: 'Amazon Translate — translates written text from one language to another automatically' },
@@ -1628,7 +1628,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-031',
-    text: "Zomato's engineering team wants to migrate its order routing service from EC2 to containers. However, the team does not want to provision or manage EC2 instances — they want to define only the CPU and memory each container needs and let AWS handle the underlying compute. Which compute option runs containers without requiring any EC2 instance management?",
+    text: "AnyCompany Eats's engineering team wants to migrate its order routing service from EC2 to containers. However, the team does not want to provision or manage EC2 instances — they want to define only the CPU and memory each container needs and let AWS handle the underlying compute. Which compute option runs containers without requiring any EC2 instance management?",
     options: [
       { id: 'a', text: 'Launch EC2 instances and install Docker manually to run containers on self-managed hosts' },
       { id: 'b', text: 'Run containers on EKS with self-managed EC2 node groups, managing patching and scaling manually' },
@@ -1660,7 +1660,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-033',
-    text: "Adani Enterprises' corporate headquarters has a legacy NAS system storing engineering drawings. Remote plant engineers must access these files locally with low latency, but the IT team also wants the data backed up to S3 without replacing the existing on-premises NAS infrastructure. Which AWS service bridges on-premises applications to AWS cloud storage without requiring a full migration?",
+    text: "AnyCompany Industries' corporate headquarters has a legacy NAS system storing engineering drawings. Remote plant engineers must access these files locally with low latency, but the IT team also wants the data backed up to S3 without replacing the existing on-premises NAS infrastructure. Which AWS service bridges on-premises applications to AWS cloud storage without requiring a full migration?",
     options: [
       { id: 'a', text: 'Amazon EFS — NFS file system that can be mounted by EC2 instances but requires migration off on-premises' },
       { id: 'b', text: 'AWS DataSync — agent-based service for one-time or scheduled data transfers from on-premises to AWS' },
@@ -1692,7 +1692,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-035',
-    text: "Zomato's home page loads a personalised feed of restaurant recommendations backed by millions of real-time database reads per second. Each query currently hits Amazon RDS and takes 40–80 ms. The engineering team wants to reduce response times to single-digit milliseconds for the most frequently accessed restaurant profiles by adding a managed in-memory caching layer. Which AWS service provides managed Redis or Memcached caching for this use case?",
+    text: "AnyCompany Eats's home page loads a personalised feed of restaurant recommendations backed by millions of real-time database reads per second. Each query currently hits Amazon RDS and takes 40–80 ms. The engineering team wants to reduce response times to single-digit milliseconds for the most frequently accessed restaurant profiles by adding a managed in-memory caching layer. Which AWS service provides managed Redis or Memcached caching for this use case?",
     options: [
       { id: 'a', text: 'Amazon RDS Read Replica — asynchronous copy of the primary DB for offloading read traffic' },
       { id: 'b', text: 'Amazon DynamoDB Accelerator (DAX) — in-memory cache specifically for DynamoDB tables' },
@@ -1724,7 +1724,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-037',
-    text: "Zomato is launching a mobile app where users can sign in with their Google or Apple account, or with their corporate email via SAML federation. The app needs to maintain user sessions across devices, enforce MFA for restaurant-owner accounts, and store custom attributes like preferred cuisine and delivery address. Which AWS service provides user authentication, social identity federation, and user profile management for mobile apps?",
+    text: "AnyCompany Eats is launching a mobile app where users can sign in with their Google or Apple account, or with their corporate email via SAML federation. The app needs to maintain user sessions across devices, enforce MFA for restaurant-owner accounts, and store custom attributes like preferred cuisine and delivery address. Which AWS service provides user authentication, social identity federation, and user profile management for mobile apps?",
     options: [
       { id: 'a', text: 'AWS IAM — identity and access management for controlling AWS service-to-service permissions' },
       { id: 'b', text: 'AWS Directory Service — managed Microsoft Active Directory for enterprise Windows workloads' },
@@ -1756,7 +1756,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-039',
-    text: "Adani Enterprises collects raw sensor CSV files from 800 factories into S3 every hour. Before loading the data into Redshift, it must be cleaned (removing null readings), normalised (converting units), and enriched (joining with a machine metadata table). The team wants a managed, serverless ETL pipeline — no clusters to provision or maintain. Which AWS service provides a fully managed serverless ETL capability for this data integration workflow?",
+    text: "AnyCompany Industries collects raw sensor CSV files from 800 factories into S3 every hour. Before loading the data into Redshift, it must be cleaned (removing null readings), normalised (converting units), and enriched (joining with a machine metadata table). The team wants a managed, serverless ETL pipeline — no clusters to provision or maintain. Which AWS service provides a fully managed serverless ETL capability for this data integration workflow?",
     options: [
       { id: 'a', text: 'Amazon EMR — managed big data cluster running Apache Spark jobs on provisioned EC2 instances' },
       { id: 'b', text: 'Amazon Athena — serverless SQL query service for analysing data stored directly in S3' },
@@ -1804,7 +1804,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-042',
-    text: "Zomato integrates with third-party SaaS services — Stripe for payments, Twilio for SMS, and Segment for analytics. Whenever a payment succeeds in Stripe, the platform must automatically trigger a Lambda function to update the order status, and send a separate event to an SQS queue that triggers SMS delivery. Which AWS service acts as a serverless event bus that ingests events from SaaS apps and custom sources and routes them to multiple AWS targets?",
+    text: "AnyCompany Eats integrates with third-party SaaS services — Stripe for payments, Twilio for SMS, and Segment for analytics. Whenever a payment succeeds in Stripe, the platform must automatically trigger a Lambda function to update the order status, and send a separate event to an SQS queue that triggers SMS delivery. Which AWS service acts as a serverless event bus that ingests events from SaaS apps and custom sources and routes them to multiple AWS targets?",
     options: [
       { id: 'a', text: 'Amazon SNS — pub/sub service for fan-out notification delivery to email, SMS, and HTTP endpoints' },
       { id: 'b', text: 'Amazon SQS — message queue for decoupling services with at-least-once delivery semantics' },
@@ -1812,7 +1812,7 @@ const clf02TechPart1: Question[] = [
       { id: 'd', text: 'AWS Step Functions — workflow orchestration service for multi-step state machine coordination' },
     ],
     correctOptionId: 'c',
-    explanation: "Amazon EventBridge is a serverless event bus that ingests data from your own applications, SaaS apps, and AWS services and routes events to Lambda functions, SQS, SNS, and other targets. ✓ (c) EventBridge has native partner integrations with SaaS providers including Stripe, and its rule-based routing can simultaneously trigger a Lambda function (for order status update) and an SQS queue (for SMS delivery) from a single Stripe payment event — making it the exact fit for this multi-target SaaS integration pattern. ✗ (a) Amazon SNS delivers a published message to all subscribers simultaneously — while it can fan out to Lambda and SQS, it does not have built-in SaaS partner event source integrations and requires Zomato to build a custom ingest layer to receive Stripe webhooks before publishing to SNS. ✗ (b) Amazon SQS is a point-to-point queue where a message is consumed by a single consumer — it does not support routing a single event to multiple different targets (Lambda and another SQS queue simultaneously), and it has no native SaaS event source integrations. ✗ (d) AWS Step Functions orchestrates multi-step sequential or parallel workflows using state machines — it is designed for long-running process coordination, not for real-time event routing from SaaS webhook sources to multiple decoupled AWS service targets.",
+    explanation: "Amazon EventBridge is a serverless event bus that ingests data from your own applications, SaaS apps, and AWS services and routes events to Lambda functions, SQS, SNS, and other targets. ✓ (c) EventBridge has native partner integrations with SaaS providers including Stripe, and its rule-based routing can simultaneously trigger a Lambda function (for order status update) and an SQS queue (for SMS delivery) from a single Stripe payment event — making it the exact fit for this multi-target SaaS integration pattern. ✗ (a) Amazon SNS delivers a published message to all subscribers simultaneously — while it can fan out to Lambda and SQS, it does not have built-in SaaS partner event source integrations and requires AnyCompany Eats to build a custom ingest layer to receive Stripe webhooks before publishing to SNS. ✗ (b) Amazon SQS is a point-to-point queue where a message is consumed by a single consumer — it does not support routing a single event to multiple different targets (Lambda and another SQS queue simultaneously), and it has no native SaaS event source integrations. ✗ (d) AWS Step Functions orchestrates multi-step sequential or parallel workflows using state machines — it is designed for long-running process coordination, not for real-time event routing from SaaS webhook sources to multiple decoupled AWS service targets.",
     docUrl: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html',
     difficulty: 'intermediate',
     category: 'clf-c02',
@@ -1836,7 +1836,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-044',
-    text: "Zomato is expanding into Southeast Asia and needs to translate its restaurant menu descriptions, user reviews, and push notification text from English into Thai, Vietnamese, Bahasa Indonesia, and six other languages — automatically, at scale, without building a custom translation model. Which AWS service provides neural machine translation between supported language pairs?",
+    text: "AnyCompany Eats is expanding into Southeast Asia and needs to translate its restaurant menu descriptions, user reviews, and push notification text from English into Thai, Vietnamese, Bahasa Indonesia, and six other languages — automatically, at scale, without building a custom translation model. Which AWS service provides neural machine translation between supported language pairs?",
     options: [
       { id: 'a', text: 'Amazon Comprehend — NLP service for analysing text sentiment and extracting entities from content' },
       { id: 'b', text: 'Amazon Polly — text-to-speech service that reads text aloud in multiple languages and voices' },
@@ -1852,7 +1852,7 @@ const clf02TechPart1: Question[] = [
   },
   {
     id: 'clf-c02-tech-045',
-    text: "Adani Enterprises has three remote gas processing plants in locations where laying a Direct Connect fibre circuit is not commercially viable. The security team needs encrypted connectivity between each plant's on-premises network and AWS us-east-1 to transmit SCADA control data securely over existing broadband internet links. Which AWS service creates an encrypted VPN tunnel over the public internet between an on-premises network and an AWS VPC?",
+    text: "AnyCompany Industries has three remote gas processing plants in locations where laying a Direct Connect fibre circuit is not commercially viable. The security team needs encrypted connectivity between each plant's on-premises network and AWS us-east-1 to transmit SCADA control data securely over existing broadband internet links. Which AWS service creates an encrypted VPN tunnel over the public internet between an on-premises network and an AWS VPC?",
     options: [
       { id: 'a', text: 'AWS Direct Connect — dedicated private circuit bypassing the internet, requires carrier provisioning at colocation' },
       { id: 'b', text: 'AWS Site-to-Site VPN — IPSec-encrypted tunnel over the public internet connecting on-premises networks to a VPC' },
@@ -1904,7 +1904,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-048',
-    text: "A TCS cloud architect is training new graduates on Amazon S3. One trainee asks whether S3 bucket names need to be unique only within their AWS account. What is the correct answer?",
+    text: "An AnyCompany Consulting cloud architect is training new graduates on Amazon S3. One trainee asks whether S3 bucket names need to be unique only within their AWS account. What is the correct answer?",
     options: [
       { id: 'a', text: 'True — S3 bucket names must be globally unique across all AWS accounts worldwide' },
       { id: 'b', text: 'False — bucket names only need to be unique within your own AWS account' },
@@ -1920,7 +1920,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-049',
-    text: "Adani Enterprises generates compliance records and engineering audit logs that must be retained for seven years but are almost never accessed after the first 90 days. The team wants the lowest possible storage cost and can tolerate retrieval times of several hours. Which S3 storage class should they use?",
+    text: "AnyCompany Industries generates compliance records and engineering audit logs that must be retained for seven years but are almost never accessed after the first 90 days. The team wants the lowest possible storage cost and can tolerate retrieval times of several hours. Which S3 storage class should they use?",
     options: [
       { id: 'a', text: 'Store all records in S3 Standard for immediate availability' },
       { id: 'b', text: 'Move records to S3 Standard-IA after 90 days for lower cost' },
@@ -1968,7 +1968,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-052',
-    text: "TCS is migrating a suite of Windows Server applications to AWS that rely on Active Directory for authentication and group policy. The operations team wants a fully managed AD solution without managing domain controllers themselves. Which service meets this requirement?",
+    text: "AnyCompany Consulting is migrating a suite of Windows Server applications to AWS that rely on Active Directory for authentication and group policy. The operations team wants a fully managed AD solution without managing domain controllers themselves. Which service meets this requirement?",
     options: [
       { id: 'a', text: 'Use Amazon Cognito to replace Active Directory with a cloud-native identity provider' },
       { id: 'b', text: 'Use AWS IAM Identity Center to federate corporate identities into AWS accounts' },
@@ -2048,7 +2048,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-057',
-    text: "Adani Enterprises operates a power grid monitoring facility in a remote location with strict data sovereignty requirements — workloads must run on-premises but using the same AWS APIs, services, and tooling as their cloud environment. Which AWS offering fulfils this requirement?",
+    text: "AnyCompany Industries operates a power grid monitoring facility in a remote location with strict data sovereignty requirements — workloads must run on-premises but using the same AWS APIs, services, and tooling as their cloud environment. Which AWS offering fulfils this requirement?",
     options: [
       { id: 'a', text: 'Deploy workloads in AWS Local Zones located near the facility' },
       { id: 'b', text: 'Install AWS Outposts — fully managed racks that bring AWS infrastructure, services, and APIs on-premises' },
@@ -2064,7 +2064,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-058',
-    text: "A TCS storage architect is designing a document archive for a client and needs to know the largest single object size that Amazon S3 can store. What is the correct limit?",
+    text: "An AnyCompany Consulting storage architect is designing a document archive for a client and needs to know the largest single object size that Amazon S3 can store. What is the correct limit?",
     options: [
       { id: 'a', text: '5 GB per object, requiring chunking of larger files' },
       { id: 'b', text: '100 GB per object using multipart upload' },
@@ -2144,7 +2144,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-063',
-    text: "A TCS cloud instructor is explaining Amazon VPC to a group of developers. A student asks: which VPC component acts as the internal router, deciding where network packets are sent when they leave a subnet? What is the correct answer?",
+    text: "An AnyCompany Consulting cloud instructor is explaining Amazon VPC to a group of developers. A student asks: which VPC component acts as the internal router, deciding where network packets are sent when they leave a subnet? What is the correct answer?",
     options: [
       { id: 'a', text: 'The Internet Gateway routes all traffic within the VPC between subnets' },
       { id: 'b', text: 'The Network ACL determines packet routing by evaluating inbound and outbound rules' },
@@ -2160,7 +2160,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-064',
-    text: "Adani Enterprises needs to migrate 80 TB of historical plant sensor data to Amazon S3. Their facility has a 1 Gbps internet link shared with operations, and uploading over the internet would saturate the link for weeks. Which AWS service provides a physical appliance to transfer data offline?",
+    text: "AnyCompany Industries needs to migrate 80 TB of historical plant sensor data to Amazon S3. Their facility has a 1 Gbps internet link shared with operations, and uploading over the internet would saturate the link for weeks. Which AWS service provides a physical appliance to transfer data offline?",
     options: [
       { id: 'a', text: 'Use AWS DataSync to accelerate the transfer over the existing internet connection' },
       { id: 'b', text: 'Provision an AWS Direct Connect circuit dedicated to the data migration' },
@@ -2224,7 +2224,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-068',
-    text: "TCS is building a centralised log analytics platform for a banking client — ingesting application logs, security events, and audit trails from hundreds of services. The team needs full-text search across logs and interactive dashboards on top of the same dataset. Which AWS service is purpose-built for this use case?",
+    text: "AnyCompany Consulting is building a centralised log analytics platform for a banking client — ingesting application logs, security events, and audit trails from hundreds of services. The team needs full-text search across logs and interactive dashboards on top of the same dataset. Which AWS service is purpose-built for this use case?",
     options: [
       { id: 'a', text: 'Stream logs into Amazon Kinesis Data Firehose and query with custom Spark jobs on EMR' },
       { id: 'b', text: 'Load logs into Amazon Redshift and build SQL-based dashboards for full-text search' },
@@ -2304,7 +2304,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-073',
-    text: "TCS is leading a large-scale migration for a financial services client — hundreds of VMware VMs running on-premises Windows Server workloads need to move to AWS EC2 with minimal downtime. The client wants a continuous replication approach so the cutover window is as short as possible. Which AWS service is the primary recommendation for this lift-and-shift migration?",
+    text: "AnyCompany Consulting is leading a large-scale migration for a financial services client — hundreds of VMware VMs running on-premises Windows Server workloads need to move to AWS EC2 with minimal downtime. The client wants a continuous replication approach so the cutover window is as short as possible. Which AWS service is the primary recommendation for this lift-and-shift migration?",
     options: [
       { id: 'a', text: 'Use AWS Database Migration Service (DMS) to migrate the application databases first, then manually recreate compute' },
       { id: 'b', text: 'Use AWS Application Migration Service (MGN), which continuously replicates source servers to AWS and converts them to run natively as EC2 instances' },
@@ -2320,7 +2320,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-074',
-    text: "Adani Enterprises is enabling remote work for its engineers at field sites with unreliable local IT infrastructure. They want to provide secure Windows desktops accessible from any device and any location — without managing physical PCs or VDI servers. Which AWS service provides managed cloud desktops?",
+    text: "AnyCompany Industries is enabling remote work for its engineers at field sites with unreliable local IT infrastructure. They want to provide secure Windows desktops accessible from any device and any location — without managing physical PCs or VDI servers. Which AWS service provides managed cloud desktops?",
     options: [
       { id: 'a', text: 'Provision EC2 Windows instances and give engineers RDP access credentials' },
       { id: 'b', text: 'Use Amazon WorkSpaces, a fully managed Desktop as a Service (DaaS) providing persistent Windows or Linux desktops' },
@@ -2336,7 +2336,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-075',
-    text: "A startup spun out of TCS wants to launch a simple customer portal — a web server, a managed database, and a static IP — within an hour without dealing with VPC configuration, subnetting, or IAM role setup. Which AWS service offers a streamlined, all-in-one interface for this type of deployment?",
+    text: "A startup spun out of AnyCompany Consulting wants to launch a simple customer portal — a web server, a managed database, and a static IP — within an hour without dealing with VPC configuration, subnetting, or IAM role setup. Which AWS service offers a streamlined, all-in-one interface for this type of deployment?",
     options: [
       { id: 'a', text: 'Launch an EC2 instance and configure the full VPC, security groups, and database manually' },
       { id: 'b', text: 'Use Amazon Lightsail, which provides pre-configured VPS instances, managed databases, and networking at a predictable low price' },
@@ -2384,7 +2384,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-078',
-    text: "Adani Enterprises wants to give its executive leadership team self-service access to operational KPIs — energy output, downtime events, and maintenance trends — through interactive dashboards with ML-powered forecasting and anomaly detection, all without deploying BI servers. Which AWS service should they use?",
+    text: "AnyCompany Industries wants to give its executive leadership team self-service access to operational KPIs — energy output, downtime events, and maintenance trends — through interactive dashboards with ML-powered forecasting and anomaly detection, all without deploying BI servers. Which AWS service should they use?",
     options: [
       { id: 'a', text: 'Load operational data into Amazon Redshift and give executives SQL access via a BI tool' },
       { id: 'b', text: 'Run ad-hoc queries in Amazon Athena and export results to spreadsheets for leadership review' },
@@ -2416,7 +2416,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-080',
-    text: "TCS built a microservices platform for a retail client where an order flows through a payment service, inventory service, fulfilment service, and notification service. When a customer complains about a slow checkout, the team needs to see the end-to-end journey of that specific request across all services to pinpoint the bottleneck. Which AWS service provides this distributed tracing capability?",
+    text: "AnyCompany Consulting built a microservices platform for a retail client where an order flows through a payment service, inventory service, fulfilment service, and notification service. When a customer complains about a slow checkout, the team needs to see the end-to-end journey of that specific request across all services to pinpoint the bottleneck. Which AWS service provides this distributed tracing capability?",
     options: [
       { id: 'a', text: 'Use Amazon CloudWatch to review metrics from each service individually and correlate manually' },
       { id: 'b', text: 'Use AWS CloudTrail to trace the API calls made during the checkout flow' },
@@ -2464,7 +2464,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-083',
-    text: "TCS is designing a network architecture for a client with 200 VPCs across multiple AWS accounts and several on-premises data centres. Managing hundreds of individual VPC peering connections has become unmanageable. Which AWS service should they deploy to centralise all connectivity through a single hub?",
+    text: "AnyCompany Consulting is designing a network architecture for a client with 200 VPCs across multiple AWS accounts and several on-premises data centres. Managing hundreds of individual VPC peering connections has become unmanageable. Which AWS service should they deploy to centralise all connectivity through a single hub?",
     options: [
       { id: 'a', text: 'Create VPC Peering connections between every pair of VPCs in a full mesh topology' },
       { id: 'b', text: 'Deploy AWS Transit Gateway as a central hub to connect all VPCs and on-premises networks in a hub-and-spoke model' },
@@ -2528,7 +2528,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-087',
-    text: "TCS is advising a client on AWS cost management. The client stopped several EC2 instances over the weekend to save money. A developer asks: do all charges stop when an EC2 instance is in the stopped state? What is the accurate answer?",
+    text: "AnyCompany Consulting is advising a client on AWS cost management. The client stopped several EC2 instances over the weekend to save money. A developer asks: do all charges stop when an EC2 instance is in the stopped state? What is the accurate answer?",
     options: [
       { id: 'a', text: 'True — EBS storage volumes, Elastic IP addresses, and other associated resources continue to incur charges even when the instance is stopped; only compute (vCPU/memory) charges stop' },
       { id: 'b', text: 'False — all EC2-related charges including storage and networking completely stop when the instance is stopped' },
@@ -2544,7 +2544,7 @@ const clf02TechPart2: Question[] = [
   },
   {
     id: 'clf-c02-tech-088',
-    text: "Adani Enterprises is setting up a customer support centre for their utility services division. They want a cloud-based contact centre that agents can access from anywhere, with built-in call routing, IVR, and real-time analytics — without purchasing PBX hardware or signing long-term telecom contracts. Which AWS service enables this?",
+    text: "AnyCompany Industries is setting up a customer support centre for their utility services division. They want a cloud-based contact centre that agents can access from anywhere, with built-in call routing, IVR, and real-time analytics — without purchasing PBX hardware or signing long-term telecom contracts. Which AWS service enables this?",
     options: [
       { id: 'a', text: 'Use Amazon Pinpoint to build an outbound SMS and email customer engagement platform' },
       { id: 'b', text: 'Use Amazon Chime SDK to build a custom voice and video communication application' },
@@ -2596,7 +2596,7 @@ const clf02TechPart2: Question[] = [
 export const clf02BillingQuestions: Question[] = [
   {
     id: 'clf-c02-bill-001',
-    text: "Adani Enterprises is evaluating AWS for a new solar monitoring project and wants to start immediately without long-term commitments. The project scope may change significantly within the first six months. Which AWS pricing model lets them pay only for what they use with no upfront commitment or minimum term?",
+    text: "AnyCompany Industries is evaluating AWS for a new solar monitoring project and wants to start immediately without long-term commitments. The project scope may change significantly within the first six months. Which AWS pricing model lets them pay only for what they use with no upfront commitment or minimum term?",
     options: [
       { id: 'a', text: 'Purchase Reserved capacity for the expected workload to lock in the best rates' },
       { id: 'b', text: 'Bid for Spot capacity to get unused EC2 capacity at the lowest price' },
@@ -2644,7 +2644,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-004',
-    text: "TCS operates a production SaaS platform on AWS and needs 24/7 access to AWS support engineers via phone and chat. When a critical production system goes down, they need a response within one hour. Which AWS support plan meets these requirements?",
+    text: "AnyCompany Consulting operates a production SaaS platform on AWS and needs 24/7 access to AWS support engineers via phone and chat. When a critical production system goes down, they need a response within one hour. Which AWS support plan meets these requirements?",
     options: [
       { id: 'a', text: 'AWS Basic Support — included for all accounts at no extra cost' },
       { id: 'b', text: 'AWS Developer Support — provides business-hours email support for one contact' },
@@ -2676,7 +2676,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-006',
-    text: "A developer at a startup spun out of TCS is new to AWS and wants to explore services and prototype a web application before committing any budget. A colleague mentions the AWS Free Tier. Which description accurately explains what the Free Tier offers?",
+    text: "A developer at a startup spun out of AnyCompany Consulting is new to AWS and wants to explore services and prototype a web application before committing any budget. A colleague mentions the AWS Free Tier. Which description accurately explains what the Free Tier offers?",
     options: [
       { id: 'a', text: 'A permanent discount applied to all AWS services for as long as the account exists' },
       { id: 'b', text: 'A programme that gives new AWS customers access to certain services within specified usage limits — some for 12 months, some always free, and some as short-term trials' },
@@ -2692,7 +2692,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-007',
-    text: "Adani Enterprises is designing a new IoT data platform and wants to estimate the monthly AWS cost before building anything — including EC2 instance types, S3 storage, and data transfer charges. Which AWS tool lets them model a solution and generate a cost estimate without deploying any resources?",
+    text: "AnyCompany Industries is designing a new IoT data platform and wants to estimate the monthly AWS cost before building anything — including EC2 instance types, S3 storage, and data transfer charges. Which AWS tool lets them model a solution and generate a cost estimate without deploying any resources?",
     options: [
       { id: 'a', text: 'Use AWS Cost Explorer to project costs based on similar existing deployments' },
       { id: 'b', text: 'Use AWS Budgets to set a spending target and see whether the planned architecture fits within it' },
@@ -2724,7 +2724,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-009',
-    text: "TCS is conducting an AWS well-being review for a client and wants an automated tool that checks across their entire AWS account for underutilised resources, open security group rules, service limit breaches, and performance bottlenecks — providing prioritised recommendations across all five areas. Which AWS service provides this?",
+    text: "AnyCompany Consulting is conducting an AWS well-being review for a client and wants an automated tool that checks across their entire AWS account for underutilised resources, open security group rules, service limit breaches, and performance bottlenecks — providing prioritised recommendations across all five areas. Which AWS service provides this?",
     options: [
       { id: 'a', text: 'Use AWS Config to continuously evaluate resource configurations against predefined rules' },
       { id: 'b', text: 'Use Amazon Inspector to assess EC2 instance vulnerabilities and network reachability' },
@@ -2772,7 +2772,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-012',
-    text: "TCS manages AWS infrastructure for three separate client projects within the same AWS account. At month end, the account owner cannot tell which project drove which cost. The team wants to tag every resource with a project identifier so they can split the bill by project in future reports. Which AWS feature enables per-project cost attribution?",
+    text: "AnyCompany Consulting manages AWS infrastructure for three separate client projects within the same AWS account. At month end, the account owner cannot tell which project drove which cost. The team wants to tag every resource with a project identifier so they can split the bill by project in future reports. Which AWS feature enables per-project cost attribution?",
     options: [
       { id: 'a', text: 'Use AWS Organizations to create a separate account per project and view costs per account' },
       { id: 'b', text: 'Use AWS Resource Groups to group resources by project for cost visibility in the console' },
@@ -2804,7 +2804,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-014',
-    text: "Adani Enterprises is on the Basic AWS Support plan and a developer wants to know which Trusted Advisor checks are available without upgrading the support plan. What does Basic support include?",
+    text: "AnyCompany Industries is on the Basic AWS Support plan and a developer wants to know which Trusted Advisor checks are available without upgrading the support plan. What does Basic support include?",
     options: [
       { id: 'a', text: 'Full access to all 115+ Trusted Advisor checks across all five categories' },
       { id: 'b', text: 'Access to cost optimisation checks only, to help right-size underutilised resources' },
@@ -2836,7 +2836,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-016',
-    text: "A TCS developer is building a prototype on AWS and needs access to a single AWS support contact via email during business hours. Response times of up to 12 hours for system-impaired cases are acceptable. Which AWS support plan is the right fit for a development and test environment?",
+    text: "An AnyCompany Consulting developer is building a prototype on AWS and needs access to a single AWS support contact via email during business hours. Response times of up to 12 hours for system-impaired cases are acceptable. Which AWS support plan is the right fit for a development and test environment?",
     options: [
       { id: 'a', text: 'AWS Basic Support — already included at no cost for all accounts' },
       { id: 'b', text: 'AWS Developer Support — designed for dev/test environments, provides one primary contact and business-hours email support' },
@@ -2916,7 +2916,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-021',
-    text: "Adani Enterprises received an automated email saying an AWS service in ap-south-1 was experiencing elevated error rates that might affect their wind farm monitoring application. They want to proactively see which of their specific AWS resources and services are impacted by ongoing AWS events — not just general service status. Which tool provides this personalised health view?",
+    text: "AnyCompany Industries received an automated email saying an AWS service in ap-south-1 was experiencing elevated error rates that might affect their wind farm monitoring application. They want to proactively see which of their specific AWS resources and services are impacted by ongoing AWS events — not just general service status. Which tool provides this personalised health view?",
     options: [
       { id: 'a', text: 'Check AWS Trusted Advisor for fault tolerance findings related to the ap-south-1 region' },
       { id: 'b', text: 'Set up Amazon CloudWatch alarms on all resources to detect impact from AWS-side events' },
@@ -2948,7 +2948,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-023',
-    text: "A TCS startup client is launching their first SaaS product on AWS and has a strict monthly infrastructure budget of $500. They want to receive an automatic alert when their AWS spend is projected to exceed this threshold — before the bill arrives at month end. Which AWS service should they configure?",
+    text: "An AnyCompany Consulting startup client is launching their first SaaS product on AWS and has a strict monthly infrastructure budget of $500. They want to receive an automatic alert when their AWS spend is projected to exceed this threshold — before the bill arrives at month end. Which AWS service should they configure?",
     options: [
       { id: 'a', text: 'Use AWS Cost Explorer and check the forecast view manually each week to monitor against the budget' },
       { id: 'b', text: 'Set up an AWS Budget with a $500 monthly cost threshold and configure an email alert at 80% actual and 100% forecasted spend' },
@@ -2996,7 +2996,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-026',
-    text: "A TCS graduate trainee just created their first AWS account and asks whether they need to pay for any support to use the AWS documentation, community forums, and the Trusted Advisor core checks. What is the correct answer?",
+    text: "An AnyCompany Consulting graduate trainee just created their first AWS account and asks whether they need to pay for any support to use the AWS documentation, community forums, and the Trusted Advisor core checks. What is the correct answer?",
     options: [
       { id: 'a', text: 'True — AWS Basic Support is free for all AWS accounts and includes documentation, forums, core Trusted Advisor checks, and the AWS Health Dashboard' },
       { id: 'b', text: 'False — Basic Support requires the account to have a minimum monthly spend of $10 before it activates' },
@@ -3060,7 +3060,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-030',
-    text: "An Adani Enterprises developer used 850 hours of EC2 t3.medium during the first month — exceeding the 750 free-tier hours. They assumed the Free Tier would cap their usage. What actually happens when usage exceeds Free Tier limits?",
+    text: "An AnyCompany Industries developer used 850 hours of EC2 t3.medium during the first month — exceeding the 750 free-tier hours. They assumed the Free Tier would cap their usage. What actually happens when usage exceeds Free Tier limits?",
     options: [
       { id: 'a', text: 'AWS automatically suspends the account and sends a warning email to prevent unexpected charges' },
       { id: 'b', text: 'Usage beyond the Free Tier limit is billed at standard On-Demand rates — the 100 extra hours incur normal EC2 charges' },
@@ -3076,7 +3076,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-031',
-    text: "TCS is advising a client on AWS cost planning. The client asks which Free Tier service remains free indefinitely — not just for the first 12 months after account creation. Which service has an always-free tier?",
+    text: "AnyCompany Consulting is advising a client on AWS cost planning. The client asks which Free Tier service remains free indefinitely — not just for the first 12 months after account creation. Which service has an always-free tier?",
     options: [
       { id: 'a', text: 'Amazon EC2 t2.micro (750 hours/month) — always free regardless of account age' },
       { id: 'b', text: 'Amazon RDS db.t2.micro (750 hours/month) — always free for relational database usage' },
@@ -3108,7 +3108,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-033',
-    text: "Adani Enterprises' infrastructure team received reports that AWS DynamoDB in ap-south-1 is experiencing degraded performance. Before raising a support case, the team wants to check whether AWS has acknowledged an active issue affecting that service and region. Which AWS resource shows the current and historical operational status of all AWS services across all regions?",
+    text: "AnyCompany Industries' infrastructure team received reports that AWS DynamoDB in ap-south-1 is experiencing degraded performance. Before raising a support case, the team wants to check whether AWS has acknowledged an active issue affecting that service and region. Which AWS resource shows the current and historical operational status of all AWS services across all regions?",
     options: [
       { id: 'a', text: 'Check the AWS Health Dashboard (Your Account Health) to see events affecting your specific resources' },
       { id: 'b', text: 'Visit the AWS Service Health Dashboard at status.aws.amazon.com, which shows real-time operational status for all AWS services across all regions' },
@@ -3124,7 +3124,7 @@ export const clf02BillingQuestions: Question[] = [
   },
   {
     id: 'clf-c02-bill-034',
-    text: "TCS manages a portfolio of 35 AWS accounts for a large enterprise client across development, staging, UAT, and production environments. The client asks what specific cost management benefit AWS Organizations provides beyond simply grouping accounts. Which answer correctly identifies the key billing benefit?",
+    text: "AnyCompany Consulting manages a portfolio of 35 AWS accounts for a large enterprise client across development, staging, UAT, and production environments. The client asks what specific cost management benefit AWS Organizations provides beyond simply grouping accounts. Which answer correctly identifies the key billing benefit?",
     options: [
       { id: 'a', text: 'AWS Organizations automatically analyses usage patterns and resizes EC2 instances to minimise cost across all accounts' },
       { id: 'b', text: 'AWS Organizations provides consolidated billing, pooling usage across all accounts to reach higher volume discount tiers faster and issuing a single monthly invoice' },
