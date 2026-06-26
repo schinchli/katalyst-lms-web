@@ -245,7 +245,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-016',
     quizId: 'aip-c01-rag-foundations',
-    text: "Adani Enterprises needs a Bedrock Agent for its enterprise procurement platform that persists vendor preferences across sessions AND triggers external ERP workflows via REST APIs and Lambda functions. Which two Bedrock features enable these capabilities?",
+    text: "AnyCompany Industries needs a Bedrock Agent for its enterprise procurement platform that persists vendor preferences across sessions AND triggers external ERP workflows via REST APIs and Lambda functions. Which two Bedrock features enable these capabilities?",
     options: [
       { id: 'a', text: 'AgentCore Memory for cross-session persistence + Lambda or REST action groups for external ERP workflow triggers' },
       { id: 'b', text: 'Amazon DynamoDB session table managed by custom Lambda + SQS queues for workflow triggers' },
@@ -389,7 +389,7 @@ export const aipC01RagFoundationsQuestions: Question[] = [
   {
     id: 'aip-c01-025',
     quizId: 'aip-c01-rag-foundations',
-    text: "Adani Enterprises is implementing Amazon Q Business for its corporate knowledge portal. Employees should only see answers derived from SharePoint documents they are individually authorised to access. Which Q Business feature enforces this document-level restriction?",
+    text: "AnyCompany Industries is implementing Amazon Q Business for its corporate knowledge portal. Employees should only see answers derived from SharePoint documents they are individually authorised to access. Which Q Business feature enforces this document-level restriction?",
     options: [
       { id: 'a', text: "Document-level access controls using the user's identity from IAM Identity Center — Q Business filters retrieved documents to only those the authenticated user is authorised to access" },
       { id: 'b', text: 'Configure a single shared IAM role for all Q Business users with read permissions on all documents' },
@@ -585,7 +585,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-037',
     quizId: 'aip-c01-security-governance',
-    text: 'Adani Enterprises\' AI platform team deploys Amazon Bedrock in a shared AWS account used by multiple business units — Power, Logistics, and Green Energy. Finance requires each unit\'s Bedrock usage costs to be tracked separately on the AWS bill without splitting the account. What is the correct approach?',
+    text: 'AnyCompany Industries\' AI platform team deploys Amazon Bedrock in a shared AWS account used by multiple business units — Power, Logistics, and Green Energy. Finance requires each unit\'s Bedrock usage costs to be tracked separately on the AWS bill without splitting the account. What is the correct approach?',
     options: [
       { id: 'a', text: 'Apply cost allocation tags to Bedrock API calls using the bedrock:ResourceTag condition key and configure AWS Cost Explorer tag-based cost breakdowns per business unit' },
       { id: 'b', text: 'Create separate AWS accounts per business unit and use AWS Organizations consolidated billing' },
@@ -649,7 +649,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-041',
     quizId: 'aip-c01-security-governance',
-    text: 'Adani Enterprises\' security operations team wants to monitor their Bedrock-powered predictive maintenance AI for anomalous usage — specifically sudden spikes in token consumption that could indicate prompt injection or API abuse. Which monitoring approach should they implement?',
+    text: 'AnyCompany Industries\' security operations team wants to monitor their Bedrock-powered predictive maintenance AI for anomalous usage — specifically sudden spikes in token consumption that could indicate prompt injection or API abuse. Which monitoring approach should they implement?',
     options: [
       { id: 'a', text: 'Enable Bedrock Model Invocation Logging to CloudWatch Logs + create CloudWatch Alarms on InputTokenCount and OutputTokenCount metrics using anomaly detection bands to alert on deviations from normal usage patterns' },
       { id: 'b', text: 'Use Amazon GuardDuty to detect unusual Bedrock API call patterns and trigger automated remediation' },
@@ -681,7 +681,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-043',
     quizId: 'aip-c01-security-governance',
-    text: 'Tata Motors\' DevOps team is setting up a CI/CD pipeline to deploy their Bedrock-powered quality inspection AI to production. The pipeline must grant Bedrock model access using temporary credentials only — no long-term API keys may be stored in pipeline configurations or secrets managers. What is the correct IAM pattern?',
+    text: 'AnyCompany Motors\' DevOps team is setting up a CI/CD pipeline to deploy their Bedrock-powered quality inspection AI to production. The pipeline must grant Bedrock model access using temporary credentials only — no long-term API keys may be stored in pipeline configurations or secrets managers. What is the correct IAM pattern?',
     options: [
       { id: 'a', text: 'Use IAM roles for the CI/CD service (GitHub Actions OIDC provider, CodeBuild service role, or EC2 instance role) — these provide temporary, automatically-rotated STS credentials without any stored long-term API keys' },
       { id: 'b', text: 'Create dedicated IAM users per pipeline with 90-day key rotation and store the keys in Secrets Manager' },
@@ -793,7 +793,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-050',
     quizId: 'aip-c01-security-governance',
-    text: 'Tata Motors\' AI platform team deploys fine-tuned Bedrock models for their assembly-line quality inspection system. They need to track which model version is running in production at all times and roll back quickly if defect detection accuracy degrades after a release. What is the recommended governance practice?',
+    text: 'AnyCompany Motors\' AI platform team deploys fine-tuned Bedrock models for their assembly-line quality inspection system. They need to track which model version is running in production at all times and roll back quickly if defect detection accuracy degrades after a release. What is the recommended governance practice?',
     options: [
       { id: 'a', text: 'Tag Provisioned Throughput model units with version metadata + maintain a parameter in AWS Systems Manager Parameter Store recording the currently active model ARN, updated atomically by the CI/CD pipeline on each deployment' },
       { id: 'b', text: 'Use Git tags in the training data repository to track which data version each quality inspection model was trained on' },
@@ -841,7 +841,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-053',
     quizId: 'aip-c01-security-governance',
-    text: 'Tata Motors has a multi-account AWS setup — an ML account for model training and fine-tuning, and a production account for their quality inspection application. They want to invoke a fine-tuned Bedrock model from the production account without copying the model artifacts. What is the correct approach?',
+    text: 'AnyCompany Motors has a multi-account AWS setup — an ML account for model training and fine-tuning, and a production account for their quality inspection application. They want to invoke a fine-tuned Bedrock model from the production account without copying the model artifacts. What is the correct approach?',
     options: [
       { id: 'a', text: 'Apply a Bedrock resource-based policy on the Provisioned Throughput model unit in the ML account granting bedrock:InvokeModel to the production account\'s IAM role — no artifact copying required' },
       { id: 'b', text: 'Export the model weights from S3 in the ML account to the production account\'s S3 and re-import using CreateModelImportJob' },
@@ -857,7 +857,7 @@ export const aipC01SecurityOpsQuestions: Question[] = [
   {
     id: 'aip-c01-054',
     quizId: 'aip-c01-security-governance',
-    text: 'Adani Enterprises\' security team must ensure that proprietary AI training datasets stored in S3 are protected from exfiltration. Even if an attacker compromises an IAM principal with valid S3 read access, they must not be able to download the data from outside the corporate VPC. Which S3 feature enforces this network-level control?',
+    text: 'AnyCompany Industries\' security team must ensure that proprietary AI training datasets stored in S3 are protected from exfiltration. Even if an attacker compromises an IAM principal with valid S3 read access, they must not be able to download the data from outside the corporate VPC. Which S3 feature enforces this network-level control?',
     options: [
       { id: 'a', text: 'S3 VPC endpoint policy with a condition denying GetObject unless the request originates from the specific VPC endpoint ID (aws:SourceVpce) — even valid IAM credentials cannot download data if the request comes from outside the VPC' },
       { id: 'b', text: 'S3 Block Public Access settings to prevent any public exposure of the training data buckets' },
@@ -940,11 +940,11 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-059',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises deploys a Bedrock-powered predictive maintenance assistant to production. During load testing, inference latency varies between 800 ms and 4,000 ms on on-demand pricing — far too variable for the premium SLA promised to plant operators. What should the team purchase to achieve consistent sub-1,000 ms latency?',
+    text: 'AnyCompany Industries deploys a Bedrock-powered predictive maintenance assistant to production. During load testing, inference latency varies between 800 ms and 4,000 ms on on-demand pricing — far too variable for the premium SLA promised to plant operators. What should the team purchase to achieve consistent sub-1,000 ms latency?',
     options: [
       { id: 'a', text: 'Provisioned Throughput with sufficient Model Units — provides dedicated compute capacity with consistent, predictable latency, eliminating the cold-start and queue variability of the shared on-demand tier' },
       { id: 'b', text: 'Amazon CloudFront caching for Bedrock API responses to avoid repeated inference calls for the same sensor data queries' },
-      { id: 'c', text: 'AWS Direct Connect to reduce network latency between Adani\'s on-premises systems and the Bedrock regional endpoint' },
+      { id: 'c', text: 'AWS Direct Connect to reduce network latency between AnyCompany Industries\' on-premises systems and the Bedrock regional endpoint' },
       { id: 'd', text: 'Enable Bedrock response streaming to start receiving tokens faster and reduce perceived end-to-end latency' },
     ],
     correctOptionId: 'a',
@@ -956,7 +956,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-060',
     quizId: 'aip-c01-agents-ops',
-    text: 'Tata Motors\' quality inspection team uses Amazon Bedrock for cloud inference during connected operations, but needs sub-50 ms defect detection on the factory floor when internet connectivity is unavailable. They want to deploy optimised ML models directly to factory-floor devices. Which AWS service handles model optimisation and on-device deployment?',
+    text: 'AnyCompany Motors\' quality inspection team uses Amazon Bedrock for cloud inference during connected operations, but needs sub-50 ms defect detection on the factory floor when internet connectivity is unavailable. They want to deploy optimised ML models directly to factory-floor devices. Which AWS service handles model optimisation and on-device deployment?',
     options: [
       { id: 'a', text: 'Amazon SageMaker Neo — compiles and optimises ML models for target hardware (ARM, x86, edge chipsets) using Apache TVM, enabling efficient on-device inference with no internet connectivity required' },
       { id: 'b', text: 'AWS IoT Greengrass — deploys full Bedrock foundation models to edge devices for offline inference' },
@@ -972,7 +972,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-061',
     quizId: 'aip-c01-agents-ops',
-    text: 'An Adani Enterprises engineer builds a LangChain application using Amazon Bedrock as the LLM provider for a multi-step pipeline that classifies sensor alerts, retrieves maintenance history, and generates work orders. They want to trace every LLM call, tool invocation, and chain step for debugging and performance optimisation. Which AWS observability service integrates with LangChain\'s tracing system?',
+    text: 'An AnyCompany Industries engineer builds a LangChain application using Amazon Bedrock as the LLM provider for a multi-step pipeline that classifies sensor alerts, retrieves maintenance history, and generates work orders. They want to trace every LLM call, tool invocation, and chain step for debugging and performance optimisation. Which AWS observability service integrates with LangChain\'s tracing system?',
     options: [
       { id: 'a', text: 'AWS X-Ray — integrates with LangChain via the AWS Bedrock SDK instrumentation, capturing distributed traces of each chain step including prompt content, latency, and tool calls in a single trace view' },
       { id: 'b', text: 'Amazon CloudWatch Application Insights for automatic LangChain trace collection and anomaly detection' },
@@ -1036,7 +1036,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-065',
     quizId: 'aip-c01-agents-ops',
-    text: 'A Tata Motors ML engineer fine-tunes a Bedrock model on proprietary quality inspection data. After training, model evaluation reveals overfitting: performance on the training set is excellent but validation set accuracy on new defect types is poor. Which regularisation technique can be applied within Bedrock fine-tuning hyperparameters?',
+    text: 'An AnyCompany Motors ML engineer fine-tunes a Bedrock model on proprietary quality inspection data. After training, model evaluation reveals overfitting: performance on the training set is excellent but validation set accuracy on new defect types is poor. Which regularisation technique can be applied within Bedrock fine-tuning hyperparameters?',
     options: [
       { id: 'a', text: 'Adjust hyperparameters: reduce the number of training epochs to prevent over-exposure to the dataset, lower the learning rate to preserve pretrained generalization, and increase warmup steps to stabilise early training convergence' },
       { id: 'b', text: 'Increase training dataset size by duplicating existing defect examples to give the model more signal' },
@@ -1052,7 +1052,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-066',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' AI platform team manages multiple Bedrock applications across their Power, Logistics, and Solar divisions. They need (1) to query logs across all applications for specific error patterns, and (2) to visualise token usage trends over time on a single operations dashboard. Which two AWS services best address these requirements?',
+    text: 'AnyCompany Industries\' AI platform team manages multiple Bedrock applications across their Power, Logistics, and Solar divisions. They need (1) to query logs across all applications for specific error patterns, and (2) to visualise token usage trends over time on a single operations dashboard. Which two AWS services best address these requirements?',
     options: [
       { id: 'a', text: 'Amazon CloudWatch Logs Insights for ad-hoc queries across Bedrock invocation log groups + Amazon CloudWatch dashboards with native Bedrock metrics (InputTokenCount, OutputTokenCount, Latency) for trend visualisation across all divisions' },
       { id: 'b', text: 'Amazon Athena for S3-based log queries + Amazon QuickSight for business intelligence dashboards with SPICE caching' },
@@ -1068,7 +1068,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-067',
     quizId: 'aip-c01-agents-ops',
-    text: 'Tata Motors\' engineering team builds a mobile app for field technicians that uses Bedrock for cloud inference during connected operations but requires sub-50 ms defect assessments and offline capability when technicians are in areas without connectivity. Which combination of services addresses both latency and offline requirements?',
+    text: 'AnyCompany Motors\' engineering team builds a mobile app for field technicians that uses Bedrock for cloud inference during connected operations but requires sub-50 ms defect assessments and offline capability when technicians are in areas without connectivity. Which combination of services addresses both latency and offline requirements?',
     options: [
       { id: 'a', text: 'Amazon Bedrock for complex cloud inference when online + Amazon SageMaker Neo to compile and optimise lightweight defect detection models for on-device deployment (offline, sub-50 ms) — with API Gateway bridging both paths from the mobile app' },
       { id: 'b', text: 'AWS Wavelength for edge inference at telecom sites + Amazon CloudFront for caching offline responses from the last connected session' },
@@ -1100,7 +1100,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-069',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' platform engineering team uses AWS AppConfig with Amazon Bedrock to implement dynamic model routing for their predictive maintenance AI — switching the active model from Claude Sonnet to Nova Pro in production without a full code deployment or service restart. How does this pattern work?',
+    text: 'AnyCompany Industries\' platform engineering team uses AWS AppConfig with Amazon Bedrock to implement dynamic model routing for their predictive maintenance AI — switching the active model from Claude Sonnet to Nova Pro in production without a full code deployment or service restart. How does this pattern work?',
     options: [
       { id: 'a', text: 'Store the Bedrock model ID in an AppConfig configuration profile; the application retrieves the current model ID from AppConfig at startup (or on cache refresh interval). Update the AppConfig deployment to switch the model without redeploying application code' },
       { id: 'b', text: 'AppConfig triggers a Lambda function that directly updates the Bedrock provisioned endpoint configuration' },
@@ -1116,7 +1116,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-070',
     quizId: 'aip-c01-agents-ops',
-    text: 'Tata Motors\' AI team uses Amazon Bedrock Batch Inference to process product catalogue data. Which scenario is most appropriate for batch inference versus real-time InvokeModel calls in their manufacturing context?',
+    text: 'AnyCompany Motors\' AI team uses Amazon Bedrock Batch Inference to process product catalogue data. Which scenario is most appropriate for batch inference versus real-time InvokeModel calls in their manufacturing context?',
     options: [
       { id: 'a', text: 'Processing 100,000 technical specifications overnight to generate standardised parts descriptions — batch jobs run asynchronously from S3, support large volumes, and cost less per token than on-demand real-time inference' },
       { id: 'b', text: 'Responding to live quality alerts from assembly-line sensors requiring an immediate pass/fail decision' },
@@ -1132,7 +1132,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-071',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' MLOps team implements a pipeline for their Bedrock fine-tuned predictive maintenance model. They need automated retraining when model accuracy degrades below a threshold, followed by evaluation and A/B testing before full deployment. Which AWS services form this MLOps pipeline?',
+    text: 'AnyCompany Industries\' MLOps team implements a pipeline for their Bedrock fine-tuned predictive maintenance model. They need automated retraining when model accuracy degrades below a threshold, followed by evaluation and A/B testing before full deployment. Which AWS services form this MLOps pipeline?',
     options: [
       { id: 'a', text: 'Amazon CloudWatch alarm on evaluation metrics → EventBridge rule → Amazon SageMaker Pipelines for fine-tuning + evaluation jobs → Bedrock A/B testing via weighted Provisioned Throughput routing between model versions' },
       { id: 'b', text: 'AWS CodePipeline for CI/CD → Lambda for retraining job trigger → Manual approval gate → Bedrock deployment of new model' },
@@ -1244,7 +1244,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-078',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' AI team implements a ReAct (Reasoning + Acting) agent using Amazon Bedrock to autonomously investigate sensor anomalies — reasoning about what data to gather, taking actions to query systems, observing results, and iterating until it generates a root-cause report. Which Bedrock component natively implements this ReAct agent loop without requiring custom orchestration code?',
+    text: 'AnyCompany Industries\' AI team implements a ReAct (Reasoning + Acting) agent using Amazon Bedrock to autonomously investigate sensor anomalies — reasoning about what data to gather, taking actions to query systems, observing results, and iterating until it generates a root-cause report. Which Bedrock component natively implements this ReAct agent loop without requiring custom orchestration code?',
     options: [
       { id: 'a', text: 'Amazon Bedrock Agents — uses a built-in ReAct orchestration prompt; the agent autonomously reasons, selects actions from configured tool groups, observes tool results, and continues the loop until a final answer is reached' },
       { id: 'b', text: 'Amazon Bedrock Flows — build the Thought-Action-Observation cycle using sequential Prompt and Lambda nodes in the visual canvas' },
@@ -1292,7 +1292,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-081',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' central AI governance team needs to enforce two controls across all accounts in their AWS Organization: (1) only approved Bedrock model ARNs may be invoked, and (2) all deployed prompts must pass through a sensitive-term filter Lambda deployed consistently across every account. Which two governance mechanisms enforce these requirements?',
+    text: 'AnyCompany Industries\' central AI governance team needs to enforce two controls across all accounts in their AWS Organization: (1) only approved Bedrock model ARNs may be invoked, and (2) all deployed prompts must pass through a sensitive-term filter Lambda deployed consistently across every account. Which two governance mechanisms enforce these requirements?',
     options: [
       { id: 'a', text: 'AWS Organizations SCP restricting bedrock:InvokeModel to an approved model ARN allowlist + AWS CloudFormation StackSets deploying a sensitive-term filter Lambda function uniformly across all target accounts' },
       { id: 'b', text: 'AWS Config rules detecting non-approved Bedrock model usage after the fact + manual Lambda deployment in each account as needed' },
@@ -1324,7 +1324,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-083',
     quizId: 'aip-c01-agents-ops',
-    text: 'Tata Motors\' ML team trains a custom embedding model using Amazon SageMaker optimised for automotive parts terminology, and wants to use it as the embedding model for an Amazon Bedrock Knowledge Base instead of the built-in Titan Embeddings. Is this possible, and if not, what is the recommended workaround?',
+    text: 'AnyCompany Motors\' ML team trains a custom embedding model using Amazon SageMaker optimised for automotive parts terminology, and wants to use it as the embedding model for an Amazon Bedrock Knowledge Base instead of the built-in Titan Embeddings. Is this possible, and if not, what is the recommended workaround?',
     options: [
       { id: 'a', text: 'Not directly — Bedrock Knowledge Bases require a supported embedding model (Titan Embeddings, Cohere Embed). To use the custom SageMaker model, implement a custom chunking/embedding pipeline via Lambda calling the SageMaker endpoint, then write vectors directly to OpenSearch Serverless for retrieval' },
       { id: 'b', text: 'Yes — import the SageMaker model into Bedrock using CreateModelImportJob and it becomes selectable as the KB embedding model' },
@@ -1356,7 +1356,7 @@ export const aipC01AdvancedPatternsQuestions: Question[] = [
   {
     id: 'aip-c01-085',
     quizId: 'aip-c01-agents-ops',
-    text: 'Adani Enterprises\' AI architects are choosing between Amazon Bedrock Agents and Amazon Bedrock Flows for a complex energy grid anomaly investigation workflow. The workflow requires dynamic reasoning about which diagnostic steps to take based on intermediate sensor readings, must handle unexpected follow-up queries from operators mid-flow, and needs to select monitoring tools adaptively. Which option is more appropriate?',
+    text: 'AnyCompany Industries\' AI architects are choosing between Amazon Bedrock Agents and Amazon Bedrock Flows for a complex energy grid anomaly investigation workflow. The workflow requires dynamic reasoning about which diagnostic steps to take based on intermediate sensor readings, must handle unexpected follow-up queries from operators mid-flow, and needs to select monitoring tools adaptively. Which option is more appropriate?',
     options: [
       { id: 'a', text: 'Amazon Bedrock Agents — designed for dynamic, agentic workflows where the FM reasons about next steps based on context, handles unexpected mid-flow inputs from operators, and adaptively selects tools at runtime. Flows is for fixed, predefined pipeline sequences' },
       { id: 'b', text: 'Amazon Bedrock Flows — more powerful and flexible than Agents for complex multi-step workflows with conditional logic' },

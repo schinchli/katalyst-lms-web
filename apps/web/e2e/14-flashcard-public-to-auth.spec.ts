@@ -64,8 +64,8 @@ test.describe('public flashcard → login → resume same deck', () => {
   test('full public→login→authenticated flashcard journey', async ({ page }) => {
 
     test.skip(
-      !SUPABASE_URL || !SERVICE_KEY,
-      'requires NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY',
+      !!process.env.SKIP_LIVE_AUTH || !SUPABASE_URL || !SERVICE_KEY,
+      'requires live Supabase auth harness (NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY); set SKIP_LIVE_AUTH to skip in CI',
     );
 
     // Prime the test user
