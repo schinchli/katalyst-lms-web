@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true   # mobile is a git submodule; checked out via katalyst-mobile.git CI
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - uses: actions/setup-node@v4
