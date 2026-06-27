@@ -1,8 +1,54 @@
 # Katalyst LMS — Claude Code Instructions
 
-> **Last Updated:** 2026-05-08
+> **Last Updated:** 2026-06-27
 > **Platform:** AWS Cloud & GenAI Certification Prep (Katalyst)
 > **Branch:** `main`
+
+---
+
+## ⚡ GRAPH-FIRST, TOKEN-LEAN PROTOCOL (READ FIRST — applies to ALL work)
+
+**Every task in this repo goes through the graph before touching files.** Two graphs exist;
+use them to navigate, understand, and review instead of grepping/reading raw source. This
+is the single biggest token saver — a graph lookup is hundreds of tokens; the equivalent
+file reads are tens of thousands.
+
+### 1. Navigate via the Understand-Anything graph (`.understand-anything/knowledge-graph.json`)
+A summarized map of the whole monorepo (633 nodes / 907 edges / 15 layers / 12-step tour).
+Query it with the zero-dependency helper — never read it raw:
+```bash
+node scripts/graph-query.mjs stats                 # project + node/edge/layer counts
+node scripts/graph-query.mjs find <substring>      # locate a node by id/name/summary
+node scripts/graph-query.mjs file <path-substring> # a file's summary + imports + importers
+node scripts/graph-query.mjs deps <path-substring> # incoming + outgoing edges (blast radius)
+node scripts/graph-query.mjs layer [name]          # architectural layers / files in a layer
+node scripts/graph-query.mjs tour                  # guided reading order for the codebase
+```
+Use this to answer "where does X live / what depends on Y / what's in layer Z" before any
+Grep/Glob/Read. Fall back to file reads ONLY when the graph lacks the detail you need.
+
+### 2. Review & impact via the `code-review-graph` MCP tools
+For change review, impact radius, and call-tracing use the MCP tools (see
+"MCP Tools: code-review-graph" at the bottom of this file): `detect_changes`,
+`get_review_context`, `get_impact_radius`, `query_graph`, `semantic_search_nodes`.
+
+### 3. Keep the graphs fresh — incrementally, never full rebuild
+- `.understand-anything/config.json` has `"autoUpdate": true`. After substantial changes,
+  refresh with `/understand` — it auto-detects the changed files via `git diff` and
+  re-analyzes ONLY those (cheap), then re-merges. Do NOT pass `--full` unless the graph is
+  corrupt. The `code-review-graph` updates on file-change hooks.
+
+### 4. Token-lean builds — always workspace-scoped, never the whole monorepo
+Build/type-check only the workspace you changed; never fan out across web + admin + mobile:
+```bash
+npm run type-check --workspace apps/web      # or apps/admin, etc. — tsc before build, it's cheaper
+npm run build      --workspace apps/web
+npx turbo run build --filter=@lms/admin      # turbo uses the package name, not the path
+```
+Pipe long build/test logs to a file and read only the tail/errors (`… 2>&1 | tail -30` or
+`| grep -E "error|Error|failed"`). Never paste a full Next.js/turbo build log into context.
+Trust Edit/Write results — don't re-Read a file you just wrote. Keep `.next`/turbo caches.
+Per-app overrides live in each workspace's `CLAUDE.md` (e.g. `apps/admin/CLAUDE.md`).
 
 ---
 

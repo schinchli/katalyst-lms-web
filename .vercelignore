@@ -42,9 +42,18 @@ apps/web/tsconfig.tsbuildinfo
 coverage/
 
 # ─── Build artifacts (Vercel rebuilds these) ──────────────────────────────────
-**/node_modules/
-# apps/web/.next/ — DO NOT exclude; Vercel needs the build output here
+node_modules
+**/node_modules
+.next
+**/.next
+apps/web/test-results
+apps/web/e2e-report
+apps/web/e2e-screenshots
 **/*.tsbuildinfo
+.expo
+.turbo
+.code-review-graph
+.understand-anything
 
 # ─── Data backups ─────────────────────────────────────────────────────────────
 apps/web/src/data/*_backup_*
