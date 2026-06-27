@@ -73,7 +73,8 @@ supabase/
 .vercel
 
 # Knowledge graph (generated)
-.understand-anything/
+.understand-anything/*
+!.understand-anything/config.json
 .code-review-graph/
 
 # Test artifacts
