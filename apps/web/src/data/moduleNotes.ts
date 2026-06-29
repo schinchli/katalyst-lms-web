@@ -9,6 +9,18 @@
  * public/clf-c02/notes/ (web). Reference by filename without extension.
  */
 
+/** One labelled step explained beneath a diagram (e.g. badge "A" or "1"). */
+export interface DiagramStep {
+  /** The badge shown on the diagram — "A", "1", etc. */
+  label: string;
+  /** Short heading for the step. */
+  title: string;
+  /** Plain-language explanation. Supports **bold** inline markdown. */
+  detail: string;
+  /** Badge tint: 'flow' (purple data-flow) or 'boundary' (red trust boundary). */
+  kind?: 'flow' | 'boundary';
+}
+
 export interface NoteSection {
   heading: string;
   /** Body paragraphs. Use \n\n to separate paragraphs. */
@@ -16,6 +28,10 @@ export interface NoteSection {
   /** Diagram filename (without extension) in the notes/ folder. */
   diagram?: string;
   diagramCaption?: string;
+  /** Asset format for the diagram. Defaults to 'png'; 'svg' renders crisp + fully responsive. */
+  diagramFormat?: 'png' | 'svg';
+  /** Step-by-step walkthrough rendered as a responsive list under the diagram. */
+  diagramSteps?: DiagramStep[];
   /** Bullet-point takeaways shown in a highlighted box. */
   keyPoints?: string[];
 }

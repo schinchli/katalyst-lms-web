@@ -91,20 +91,55 @@ export default function ModuleNotesPage() {
 
           {section.diagram && (
             <figure style={{ margin: '20px 0', textAlign: 'center', background: 'var(--bg)', borderRadius: 12, border: '1px solid var(--border)', padding: 18 }}>
-              <Image
-                src={`/${noteFolder(section.diagram)}/notes/${section.diagram}.png`}
-                alt={section.diagramCaption ?? section.heading}
-                width={680}
-                height={520}
-                style={{ width: '100%', height: 'auto', maxWidth: 560, objectFit: 'contain' }}
-                unoptimized
-              />
+              {section.diagramFormat === 'svg' ? (
+                // SVG scales crisply at any width — fully responsive, no fixed intrinsic size.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={`/${noteFolder(section.diagram)}/notes/${section.diagram}.svg`}
+                  alt={section.diagramCaption ?? section.heading}
+                  style={{ display: 'block', width: '100%', height: 'auto', maxWidth: 720, margin: '0 auto' }}
+                />
+              ) : (
+                <Image
+                  src={`/${noteFolder(section.diagram)}/notes/${section.diagram}.png`}
+                  alt={section.diagramCaption ?? section.heading}
+                  width={680}
+                  height={520}
+                  style={{ width: '100%', height: 'auto', maxWidth: 560, objectFit: 'contain' }}
+                  unoptimized
+                />
+              )}
               {section.diagramCaption && (
                 <figcaption style={{ marginTop: 10, fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic' }}>
                   {section.diagramCaption}
                 </figcaption>
               )}
             </figure>
+          )}
+
+          {section.diagramSteps && section.diagramSteps.length > 0 && (
+            <ol style={{ listStyle: 'none', margin: '8px 0 14px', padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {section.diagramSteps.map((step, s) => {
+                const isBoundary = step.kind === 'boundary';
+                const badgeBg = isBoundary ? 'var(--danger, #DD344C)' : '#3B1E66';
+                return (
+                  <li key={s} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: 'var(--bg)', border: '1px solid var(--border)', borderLeft: `3px solid ${badgeBg}`, borderRadius: 10, padding: '12px 14px' }}>
+                    <span aria-hidden style={{ flex: '0 0 auto', width: 28, height: 28, borderRadius: '50%', background: badgeBg, color: '#fff', fontWeight: 700, fontSize: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {step.label}
+                    </span>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14.5, color: 'var(--text)', marginBottom: 2 }}>
+                        {step.title}
+                        <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.4, color: isBoundary ? 'var(--danger, #DD344C)' : '#3B1E66' }}>
+                          {isBoundary ? 'Trust boundary' : 'Data flow'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.7 }}>{renderInline(step.detail)}</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
           )}
 
           {section.keyPoints && section.keyPoints.length > 0 && (

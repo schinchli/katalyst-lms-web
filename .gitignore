@@ -75,6 +75,13 @@ supabase/
 # Knowledge graph (generated)
 .understand-anything/*
 !.understand-anything/config.json
+
+# Security Engineering diagram build/review artifacts
+scripts/sec-eng-aws/diagram_kit/**/__pycache__/
+scripts/sec-eng-aws/diagram_kit/aws_icons/_pptx/
+scripts/sec-eng-aws/diagrams/png/*__compare.png
+scripts/sec-eng-aws/diagrams/png/*__overlay.png
+scripts/sec-eng-aws/diagrams/review/*.png
 .code-review-graph/
 
 # Test artifacts

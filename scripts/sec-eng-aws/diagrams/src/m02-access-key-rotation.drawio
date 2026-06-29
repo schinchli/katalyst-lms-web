@@ -1,67 +1,37 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="m02-key-rotation" name="Access key rotation">
-    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="620" math="0" shadow="0">
+  <diagram id="d" name="diagram">
+    <mxGraphModel dx="1000" dy="700" grid="0" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="562" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- IAM user -->
-        <mxCell id="user" value="IAM user" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#8C7AE6;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=18;aspect=fixed;shape=mxgraph.aws4.user;" vertex="1" parent="1">
-          <mxGeometry x="190" y="60" width="80" height="80" as="geometry" />
-        </mxCell>
-
-        <!-- arrow user -> tools -->
-        <mxCell id="a_user_tools" value="" style="endArrow=block;html=1;strokeColor=#5C6B73;strokeWidth=10;endFill=1;" edge="1" parent="1" source="user" target="cli">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- CLI circle -->
-        <mxCell id="cli" value="C:\" style="ellipse;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=#D6336C;strokeWidth=3;fontColor=#FFFFFF;fontSize=28;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="430" y="50" width="100" height="100" as="geometry" />
-        </mxCell>
-
-        <!-- SDK hexagon circle -->
-        <mxCell id="sdk" value="SDK" style="ellipse;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=#D6336C;strokeWidth=3;fontColor=#FFFFFF;fontSize=24;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="600" y="50" width="100" height="100" as="geometry" />
-        </mxCell>
-
-        <!-- big down arrow -->
-        <mxCell id="downarrow" value="" style="shape=singleArrow;direction=south;whiteSpace=wrap;html=1;fillColor=#5C6B73;strokeColor=none;arrowWidth=0.6;arrowSize=0.4;" vertex="1" parent="1">
-          <mxGeometry x="540" y="200" width="50" height="100" as="geometry" />
-        </mxCell>
-
-        <!-- Key #1 label -->
-        <mxCell id="key1lbl" value="Key #1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="240" y="320" width="200" height="26" as="geometry" />
-        </mxCell>
-        <!-- Key #1 box (dashed purple) -->
-        <mxCell id="key1box" value="Access Key ID: A2IAI5EXAMPLE&lt;br&gt;&lt;br&gt;Secret Access Key: wJalrFE/KbEKxE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#4B0082;strokeWidth=3;dashed=1;dashPattern=8 6;fontSize=15;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="170" y="355" width="430" height="130" as="geometry" />
-        </mxCell>
-        <!-- Key #1 key icon (unicode) -->
-        <mxCell id="key1icon" value="&#128273;" style="text;html=1;align=center;verticalAlign=middle;fontSize=58;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="120" y="390" width="90" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="key1status" value="Status: &lt;b&gt;INACTIVE&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="190" y="500" width="380" height="26" as="geometry" />
-        </mxCell>
-
-        <!-- Key #2 label -->
-        <mxCell id="key2lbl" value="Key #2" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="740" y="320" width="200" height="26" as="geometry" />
-        </mxCell>
-        <!-- Key #2 box -->
-        <mxCell id="key2box" value="Access Key ID: AEEAI4EXAMPLE&lt;br&gt;&lt;br&gt;Secret Access Key: Kma7FEKbE87/EY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#4B0082;strokeWidth=3;dashed=1;dashPattern=8 6;fontSize=15;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="670" y="355" width="430" height="130" as="geometry" />
-        </mxCell>
-        <!-- Key #2 key icon (unicode) -->
-        <mxCell id="key2icon" value="&#128273;" style="text;html=1;align=center;verticalAlign=middle;fontSize=58;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="620" y="390" width="90" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="key2status" value="Status: &lt;b&gt;ACTIVE&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="690" y="500" width="380" height="26" as="geometry" />
-        </mxCell>
-
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1000" height="562" as="geometry"/></mxCell>
+        <mxCell id="t1" value="User access keys" style="text;html=1;align=left;verticalAlign=middle;fontSize=35;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="38" y="30" width="760" height="48" as="geometry"/></mxCell>
+        <mxCell id="rule" value="" style="rounded=0;html=1;fillColor=#330066;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="38" y="78" width="250" height="4" as="geometry"/></mxCell>
+        <mxCell id="iamuser" value="IAM user" style="shape=image;html=1;aspect=fixed;imageAspect=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontColor=#232F3E;fontSize=13;fontFamily=Amazon Ember;labelBackgroundColor=none;image=data:image/png,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;" vertex="1" parent="1"><mxGeometry x="110" y="110" width="52" height="52" as="geometry"/></mxCell>
+        <mxCell id="arr1" value="" style="shape=singleArrow;html=1;fillColor=#7D8998;strokeColor=none;arrowWidth=0.5;arrowHead=0.6;" vertex="1" parent="1"><mxGeometry x="195" y="122" width="60" height="30" as="geometry"/></mxCell>
+        <mxCell id="cli" value="C:\" style="ellipse;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;fontFamily=Amazon Ember;" vertex="1" parent="1"><mxGeometry x="272" y="104" width="62" height="62" as="geometry"/></mxCell>
+        <mxCell id="sdk" value="SDK" style="ellipse;html=1;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;fontFamily=Amazon Ember;" vertex="1" parent="1"><mxGeometry x="340" y="104" width="62" height="62" as="geometry"/></mxCell>
+        <mxCell id="callout" value="3. AnyCompany creates user access keys for developers to use with the AWS CLI and AWS SDK." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F4D8;strokeColor=none;align=left;verticalAlign=top;fontColor=#232F3E;fontSize=13;fontFamily=Amazon Ember;spacing=8;" vertex="1" parent="1"><mxGeometry x="560" y="90" width="380" height="96" as="geometry"/></mxCell>
+        <mxCell id="arr2" value="" style="shape=singleArrow;direction=south;html=1;fillColor=#7D8998;strokeColor=none;arrowWidth=0.5;arrowHead=0.7;" vertex="1" parent="1"><mxGeometry x="288" y="196" width="34" height="60" as="geometry"/></mxCell>
+        <mxCell id="t2" value="Key #1" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="130" y="250" width="200" height="20" as="geometry"/></mxCell>
+        <mxCell id="k1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1;dashed=1;dashPattern=4 3;" vertex="1" parent="1"><mxGeometry x="60" y="272" width="320" height="84" as="geometry"/></mxCell>
+        <mxCell id="k1kb" value="" style="ellipse;html=1;fillColor=none;strokeColor=#232F3E;strokeWidth=4;" vertex="1" parent="1"><mxGeometry x="82" y="308" width="18" height="18" as="geometry"/></mxCell>
+        <mxCell id="k1ks" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="99" y="315" width="26" height="4" as="geometry"/></mxCell>
+        <mxCell id="k1kt1" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="118" y="319" width="4" height="7" as="geometry"/></mxCell>
+        <mxCell id="k1kt2" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="124" y="319" width="4" height="9" as="geometry"/></mxCell>
+        <mxCell id="t3" value="Access Key ID: A2IAI5EXAMPLE" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="130" y="286" width="240" height="20" as="geometry"/></mxCell>
+        <mxCell id="t4" value="Secret Access Key: wJalrFE/KbEKxE" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="130" y="320" width="240" height="20" as="geometry"/></mxCell>
+        <mxCell id="t5" value="Status: INACTIVE" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="362" width="320" height="20" as="geometry"/></mxCell>
+        <mxCell id="t6" value="Key #2" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="630" y="250" width="200" height="20" as="geometry"/></mxCell>
+        <mxCell id="k2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1;dashed=0;" vertex="1" parent="1"><mxGeometry x="560" y="272" width="320" height="84" as="geometry"/></mxCell>
+        <mxCell id="k2kb" value="" style="ellipse;html=1;fillColor=none;strokeColor=#232F3E;strokeWidth=4;" vertex="1" parent="1"><mxGeometry x="582" y="308" width="18" height="18" as="geometry"/></mxCell>
+        <mxCell id="k2ks" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="599" y="315" width="26" height="4" as="geometry"/></mxCell>
+        <mxCell id="k2kt1" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="618" y="319" width="4" height="7" as="geometry"/></mxCell>
+        <mxCell id="k2kt2" value="" style="rounded=0;html=1;fillColor=#232F3E;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="624" y="319" width="4" height="9" as="geometry"/></mxCell>
+        <mxCell id="t7" value="Access Key ID: AEEAI4EXAMPLE" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="630" y="286" width="240" height="20" as="geometry"/></mxCell>
+        <mxCell id="t8" value="Secret Access Key: Kma7FEKbE87/EY" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="630" y="320" width="240" height="20" as="geometry"/></mxCell>
+        <mxCell id="t9" value="Status: ACTIVE" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="560" y="362" width="320" height="20" as="geometry"/></mxCell>
+        <mxCell id="t10" value="Delete the inactive key when you are sure it is not needed." style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="40" y="398" width="600" height="20" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>

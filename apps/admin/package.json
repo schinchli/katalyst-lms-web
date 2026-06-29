@@ -4,28 +4,28 @@
   "private": true,
   "description": "AWS GenAI Prep — Admin Panel (Vuexy Next.js child theme)",
   "scripts": {
-    "dev":        "next dev",
-    "build":      "next build",
-    "start":      "next start",
-    "lint":       "next lint",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "type-check": "tsc --noEmit",
     "setup-vuexy": "bash scripts/setup-vuexy.sh",
-    "sync-vuexy":  "bash scripts/sync-vuexy.sh"
+    "sync-vuexy": "bash scripts/sync-vuexy.sh"
   },
   "dependencies": {
-    "@lms/shared-types": "*",
-    "@lms/theme": "*",
-    "next": "^16.1.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@mui/material": "^7.3.6",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "tailwindcss": "^4.1.17"
+    "@emotion/styled": "^11.14.1",
+    "@lms/shared-types": "^1.0.0",
+    "@lms/theme": "^1.0.0",
+    "@mui/material": "^7.3.11",
+    "next": "^16.2.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.2.6",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
+    "@types/node": "^22.19.19",
+    "@types/react": "^19.2.15",
     "typescript": "~5.9.2"
   },
   "notes": [
