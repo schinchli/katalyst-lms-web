@@ -1,60 +1,24 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="m02-perm-boundary" name="Permissions boundary effective">
-    <mxGraphModel dx="800" dy="500" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="720" pageHeight="430" math="0" shadow="0">
+  <diagram id="d" name="diagram">
+    <mxGraphModel dx="1000" dy="700" grid="0" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="562" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- Identity-based policy box (top-right, purple outline) -->
-        <mxCell id="idpolicy" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7B2D5E;strokeWidth=5;arcSize=14;" vertex="1" parent="1">
-          <mxGeometry x="230" y="20" width="380" height="280" as="geometry" />
-        </mxCell>
-        <mxCell id="idpolicylbl" value="Identity-based&lt;br&gt;policy" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="360" y="35" width="220" height="70" as="geometry" />
-        </mxCell>
-        <!-- black check inside id policy (top) -->
-        <mxCell id="idcheck" value="&#10003;" style="text;html=1;align=center;verticalAlign=middle;fontSize=44;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="250" y="60" width="70" height="60" as="geometry" />
-        </mxCell>
-
-        <!-- Permissions boundary box (bottom-left, purple outline) -->
-        <mxCell id="boundary" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7B2D5E;strokeWidth=5;arcSize=14;" vertex="1" parent="1">
-          <mxGeometry x="20" y="140" width="380" height="270" as="geometry" />
-        </mxCell>
-        <mxCell id="boundarylbl" value="Permissions&lt;br&gt;boundary" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontColor=#232F3E;" vertex="1" parent="1">
-          <mxGeometry x="36" y="320" width="220" height="70" as="geometry" />
-        </mxCell>
-        <!-- black check inside boundary (bottom) -->
-        <mxCell id="bcheck" value="&#10003;" style="text;html=1;align=center;verticalAlign=middle;fontSize=44;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="300" y="320" width="70" height="60" as="geometry" />
-        </mxCell>
-
-        <!-- Intersection (filled dark purple, on top) -->
-        <mxCell id="intersect" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#7B2D5E;strokeColor=none;arcSize=20;" vertex="1" parent="1">
-          <mxGeometry x="230" y="140" width="170" height="160" as="geometry" />
-        </mxCell>
-        <!-- three white checks in intersection -->
-        <mxCell id="wc1" value="&#10003;" style="text;html=1;align=center;verticalAlign=middle;fontSize=40;fontStyle=1;fontColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="280" y="150" width="70" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="wc2" value="&#10003;" style="text;html=1;align=center;verticalAlign=middle;fontSize=40;fontStyle=1;fontColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="280" y="196" width="70" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="wc3" value="&#10003;" style="text;html=1;align=center;verticalAlign=middle;fontSize=40;fontStyle=1;fontColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="280" y="242" width="70" height="48" as="geometry" />
-        </mxCell>
-
-        <!-- Effective permissions arrow pointing into intersection -->
-        <mxCell id="effarrow" value="" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=8;endFill=1;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="560" y="250" as="sourcePoint" />
-            <mxPoint x="405" y="250" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="efflbl" value="Effective permissions" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontColor=#4B0082;" vertex="1" parent="1">
-          <mxGeometry x="380" y="300" width="320" height="30" as="geometry" />
-        </mxCell>
-
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1000" height="562" as="geometry"/></mxCell>
+        <mxCell id="t1" value="Effective permissions" style="text;html=1;align=left;verticalAlign=middle;fontSize=35;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="38" y="30" width="760" height="48" as="geometry"/></mxCell>
+        <mxCell id="rule" value="" style="rounded=0;html=1;fillColor=#8C4FFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="38" y="78" width="360" height="4" as="geometry"/></mxCell>
+        <mxCell id="bound" value="" style="rounded=1;arcSize=10;html=1;fillColor=#FFFFFF;strokeColor=#8C1060;strokeWidth=3;" vertex="1" parent="1"><mxGeometry x="290" y="250" width="380" height="220" as="geometry"/></mxCell>
+        <mxCell id="t2" value="Permissions&#10;boundary" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="304" y="408" width="170" height="44" as="geometry"/></mxCell>
+        <mxCell id="ident" value="" style="rounded=1;arcSize=10;html=1;fillColor=#FFFFFF;strokeColor=#4A1A6B;strokeWidth=3;" vertex="1" parent="1"><mxGeometry x="470" y="120" width="380" height="220" as="geometry"/></mxCell>
+        <mxCell id="t3" value="Identity-based&#10;policy" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontFamily=Amazon Ember;fontColor=#232F3E;" vertex="1" parent="1"><mxGeometry x="636" y="134" width="200" height="44" as="geometry"/></mxCell>
+        <mxCell id="overlap" value="" style="rounded=1;arcSize=14;html=1;fillColor=#6A1B5A;gradientColor=#3F1238;gradientDirection=south;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="486" y="196" width="150" height="210" as="geometry"/></mxCell>
+        <mxCell id="ov1" style="endArrow=none;startArrow=none;html=1;rounded=1;strokeColor=#FFFFFF;strokeWidth=8;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="520" y="245.2" as="sourcePoint"/><mxPoint x="548.6" y="227.6" as="targetPoint"/><Array as="points"><mxPoint x="529.9" y="256.2"/></Array></mxGeometry></mxCell>
+        <mxCell id="ov2" style="endArrow=none;startArrow=none;html=1;rounded=1;strokeColor=#FFFFFF;strokeWidth=8;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="520" y="299.2" as="sourcePoint"/><mxPoint x="548.6" y="281.6" as="targetPoint"/><Array as="points"><mxPoint x="529.9" y="310.2"/></Array></mxGeometry></mxCell>
+        <mxCell id="ov3" style="endArrow=none;startArrow=none;html=1;rounded=1;strokeColor=#FFFFFF;strokeWidth=8;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="520" y="353.2" as="sourcePoint"/><mxPoint x="548.6" y="335.6" as="targetPoint"/><Array as="points"><mxPoint x="529.9" y="364.2"/></Array></mxGeometry></mxCell>
+        <mxCell id="id_chk" style="endArrow=none;startArrow=none;html=1;rounded=1;strokeColor=#111111;strokeWidth=8;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="181.2" as="sourcePoint"/><mxPoint x="718.6" y="163.6" as="targetPoint"/><Array as="points"><mxPoint x="699.9" y="192.2"/></Array></mxGeometry></mxCell>
+        <mxCell id="bd_chk" style="endArrow=none;startArrow=none;html=1;rounded=1;strokeColor=#111111;strokeWidth=8;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="385.2" as="sourcePoint"/><mxPoint x="568.6" y="367.6" as="targetPoint"/><Array as="points"><mxPoint x="549.9" y="396.2"/></Array></mxGeometry></mxCell>
+        <mxCell id="effarrow" style="endArrow=open;endSize=14;startArrow=none;html=1;rounded=0;strokeColor=#2E1A6B;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="858" y="320" as="sourcePoint"/><mxPoint x="642" y="320" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="t4" value="Effective permissions" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontFamily=Amazon Ember;fontColor=#6B2FA0;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="648" y="414" width="240" height="26" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
