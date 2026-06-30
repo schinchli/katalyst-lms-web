@@ -1,90 +1,42 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="m03-scp-deny" name="SCP inheritance deny example">
-    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="700" math="0" shadow="0">
+  <diagram id="d" name="diagram">
+    <mxGraphModel dx="1000" dy="700" grid="0" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="562" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- Default SCP title -->
-        <mxCell id="scptitle" value="&lt;b&gt;Default SCP:&lt;/b&gt; FullAWSAccess" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=18;" vertex="1" parent="1">
-          <mxGeometry x="30" y="20" width="420" height="30" as="geometry" />
-        </mxCell>
-        <!-- Default SCP JSON box -->
-        <mxCell id="scpjson" value="{&#10;&#160;&#160;&quot;Effect&quot;: &quot;Allow&quot;,&#10;&#160;&#160;&quot;Action&quot;: &quot;*&quot;,&#10;&#160;&#160;&quot;Resource&quot;: &quot;*&quot;&#10;}" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#9E9E9E;align=left;verticalAlign=top;fontFamily=Courier New;fontSize=18;fontColor=#1F3864;spacingLeft=10;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="30" y="60" width="370" height="170" as="geometry" />
-        </mxCell>
-        <!-- checklist icon inside SCP box -->
-        <mxCell id="scpcheck" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#DD344C;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="300" y="105" width="60" height="70" as="geometry" />
-        </mxCell>
-
-        <!-- OU 1 icon -->
-        <mxCell id="ou1" value="OU 1" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=left;html=1;fontSize=18;fontColor=#232F3E;fontStyle=1;spacingRight=8;" vertex="1" parent="1">
-          <mxGeometry x="500" y="280" width="64" height="64" as="geometry" />
-        </mxCell>
-        <!-- OU 2 icon -->
-        <mxCell id="ou2" value="OU 2" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.organizations_organizational_unit;sketch=0;outlineConnect=0;fillColor=#CD2264;strokeColor=none;verticalLabelPosition=right;verticalAlign=middle;align=left;labelPosition=right;html=1;fontSize=18;fontColor=#232F3E;fontStyle=1;spacingLeft=8;" vertex="1" parent="1">
-          <mxGeometry x="860" y="280" width="64" height="64" as="geometry" />
-        </mxCell>
-
-        <!-- OU 1 result box (light blue) -->
-        <mxCell id="box1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D9F2FB;strokeColor=#90CAF9;" vertex="1" parent="1">
-          <mxGeometry x="20" y="380" width="580" height="290" as="geometry" />
-        </mxCell>
-        <mxCell id="box1txt" value="&lt;font color=&quot;#CD2264&quot;&gt;&lt;b&gt;Inherited:&lt;/b&gt;&lt;/font&gt; FullAWSAccess&lt;br&gt;&lt;font color=&quot;#3B1E66&quot;&gt;&lt;b&gt;Attached:&lt;/b&gt;&lt;/font&gt; None" style="text;html=1;align=left;verticalAlign=top;fontColor=#232F3E;fontSize=18;" vertex="1" parent="1">
-          <mxGeometry x="40" y="400" width="540" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="box1state" value="&lt;i&gt;Default state&lt;/i&gt;" style="text;html=1;align=left;verticalAlign=bottom;fontColor=#666666;fontSize=18;" vertex="1" parent="1">
-          <mxGeometry x="40" y="610" width="200" height="40" as="geometry" />
-        </mxCell>
-
-        <!-- OU 2 result box (grey) -->
-        <mxCell id="box2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#BDBDBD;" vertex="1" parent="1">
-          <mxGeometry x="640" y="380" width="580" height="290" as="geometry" />
-        </mxCell>
-        <mxCell id="box2txt" value="&lt;font color=&quot;#CD2264&quot;&gt;&lt;b&gt;Inherited:&lt;/b&gt;&lt;/font&gt; FullAWSAccess&lt;br&gt;&lt;font color=&quot;#3B1E66&quot;&gt;&lt;b&gt;Attached:&lt;/b&gt;&lt;/font&gt; Deny_DeleteLogs" style="text;html=1;align=left;verticalAlign=top;fontColor=#232F3E;fontSize=18;" vertex="1" parent="1">
-          <mxGeometry x="660" y="400" width="540" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="box2json" value="{&#10;&#160;&quot;Effect&quot;: &quot;Deny&quot;,&#10;&#160;&quot;Action&quot;: [&#10;&#160;&#160;&#160;&#160;&quot;ec2:DeleteFlowLogs&quot;,&#10;&#160;&#160;&#160;&#160;&quot;logs:DeleteLogGroup&quot;,&#10;&#160;&#160;&#160;&#160;&quot;logs:DeleteLogStream&quot;,]&#10;&#160;&quot;Resource&quot;: &quot;*&quot;&#10;}" style="text;html=1;align=left;verticalAlign=top;fontFamily=Courier New;fontSize=17;fontColor=#1F3864;" vertex="1" parent="1">
-          <mxGeometry x="660" y="470" width="540" height="190" as="geometry" />
-        </mxCell>
-
-        <!-- star on OU 2 box -->
-        <mxCell id="star" value="" style="shape=mxgraph.basic.star;fillColor=#FFD400;strokeColor=#E6A700;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1150" y="350" width="80" height="80" as="geometry" />
-        </mxCell>
-
-        <!-- arrow from SCP box rightward, then T-split down to OU 1 and OU 2 -->
-        <mxCell id="e_right" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=4;exitX=1;exitY=0.4;entryX=0;entryY=0.5;rounded=0;" edge="1" parent="1" source="scpjson">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="690" y="128" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <!-- down split to OU1 -->
-        <mxCell id="e_ou1" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=4;rounded=0;entryX=0.5;entryY=0;" edge="1" parent="1" target="ou1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="690" y="180" as="sourcePoint" />
-            <Array as="points">
-              <mxPoint x="532" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <!-- down split to OU2 -->
-        <mxCell id="e_ou2" style="endArrow=block;html=1;strokeColor=#3B1E66;strokeWidth=4;rounded=0;entryX=0.5;entryY=0;" edge="1" parent="1" target="ou2">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="690" y="180" as="sourcePoint" />
-            <Array as="points">
-              <mxPoint x="892" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <!-- horizontal connector at y=180 between the two split points -->
-        <mxCell id="e_hbar" style="endArrow=none;html=1;strokeColor=#3B1E66;strokeWidth=4;rounded=0;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="532" y="180" as="sourcePoint" />
-            <mxPoint x="892" y="180" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1000" height="562" as="geometry"/></mxCell>
+        <mxCell id="t1" value="Service control policies" style="text;html=1;align=left;verticalAlign=middle;fontSize=35;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="38" y="30" width="760" height="48" as="geometry"/></mxCell>
+        <mxCell id="rule" value="" style="rounded=0;html=1;fillColor=#8C4FFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="38" y="78" width="470" height="4" as="geometry"/></mxCell>
+        <mxCell id="t2" value="Default SCP: FullAWSAccess" style="text;html=1;align=left;verticalAlign=middle;fontSize=18;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="66" y="112" width="420" height="26" as="geometry"/></mxCell>
+        <mxCell id="scpbox" value="" style="rounded=0;html=1;fillColor=#ECECEC;strokeColor=#C9C9C9;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="66" y="148" width="300" height="126" as="geometry"/></mxCell>
+        <mxCell id="scpjson" value="{&#10;  &quot;Effect&quot;: &quot;Allow&quot;,&#10;  &quot;Action&quot;: &quot;*&quot;,&#10;  &quot;Resource&quot;: &quot;*&quot;&#10;}" style="rounded=0;whiteSpace=pre;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontColor=#26124A;fontSize=15;fontFamily=Courier New;spacingLeft=4;spacingTop=2;" vertex="1" parent="1"><mxGeometry x="78" y="158" width="200" height="110" as="geometry"/></mxCell>
+        <mxCell id="scpchk" value="" style="rounded=0;html=1;fillColor=#FFFFFF;strokeColor=#C7253E;strokeWidth=3;" vertex="1" parent="1"><mxGeometry x="286" y="176" width="38" height="48" as="geometry"/></mxCell>
+        <mxCell id="scpchka188" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="295.88" y="188.0" as="sourcePoint"/><mxPoint x="300.88" y="193.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="scpchkb188" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300.88" y="193.0" as="sourcePoint"/><mxPoint x="309.88" y="182.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="scpchka200" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="295.88" y="200.0" as="sourcePoint"/><mxPoint x="300.88" y="205.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="scpchkb200" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="300.88" y="205.0" as="sourcePoint"/><mxPoint x="309.88" y="194.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="scpchkx1" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="295.88" y="209.0" as="sourcePoint"/><mxPoint x="308.88" y="220.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="scpchkx2" style="endArrow=none;startArrow=none;html=1;rounded=0;strokeColor=#C7253E;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="308.88" y="209.0" as="sourcePoint"/><mxPoint x="295.88" y="220.0" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="toroot" style="endArrow=block;endSize=5;startArrow=none;html=1;rounded=0;strokeColor=#330066;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="366" y="210" as="sourcePoint"/><mxPoint x="536" y="156" as="targetPoint"/><Array as="points"></Array></mxGeometry></mxCell>
+        <mxCell id="t3" value="ROOT OU" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="514" y="88" width="140" height="24" as="geometry"/></mxCell>
+        <mxCell id="root" value="" style="shape=image;html=1;aspect=fixed;imageAspect=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontColor=#232F3E;fontSize=13;fontFamily=Amazon Ember;labelBackgroundColor=none;image=data:image/png,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAMKADAAQAAAABAAAAMAAAAADbN2wMAAAD0klEQVRoBe1YMU8UQRR+7+4wFMREc0s4EgmFLcZCSwpjp4mNlaUUWFoI0RxBFvBIFH6CsbMxEoMGOmJhiYUJ2lEQLQ65iwVSaPbuxvf2bjZ7u7N3s4Pc7hk3uezMm/dmvve+N29mD+D/k2wEUC5ftuY2qX1D9lPy3ipUSjc7Ycn4BtMGnqF1xZTzOeA2yWOPleBYL/uUEUJnPT8DOvqp0wkxkBaEupnw7zOQ9uqkw0DXSpBA2nmYtPeAbk6etjPB6qTDwGljOtH82gycaBUNYwHTA2UrvwoCd0arpZcaJq5Kahgo54enEPA+Ijyv5IuFvnLgC9hnMAPFFuhBB/FRXzlwLl+7C0KMAeJXAi7oLjOty0LiKdQWfQEPCP86OaHNQuIOeNEH+DxSebKOmexSHBYSdaAt+oCLlDpi5PvybhwWEnUgGH25ceOwkJgD7dGHJY6+dKCdBXgo5ap37IPM4HKn/Cxsj37pdRAcsyAajdt0NtyjivTUqq6UgzrcN2HAu0ipJlTIQvqdoi/tdVmIzYBcQOdyF7x4SdvzlnOHEmas1X9FenJI+WYWvp21ly4c2T+CCiYMBOeI3aeT6oiMfmsbIh428Je3R/x2xgz4J4nbHj0svSGbwbh2Kv1EGFABMZX1vQOJpBBH+9Cyh+rozKKAW5TcF1lGZ8GeQNzIitzacMU+Zlm3JxEGyvnitTo4u1SJHhP4ywRyiH9uW4gFHmOdbuB5vOcOuMAQt2ntcYr5B2YgJ8Qo/7jNMneMdHSc6GkKuWkDzgsCSFhhpVDJzSPYDerL550Ae7NsOcuUTkX6PnhBNhOd0snYgahDSiJRvTnnKW3GOcoK8K4JOyQq9vyBVZuk69GkawOwoJqPZSYptBU1WYSc/7Z3n2aKcPjFaiDyUqWpR06Q7hp3pE2bgq8TmwG6QnT8v943d6hJaeNWmyyIj6HBgCALjZ0a1SVpExj2uiYMeMZpaPTUAdqYe+x0HfBKN+frkLnKOtImSr+nDtAl7i0DocNqlqpN5No8RrozLd2NKPAsD03C1cWkwnRaRI7lGg5vzH2uLlwqVU6wjMdYh3X5VJb2qrd/E3N1CX18qIxMZVb12U86nKaovm9znedSeSDmVuWm5rQ5wNoMjTF4Qf8VTQ1XO18pPAdOUl3iOFSorrwnJ67zIcVRplSZ5GrTfKjmNJ99Bs+6UhD1DqVQlOLflDOwnHAuEW7+mP9Ec/PF7dhtIy5mYWBCBzxj8hjgTi8fTidab6H1M146EQaM0SoMtRk4rcqkwBRLpMNA3LtPLACGymnEZOhKv5v9AfuFTqYufSm4AAAAAElFTkSuQmCC;" vertex="1" parent="1"><mxGeometry x="540" y="114" width="54" height="50" as="geometry"/></mxCell>
+        <mxCell id="ou1" value="" style="shape=image;html=1;aspect=fixed;imageAspect=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontColor=#232F3E;fontSize=13;fontFamily=Amazon Ember;labelBackgroundColor=none;image=data:image/png,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAMKADAAQAAAABAAAAMAAAAADbN2wMAAAD0klEQVRoBe1YMU8UQRR+7+4wFMREc0s4EgmFLcZCSwpjp4mNlaUUWFoI0RxBFvBIFH6CsbMxEoMGOmJhiYUJ2lEQLQ65iwVSaPbuxvf2bjZ7u7N3s4Pc7hk3uezMm/dmvve+N29mD+D/k2wEUC5ftuY2qX1D9lPy3ipUSjc7Ycn4BtMGnqF1xZTzOeA2yWOPleBYL/uUEUJnPT8DOvqp0wkxkBaEupnw7zOQ9uqkw0DXSpBA2nmYtPeAbk6etjPB6qTDwGljOtH82gycaBUNYwHTA2UrvwoCd0arpZcaJq5Kahgo54enEPA+Ijyv5IuFvnLgC9hnMAPFFuhBB/FRXzlwLl+7C0KMAeJXAi7oLjOty0LiKdQWfQEPCP86OaHNQuIOeNEH+DxSebKOmexSHBYSdaAt+oCLlDpi5PvybhwWEnUgGH25ceOwkJgD7dGHJY6+dKCdBXgo5ap37IPM4HKn/Cxsj37pdRAcsyAajdt0NtyjivTUqq6UgzrcN2HAu0ipJlTIQvqdoi/tdVmIzYBcQOdyF7x4SdvzlnOHEmas1X9FenJI+WYWvp21ly4c2T+CCiYMBOeI3aeT6oiMfmsbIh428Je3R/x2xgz4J4nbHj0svSGbwbh2Kv1EGFABMZX1vQOJpBBH+9Cyh+rozKKAW5TcF1lGZ8GeQNzIitzacMU+Zlm3JxEGyvnitTo4u1SJHhP4ywRyiH9uW4gFHmOdbuB5vOcOuMAQt2ntcYr5B2YgJ8Qo/7jNMneMdHSc6GkKuWkDzgsCSFhhpVDJzSPYDerL550Ae7NsOcuUTkX6PnhBNhOd0snYgahDSiJRvTnnKW3GOcoK8K4JOyQq9vyBVZuk69GkawOwoJqPZSYptBU1WYSc/7Z3n2aKcPjFaiDyUqWpR06Q7hp3pE2bgq8TmwG6QnT8v943d6hJaeNWmyyIj6HBgCALjZ0a1SVpExj2uiYMeMZpaPTUAdqYe+x0HfBKN+frkLnKOtImSr+nDtAl7i0DocNqlqpN5No8RrozLd2NKPAsD03C1cWkwnRaRI7lGg5vzH2uLlwqVU6wjMdYh3X5VJb2qrd/E3N1CX18qIxMZVb12U86nKaovm9znedSeSDmVuWm5rQ5wNoMjTF4Qf8VTQ1XO18pPAdOUl3iOFSorrwnJ67zIcVRplSZ5GrTfKjmNJ99Bs+6UhD1DqVQlOLflDOwnHAuEW7+mP9Ec/PF7dhtIy5mYWBCBzxj8hjgTi8fTidab6H1M146EQaM0SoMtRk4rcqkwBRLpMNA3LtPLACGymnEZOhKv5v9AfuFTqYufSm4AAAAAElFTkSuQmCC;" vertex="1" parent="1"><mxGeometry x="380" y="232" width="50" height="46" as="geometry"/></mxCell>
+        <mxCell id="t4" value="OU 1" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="312" y="246" width="64" height="24" as="geometry"/></mxCell>
+        <mxCell id="ou2" value="" style="shape=image;html=1;aspect=fixed;imageAspect=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontColor=#232F3E;fontSize=13;fontFamily=Amazon Ember;labelBackgroundColor=none;image=data:image/png,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAMKADAAQAAAABAAAAMAAAAADbN2wMAAAD0klEQVRoBe1YMU8UQRR+7+4wFMREc0s4EgmFLcZCSwpjp4mNlaUUWFoI0RxBFvBIFH6CsbMxEoMGOmJhiYUJ2lEQLQ65iwVSaPbuxvf2bjZ7u7N3s4Pc7hk3uezMm/dmvve+N29mD+D/k2wEUC5ftuY2qX1D9lPy3ipUSjc7Ycn4BtMGnqF1xZTzOeA2yWOPleBYL/uUEUJnPT8DOvqp0wkxkBaEupnw7zOQ9uqkw0DXSpBA2nmYtPeAbk6etjPB6qTDwGljOtH82gycaBUNYwHTA2UrvwoCd0arpZcaJq5Kahgo54enEPA+Ijyv5IuFvnLgC9hnMAPFFuhBB/FRXzlwLl+7C0KMAeJXAi7oLjOty0LiKdQWfQEPCP86OaHNQuIOeNEH+DxSebKOmexSHBYSdaAt+oCLlDpi5PvybhwWEnUgGH25ceOwkJgD7dGHJY6+dKCdBXgo5ap37IPM4HKn/Cxsj37pdRAcsyAajdt0NtyjivTUqq6UgzrcN2HAu0ipJlTIQvqdoi/tdVmIzYBcQOdyF7x4SdvzlnOHEmas1X9FenJI+WYWvp21ly4c2T+CCiYMBOeI3aeT6oiMfmsbIh428Je3R/x2xgz4J4nbHj0svSGbwbh2Kv1EGFABMZX1vQOJpBBH+9Cyh+rozKKAW5TcF1lGZ8GeQNzIitzacMU+Zlm3JxEGyvnitTo4u1SJHhP4ywRyiH9uW4gFHmOdbuB5vOcOuMAQt2ntcYr5B2YgJ8Qo/7jNMneMdHSc6GkKuWkDzgsCSFhhpVDJzSPYDerL550Ae7NsOcuUTkX6PnhBNhOd0snYgahDSiJRvTnnKW3GOcoK8K4JOyQq9vyBVZuk69GkawOwoJqPZSYptBU1WYSc/7Z3n2aKcPjFaiDyUqWpR06Q7hp3pE2bgq8TmwG6QnT8v943d6hJaeNWmyyIj6HBgCALjZ0a1SVpExj2uiYMeMZpaPTUAdqYe+x0HfBKN+frkLnKOtImSr+nDtAl7i0DocNqlqpN5No8RrozLd2NKPAsD03C1cWkwnRaRI7lGg5vzH2uLlwqVU6wjMdYh3X5VJb2qrd/E3N1CX18qIxMZVb12U86nKaovm9znedSeSDmVuWm5rQ5wNoMjTF4Qf8VTQ1XO18pPAdOUl3iOFSorrwnJ67zIcVRplSZ5GrTfKjmNJ99Bs+6UhD1DqVQlOLflDOwnHAuEW7+mP9Ec/PF7dhtIy5mYWBCBzxj8hjgTi8fTidab6H1M146EQaM0SoMtRk4rcqkwBRLpMNA3LtPLACGymnEZOhKv5v9AfuFTqYufSm4AAAAAElFTkSuQmCC;" vertex="1" parent="1"><mxGeometry x="740" y="232" width="50" height="46" as="geometry"/></mxCell>
+        <mxCell id="t5" value="OU 2" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="798" y="246" width="64" height="24" as="geometry"/></mxCell>
+        <mxCell id="r0" style="endArrow=none;endSize=5;startArrow=none;html=1;rounded=0;strokeColor=#330066;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="567" y="164" as="sourcePoint"/><mxPoint x="567" y="210" as="targetPoint"/><Array as="points"></Array></mxGeometry></mxCell>
+        <mxCell id="rbus" style="endArrow=none;endSize=5;startArrow=none;html=1;rounded=0;strokeColor=#330066;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="405" y="210" as="sourcePoint"/><mxPoint x="765" y="210" as="targetPoint"/><Array as="points"></Array></mxGeometry></mxCell>
+        <mxCell id="rA" style="endArrow=block;endSize=5;startArrow=none;html=1;rounded=0;strokeColor=#330066;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="405" y="210" as="sourcePoint"/><mxPoint x="405" y="232" as="targetPoint"/><Array as="points"></Array></mxGeometry></mxCell>
+        <mxCell id="rC" style="endArrow=block;endSize=5;startArrow=none;html=1;rounded=0;strokeColor=#330066;strokeWidth=4;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="765" y="210" as="sourcePoint"/><mxPoint x="765" y="232" as="targetPoint"/><Array as="points"></Array></mxGeometry></mxCell>
+        <mxCell id="box1" value="" style="rounded=0;html=1;fillColor=#E0F2F1;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="58" y="296" width="424" height="240" as="geometry"/></mxCell>
+        <mxCell id="t6" value="Inherited: FullAWSAccess" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontFamily=Amazon Ember;fontColor=#C2185B;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="76" y="312" width="400" height="24" as="geometry"/></mxCell>
+        <mxCell id="t7" value="Attached: None" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontFamily=Amazon Ember;fontColor=#4A148C;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="76" y="340" width="400" height="24" as="geometry"/></mxCell>
+        <mxCell id="def" value="Default state" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=2;fontFamily=Amazon Ember;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="76" y="498" width="200" height="26" as="geometry"/></mxCell>
+        <mxCell id="box2" value="" style="rounded=0;html=1;fillColor=#ECECEC;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="558" y="296" width="424" height="240" as="geometry"/></mxCell>
+        <mxCell id="t8" value="Inherited: FullAWSAccess" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontFamily=Amazon Ember;fontColor=#C2185B;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="576" y="312" width="400" height="24" as="geometry"/></mxCell>
+        <mxCell id="t9" value="Attached: Deny_DeleteLogs" style="text;html=1;align=left;verticalAlign=middle;fontSize=17;fontFamily=Amazon Ember;fontColor=#4A148C;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="576" y="340" width="400" height="24" as="geometry"/></mxCell>
+        <mxCell id="denyjson" value="{&#10;  &quot;Effect&quot;: &quot;Deny&quot;,&#10;  &quot;Action&quot;: [&#10;      &quot;ec2:DeleteFlowLogs&quot;,&#10;      &quot;logs:DeleteLogGroup&quot;,&#10;      &quot;logs:DeleteLogStream&quot; ]&#10;  &quot;Resource&quot;: &quot;*&quot;&#10;}" style="rounded=0;whiteSpace=pre;html=1;fillColor=none;strokeColor=none;align=left;verticalAlign=top;fontColor=#26124A;fontSize=14;fontFamily=Courier New;spacingLeft=4;spacingTop=2;" vertex="1" parent="1"><mxGeometry x="576" y="374" width="404" height="156" as="geometry"/></mxCell>
+        <mxCell id="star" value="" style="shape=mxgraph.basic.star;html=1;fillColor=#FFD400;strokeColor=#E53935;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="916" y="268" width="74" height="74" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
