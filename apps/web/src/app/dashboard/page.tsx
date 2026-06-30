@@ -11,6 +11,7 @@ import { FEATURED_ARTICLES, PLATFORM_TESTIMONIALS } from '@/lib/experienceFixtur
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
+import CloudNews from '@/components/CloudNews';
 
 function getLocalResults(): QuizResult[] {
   if (typeof window === 'undefined') return [];
@@ -217,6 +218,9 @@ export default function DashboardPage() {
           </Link>
         </div>
       )}
+
+      {/* ── Cloud News (parity with mobile home widget) ── */}
+      <CloudNews />
 
       {/* ── Main 2-col grid ── */}
       <div className="dash-academy-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
