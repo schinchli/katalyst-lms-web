@@ -23,6 +23,7 @@ import {
 import { PlatformExperienceProvider } from '@/components/PlatformExperienceProvider';
 import { ManagedQuizContentProvider, useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import AskAI from '@/components/AskAI';
 
 const NAV = [
   { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
@@ -564,6 +565,9 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       <main className="main-content">
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
+
+      {/* Global Ask AI (RAG) — parity with mobile AskAISheet */}
+      <AskAI />
 
       {/* Mobile sidebar overlay */}
       <div
