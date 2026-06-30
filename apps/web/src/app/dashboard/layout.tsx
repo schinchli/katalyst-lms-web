@@ -31,6 +31,7 @@ const NAV = [
   { href: '/dashboard/learn',          label: 'Learn',          icon: PlayNavIcon },
   { href: '/dashboard/flashcards',     label: 'Flashcards',     icon: FlashcardIcon },
   { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
+  { href: '/dashboard/self-challenge',  label: 'Challenge',      icon: ZapIcon },
   { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
 ];
 
@@ -134,6 +135,13 @@ function TrophyIcon({ active }: { active: boolean }) {
       <path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
       <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
       <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+    </svg>
+  );
+}
+function ZapIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
