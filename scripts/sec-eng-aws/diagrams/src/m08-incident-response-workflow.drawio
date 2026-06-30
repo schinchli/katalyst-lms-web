@@ -1,42 +1,18 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="m08-ir-workflow" name="Incident response workflow">
-    <mxGraphModel dx="1000" dy="520" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="420" math="0" shadow="0">
+  <diagram id="d" name="diagram">
+    <mxGraphModel dx="1000" dy="700" grid="0" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="562" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- Title -->
-        <mxCell id="title" value="Incident response workflows" style="text;html=1;align=left;verticalAlign=middle;fontColor=#232F3E;fontSize=26;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="30" y="20" width="700" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="rule" value="" style="endArrow=none;html=1;strokeColor=#7C3AED;strokeWidth=3;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="32" y="70" as="sourcePoint" />
-            <mxPoint x="1070" y="70" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-
-        <!-- Big grey right-pointing arrow (background) -->
-        <mxCell id="bigarrow" value="" style="shape=singleArrow;whiteSpace=wrap;html=1;fillColor=#D5D5DC;strokeColor=none;arrowWidth=0.75;arrowSize=0.28;direction=east;" vertex="1" parent="1">
-          <mxGeometry x="60" y="130" width="980" height="240" as="geometry" />
-        </mxCell>
-
-        <!-- 5 purple step boxes -->
-        <mxCell id="s1" value="Establish&lt;br&gt;control" style="rounded=1;arcSize=22;whiteSpace=wrap;html=1;fillColor=#3D1A66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="175" width="150" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="s2" value="Determine&lt;br&gt;impact" style="rounded=1;arcSize=22;whiteSpace=wrap;html=1;fillColor=#3D1A66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="265" y="175" width="150" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="s3" value="Recover as&lt;br&gt;needed" style="rounded=1;arcSize=22;whiteSpace=wrap;html=1;fillColor=#3D1A66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="450" y="175" width="150" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="s4" value="Investigate&lt;br&gt;root cause" style="rounded=1;arcSize=22;whiteSpace=wrap;html=1;fillColor=#3D1A66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="635" y="175" width="150" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="s5" value="Improve" style="rounded=1;arcSize=22;whiteSpace=wrap;html=1;fillColor=#3D1A66;strokeColor=none;fontColor=#FFFFFF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="820" y="175" width="150" height="150" as="geometry" />
-        </mxCell>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1000" height="562" as="geometry"/></mxCell>
+        <mxCell id="t1" value="Incident response workflows" style="text;html=1;align=left;verticalAlign=middle;fontSize=35;fontFamily=Amazon Ember;fontColor=#232F3E;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="38" y="30" width="760" height="48" as="geometry"/></mxCell>
+        <mxCell id="rule" value="" style="rounded=0;html=1;fillColor=#8C4FFF;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="38" y="96" width="920" height="4" as="geometry"/></mxCell>
+        <mxCell id="arrow" value="" style="shape=singleArrow;direction=east;arrowWidth=0.74;arrowSize=0.26;html=1;fillColor=#D4D1DC;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="118" y="160" width="844" height="248" as="geometry"/></mxCell>
+        <mxCell id="s0" value="Establish&#10;control" style="rounded=1;arcSize=16;html=1;fillColor=#3D1566;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=20;fontFamily=Amazon Ember;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="132" y="209" width="150" height="150" as="geometry"/></mxCell>
+        <mxCell id="s1" value="Determine&#10;impact" style="rounded=1;arcSize=16;html=1;fillColor=#3D1566;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=20;fontFamily=Amazon Ember;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="290" y="209" width="150" height="150" as="geometry"/></mxCell>
+        <mxCell id="s2" value="Recover as&#10;needed" style="rounded=1;arcSize=16;html=1;fillColor=#3D1566;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=20;fontFamily=Amazon Ember;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="448" y="209" width="150" height="150" as="geometry"/></mxCell>
+        <mxCell id="s3" value="Investigate&#10;root cause" style="rounded=1;arcSize=16;html=1;fillColor=#3D1566;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=20;fontFamily=Amazon Ember;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="606" y="209" width="150" height="150" as="geometry"/></mxCell>
+        <mxCell id="s4" value="Improve" style="rounded=1;arcSize=16;html=1;fillColor=#3D1566;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=20;fontFamily=Amazon Ember;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="766" y="209" width="150" height="150" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
