@@ -32,6 +32,7 @@ const NAV = [
   { href: '/dashboard/flashcards',     label: 'Flashcards',     icon: FlashcardIcon },
   { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
   { href: '/dashboard/self-challenge',  label: 'Challenge',      icon: ZapIcon },
+  { href: '/dashboard/coins',          label: 'Coins',          icon: CoinIcon },
   { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
 ];
 
@@ -142,6 +143,13 @@ function ZapIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+function CoinIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><path d="M14.8 9a2.7 2.7 0 0 0-2.8-1.6c-1.7 0-2.5.9-2.5 1.9 0 2.7 5.5 1.3 5.5 4 0 1.1-1 2-2.7 2A2.8 2.8 0 0 1 9.2 15" /><path d="M12 6.5v1.2M12 16.3v1.2" />
     </svg>
   );
 }
