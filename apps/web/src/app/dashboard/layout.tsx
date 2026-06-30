@@ -27,6 +27,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const NAV = [
   { href: '/dashboard',                label: 'Home',           icon: HomeIcon },
   { href: '/dashboard/learning-paths', label: 'Learning Paths', icon: PathIcon },
+  { href: '/dashboard/exam-coach',     label: 'Exam Coach',     icon: ExamIcon },
   { href: '/dashboard/quizzes',        label: 'Courses',        icon: BookIcon },
   { href: '/dashboard/learn',          label: 'Learn',          icon: PlayNavIcon },
   { href: '/dashboard/flashcards',     label: 'Flashcards',     icon: FlashcardIcon },
@@ -143,6 +144,13 @@ function ZapIcon({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+function ExamIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4.5" /><circle cx="12" cy="12" r="1" />
     </svg>
   );
 }
