@@ -33,6 +33,7 @@ const NAV = [
   { href: '/dashboard/flashcards',     label: 'Flashcards',     icon: FlashcardIcon },
   { href: '/dashboard/leaderboard',    label: 'Leaderboard',    icon: TrophyIcon },
   { href: '/dashboard/self-challenge',  label: 'Challenge',      icon: ZapIcon },
+  { href: '/dashboard/battles',        label: 'Battles',        icon: BattleIcon },
   { href: '/dashboard/contests',       label: 'Contests',       icon: ContestIcon },
   { href: '/dashboard/coins',          label: 'Coins',          icon: CoinIcon },
   { href: '/dashboard/profile',        label: 'Profile',        icon: UserIcon },
