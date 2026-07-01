@@ -31,13 +31,15 @@
 | Progress | `/dashboard/progress` | Stat cards, completion bar, full quiz history table with Supabase sync |
 | Leaderboard | `/dashboard/leaderboard` | daily/monthly/alltime periods, top-50, coin + streak display |
 | Flashcards | `/dashboard/flashcards` | Deck selector, flip cards, mark known/unknown, progress ring |
-| Battles | `/dashboard/battles` | Real-time quiz battle lobby + match (prototype via app_settings) |
-| Contests | `/dashboard/contests` | Active contest list, join/view |
-| Coin Store | `/dashboard/coin-store` | Coin pack listings, purchase flow |
-| Coins | `/dashboard/coins` | Coin balance + transaction history |
+| Battles | `/dashboard/battles` | Mode select (random / 1v1 / group). **Simulated** matchmaking — parity with mobile (no realtime backend) |
+| Battle Lobby | `/dashboard/battle-lobby` | Invite code, 30s simulated matchmaking, join-by-code → random free quiz |
+| Contests | `/dashboard/contests` | Live/upcoming/past tabs from `/api/contests`, entry fee + prize, enter → quiz (coin-spend join NOT built — payment) |
+| Coins | `/dashboard/coins` | Coin balance + transaction history from `/api/coins` |
+| Coin Store | `/dashboard/coin-store` | ⚠️ redirect stub — buying coins NOT built (payment money-flow) |
+| Store | `/dashboard/store` | ⚠️ redirect stub — coin/premium purchase hub NOT built (payment) |
 | Bookmarks | `/dashboard/bookmarks` | Saved questions across quizzes |
-| Store | `/dashboard/store` | Premium upgrade + coin purchase hub |
-| Self Challenge | `/dashboard/self-challenge` | Solo timed challenge mode |
+| Self Challenge | `/dashboard/self-challenge` | Beat-the-CPU arena: real best scores, difficulty filter, CPU target → quiz `?challenge=` |
+| Exam Coach | `/dashboard/exam-coach` | Study planner: exam date + daily target, session logging, readiness score + streak (localStorage) |
 | Payment Success | `/dashboard/payment-success` | Post-checkout confirmation |
 | Profile | `/dashboard/profile` | 9 colour swatches, 5 fonts, 4 font sizes, 16 IANA timezones, live CSS variable preview; saved to user_profiles |
 | Settings | `/dashboard/settings` | Admin-only: platform theme, system feature flags, AdSense config, upsell copy |
@@ -63,6 +65,9 @@
 | Sanity CMS | Article content for Learn section; Sanity Studio at `/studio` |
 | reCAPTCHA v3 | Best-effort bot protection on login, signup, reset, profile save |
 | Admin Guard | JWT + `ADMIN_EMAILS` server-side; Settings/Admin pages redirect non-admins |
+| Ask AI (RAG) | Global floating assistant (`components/AskAI`) → `/api/rag/ask`; answer + sources + study-next. Parity with mobile AskAISheet |
+| Cloud News | Home dashboard carousel (`components/CloudNews`) → `/api/cloud-news`; hides itself when empty |
+| Quiz Reviews | Rate + comment on quiz results/intro → `/api/quiz-reviews/[id]`; mobile has matching `components/QuizReviews` |
 
 ### Web Payment
 
@@ -154,6 +159,16 @@ Mirror of the Lambda layer: `quiz-submit`, `progress-fetch`, `leaderboard-fetch`
 ---
 
 ## Planned Features
+
+### Yet to be implemented (as of 2026-07-01)
+
+Web ↔ mobile feature parity is complete **except payment money-flow**. What remains:
+
+- [ ] **Buying coins** (web coin store + `/dashboard/store`) — needs payment flow: extend `create-order`/Stripe + `verify` to grant coins
+- [ ] **Contest join coin-spend** — deduct entry-fee coins on join (depends on the coin money-flow above)
+- [ ] **Mobile in-app payment** — currently defers to web; needs Apple/Google IAP (mobile CLAUDE.md §13.6)
+- [ ] **Real-time battles** — current battles are simulated (parity with mobile); true PvP needs a `battle_sessions` table + Supabase Realtime + matchmaking
+- [ ] Subscription management page (cancel, billing history) + per-user purchase history
 
 ### Phase 2 — Content Expansion
 

@@ -7,11 +7,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Pending
+### Pending (payments + realtime only — see FEATURES.md)
+- Buying coins (web coin store + `/dashboard/store`) — payment money-flow
+- Contest join coin-spend deduction (depends on coin money-flow)
+- Mobile in-app payment (Apple/Google IAP)
+- Real-time battles (`battle_sessions` + Supabase Realtime) — current battles are simulated
 - CDK infrastructure (DynamoDB tables, Cognito, API Gateway)
-- Stripe/Razorpay purchase flow
-- Push notifications (Expo + SNS)
-- Streak tracking + badge engine
+
+---
+
+## [0.11.0] — 2026-07-01 — Web ↔ Mobile Feature Parity + Remote Diagrams + Graph
+
+### Added
+- **Web feature parity** (all replace redirect stubs / fill gaps; real data, typecheck clean, security-gate green; wired into sidebar nav):
+  - Self-Challenge (Challenge Arena, beat-the-CPU) — `/dashboard/self-challenge`
+  - Coins balance + transaction history — `/dashboard/coins`
+  - Exam Coach / study planner (readiness score + streak) — `/dashboard/exam-coach`
+  - Contests (live/upcoming/past) — `/dashboard/contests`
+  - Battles + lobby (simulated matchmaking, parity with mobile) — `/dashboard/battles`, `/dashboard/battle-lobby`
+  - Global Ask AI (RAG) assistant — `components/AskAI`
+  - Cloud News home widget — `components/CloudNews`
+- **Mobile**: quiz reviews (rate + comment) on results — `components/QuizReviews` → `/api/quiz-reviews/[id]`
+- **`docs/FEATURE_MANIFEST.md`** — token-lean feature inventory + graph usage.
+
+### Changed
+- **Mobile diagrams served from Vercel/CDN, not bundled** — `noteDiagrams.ts` maps remote `{uri}` (expo-image disk cache); removed 73 duplicated note PNGs from the mobile repo. EAS source upload 25 MB → 9 MB; APK no longer carries diagram assets.
+- **Knowledge graph** — registered mobile as a second repo + rebuilt both stores (root 331 files / 2104 nodes; mobile 161 files / 870 nodes). Fixed `.claude/settings.json` auto-update hooks to call `uvx code-review-graph` (previously bare command failed silently → stale graph).
+
+### Not built (by decision)
+- Payment money-flow only: buying coins, mobile IAP, contest coin-spend, real-time battles. See FEATURES.md → "Yet to be implemented".
 
 ---
 
