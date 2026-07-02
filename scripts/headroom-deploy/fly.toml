@@ -1,0 +1,26 @@
+# Fly.io deployment for the Headroom compression proxy.
+#   cd scripts/headroom-deploy && fly launch --copy-config --now   (first time)
+#   fly deploy                                                     (updates)
+app = "katalyst-headroom"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "4s"
+    grace_period = "12s"
+    method = "GET"
+    path = "/livez"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
