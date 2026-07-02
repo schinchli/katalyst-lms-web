@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 /**
  * /dashboard/learning-paths
  *
- * Lists all structured certification learning paths (CLF-C02, AIP-C01,
+ * Lists all structured certification learning paths (CLF-C02, AIF-C01,
  * GenAI Foundations, AWS Fundamentals A–Z). Each path is a sequenced
  * set of flashcard + quiz steps. Mirrors the mobile My Track experience.
  */

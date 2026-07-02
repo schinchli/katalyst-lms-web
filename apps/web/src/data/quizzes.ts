@@ -614,7 +614,7 @@ export const quizQuestions: Record<string, Question[]> = {
   'pricing-support':       pricing_supportQuestions,
   'migration-innovation':  migration_innovationQuestions,
 
-  // ── AIP-C01 ──────────────────────────────────────────────────────────────────
+  // ── AIF-C01 ──────────────────────────────────────────────────────────────────
   'aip-c01-rag-foundations':   aipC01RagFoundationsQuestions,
   'aip-c01-security-ops':      aipC01SecurityOpsQuestions,
   'aip-c01-advanced-patterns': aipC01AdvancedPatternsQuestions,

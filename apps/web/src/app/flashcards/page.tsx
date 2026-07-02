@@ -14,16 +14,16 @@ const TOTAL_DECKS = flashcardDecks.length;
 
 export const metadata: Metadata = {
   title: `Free AWS, Kubernetes & GenAI Flashcards — ${TOTAL_CARDS}+ cards | LearnKloud`,
-  description: `Browse ${TOTAL_DECKS} flashcard decks covering Amazon EKS, AWS Cloud Practitioner (CLF-C02), AI Practitioner (AIP-C01), Kubernetes, and GenAI. ${TOTAL_CARDS}+ cards, free to study.`,
+  description: `Browse ${TOTAL_DECKS} flashcard decks covering Amazon EKS, AWS Cloud Practitioner (CLF-C02), AI Practitioner (AIF-C01), Kubernetes, and GenAI. ${TOTAL_CARDS}+ cards, free to study.`,
   keywords: [
     'AWS flashcards', 'EKS flashcards', 'Kubernetes flashcards', 'CLF-C02 flashcards',
-    'AIP-C01 flashcards', 'GenAI flashcards', 'AWS certification prep', 'free flashcards',
+    'AIF-C01 flashcards', 'GenAI flashcards', 'AWS certification prep', 'free flashcards',
     'Amazon EKS exam prep', 'cloud certification flashcards',
   ],
   alternates: { canonical: `${PUBLIC_BASE_URL}/flashcards` },
   openGraph: {
     title: `Free AWS & Kubernetes Flashcards (${TOTAL_CARDS}+) | LearnKloud`,
-    description: `${TOTAL_DECKS} decks · ${TOTAL_CARDS} cards · free to study. Amazon EKS, CLF-C02, AIP-C01, Kubernetes, GenAI.`,
+    description: `${TOTAL_DECKS} decks · ${TOTAL_CARDS} cards · free to study. Amazon EKS, CLF-C02, AIF-C01, Kubernetes, GenAI.`,
     url: `${PUBLIC_BASE_URL}/flashcards`,
     siteName: 'LearnKloud',
     type: 'website',

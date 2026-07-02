@@ -629,13 +629,13 @@ export const LEARNING_PATHS: LearningPath[] = [
   },
 
   // ─────────────────────────────────────────────────────────────
-  // AWS AI Practitioner — AIP-C01
+  // AWS AI Practitioner — AIF-C01
   // ─────────────────────────────────────────────────────────────
   {
     id: 'aip-c01',
-    certCode: 'AIP-C01',
+    certCode: 'AIF-C01',
     certName: 'AWS AI Practitioner',
-    tagline: 'Master generative AI on AWS and pass AIP-C01',
+    tagline: 'Master generative AI on AWS and pass AIF-C01',
     difficulty: 'Intermediate',
     totalHours: 10,
     color: '#7367F0',
@@ -648,7 +648,7 @@ export const LEARNING_PATHS: LearningPath[] = [
         subtitle: "A Beginner's Guide to Amazon Bedrock",
         estimatedMinutes: 22,
         icon: 'play-circle',
-        why: 'Amazon Bedrock is the core service tested across all AIP-C01 domains.',
+        why: 'Amazon Bedrock is the core service tested across all AIF-C01 domains.',
       },
       {
         id: 'aip-v2',
@@ -658,13 +658,13 @@ export const LEARNING_PATHS: LearningPath[] = [
         subtitle: 'Building RAG Applications with Amazon Bedrock',
         estimatedMinutes: 19,
         icon: 'play-circle',
-        why: 'RAG is heavily tested — accounts for ~20% of AIP-C01 questions.',
+        why: 'RAG is heavily tested — accounts for ~20% of AIF-C01 questions.',
       },
       {
         id: 'aip-flash1',
         type: 'flashcard',
         resourceId: 'aip-c01',
-        title: 'AIP-C01 Flashcards',
+        title: 'AIF-C01 Flashcards',
         subtitle: '20 key concepts & definitions',
         estimatedMinutes: 20,
         icon: 'layers',
@@ -688,7 +688,7 @@ export const LEARNING_PATHS: LearningPath[] = [
         subtitle: 'Build AI Agents — 15 min',
         estimatedMinutes: 16,
         icon: 'play-circle',
-        why: 'Agents & orchestration is a key AIP-C01 section. Watch before the next quiz.',
+        why: 'Agents & orchestration is a key AIF-C01 section. Watch before the next quiz.',
       },
       {
         id: 'aip-q2',
