@@ -35,6 +35,7 @@ function toSections(md) {
     const h = raw.match(/^#{2,4}\s+(.+)/);
     if (h) { flush(); cur = { heading: clean(h[1]), bodyLines: [], keyPoints: [] }; continue; }
     if (!cur) cur = { heading: 'Overview', bodyLines: [], keyPoints: [] };
+    if (/^\s*```/.test(raw)) continue; // drop code-fence markers
     const b = raw.match(/^\s*[-*]\s+(.+)/);
     if (b) cur.keyPoints.push(clean(b[1]).slice(0, 180));
     else if (raw.trim() && !/^#\s/.test(raw)) cur.bodyLines.push(clean(raw));
@@ -46,7 +47,12 @@ function toSections(md) {
 
 function moduleNotes(moduleId, title, subtitle, md, examTips) {
   const sections = toSections(md);
-  const intro = clean((md.split('\n\n').find((p) => p.trim() && !p.startsWith('#')) || subtitle)).slice(0, 400);
+  const introPara = md.split('\n\n').find((p) => {
+    const t = p.trim();
+    return t && !t.startsWith('#') && !/^[-=*_\s]{3,}$/.test(t) && !/^\s*[-*]\s/.test(t)
+      && !/[{}`]|"\s*:|```/.test(t) && /[a-z]/.test(t) && wordCount(t) > 8;
+  });
+  const intro = clean(introPara || subtitle).slice(0, 400);
   return {
     moduleId, title, subtitle,
     readingMinutes: readingMin(md),
