@@ -1,144 +1,363 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+/**
+ * /dashboard/learn — unified, filterable content Library.
+ *
+ * Aggregates notes, quizzes, videos, articles, and flashcards into one
+ * searchable grid, mirroring the mobile Library exactly (shared content-type
+ * registry in @/components/ContentTypeBadge).
+ */
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { ArticleListItem } from '@/lib/sanityClient';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import {
+  CONTENT_TYPES,
+  ContentTypeBadge,
+  ContentTypeIconTile,
+  FeatherIcon,
+  type ContentKind,
+} from '@/components/ContentTypeBadge';
+import { LEARNING_PATHS } from '@/data/learningPaths';
+import { flashcardDecks } from '@/data/flashcards';
+import { quizzes } from '@/data/quizzes';
+import { PLAYLIST } from '@/data/videos';
 
-const TAG_COLORS: Record<string, string> = {
-  'AWS':           'vx-badge-primary',
-  'GenAI':         'vx-badge-success',
-  'Security':      'vx-badge-error',
-  'Networking':    'vx-badge-info',
-  'Hugging Face':  'vx-badge-primary',
-  'SQL':           'vx-badge-info',
-  'AI Agents':     'vx-badge-success',
-  'Bedrock':       'vx-badge-warning',
-  'Prompting':     'vx-badge-error',
-  'Observability': 'vx-badge-secondary',
-};
+interface LibraryItem {
+  key: string;
+  kind: ContentKind;
+  title: string;
+  subtitle?: string;
+  meta: string;
+  course?: string;
+  premium?: boolean;
+  href?: string;
+  externalUrl?: string;
+}
 
-const TAG_AVATAR: Record<string, string> = {
-  'AWS':           'vx-avatar-primary',
-  'GenAI':         'vx-avatar-success',
-  'Security':      'vx-avatar-error',
-  'Networking':    'vx-avatar-info',
-  'Hugging Face':  'vx-avatar-primary',
-  'SQL':           'vx-avatar-info',
-  'AI Agents':     'vx-avatar-success',
-  'Bedrock':       'vx-avatar-warning',
-  'Prompting':     'vx-avatar-error',
-  'Observability': 'vx-avatar-secondary',
-};
+const KIND_ORDER: ContentKind[] = ['notes', 'quiz', 'video', 'article', 'flashcard'];
 
 function formatDate(iso: string | null) {
   if (!iso) return '';
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+function articleMeta(article: ArticleListItem): string {
+  const parts = [article.author ?? 'LearnKloud Team'];
+  if (article.readTime) parts.push(article.readTime);
+  const date = formatDate(article.publishedAt);
+  if (date) parts.push(date);
+  return parts.join(' · ');
+}
+
 export default function LearnPage() {
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [kindFilter, setKindFilter] = useState<'all' | ContentKind>('all');
+  const [courseFilter, setCourseFilter] = useState<string>('all');
 
   useEffect(() => {
     fetch('/api/articles')
       .then((r) => r.json())
       .then((d: { ok: boolean; articles?: ArticleListItem[]; error?: string }) => {
         if (d.ok && d.articles) setArticles(d.articles);
-        else setError(d.error ?? 'Failed to load articles');
+        else setArticlesError(d.error ?? 'Failed to load articles');
       })
-      .catch(() => setError('Failed to load articles'))
-      .finally(() => setLoading(false));
+      .catch(() => setArticlesError('Failed to load articles'))
+      .finally(() => setArticlesLoading(false));
   }, []);
+
+  // ── Aggregate every content source into LibraryItems ──
+  const items = useMemo<LibraryItem[]>(() => {
+    const list: LibraryItem[] = [];
+
+    // Notes + flashcards from learning paths
+    for (const path of LEARNING_PATHS) {
+      for (const step of path.steps) {
+        if (step.type === 'notes') {
+          list.push({
+            key: `notes-${step.id}`,
+            kind: 'notes',
+            title: step.title.replace(/^Read:\s*/, ''),
+            subtitle: step.subtitle,
+            meta: `${path.certCode} · ${step.estimatedMinutes} min read`,
+            course: path.certCode,
+            href: `/dashboard/learning-paths/notes/${step.resourceId}`,
+          });
+        }
+        if (step.type === 'flashcard') {
+          // Mirror the stepHref guard: only link decks that actually exist.
+          const deck = flashcardDecks.find((d) => d.id === step.resourceId);
+          if (!deck) continue;
+          list.push({
+            key: `flashcard-${step.id}`,
+            kind: 'flashcard',
+            title: step.title,
+            subtitle: step.subtitle,
+            meta: `${path.certCode} · ${step.estimatedMinutes} min`,
+            course: path.certCode,
+            href: `/dashboard/flashcards/${step.resourceId}`,
+          });
+        }
+      }
+    }
+
+    // Quizzes
+    for (const quiz of quizzes) {
+      if (quiz.enabled === false) continue;
+      list.push({
+        key: `quiz-${quiz.id}`,
+        kind: 'quiz',
+        title: quiz.title,
+        subtitle: quiz.description,
+        meta: `${(quiz.examCode ?? quiz.category).toUpperCase()} · ${quiz.questionCount} questions · ${quiz.duration} min`,
+        course: quiz.examCode,
+        premium: quiz.isPremium,
+        href: `/dashboard/quiz/${quiz.id}`,
+      });
+    }
+
+    // Videos (external YouTube)
+    for (const video of PLAYLIST) {
+      list.push({
+        key: `video-${video.id}`,
+        kind: 'video',
+        title: video.title,
+        subtitle: video.description,
+        meta: `${video.author} · ${video.duration}`,
+        externalUrl: `https://youtu.be/${video.youtubeId}`,
+      });
+    }
+
+    // Articles (fetched)
+    for (const article of articles) {
+      list.push({
+        key: `article-${article.slug}`,
+        kind: 'article',
+        title: article.title,
+        subtitle: article.excerpt ?? undefined,
+        meta: articleMeta(article),
+        premium: article.accessTier === 'premium',
+        href: `/dashboard/learn/${article.slug}`,
+      });
+    }
+
+    return list;
+  }, [articles]);
+
+  const courses = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of items) if (item.course) set.add(item.course);
+    return Array.from(set).sort();
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return items.filter((item) => {
+      if (kindFilter !== 'all' && item.kind !== kindFilter) return false;
+      // Course chips are hidden for articles, so don't apply the course filter there.
+      if (kindFilter !== 'article' && courseFilter !== 'all' && item.course !== courseFilter) return false;
+      if (q) {
+        return [item.title, item.subtitle, item.meta]
+          .filter(Boolean)
+          .some((f) => String(f).toLowerCase().includes(q));
+      }
+      return true;
+    });
+  }, [items, kindFilter, courseFilter, search]);
+
+  const grouped = useMemo(
+    () =>
+      KIND_ORDER.map((kind) => ({ kind, items: filtered.filter((i) => i.kind === kind) })).filter(
+        (g) => g.items.length > 0,
+      ),
+    [filtered],
+  );
+
+  const renderCard = (item: LibraryItem) => {
+    const inner = (
+      <>
+        <div style={{ padding: '20px 20px 14px', flex: 1 }}>
+          {/* Top row: type badge + premium lock + external indicator */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+              <ContentTypeBadge kind={item.kind} />
+              {item.premium && <FeatherIcon name="lock" size={13} color="#FF9F43" />}
+            </div>
+            {item.externalUrl && (
+              <FeatherIcon name="external-link" size={13} color="var(--text-secondary)" />
+            )}
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <ContentTypeIconTile kind={item.kind} />
+          </div>
+          <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 15, color: 'var(--text)', lineHeight: 1.4 }}>
+            {item.title}
+          </h6>
+          {item.subtitle && (
+            <p
+              style={{
+                margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6,
+                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+              }}
+            >
+              {item.subtitle}
+            </p>
+          )}
+        </div>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{item.meta}</span>
+        </div>
+      </>
+    );
+
+    const cardStyle = { textDecoration: 'none', display: 'flex', flexDirection: 'column' } as const;
+
+    return item.externalUrl ? (
+      <a key={item.key} href={item.externalUrl} target="_blank" rel="noopener noreferrer" className="quiz-card" style={cardStyle}>
+        {inner}
+      </a>
+    ) : (
+      <Link key={item.key} href={item.href ?? '#'} className="quiz-card" style={cardStyle}>
+        {inner}
+      </Link>
+    );
+  };
 
   return (
     <div className="page-content">
-      {/* Page header */}
+      {/* ── Page header ── */}
       <div style={{ marginBottom: 24 }}>
-        <h4 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Resources</h4>
+        <h4 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Library</h4>
         <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
-          Editorial-style articles, cheat sheets, and guided notes for deep study sessions.
+          All study content in one place — notes, quizzes, videos, articles, and flashcards.
         </p>
       </div>
 
-      {loading && <LoadingSpinner label="Loading articles…" />}
-
-      {!loading && error && (
-        <div className="vx-card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
-          <p style={{ margin: 0 }}>{error}</p>
+      {/* ── Search + filters ── */}
+      <div className="vx-card" style={{ marginBottom: 24, padding: '16px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid var(--border)', borderRadius: 8, padding: '8px 14px', background: 'var(--bg)' }}>
+          <FeatherIcon name="search" size={15} color="var(--text-secondary)" />
+          <input
+            value={search} onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search notes, quizzes, videos, articles, flashcards…"
+            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 14, color: 'var(--text)', width: '100%', fontFamily: 'inherit' }}
+          />
+          {search && (
+            <button
+              type="button" onClick={() => setSearch('')} aria-label="Clear search"
+              style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--text-secondary)' }}
+            >
+              <FeatherIcon name="x" size={14} />
+            </button>
+          )}
         </div>
-      )}
 
-      {!loading && !error && articles.length === 0 && (
-        <div className="vx-card" style={{ padding: 48, textAlign: 'center', color: 'var(--text-secondary)', fontSize: 14 }}>
-          No articles published yet. Check back soon!
-        </div>
-      )}
-
-      {/* Article grid — same layout as /dashboard/quizzes */}
-      {!loading && articles.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-          {articles.map((article) => {
-            const tagColor    = TAG_COLORS[article.tag ?? ''] ?? 'vx-badge-secondary';
-            const avatarColor = TAG_AVATAR[article.tag ?? ''] ?? 'vx-avatar-primary';
-            const tagLetter   = article.tag?.charAt(0).toUpperCase() ?? 'A';
-
+        {/* Type filter chips */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
+          <button
+            type="button" onClick={() => setKindFilter('all')}
+            style={{
+              padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+              border: `1px solid ${kindFilter === 'all' ? 'var(--primary)' : 'var(--border)'}`,
+              background: kindFilter === 'all' ? 'var(--primary)' : 'var(--card-bg)',
+              color: kindFilter === 'all' ? '#fff' : 'var(--text-secondary)',
+            }}
+          >
+            All
+          </button>
+          {KIND_ORDER.map((kind) => {
+            const meta = CONTENT_TYPES[kind];
+            const active = kindFilter === kind;
             return (
-              <Link
-                key={article.slug}
-                href={`/dashboard/learn/${article.slug}`}
-                className="quiz-card"
-                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+              <button
+                key={kind} type="button" onClick={() => setKindFilter(kind)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                  border: `1px solid ${active ? meta.color : 'var(--border)'}`,
+                  background: active ? `${meta.color}22` : 'var(--card-bg)',
+                  color: active ? meta.color : 'var(--text-secondary)',
+                }}
               >
-                {/* Card header */}
-                <div style={{ padding: '20px 20px 14px', flex: 1 }}>
-                  {/* Top row: tag + premium badge on left, readTime on right */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      <span className={`vx-badge ${tagColor}`}>{article.tag ?? 'General'}</span>
-                      {article.accessTier === 'premium' && (
-                        <span className="vx-badge vx-badge-warning">Premium</span>
-                      )}
-                    </div>
-                    {article.readTime && (
-                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{article.readTime}</span>
-                    )}
-                  </div>
-                  {/* Tag avatar in the "icon" slot (mirrors quiz.icon) */}
-                  <div
-                    className={`vx-avatar ${avatarColor}`}
-                    style={{ width: 48, height: 48, borderRadius: 12, fontSize: 18, fontWeight: 700, marginBottom: 12 }}
-                  >
-                    {tagLetter}
-                  </div>
-                  <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 15, color: 'var(--text)', lineHeight: 1.4 }}>
-                    {article.title}
-                  </h6>
-                  {article.excerpt && (
-                    <p
-                      style={{
-                        margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6,
-                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                      }}
-                    >
-                      {article.excerpt}
-                    </p>
-                  )}
-                </div>
-                {/* Card footer */}
-                <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: 'var(--text-secondary)' }}>
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {article.author ?? 'LearnKloud Team'}
-                    </span>
-                    {article.publishedAt && <span>{formatDate(article.publishedAt)}</span>}
-                  </div>
-                </div>
-              </Link>
+                <FeatherIcon name={meta.icon} size={13} color={active ? meta.color : 'var(--text-secondary)'} />
+                {meta.label}
+              </button>
             );
           })}
+        </div>
+
+        {/* Course chips (hidden for articles — they have no course mapping) */}
+        {kindFilter !== 'article' && courses.length > 0 && (
+          <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+            {['all', ...courses].map((course) => {
+              const active = courseFilter === course;
+              return (
+                <button
+                  key={course} type="button" onClick={() => setCourseFilter(course)}
+                  style={{
+                    padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    background: active ? 'var(--primary-light)' : 'var(--card-bg)',
+                    color: active ? 'var(--primary)' : 'var(--text-secondary)',
+                  }}
+                >
+                  {course === 'all' ? 'ALL' : course}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Result count ── */}
+      <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
+        {filtered.length} item{filtered.length === 1 ? '' : 's'}
+      </p>
+
+      {/* ── Grouped sections ── */}
+      {grouped.map(({ kind, items: sectionItems }) => {
+        const meta = CONTENT_TYPES[kind];
+        return (
+          <div key={kind} style={{ marginBottom: 28 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <FeatherIcon name={meta.icon} size={16} color={meta.color} />
+              <h6 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{meta.label}</h6>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>({sectionItems.length})</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+              {sectionItems.map(renderCard)}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Articles still loading — the rest of the library renders above */}
+      {articlesLoading && (kindFilter === 'all' || kindFilter === 'article') && (
+        <LoadingSpinner label="Loading articles…" />
+      )}
+
+      {/* Non-fatal article error */}
+      {!articlesLoading && articlesError && (kindFilter === 'all' || kindFilter === 'article') && (
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
+          Articles unavailable: {articlesError}
+        </p>
+      )}
+
+      {/* Empty state */}
+      {!articlesLoading && filtered.length === 0 && (
+        <div className="vx-card" style={{ padding: '48px 24px', textAlign: 'center' }}>
+          <h5 style={{ margin: '0 0 8px', fontWeight: 700, color: 'var(--text)' }}>No content found</h5>
+          <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', fontSize: 14 }}>Try adjusting your search or filters.</p>
+          <button
+            type="button" onClick={() => { setSearch(''); setKindFilter('all'); setCourseFilter('all'); }}
+            style={{ padding: '10px 20px', borderRadius: 8, background: 'var(--primary)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+          >
+            Reset filters
+          </button>
         </div>
       )}
     </div>

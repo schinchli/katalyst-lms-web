@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { AdBanner } from '@/components/AdBanner';
 import type { MatchPair, Question, QuizMode, QuizResult } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { getDeviceId } from '@/lib/deviceId';
 import { getQuizResults } from '@/lib/db';
 import { usePlatformExperience } from '@/components/PlatformExperienceProvider';
 import { usePayment } from '@/hooks/usePayment';
@@ -71,7 +72,7 @@ const ClockSvg = () => (
   </svg>
 );
 const StarSvg = ({ filled }: { filled: boolean }) => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? 'var(--warning)' : 'none'} stroke="#FF9F43" strokeWidth="2">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? '#FBBF24' : 'none'} stroke={filled ? '#F59E0B' : 'var(--text-secondary)'} strokeWidth="2">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
@@ -104,6 +105,12 @@ export default function QuizPage() {
 
   const [phase,       setPhase]       = useState<Phase>('intro');
   const [idx,         setIdx]         = useState(0);
+
+  // Long questions leave the page scrolled to the answer area — start every
+  // question (and phase change) back at the top so the question is readable.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [idx, phase]);
   const [answers,     setAnswers]     = useState<Record<string, string>>({});
   const [feedback,    setFeedback]    = useState(false);
   const [timeLeft,    setTimeLeft]    = useState(Q_TIME);
@@ -1081,6 +1088,7 @@ export default function QuizPage() {
               <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Rate this quiz</div>
               <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--text-secondary)' }}>
                 Share your experience to help other learners.
+                {!authUserId && ' You’re posting as a Guest — no account needed.'}
               </p>
 
               {alreadyReviewed ? (
@@ -1088,10 +1096,6 @@ export default function QuizPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   {reviewMsg || 'Your review has been submitted.'}
                 </div>
-              ) : !authUserId ? (
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
-                  <a href="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</a> to leave a review.
-                </p>
               ) : (
                 <form onSubmit={async (e) => {
                   e.preventDefault();
@@ -1101,11 +1105,19 @@ export default function QuizPage() {
                   try {
                     const { data: { session } } = await supabase.auth.getSession();
                     const token = session?.access_token;
-                    if (!token) { setReviewMsg('Sign in to leave a review.'); setReviewSubmitting(false); return; }
+                    // Signed-in users submit with their session; guests submit
+                    // with a stable per-device id — no login required.
                     const res = await fetch(`/api/quiz-reviews/${id}`, {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                      body: JSON.stringify({ rating: reviewRating, comment: reviewComment }),
+                      headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                      },
+                      body: JSON.stringify({
+                        rating: reviewRating,
+                        comment: reviewComment,
+                        ...(token ? {} : { deviceId: getDeviceId() }),
+                      }),
                     });
                     const body = await res.json() as { ok: boolean; message?: string; error?: string };
                     if (body.ok) {
@@ -1131,8 +1143,10 @@ export default function QuizPage() {
                         aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
                       >
                         <svg width="28" height="28" viewBox="0 0 24 24"
-                          fill={n <= reviewRating ? '#FF9F43' : 'none'}
-                          stroke="#FF9F43" strokeWidth="1.5">
+                          fill={n <= reviewRating ? '#FBBF24' : 'none'}
+                          stroke={n <= reviewRating ? '#F59E0B' : 'var(--text-secondary)'}
+                          strokeWidth="1.5"
+                          style={{ transition: 'fill 120ms ease, stroke 120ms ease' }}>
                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
                       </button>

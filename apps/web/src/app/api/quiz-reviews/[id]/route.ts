@@ -55,7 +55,46 @@ const ROUTE = '/api/quiz-reviews/[id]';
 const SubmitSchema = z.object({
   rating: z.number().int().min(1).max(5),
   comment: z.string().min(10).max(1000),
+  /** Guest submissions: stable per-device identifier (no login required). */
+  deviceId: z.string().regex(/^[0-9a-fA-F-]{16,64}$/).optional(),
 });
+
+/**
+ * Guest reviews: each device gets a dedicated auth user (created via the
+ * service-role Admin API, never sign-in-able) so the existing quiz_reviews
+ * schema, RLS, and one-review-per-user-per-quiz constraint all keep working.
+ */
+const guestEmail = (deviceId: string) => `guest-${deviceId.toLowerCase()}@guest.katalyst.app`;
+
+async function resolveGuestUserId(deviceId: string): Promise<string | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const headers = { apikey: svc, Authorization: `Bearer ${svc}`, 'Content-Type': 'application/json' };
+  const email = guestEmail(deviceId);
+
+  // Existing guest user for this device?
+  const lookup = await fetch(`${url}/auth/v1/admin/users?filter=${encodeURIComponent(email)}`, { headers });
+  if (lookup.ok) {
+    const body = await lookup.json() as { users?: { id: string; email?: string }[] };
+    const match = body.users?.find((u) => u.email === email);
+    if (match) return match.id;
+  }
+
+  // First review from this device — create its guest user (profile name set
+  // via the on_auth_user_created trigger from user_metadata.name).
+  const created = await fetch(`${url}/auth/v1/admin/users`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      email,
+      email_confirm: true,
+      user_metadata: { name: 'Guest', guest: true, device_id: deviceId },
+    }),
+  });
+  if (!created.ok) return null;
+  const user = await created.json() as { id?: string };
+  return user.id ?? null;
+}
 
 // ── GET: aggregate stats + published user reviews ──────────────────────────────
 export async function GET(
@@ -83,26 +122,43 @@ export async function GET(
   const stored = (settingsRow?.value ?? {}) as Record<string, QuizReviewStats>;
   const stats: QuizReviewStats | null = stored[id] ?? DEFAULT_REVIEW_STATS[id] ?? null;
 
-  // Load published user reviews (max 20 most recent)
+  // Load published user reviews (max 20 most recent).
+  // NOTE: quiz_reviews.user_id references auth.users (no FK to user_profiles),
+  // so PostgREST cannot embed user_profiles here — fetch names separately.
   const { data: reviewRows } = await client
     .from('quiz_reviews')
-    .select('id, user_id, rating, comment, created_at, user_profiles(name)')
+    .select('id, user_id, rating, comment, created_at')
     .eq('quiz_id', id)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(20);
 
-  const reviews: UserReview[] = (reviewRows ?? []).map((r) => {
-    const profile = Array.isArray(r.user_profiles) ? r.user_profiles[0] : r.user_profiles;
-    return {
-      id: r.id as string,
-      userId: r.user_id as string,
-      userName: (profile as { name?: string } | null)?.name ?? 'Learner',
-      rating: r.rating as number,
-      comment: r.comment as string,
-      createdAt: r.created_at as string,
-    };
-  });
+  const userIds = Array.from(new Set((reviewRows ?? []).map((r) => r.user_id as string)));
+  const nameById = new Map<string, string>();
+  if (userIds.length > 0) {
+    // user_profiles is RLS-protected (owner-only) — read names via service role
+    const serviceClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+    const { data: profiles } = await serviceClient
+      .from('user_profiles')
+      .select('id, name')
+      .in('id', userIds)
+      .limit(userIds.length);
+    for (const p of profiles ?? []) {
+      if (p.name) nameById.set(p.id as string, p.name as string);
+    }
+  }
+
+  const reviews: UserReview[] = (reviewRows ?? []).map((r) => ({
+    id: r.id as string,
+    userId: r.user_id as string,
+    userName: nameById.get(r.user_id as string) ?? 'Learner',
+    rating: r.rating as number,
+    comment: r.comment as string,
+    createdAt: r.created_at as string,
+  }));
 
   return NextResponse.json({ ok: true, stats, reviews });
 }
@@ -120,29 +176,7 @@ export async function POST(
     return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
   }
 
-  // Auth check
-  const authHeader = req.headers.get('authorization') ?? '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (!token) {
-    return NextResponse.json({ ok: false, error: 'Sign in to leave a review' }, { status: 401 });
-  }
-
-  const anonClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data: { user } } = await anonClient.auth.getUser(token);
-  if (!user) {
-    return NextResponse.json({ ok: false, error: 'Invalid session' }, { status: 401 });
-  }
-
-  // Rate limit per user (3 review submits per hour across all quizzes)
-  if (!(await checkRateLimit(`review-submit:${user.id}`, 3, 3_600_000))) {
-    logger.rateLimited(ROUTE, user.id);
-    return NextResponse.json({ ok: false, error: 'Too many requests. Try again later.' }, { status: 429 });
-  }
-
-  // Parse + validate body
+  // Parse + validate body first (needed to detect guest submissions)
   let body: unknown;
   try { body = await req.json(); } catch {
     return NextResponse.json({ ok: false, error: 'Invalid JSON' }, { status: 400 });
@@ -151,7 +185,45 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: parsed.error.flatten() }, { status: 400 });
   }
-  const { rating, comment } = parsed.data;
+  const { rating, comment, deviceId } = parsed.data;
+
+  // Identity: signed-in user (Bearer token) or guest (per-device id)
+  const authHeader = req.headers.get('authorization') ?? '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  let userId: string | null = null;
+
+  if (token) {
+    const anonClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+    const { data: { user } } = await anonClient.auth.getUser(token);
+    if (!user) {
+      return NextResponse.json({ ok: false, error: 'Invalid session' }, { status: 401 });
+    }
+    userId = user.id;
+  } else if (deviceId) {
+    // Guest flow — throttle guest-user creation per IP as well as per device
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    if (!(await checkRateLimit(`review-submit:guest-ip:${ip}`, 5, 3_600_000))) {
+      logger.rateLimited(ROUTE, `guest-ip:${ip}`);
+      return NextResponse.json({ ok: false, error: 'Too many requests. Try again later.' }, { status: 429 });
+    }
+    userId = await resolveGuestUserId(deviceId);
+    if (!userId) {
+      logger.error(ROUTE, 'guest_user_resolve_failed', { deviceId });
+      return NextResponse.json({ ok: false, error: 'Could not submit as guest. Try again.' }, { status: 500 });
+    }
+  } else {
+    return NextResponse.json({ ok: false, error: 'Sign in to leave a review' }, { status: 401 });
+  }
+
+  // Rate limit per identity (3 review submits per hour across all quizzes)
+  if (!(await checkRateLimit(`review-submit:${userId}`, 3, 3_600_000))) {
+    logger.rateLimited(ROUTE, userId);
+    return NextResponse.json({ ok: false, error: 'Too many requests. Try again later.' }, { status: 429 });
+  }
 
   // Content moderation
   const filter = checkContent(comment);
@@ -167,7 +239,7 @@ export async function POST(
     .from('quiz_reviews')
     .upsert(
       {
-        user_id: user.id,
+        user_id: userId,
         quiz_id: quizId,
         rating,
         comment,
@@ -180,11 +252,11 @@ export async function POST(
     );
 
   if (error) {
-    logger.error(ROUTE, 'insert_failed', { userId: user.id, reason: error.message });
+    logger.error(ROUTE, 'insert_failed', { userId, reason: error.message });
     return NextResponse.json({ ok: false, error: 'Failed to save review' }, { status: 500 });
   }
 
-  logger.info(ROUTE, 'review_submitted', { userId: user.id, quizId, status });
+  logger.info(ROUTE, 'review_submitted', { userId, quizId, status, guest: !token });
 
   return NextResponse.json({
     ok: true,

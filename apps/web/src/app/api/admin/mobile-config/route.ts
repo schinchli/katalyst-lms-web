@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from '@/lib/rateLimiter';
+import { normalizePlatformExperience } from '@/lib/platformExperience';
 import { z } from 'zod';
 
-// Mobile experience config schema — only allow known keys with safe types
+// Platform experience config — the NESTED shape that both readers
+// (web lib/platformExperience.ts and mobile config/platformExperience.ts)
+// expect and that the Settings page + mobile admin save actually POST.
+// Sections are loose records (bounded value types); the exact field set is
+// enforced by normalizePlatformExperience before persisting.
 const MobileConfigSchema = z.object({
-  primaryColor:     z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  accentColor:      z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  platformTheme:    z.string().max(64).optional(),
-  appName:          z.string().max(128).optional(),
-  logoUrl:          z.string().url().max(512).optional(),
-  welcomeMessage:   z.string().max(512).optional(),
-  features:         z.record(z.string().max(64), z.boolean()).optional(),
+  copy:    z.record(z.string().max(64), z.string().max(512)).optional(),
+  colors:  z.record(z.string().max(64), z.string().max(64)).optional(),
+  layout:  z.record(z.string().max(64), z.union([z.string().max(32), z.number(), z.boolean()])).optional(),
+  widgets: z.record(z.string().max(64), z.boolean()).optional(),
+  theme:   z.record(z.string().max(64), z.union([z.string().max(64), z.null()])).optional(),
 }).strict();
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
@@ -74,16 +77,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: parsed.error.flatten() }, { status: 400 });
   }
 
+  // Normalize to the canonical experience shape (fills defaults, clamps
+  // counts, validates the theme preset) — mobile-only extras like
+  // widgets.showDiscountBanner / theme.platformAccent survive the merge.
+  const config = normalizePlatformExperience(parsed.data);
+
   const { error } = await adminClient()
     .from('app_settings')
     .upsert({
       key: MOBILE_PLATFORM_CONFIG_KEY,
-      value: parsed.data,
+      value: config,
       updated_by: auth.user.id,
     }, { onConflict: 'key' });
 
   if (error) return NextResponse.json({ ok: false, error: 'Failed to save mobile config' }, { status: 500 });
-  return NextResponse.json({ ok: true, config: parsed.data });
+  return NextResponse.json({ ok: true, config });
 }
 
 export async function GET(req: NextRequest) {

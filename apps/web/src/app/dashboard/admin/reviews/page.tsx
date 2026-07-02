@@ -44,6 +44,16 @@ interface PendingReview {
   created_at: string;
 }
 
+interface RecentReview {
+  id: string;
+  quiz_id: string;
+  user_name: string;
+  rating: number;
+  comment: string;
+  status: string;
+  created_at: string;
+}
+
 type PageStatus = 'loading' | 'authorized' | 'unauthorized' | 'error';
 
 const EMPTY_DIST: ReviewDistribution = { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 };
@@ -61,6 +71,7 @@ export default function ReviewsPage() {
   const [token, setToken]           = useState('');
   const [rows, setRows]             = useState<QuizReviewRow[]>([]);
   const [pending, setPending]       = useState<PendingReview[]>([]);
+  const [recent, setRecent]         = useState<RecentReview[]>([]);
   const [moderating, setModerating] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -107,8 +118,8 @@ export default function ReviewsPage() {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
         if (pendingRes.ok) {
-          const pb = await pendingRes.json() as { ok: boolean; reviews: PendingReview[] };
-          if (pb.ok) setPending(pb.reviews);
+          const pb = await pendingRes.json() as { ok: boolean; reviews: PendingReview[]; recent?: RecentReview[] };
+          if (pb.ok) { setPending(pb.reviews); setRecent(pb.recent ?? []); }
         }
       } catch {
         setPageStatus('error');
@@ -261,6 +272,48 @@ export default function ReviewsPage() {
           </div>
         </div>
       )}
+
+      {/* ── Recent Reviews (live user + guest feedback) ───────────────────── */}
+      <div className="vx-card" style={{ padding: 20, marginBottom: 24 }}>
+        <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Recent reviews</div>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
+          Latest feedback submitted by signed-in users and guests across all quizzes.
+        </p>
+        {recent.length === 0 ? (
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>No reviews submitted yet.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {recent.map((r) => (
+              <div key={r.id} style={{ padding: '12px 16px', background: 'var(--bg)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>{r.user_name}</span>
+                    <span style={{ display: 'flex', gap: 2 }}>
+                      {[1,2,3,4,5].map((n) => (
+                        <span key={n} style={{ color: n <= r.rating ? '#FBBF24' : 'var(--border)', fontSize: 14 }}>★</span>
+                      ))}
+                    </span>
+                    <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{r.quiz_id}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 6,
+                      background: r.status === 'published' ? 'rgba(40,199,111,0.12)' : r.status === 'pending' ? 'rgba(255,159,67,0.12)' : 'rgba(255,76,81,0.1)',
+                      color: r.status === 'published' ? 'var(--success)' : r.status === 'pending' ? 'var(--warning)' : 'var(--error)',
+                    }}>
+                      {r.status}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                      {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{r.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* ── Aggregate Stats Editor ─────────────────────────────────────────── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

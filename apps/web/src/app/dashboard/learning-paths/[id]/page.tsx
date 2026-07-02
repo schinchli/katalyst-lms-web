@@ -15,6 +15,7 @@ import { useParams } from 'next/navigation';
 import { getLearningPath, type LearningStep } from '@/data/learningPaths';
 import { quizzes } from '@/data/quizzes';
 import { flashcardDecks } from '@/data/flashcards';
+import { CONTENT_TYPES, ContentTypeBadge, FeatherIcon } from '@/components/ContentTypeBadge';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import type { QuizResult } from '@/types';
@@ -176,24 +177,21 @@ export default function LearningPathDetailPage() {
                 opacity: href ? 1 : 0.55,
               }}
             >
-              {/* Step number / check */}
+              {/* Step check / content-type icon */}
               <div style={{
-                flexShrink: 0, width: 30, height: 30, borderRadius: '50%',
+                flexShrink: 0, width: 30, height: 30, borderRadius: done ? '50%' : 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 13, fontWeight: 700,
-                background: done ? path.color : 'var(--bg)',
-                color: done ? '#fff' : 'var(--text-secondary)',
-                border: done ? 'none' : `2px solid var(--border)`,
+                background: done ? path.color : `${CONTENT_TYPES[step.type].color}1A`,
+                color: done ? '#fff' : CONTENT_TYPES[step.type].color,
               }}>
-                {done ? '✓' : idx + 1}
+                {done ? '✓' : <FeatherIcon name={CONTENT_TYPES[step.type].icon} size={14} color={CONTENT_TYPES[step.type].color} />}
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 3 }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{step.title}</span>
-                  <span className="vx-badge vx-badge-secondary" style={{ fontSize: 10 }}>
-                    {step.type === 'notes' ? '📖 Read' : step.type === 'flashcard' ? '🃏 Flashcards' : '📝 Quiz'}
-                  </span>
+                  <ContentTypeBadge kind={step.type} />
                   {isNext && <span className="vx-badge" style={{ fontSize: 10, background: `${path.color}20`, color: path.color }}>Up next</span>}
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>{step.subtitle}</div>

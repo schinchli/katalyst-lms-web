@@ -49,5 +49,36 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Failed to fetch pending reviews' }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, reviews: data ?? [] });
+  // Latest reviews across all statuses so admins can see live feedback.
+  // quiz_reviews has no FK to user_profiles — fetch names in a second query.
+  const { data: recentRows } = await serviceClient
+    .from('quiz_reviews')
+    .select('id, user_id, quiz_id, rating, comment, status, created_at')
+    .order('created_at', { ascending: false })
+    .limit(30);
+
+  const userIds = Array.from(new Set((recentRows ?? []).map((r) => r.user_id as string)));
+  const nameById = new Map<string, string>();
+  if (userIds.length > 0) {
+    const { data: profiles } = await serviceClient
+      .from('user_profiles')
+      .select('id, name')
+      .in('id', userIds)
+      .limit(userIds.length);
+    for (const p of profiles ?? []) {
+      if (p.name) nameById.set(p.id as string, p.name as string);
+    }
+  }
+
+  const recent = (recentRows ?? []).map((r) => ({
+    id: r.id as string,
+    quiz_id: r.quiz_id as string,
+    user_name: nameById.get(r.user_id as string) ?? 'Learner',
+    rating: r.rating as number,
+    comment: r.comment as string,
+    status: r.status as string,
+    created_at: r.created_at as string,
+  }));
+
+  return NextResponse.json({ ok: true, reviews: data ?? [], recent });
 }

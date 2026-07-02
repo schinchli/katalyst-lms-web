@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
 import { DEFAULT_SYSTEM_FEATURES, resolveDailyQuiz, type SystemFeaturesConfig } from '@/lib/systemFeatures';
 import { DailyQuizBadge } from '@/components/DailyQuizBadge';
+import { ContentTypeBadge } from '@/components/ContentTypeBadge';
 import { useManagedQuizContentVersion } from '@/components/ManagedQuizContentProvider';
 
 function getLocalResults(): QuizResult[] {
@@ -185,6 +186,7 @@ export default function QuizzesPage() {
                 <div style={{ padding: '20px 20px 14px', flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <ContentTypeBadge kind="quiz" />
                       <span className={`vx-badge ${DIFF_BADGE[quiz.difficulty] ?? 'vx-badge-secondary'}`}>{quiz.difficulty}</span>
                       {quiz.isPremium && <span className="vx-badge vx-badge-warning">Premium</span>}
                       {isDailyQuiz && <DailyQuizBadge label={systemFeatures.dailyQuizLabel} completed={dailyQuizCompleted} compact />}
