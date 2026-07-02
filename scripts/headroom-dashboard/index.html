@@ -128,17 +128,22 @@ async function tick() {
 
     let stats = {}; try { stats = JSON.parse(statsR.raw); } catch {}
     const metricsText = metricsR && !metricsR.offline ? (metricsR.raw||'') : '';
+    // Headroom proxy schema: summary.compression.{avg_compression_pct, total_tokens_removed, requests_compressed}
+    const comp = (stats && stats.summary && stats.summary.compression) || {};
+    const summ = (stats && stats.summary) || {};
 
-    let saved = pick(stats, ['tokens_saved','tokensSaved','total_tokens_saved']) ?? fromMetrics(metricsText, 'tokens_saved');
-    let ratio = pick(stats, ['compression_ratio','compressionRatio','ratio']);
-    let reqs  = pick(stats, ['total_requests','requests','request_count','count']) ?? fromMetrics(metricsText, 'requests_total');
-    let tin   = pick(stats, ['tokens_in','input_tokens','tokens_input']);
-    let tout  = pick(stats, ['tokens_out','output_tokens','tokens_output']);
+    let saved = comp.total_tokens_removed ?? comp.total_tokens_saved_with_cli_filtering
+      ?? pick(stats, ['total_tokens_removed','tokens_saved','tokensSaved']) ?? fromMetrics(metricsText, 'tokens_saved');
+    let reqs  = comp.requests_compressed ?? summ.api_requests
+      ?? pick(stats, ['total_requests','requests','request_count']) ?? fromMetrics(metricsText, 'requests_total');
 
+    const rawRatio = pick(stats, ['compression_ratio','compressionRatio','ratio']);
     let pct;
-    if (typeof ratio === 'number') pct = Math.max(0, Math.min(100, (1-ratio)*100));
-    else if (typeof saved === 'number' && typeof tin === 'number' && tin>0) pct = (saved/tin)*100;
-    else if (typeof tin === 'number' && typeof tout === 'number' && tin>0) { pct = (1-tout/tin)*100; ratio = tout/tin; }
+    if (typeof comp.avg_compression_pct === 'number' && (comp.requests_compressed || comp.avg_compression_pct > 0)) pct = comp.avg_compression_pct;
+    else if (typeof comp.avg_compression_pct === 'number') pct = comp.avg_compression_pct;
+    else if (typeof rawRatio === 'number') pct = (1 - rawRatio) * 100;
+    if (typeof pct === 'number') pct = Math.max(0, Math.min(100, pct));
+    let ratio = typeof pct === 'number' ? Math.max(0, 1 - pct/100) : rawRatio;
 
     document.getElementById('saved').textContent = typeof saved === 'number' ? fmt(saved) : '—';
     document.getElementById('pct').textContent   = typeof pct === 'number' ? pct.toFixed(1)+'%' : '—';
