@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { embedQuery, semanticSearch, generateAnswer, RAG_DECLINE_MESSAGE, type KbHit } from '@/lib/rag';
+import { buildRagResources } from '@/lib/ragResources';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { nextPages, prerequisiteModules } from '@/data/eks-coreks-graph';
 
@@ -174,6 +175,7 @@ export async function POST(req: NextRequest) {
       learnerContext: learnerContext ? formatLearnerContext(learnerContext) : undefined,
     });
     const next = concept && isEksOnly ? nextPages(`concept:${concept}`) : [];
+    const resources = buildRagResources(chunks, question);
 
     return json({
       ok: true,
@@ -181,6 +183,8 @@ export async function POST(req: NextRequest) {
       answer: gen.answer,
       model:  gen.model,
       personalized: Boolean(learnerContext),
+      // Clickable next-step study resources derived from the retrieved content.
+      resources,
       sources: chunks.map((c) => ({
         corpus:      c.corpus,
         source_type: c.source_type,
