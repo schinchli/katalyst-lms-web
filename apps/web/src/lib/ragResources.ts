@@ -73,7 +73,7 @@ export async function recommendResources(questionEmbedding: number[]): Promise<R
   // This drops the "least-bad" filler (e.g. an EKS quiz for a Bedrock question)
   // while keeping genuinely-relevant picks.
   const topScore = scored.reduce((m, s) => Math.max(m, s.score), 0);
-  const floor = Math.max(MIN_SCORE, topScore * 0.6);
+  const floor = Math.max(MIN_SCORE, topScore * 0.55);
 
   const out: RagResource[] = [];
   const add = (s?: { it: CatalogItem; score: number }) => {
