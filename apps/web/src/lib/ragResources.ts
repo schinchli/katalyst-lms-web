@@ -31,7 +31,11 @@ export interface RagResource {
 interface Cache { ts: number; items: CatalogItem[]; embeddings: number[][] }
 let _cache: Cache | null = null;
 const CACHE_TTL_MS = 15 * 60 * 1000;
-const MIN_SCORE = 0.15; // drop weakly-related picks rather than show noise
+// Same-domain AWS content shares a moderate cosine floor (~0.15–0.25) even when
+// off-topic, so 0.15 let noise through (e.g. Storage notes for a Bedrock query).
+// 0.28 keeps genuinely-relevant picks and drops filler; a slot may show nothing
+// rather than something irrelevant.
+const MIN_SCORE = 0.28;
 
 async function getCatalogCache(now: number): Promise<Cache> {
   if (_cache && now - _cache.ts < CACHE_TTL_MS && _cache.items.length) return _cache;
