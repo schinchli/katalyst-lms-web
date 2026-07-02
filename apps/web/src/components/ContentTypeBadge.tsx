@@ -20,7 +20,7 @@ export const CONTENT_TYPES: Record<ContentKind, ContentTypeMeta> = {
   notes:     { icon: 'book-open',   label: 'Notes',      color: '#7C83FF', external: false },
   quiz:      { icon: 'help-circle', label: 'Quiz',       color: '#28C76F', external: false },
   video:     { icon: 'youtube',     label: 'Video',      color: '#EA5455', external: true  },
-  article:   { icon: 'file-text',   label: 'Article',    color: '#FF9F43', external: true  },
+  article:   { icon: 'file-text',   label: 'Article',    color: '#FF9F43', external: false },
   flashcard: { icon: 'layers',      label: 'Flashcards', color: '#B99AF6', external: false },
 };
 
