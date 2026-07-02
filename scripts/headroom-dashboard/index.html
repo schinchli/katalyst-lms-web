@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Headroom · Compression Performance</title>
+<style>
+  :root { --bg:#0b0f1a; --card:#131a2b; --border:#243049; --text:#e6ecf5; --muted:#8492ad; --accent:#38bdf8; --good:#34d399; --warn:#fbbf24; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); }
+  .wrap { max-width:1040px; margin:0 auto; padding:28px 20px 60px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
+  h1 { font-size:22px; margin:0; font-weight:800; letter-spacing:-.3px; }
+  h1 span { color:var(--accent); }
+  .status { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--muted); box-shadow:0 0 0 0 rgba(52,211,153,.5); }
+  .dot.live { background:var(--good); animation:pulse 2s infinite; }
+  .dot.off { background:#ef4444; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)} 70%{box-shadow:0 0 0 8px rgba(52,211,153,0)} 100%{box-shadow:0 0 0 0 rgba(52,211,153,0)} }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-bottom:20px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .card .label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; }
+  .card .value { font-size:32px; font-weight:800; margin-top:6px; letter-spacing:-.5px; }
+  .card .sub { font-size:12px; color:var(--muted); margin-top:4px; }
+  .value.good { color:var(--good); }
+  .value.accent { color:var(--accent); }
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:20px; }
+  .chart-card h2 { font-size:14px; margin:0 0 12px; font-weight:700; color:var(--text); }
+  canvas { width:100%; height:180px; display:block; }
+  .offline { background:#1c1424; border:1px solid #7f1d1d; border-radius:14px; padding:20px; margin-bottom:20px; }
+  .offline h2 { margin:0 0 8px; font-size:16px; color:#fca5a5; }
+  .offline p { margin:0 0 12px; color:var(--muted); font-size:14px; }
+  code { background:#0b0f1a; border:1px solid var(--border); border-radius:8px; padding:10px 12px; display:block; font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--good); overflow-x:auto; }
+  .raw { margin-top:8px; }
+  details summary { cursor:pointer; color:var(--muted); font-size:13px; }
+  pre { background:#0b0f1a; border:1px solid var(--border); border-radius:10px; padding:14px; overflow-x:auto; font-size:12px; color:var(--muted); max-height:280px; }
+  .hint { color:var(--muted); font-size:12px; text-align:center; margin-top:26px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>Headroom</span> · Compression Performance</h1>
+    <div class="status"><span id="dot" class="dot"></span><span id="statusText">connecting…</span></div>
+  </header>
+
+  <div id="offline" class="offline" style="display:none">
+    <h2>Headroom proxy is offline</h2>
+    <p>Start the proxy, send some traffic through it, then this dashboard lights up:</p>
+    <code>pip install "headroom-ai[all]"  &&  headroom proxy --port 8787</code>
+    <p style="margin-top:12px">Point your app at it via <b>HEADROOM_BASE_URL=http://localhost:8787</b> (the LMS RAG already reads this).</p>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="label">Tokens saved</div><div id="saved" class="value good">—</div><div id="savedSub" class="sub">across all requests</div></div>
+    <div class="card"><div class="label">Savings</div><div id="pct" class="value accent">—</div><div class="sub">fewer tokens to the LLM</div></div>
+    <div class="card"><div class="label">Compression ratio</div><div id="ratio" class="value">—</div><div class="sub">output ÷ input size</div></div>
+    <div class="card"><div class="label">Requests compressed</div><div id="reqs" class="value">—</div><div id="reqsSub" class="sub">since proxy start</div></div>
+  </div>
+
+  <div class="chart-card">
+    <h2>Savings % over time</h2>
+    <canvas id="chart" width="1000" height="180"></canvas>
+  </div>
+
+  <div class="raw">
+    <details><summary>Raw /stats payload</summary><pre id="rawJson">—</pre></details>
+  </div>
+
+  <p class="hint">Auto-refreshing every 3s · proxied from the Headroom <code style="display:inline;padding:2px 6px" id="src">/stats</code> endpoint</p>
+</div>
+
+<script>
+const history = []; // { t, pct }
+const fmt = (n) => n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : String(Math.round(n));
+
+// Recursively find the first numeric value for any of the given keys.
+function pick(obj, keys) {
+  if (obj == null || typeof obj !== 'object') return undefined;
+  for (const k of keys) if (typeof obj[k] === 'number') return obj[k];
+  for (const v of Object.values(obj)) { const r = pick(v, keys); if (r !== undefined) return r; }
+  return undefined;
+}
+// Parse Prometheus text as a fallback (sum matching series).
+function fromMetrics(text, needle) {
+  let sum = 0, found = false;
+  for (const line of (text||'').split('\n')) {
+    if (line.startsWith('#') || !line.includes(needle)) continue;
+    const val = parseFloat(line.trim().split(/\s+/).pop());
+    if (!Number.isNaN(val)) { sum += val; found = true; }
+  }
+  return found ? sum : undefined;
+}
+
+function setLive(live) {
+  document.getElementById('dot').className = 'dot ' + (live ? 'live' : 'off');
+  document.getElementById('statusText').textContent = live ? 'live' : 'offline';
+  document.getElementById('offline').style.display = live ? 'none' : 'block';
+}
+
+function draw() {
+  const c = document.getElementById('chart'), ctx = c.getContext('2d');
+  const W = c.width, H = c.height; ctx.clearRect(0,0,W,H);
+  if (history.length < 2) { ctx.fillStyle = '#8492ad'; ctx.font = '13px sans-serif'; ctx.fillText('Waiting for data…', 12, 24); return; }
+  const pts = history.slice(-120);
+  const max = Math.max(100, ...pts.map(p => p.pct)), min = 0;
+  const x = (i) => (i/(pts.length-1))*(W-20)+10;
+  const y = (v) => H-16 - ((v-min)/(max-min))*(H-30);
+  // grid
+  ctx.strokeStyle = '#243049'; ctx.lineWidth = 1;
+  for (let g=0; g<=100; g+=25){ const yy=y(g); ctx.beginPath(); ctx.moveTo(10,yy); ctx.lineTo(W-10,yy); ctx.stroke(); ctx.fillStyle='#4b5878'; ctx.font='10px sans-serif'; ctx.fillText(g+'%', 12, yy-3); }
+  // area + line
+  ctx.beginPath(); ctx.moveTo(x(0), y(pts[0].pct));
+  pts.forEach((p,i)=>ctx.lineTo(x(i), y(p.pct)));
+  ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.lineTo(x(pts.length-1), H-16); ctx.lineTo(x(0), H-16); ctx.closePath();
+  ctx.fillStyle = 'rgba(56,189,248,.12)'; ctx.fill();
+}
+
+async function tick() {
+  try {
+    const [statsR, metricsR] = await Promise.all([
+      fetch('/api/stats').then(r=>r.json()),
+      fetch('/api/metrics').then(r=>r.json()).catch(()=>({})),
+    ]);
+    if (statsR.offline) { setLive(false); return; }
+    setLive(true);
+
+    let stats = {}; try { stats = JSON.parse(statsR.raw); } catch {}
+    const metricsText = metricsR && !metricsR.offline ? (metricsR.raw||'') : '';
+
+    let saved = pick(stats, ['tokens_saved','tokensSaved','total_tokens_saved']) ?? fromMetrics(metricsText, 'tokens_saved');
+    let ratio = pick(stats, ['compression_ratio','compressionRatio','ratio']);
+    let reqs  = pick(stats, ['total_requests','requests','request_count','count']) ?? fromMetrics(metricsText, 'requests_total');
+    let tin   = pick(stats, ['tokens_in','input_tokens','tokens_input']);
+    let tout  = pick(stats, ['tokens_out','output_tokens','tokens_output']);
+
+    let pct;
+    if (typeof ratio === 'number') pct = Math.max(0, Math.min(100, (1-ratio)*100));
+    else if (typeof saved === 'number' && typeof tin === 'number' && tin>0) pct = (saved/tin)*100;
+    else if (typeof tin === 'number' && typeof tout === 'number' && tin>0) { pct = (1-tout/tin)*100; ratio = tout/tin; }
+
+    document.getElementById('saved').textContent = typeof saved === 'number' ? fmt(saved) : '—';
+    document.getElementById('pct').textContent   = typeof pct === 'number' ? pct.toFixed(1)+'%' : '—';
+    document.getElementById('ratio').textContent = typeof ratio === 'number' ? ratio.toFixed(2)+'×' : '—';
+    document.getElementById('reqs').textContent  = typeof reqs === 'number' ? fmt(reqs) : '—';
+    document.getElementById('rawJson').textContent = JSON.stringify(stats, null, 2).slice(0, 4000) || statsR.raw || '{}';
+
+    if (typeof pct === 'number') { history.push({ t: Date.now(), pct }); if (history.length>500) history.shift(); draw(); }
+  } catch (e) {
+    setLive(false);
+  }
+}
+tick(); setInterval(tick, 3000);
+</script>
+</body>
+</html>
