@@ -6,6 +6,7 @@
  */
 import type { MetadataRoute } from 'next';
 import { flashcardDecks } from '@/data/flashcards';
+import { CERT_GUIDES } from '@/data/certGuides';
 import { PUBLIC_BASE_URL } from '@/lib/deckMetadata';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -13,7 +14,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     // ── Core ────────────────────────────────────────────────────────
     { url: `${PUBLIC_BASE_URL}/`,            lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${PUBLIC_BASE_URL}/learn`,       lastModified: now, changeFrequency: 'weekly',  priority: 0.95 },
     { url: `${PUBLIC_BASE_URL}/flashcards`,  lastModified: now, changeFrequency: 'weekly',  priority: 0.9 },
+
+    // ── Per-certification study hubs (indexable, SEO) ───────────────
+    ...CERT_GUIDES.map((g) => ({
+      url: `${PUBLIC_BASE_URL}/learn/${g.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    })),
 
     // ── Per-deck pages (one indexable URL per deck) ─────────────────
     ...flashcardDecks.map((deck) => ({
