@@ -1,3 +1,5 @@
+import { INGESTED_PATHS } from './ingestedCertPaths';
+
 /**
  * Learning Path definitions — sequenced step-by-step content tracks
  * for each AWS/GenAI certification target.
@@ -32,6 +34,7 @@ export interface LearningPath {
 }
 
 export const LEARNING_PATHS: LearningPath[] = [
+  ...INGESTED_PATHS,
   {
     id: 'sec-eng-aws',
     certCode: 'SCS-C03',
