@@ -34,7 +34,7 @@ interface GenSource {
 const CORPORA: Array<{ id: string; label: string; color: string }> = [
   { id: 'eks-coreks',           label: 'EKS Course',         color: '#4A90E2' },
   { id: 'clf-c02',              label: 'CLF-C02',            color: '#27AE60' },
-  { id: 'aip-c01',              label: 'AIP-C01',            color: '#F39C12' },
+  { id: 'aip-c01',              label: 'AIF-C01',            color: '#F39C12' },
   { id: 'flashcards',           label: 'Generic flashcards', color: '#9B59B6' },
   { id: 'eks-coreks-questions', label: 'EKS Questions',      color: '#1ABC9C' },
   { id: 'sec-eng-aws',          label: 'Security Eng (SCS)', color: '#DD344C' },

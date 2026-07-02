@@ -50,7 +50,7 @@ export const CHALLENGE_SCORES: Record<string, number> = {
   'clf-c02-security':              72,
   'clf-c02-technology':            74,
   'clf-c02-billing':               66,
-  // AIP-C01 — professional tier, higher baselines
+  // AIF-C01 — professional tier, higher baselines
   'aip-c01-rag-foundations':       78,
   'aip-c01-security-governance':   80,
   'aip-c01-agents-ops':            76,
