@@ -9,6 +9,7 @@
  * No service-role key crosses any client boundary.
  */
 import OpenAI from 'openai';
+import { withHeadroom } from 'headroom-ai/openai';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL  = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -32,6 +33,20 @@ function openai(): OpenAI {
   if (!OPENAI_KEY) throw new Error('OPENAI_API_KEY not configured');
   if (!_openai) _openai = new OpenAI({ apiKey: OPENAI_KEY });
   return _openai;
+}
+
+/**
+ * Optional Headroom context-compression. Opt-in: only active when
+ * HEADROOM_BASE_URL points at a running Headroom proxy. When set, RAG context
+ * is compressed before the LLM call (fewer input tokens, same answer). Callers
+ * MUST fail open — a missing/down proxy must never break generation.
+ */
+const HEADROOM_URL = process.env.HEADROOM_BASE_URL?.trim();
+let _headroom: OpenAI | null = null;
+function generationClient(): OpenAI {
+  if (!HEADROOM_URL) return openai();
+  if (!_headroom) _headroom = withHeadroom(openai(), { model: GEN_MODEL }) as unknown as OpenAI;
+  return _headroom;
 }
 
 export function kbSupabase() {
@@ -144,19 +159,30 @@ export async function generateAnswer({
     })
     .join('\n\n---\n\n');
 
-  const res = await openai().chat.completions.create({
+  const createArgs = {
     model: GEN_MODEL,
     max_tokens: maxTokens,
     temperature: 0.2,
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: [
+      { role: 'system' as const, content: SYSTEM_PROMPT },
+      { role: 'user' as const, content: [
         `Course excerpts:\n\n${context}`,
         learnerContext ? `Learner context (for personalization only):\n${learnerContext}` : null,
         `Student question: ${question}`,
       ].filter(Boolean).join('\n\n---\n\n') },
     ],
-  });
+  };
+
+  // Compress via Headroom when configured; fail open to the plain client so a
+  // compression/proxy hiccup can never break answer generation.
+  let res;
+  try {
+    res = await generationClient().chat.completions.create(createArgs);
+  } catch (err) {
+    if (!HEADROOM_URL) throw err;
+    console.warn('[rag] headroom compression failed, falling back to uncompressed', err instanceof Error ? err.message : err);
+    res = await openai().chat.completions.create(createArgs);
+  }
 
   return {
     answer:       res.choices[0]?.message?.content ?? '',
