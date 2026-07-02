@@ -1,11 +1,21 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { embedQuery, semanticSearch, generateAnswer, type KbHit } from '@/lib/rag';
+import { embedQuery, semanticSearch, generateAnswer, RAG_DECLINE_MESSAGE, type KbHit } from '@/lib/rag';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { nextPages, prerequisiteModules } from '@/data/eks-coreks-graph';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
+
+/** Per-user daily Ask AI search cap. Configurable via env (default 5). */
+const DAILY_LIMIT = (() => {
+  const n = Number(process.env.RAG_DAILY_LIMIT);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 5;
+})();
+const DAY_MS = 86_400_000;
+const DAILY_LIMIT_MESSAGE =
+  process.env.RAG_DAILY_LIMIT_MESSAGE?.trim() ||
+  `You've reached today's limit of ${DAILY_LIMIT} Ask AI questions. Please come back tomorrow.`;
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -89,6 +99,16 @@ export async function POST(req: NextRequest) {
   const { question, corpus, source, metadata, concept, learnerContext } = parsed.data;
   const corporaFilter = corpus && corpus.length ? corpus : null;
 
+  // Per-user daily cap (configurable). Only valid questions consume a slot.
+  if (!(await checkRateLimit(`rag-ask-daily:${ip}`, DAILY_LIMIT, DAY_MS))) {
+    return json({
+      ok: false,
+      code: 'daily_limit',
+      dailyLimit: DAILY_LIMIT,
+      error: DAILY_LIMIT_MESSAGE,
+    }, 429);
+  }
+
   try {
     const retrievalQuery = learnerContext
       ? [
@@ -141,9 +161,10 @@ export async function POST(req: NextRequest) {
       return json({
         ok: true,
         question,
-        answer: "I couldn't find relevant content in the course material for that question.",
+        answer: RAG_DECLINE_MESSAGE,
         sources: [],
         next_pages: [],
+        dailyLimit: DAILY_LIMIT,
       });
     }
 
@@ -168,11 +189,14 @@ export async function POST(req: NextRequest) {
         similarity:  Math.round(c.similarity * 1000) / 1000,
       })),
       next_pages: next,
+      dailyLimit: DAILY_LIMIT,
       usage: { input_tokens: gen.inputTokens, output_tokens: gen.outputTokens },
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'unknown';
-    console.error('[api/rag/ask]', { ip, error: msg });
-    return json({ ok: false, error: 'RAG generation failed' }, 500);
+    const stack = err instanceof Error ? err.stack : undefined;
+    // Capture with context so failures are debuggable in Vercel logs.
+    console.error('[api/rag/ask] generation_failed', { ip, corpus: corporaFilter, error: msg, stack });
+    return json({ ok: false, code: 'server_error', error: 'Ask AI had trouble answering that. Please try again.' }, 500);
   }
 }
