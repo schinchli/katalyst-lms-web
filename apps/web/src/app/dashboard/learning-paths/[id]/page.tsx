@@ -40,8 +40,14 @@ function stepHref(step: LearningStep): string | null {
   if (step.type === 'notes') {
     return `/dashboard/learning-paths/notes/${step.resourceId}`;
   }
+  if (step.type === 'lab' || step.type === 'cheatsheet') {
+    return step.url ?? null;
+  }
   return null;
 }
+
+/** External reference steps (labs, cheat sheets) are optional — not gated in progress. */
+const isExternalStep = (type: LearningStep['type']) => type === 'lab' || type === 'cheatsheet';
 
 export default function LearningPathDetailPage() {
   const params = useParams();
@@ -107,8 +113,9 @@ export default function LearningPathDetailPage() {
   }
 
   const totalMin = path.steps.reduce((s, st) => s + st.estimatedMinutes, 0);
-  const progressPct = Math.round((completedSteps.size / path.steps.length) * 100);
-  const firstIncomplete = path.steps.find((s) => !completedSteps.has(s.id));
+  const coreSteps = path.steps.filter((s) => !isExternalStep(s.type));
+  const progressPct = coreSteps.length ? Math.round((completedSteps.size / coreSteps.length) * 100) : 0;
+  const firstIncomplete = coreSteps.find((s) => !completedSteps.has(s.id));
 
   return (
     <div className="page-content">
@@ -203,7 +210,10 @@ export default function LearningPathDetailPage() {
           );
 
           return href ? (
-            <Link key={step.id} href={href} style={{ textDecoration: 'none', display: 'block' }}
+            <Link key={step.id} href={href}
+              target={isExternalStep(step.type) ? '_blank' : undefined}
+              rel={isExternalStep(step.type) ? 'noopener noreferrer' : undefined}
+              style={{ textDecoration: 'none', display: 'block' }}
               onMouseEnter={(e) => (e.currentTarget.firstElementChild as HTMLElement).style.background = isNext ? `${path.color}18` : 'var(--bg)'}
               onMouseLeave={(e) => (e.currentTarget.firstElementChild as HTMLElement).style.background = isNext ? `${path.color}0C` : 'transparent'}>
               {inner}

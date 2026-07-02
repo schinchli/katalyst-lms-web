@@ -9,17 +9,18 @@ import { INGESTED_PATHS } from './ingestedCertPaths';
  * estimated minutes to complete.
  */
 
-export type StepType = 'video' | 'flashcard' | 'quiz' | 'notes';
+export type StepType = 'video' | 'flashcard' | 'quiz' | 'notes' | 'lab' | 'cheatsheet';
 
 export interface LearningStep {
   id: string;
   type: StepType;
-  resourceId: string;   // video.id | flashcard category | quiz.id
+  resourceId: string;   // video.id | flashcard category | quiz.id | (external step: label)
   title: string;
   subtitle: string;
   estimatedMinutes: number;
   icon: string;         // Feather icon name
   why: string;          // short explanation of why this step matters
+  url?: string;         // external link for 'lab' / 'cheatsheet' steps (opens in browser)
 }
 
 export interface LearningPath {
@@ -1194,6 +1195,36 @@ export const LEARNING_PATHS: LearningPath[] = [
     ],
   },
 ];
+
+// ── External reference steps: hands-on labs + cheat sheets ───────────────────
+// Sourced from github.com/schinchli/cloud-certification-exam-prep. Appended to
+// the relevant paths so learners see practice labs + quick-reference guides
+// inline in their certification path (opens in the browser).
+const EXAM_PREP_REPO = 'https://github.com/schinchli/cloud-certification-exam-prep/tree/main/AWS';
+const EXTERNAL_STEPS: Record<string, LearningStep[]> = {
+  'sec-eng-aws': [
+    { id: 'sec-cheatsheet', type: 'cheatsheet', resourceId: 'sheet-scs', title: 'SCS-C02 Study Guide (cheat sheet)', subtitle: 'Quick reference', estimatedMinutes: 20, icon: 'clipboard', why: 'Condensed exam-domain reference for fast review.', url: `${EXAM_PREP_REPO}/SCS-C02-Security-Specialty` },
+    { id: 'sec-lab-kms', type: 'lab', resourceId: 'lab-kms', title: 'Lab: KMS Encryption, Rotation & Multi-Region Keys', subtitle: 'Hands-on', estimatedMinutes: 45, icon: 'terminal', why: 'Practice envelope encryption + key rotation on real AWS.', url: `${EXAM_PREP_REPO}/security-labs/AWS%20KMS%20Masterclass%20-%20Encryption%2C%20Key%20Rotation%2C%20and%20Multi-Region%20Keys%20(Hands-On%20Lab)` },
+    { id: 'sec-lab-waf', type: 'lab', resourceId: 'lab-waf', title: 'Lab: CloudFront + WAF Edge Security', subtitle: 'Hands-on', estimatedMinutes: 40, icon: 'terminal', why: 'Build edge protection with WAF managed rules.', url: `${EXAM_PREP_REPO}/security-labs/CloudFront%20WAF%20Edge%20Security` },
+    { id: 'sec-lab-secrets', type: 'lab', resourceId: 'lab-secrets', title: 'Lab: RDS Credentials with KMS & Secrets Manager', subtitle: 'Hands-on', estimatedMinutes: 45, icon: 'terminal', why: 'Zero-downtime secret rotation for RDS.', url: `${EXAM_PREP_REPO}/security-labs/Securing%20RDS%20Database%20Credentials%20with%20AWS%20KMS%20and%20Secrets%20Manager%20(Hands-On%2C%20Zero-Downtime%20Rotation)` },
+  ],
+  'aip-c01': [
+    { id: 'aip-cheatsheet', type: 'cheatsheet', resourceId: 'sheet-aif', title: 'AIF-C01 Study Guide (cheat sheet)', subtitle: 'Quick reference', estimatedMinutes: 20, icon: 'clipboard', why: 'Bedrock, RAG, prompt engineering + responsible AI in one sheet.', url: `${EXAM_PREP_REPO}/AIF-C01-GenAI-Practitioner` },
+    { id: 'aip-lab', type: 'lab', resourceId: 'lab-aip', title: 'AWS Workshops — Generative AI labs', subtitle: 'Hands-on', estimatedMinutes: 60, icon: 'terminal', why: 'Build with Bedrock + knowledge bases in guided labs.', url: 'https://workshops.aws/' },
+  ],
+  'mla-c01': [
+    { id: 'mla-cheatsheet', type: 'cheatsheet', resourceId: 'sheet-mla', title: 'ML Study Guide (cheat sheet)', subtitle: 'Quick reference', estimatedMinutes: 20, icon: 'clipboard', why: 'Data engineering, modeling + MLOps quick reference.', url: `${EXAM_PREP_REPO}/MLS-C01-ML-Specialty` },
+    { id: 'mla-lab', type: 'lab', resourceId: 'lab-mla', title: 'AWS Workshops — SageMaker labs', subtitle: 'Hands-on', estimatedMinutes: 60, icon: 'terminal', why: 'Train + deploy models in guided SageMaker labs.', url: 'https://workshops.aws/' },
+  ],
+  'sap-c02': [
+    { id: 'sap-cheatsheet', type: 'cheatsheet', resourceId: 'sheet-sap', title: 'SAP-C02 Study Guide (16 domains)', subtitle: 'Quick reference', estimatedMinutes: 25, icon: 'clipboard', why: 'All 16 professional domains in one reference.', url: `${EXAM_PREP_REPO}/SAP-C02` },
+    { id: 'sap-lab', type: 'lab', resourceId: 'lab-sap', title: 'AWS Workshops — advanced architecture labs', subtitle: 'Hands-on', estimatedMinutes: 60, icon: 'terminal', why: 'Multi-account, networking + DR hands-on practice.', url: 'https://workshops.aws/' },
+  ],
+};
+for (const p of LEARNING_PATHS) {
+  const extra = EXTERNAL_STEPS[p.id];
+  if (extra && !p.steps.some((s) => s.id === extra[0].id)) p.steps.push(...extra);
+}
 
 export function getLearningPath(id: string): LearningPath | undefined {
   return LEARNING_PATHS.find((p) => p.id === id);
