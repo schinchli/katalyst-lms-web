@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-type RagResourceType = 'learning-path' | 'notes' | 'video' | 'quiz' | 'flashcard';
+type RagResourceType = 'learning-path' | 'notes' | 'video' | 'quiz' | 'flashcard' | 'article';
 interface RagResource { type: RagResourceType; id: string; title: string; subtitle?: string; url?: string }
 interface AskResponse {
   ok: boolean;
@@ -14,7 +14,8 @@ interface AskResponse {
 
 const RESOURCE_META: Record<RagResourceType, { icon: string; label: string }> = {
   'learning-path': { icon: '🗺️', label: 'Learning path' },
-  notes:           { icon: '📖', label: 'Article' },
+  article:         { icon: '📰', label: 'Blog' },
+  notes:           { icon: '📖', label: 'Reading' },
   video:           { icon: '▶️', label: 'Recommended video' },
   quiz:            { icon: '📝', label: 'Quiz' },
   flashcard:       { icon: '🃏', label: 'Flashcards' },
@@ -27,6 +28,7 @@ function resourceHref(r: RagResource): string {
     case 'flashcard':     return `/dashboard/flashcards/${r.id}`;
     case 'notes':         return `/dashboard/learning-paths/notes/${r.id}`;
     case 'learning-path': return `/dashboard/learning-paths/${r.id}`;
+    case 'article':       return `/dashboard/learn/${r.id}`;
     case 'video':         return '/dashboard/learn';
   }
 }

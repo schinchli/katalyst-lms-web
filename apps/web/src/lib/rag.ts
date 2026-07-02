@@ -57,6 +57,24 @@ export async function embedQuery(query: string): Promise<number[]> {
   return res.data[0].embedding;
 }
 
+/** Batch-embed many texts in one request (order preserved). */
+export async function embedMany(texts: string[]): Promise<number[][]> {
+  if (!texts.length) return [];
+  const res = await openai().embeddings.create({
+    model: EMBED_MODEL,
+    input: texts.map((t) => t.slice(0, 8000)),
+  });
+  return res.data.map((d) => d.embedding);
+}
+
+/** Cosine similarity of two equal-length vectors. */
+export function cosineSimilarity(a: number[], b: number[]): number {
+  let dot = 0, na = 0, nb = 0;
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; }
+  return na && nb ? dot / (Math.sqrt(na) * Math.sqrt(nb)) : 0;
+}
+
 export interface SearchOpts {
   matchCount?:     number;
   filterCorpus?:   string[] | null;             // null = all corpora

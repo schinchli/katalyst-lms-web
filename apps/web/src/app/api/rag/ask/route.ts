@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { embedQuery, semanticSearch, generateAnswer, RAG_DECLINE_MESSAGE, type KbHit } from '@/lib/rag';
-import { buildRagResources } from '@/lib/ragResources';
+import { buildRagResources, recommendResources } from '@/lib/ragResources';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { nextPages, prerequisiteModules } from '@/data/eks-coreks-graph';
 
@@ -175,7 +175,15 @@ export async function POST(req: NextRequest) {
       learnerContext: learnerContext ? formatLearnerContext(learnerContext) : undefined,
     });
     const next = concept && isEksOnly ? nextPages(`concept:${concept}`) : [];
-    const resources = buildRagResources(chunks, question);
+    // Semantic recommendations (embedding-ranked over the live catalog); fall
+    // back to the corpus-mapped resources if embedding ranking is unavailable.
+    let resources = [] as Awaited<ReturnType<typeof recommendResources>>;
+    try {
+      resources = await recommendResources(embedding);
+    } catch (e) {
+      console.error('[api/rag/ask] recommend_failed', { ip, error: e instanceof Error ? e.message : 'unknown' });
+    }
+    if (!resources.length) resources = buildRagResources(chunks, question);
 
     return json({
       ok: true,

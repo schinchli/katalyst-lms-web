@@ -8,18 +8,75 @@
  */
 import { LEARNING_PATHS } from '@/data/learningPaths';
 import { PLAYLIST, type VideoItem } from '@/data/videos';
-import type { KbHit } from './rag';
+import { embedMany, cosineSimilarity, type KbHit } from './rag';
+import { buildResourceCatalog, type CatalogItem } from './resourceCatalog';
 
-export type RagResourceType = 'learning-path' | 'notes' | 'video' | 'quiz' | 'flashcard';
+export type RagResourceType = 'learning-path' | 'notes' | 'video' | 'quiz' | 'flashcard' | 'article';
 
 export interface RagResource {
   type: RagResourceType;
-  /** Resource id used by the client to route (quizId, flashcard category, moduleId, path id, video id). */
+  /** Resource id used by the client to route (quizId, flashcard category, moduleId, path id, video id, article slug). */
   id: string;
   title: string;
   subtitle?: string;
   /** External URL (videos → YouTube). */
   url?: string;
+}
+
+// ── Semantic recommendation engine ────────────────────────────────────────────
+// Ranks the full resource catalog by embedding similarity to the question.
+// Catalog + embeddings are cached (TTL) so we embed the pool at most once per
+// window; when content is added the next refresh picks it up automatically.
+
+interface Cache { ts: number; items: CatalogItem[]; embeddings: number[][] }
+let _cache: Cache | null = null;
+const CACHE_TTL_MS = 15 * 60 * 1000;
+const MIN_SCORE = 0.15; // drop weakly-related picks rather than show noise
+
+async function getCatalogCache(now: number): Promise<Cache> {
+  if (_cache && now - _cache.ts < CACHE_TTL_MS && _cache.items.length) return _cache;
+  const items = await buildResourceCatalog();
+  const embeddings = await embedMany(items.map((i) => i.text));
+  _cache = { ts: now, items, embeddings };
+  return _cache;
+}
+
+const READING_SUBTITLE: Partial<Record<RagResourceType, string>> = {
+  'learning-path': 'Continue your learning path',
+  article: 'Blog',
+  notes: 'Reading',
+  video: 'Recommended video',
+  quiz: 'Test yourself',
+  flashcard: 'Drill flashcards',
+};
+
+/**
+ * Semantically rank the resource catalog against the question embedding and
+ * return the single best item per slot: learning path, a reading (blog article
+ * or module notes — whichever is more relevant), video, quiz, flashcards.
+ */
+export async function recommendResources(questionEmbedding: number[]): Promise<RagResource[]> {
+  if (!questionEmbedding?.length) return [];
+  const cache = await getCatalogCache(Date.now());
+  if (!cache.items.length || cache.embeddings.length !== cache.items.length) return [];
+
+  const scored = cache.items.map((it, i) => ({ it, score: cosineSimilarity(questionEmbedding, cache.embeddings[i]) }));
+  const bestOf = (...types: RagResourceType[]) =>
+    scored.filter((s) => types.includes(s.it.rtype)).sort((a, b) => b.score - a.score)[0];
+
+  const out: RagResource[] = [];
+  const add = (s?: { it: CatalogItem; score: number }) => {
+    if (s && s.score >= MIN_SCORE) {
+      out.push({ type: s.it.rtype as RagResourceType, id: s.it.rid, title: s.it.title, url: s.it.url, subtitle: READING_SUBTITLE[s.it.rtype] });
+    }
+  };
+
+  add(bestOf('learning-path'));
+  add(bestOf('article', 'notes')); // most relevant reading — Sanity blog or module notes
+  add(bestOf('video'));
+  add(bestOf('quiz'));
+  add(bestOf('flashcard'));
+  return out;
 }
 
 function moduleKey(meta: unknown): string | null {
