@@ -7,6 +7,9 @@ const config: Config = {
   testMatch: ['<rootDir>/src/__tests__/**/*.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    // next-sanity ships ESM only — ts-jest cannot parse it; use the stub
+    '^next-sanity$': '<rootDir>/src/__mocks__/next-sanity.ts',
+    '^@sanity/image-url$': '<rootDir>/src/__mocks__/sanity-image-url.ts',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {

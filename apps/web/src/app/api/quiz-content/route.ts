@@ -28,9 +28,13 @@ export async function GET() {
 
   // Never expose test/internal quizzes (ids starting with "playwright-") to end users.
   // They remain visible in the admin quiz-builder API for testing purposes.
+  const isInternal = (id: string) => id.startsWith('playwright-');
   const publicContent = {
     ...dataset,
-    quizzes: dataset.quizzes.filter((q) => !q.id.startsWith('playwright-')),
+    quizzes: dataset.quizzes.filter((q) => !isInternal(q.id)),
+    questions: Object.fromEntries(
+      Object.entries(dataset.questions).filter(([quizId]) => !isInternal(quizId)),
+    ),
   };
 
   return NextResponse.json({ ok: true, content: publicContent });

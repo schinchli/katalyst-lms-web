@@ -12,6 +12,7 @@ import { quizzes } from '@/data/quizzes';
 import { flashcardDecks } from '@/data/flashcards';
 import { LEARNING_PATHS } from '@/data/learningPaths';
 import { fetchArticleList } from '@/lib/sanityClient';
+import { examGuideText } from '@/data/examGuides';
 
 export type CatalogType = 'learning-path' | 'notes' | 'video' | 'quiz' | 'flashcard' | 'article';
 
@@ -40,9 +41,12 @@ export async function buildResourceCatalog(): Promise<CatalogItem[]> {
   }
 
   for (const q of quizzes) {
+    // Ground each quiz in its exam's OFFICIAL content outline (domain names)
+    // so semantic matching follows what the certification actually tests.
+    const guide = examGuideText(q.examCode, 0);
     items.push({
       rtype: 'quiz', rid: q.id, title: q.title,
-      text: `${q.title}. ${q.category}. ${q.examCode ?? ''} certification quiz`,
+      text: `${q.title}. ${q.category}. ${q.examCode ?? ''} certification quiz. ${guide}`,
     });
   }
 
@@ -55,9 +59,10 @@ export async function buildResourceCatalog(): Promise<CatalogItem[]> {
 
   const seenNotes = new Set<string>();
   for (const p of LEARNING_PATHS) {
+    // Learning paths get the full exam outline (domains + task statements)
     items.push({
       rtype: 'learning-path', rid: p.id, title: p.certName,
-      text: `${p.certName}. ${p.certCode}. ${p.tagline}`,
+      text: `${p.certName}. ${p.certCode}. ${p.tagline}. ${examGuideText(p.certCode)}`,
     });
     for (const s of p.steps) {
       if (s.type === 'notes' && !seenNotes.has(s.resourceId)) {
