@@ -63,6 +63,22 @@
     <canvas id="chart" width="1000" height="180"></canvas>
   </div>
 
+  <div class="chart-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0">Live compression benchmark</h2>
+        <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Runs real tool-output payloads through <code style="display:inline;padding:1px 5px">/v1/compress</code> — no API key needed.</p>
+      </div>
+      <button id="runBtn" style="background:var(--accent);color:#04121f;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer">▶ Run benchmark</button>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-top:14px;font-size:13px">
+      <thead><tr style="color:var(--muted);text-align:left">
+        <th style="padding:6px 4px">Payload</th><th>Tokens before</th><th>Tokens saved</th><th>Savings</th>
+      </tr></thead>
+      <tbody id="benchRows"><tr><td colspan="4" style="padding:10px 4px;color:var(--muted)">Click “Run benchmark” to compress sample AWS tool outputs, logs, and diffs.</td></tr></tbody>
+    </table>
+  </div>
+
   <div class="raw">
     <details><summary>Raw /stats payload</summary><pre id="rawJson">—</pre></details>
   </div>
@@ -145,17 +161,82 @@ async function tick() {
     if (typeof pct === 'number') pct = Math.max(0, Math.min(100, pct));
     let ratio = typeof pct === 'number' ? Math.max(0, 1 - pct/100) : rawRatio;
 
-    document.getElementById('saved').textContent = typeof saved === 'number' ? fmt(saved) : '—';
-    document.getElementById('pct').textContent   = typeof pct === 'number' ? pct.toFixed(1)+'%' : '—';
-    document.getElementById('ratio').textContent = typeof ratio === 'number' ? ratio.toFixed(2)+'×' : '—';
-    document.getElementById('reqs').textContent  = typeof reqs === 'number' ? fmt(reqs) : '—';
     document.getElementById('rawJson').textContent = JSON.stringify(stats, null, 2).slice(0, 4000) || statsR.raw || '{}';
 
-    if (typeof pct === 'number') { history.push({ t: Date.now(), pct }); if (history.length>500) history.shift(); draw(); }
+    // Live proxy traffic always wins; otherwise don't clobber benchmark results with 0s.
+    const hasLive = typeof reqs === 'number' && reqs > 0;
+    if (hasLive || !window.benchRan) {
+      document.getElementById('saved').textContent = typeof saved === 'number' ? fmt(saved) : '—';
+      document.getElementById('pct').textContent   = typeof pct === 'number' ? pct.toFixed(1)+'%' : '—';
+      document.getElementById('ratio').textContent = typeof ratio === 'number' ? ratio.toFixed(2)+'×' : '—';
+      document.getElementById('reqs').textContent  = typeof reqs === 'number' ? fmt(reqs) : '—';
+      if (hasLive && typeof pct === 'number') { history.push({ t: Date.now(), pct }); if (history.length>500) history.shift(); draw(); }
+    }
   } catch (e) {
     setLive(false);
   }
 }
+// ── Live compression benchmark ───────────────────────────────────────────────
+function ec2Json(n) {
+  const rows = Array.from({length:n}, (_,i)=>({id:i,instanceId:'i-'+i.toString(16).padStart(8,'0'),region:'us-east-1',
+    state:'running',type:'m5.large',az:'us-east-1a',launchTime:'2026-07-02T10:00:00Z',
+    tags:{Name:'web-'+i,env:'prod',team:'platform'},privateIp:'10.0.'+(i%255)+'.'+((i*7)%255),cpu:12.5,mem:43.1}));
+  return JSON.stringify({Reservations:rows});
+}
+function buildLog(n){ let o=''; for(let i=0;i<n;i++) o+=`2026-07-02T10:${String(i%60).padStart(2,'0')}:12.${i%1000} INFO  [worker-${i%8}] compiled module ./src/app/module-${i}.tsx in ${100+i%400}ms (cache hit)\n`; return o; }
+function gitDiff(n){ let o=''; for(let i=0;i<n;i++) o+=`diff --git a/src/f${i}.ts b/src/f${i}.ts\n@@ -${i},7 +${i},9 @@\n-  const x = ${i};\n+  const x = ${i+1};\n+  const y = ${i*2};\n   return x + y;\n`; return o; }
+
+const SAMPLES = [
+  { name: 'EC2 describe-instances (JSON, 200 rows)', content: ec2Json(200) },
+  { name: 'CI build log (600 lines)',                content: buildLog(600) },
+  { name: 'git diff (250 hunks)',                    content: gitDiff(250) },
+  { name: 'CloudTrail events (JSON, 150)',           content: ec2Json(150) },
+];
+
+function benchRow(name, before, saved, pct) {
+  const tb = document.getElementById('benchRows');
+  if (!window._benchCleared) { tb.innerHTML = ''; window._benchCleared = true; }
+  const tr = document.createElement('tr');
+  tr.style.borderTop = '1px solid var(--border)';
+  tr.innerHTML = `<td style="padding:8px 4px;color:var(--text)">${name}</td><td>${before}</td><td style="color:var(--good)">${saved}</td><td style="color:var(--accent);font-weight:700">${pct}</td>`;
+  tb.appendChild(tr);
+}
+
+async function runBenchmark() {
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = '⏳ Compressing…'; window._benchCleared = false;
+  let totBefore = 0, totSaved = 0, n = 0;
+  for (const s of SAMPLES) {
+    const payload = { model: 'gpt-4o-mini', messages: [
+      { role:'user', content:'Analyze this tool output.' },
+      { role:'assistant', content:null, tool_calls:[{ id:'c1', type:'function', function:{ name:'tool', arguments:'{}' } }] },
+      { role:'tool', tool_call_id:'c1', content:s.content },
+    ]};
+    try {
+      const r = await fetch('/api/compress', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).then(x=>x.json());
+      if (r.offline) { benchRow(s.name, '—', 'proxy offline', '—'); continue; }
+      let cr = {}; try { cr = JSON.parse(r.raw); } catch {}
+      const ratio = typeof cr.compression_ratio === 'number' ? cr.compression_ratio : 1;
+      const saved = typeof cr.tokens_saved === 'number' ? cr.tokens_saved : 0;
+      const before = ratio < 1 ? Math.round(saved / (1 - ratio)) : saved;
+      const pct = before > 0 ? (saved / before) * 100 : 0;
+      totBefore += before; totSaved += saved; n++;
+      benchRow(s.name, fmt(before), fmt(saved), pct.toFixed(1)+'%');
+      if (before > 0) { history.push({ t: Date.now(), pct }); if (history.length>500) history.shift(); draw(); }
+    } catch (e) { benchRow(s.name, '—', 'error', '—'); }
+  }
+  window.benchRan = true;
+  const aggPct = totBefore > 0 ? (totSaved / totBefore) * 100 : 0;
+  document.getElementById('saved').textContent = fmt(totSaved);
+  document.getElementById('pct').textContent = aggPct.toFixed(1) + '%';
+  document.getElementById('ratio').textContent = (Math.max(0, 1 - aggPct/100)).toFixed(2) + '×';
+  document.getElementById('reqs').textContent = String(n);
+  document.getElementById('savedSub').textContent = 'from benchmark samples';
+  document.getElementById('reqsSub').textContent = 'sample payloads compressed';
+  btn.disabled = false; btn.textContent = '▶ Run benchmark again';
+}
+document.getElementById('runBtn').addEventListener('click', runBenchmark);
+
 tick(); setInterval(tick, 3000);
 </script>
 </body>

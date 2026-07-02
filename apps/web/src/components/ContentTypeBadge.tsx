@@ -7,7 +7,7 @@
  */
 import type { CSSProperties, ReactElement } from 'react';
 
-export type ContentKind = 'notes' | 'quiz' | 'video' | 'article' | 'flashcard';
+export type ContentKind = 'notes' | 'quiz' | 'video' | 'article' | 'flashcard' | 'lab' | 'cheatsheet';
 
 export interface ContentTypeMeta {
   icon: FeatherIconName;
@@ -22,6 +22,8 @@ export const CONTENT_TYPES: Record<ContentKind, ContentTypeMeta> = {
   video:     { icon: 'youtube',     label: 'Video',      color: '#EA5455', external: true  },
   article:   { icon: 'file-text',   label: 'Article',    color: '#FF9F43', external: false },
   flashcard: { icon: 'layers',      label: 'Flashcards', color: '#B99AF6', external: false },
+  lab:        { icon: 'terminal',    label: 'Hands-on Lab', color: '#00CFE8', external: true  },
+  cheatsheet: { icon: 'clipboard',   label: 'Cheat Sheet',  color: '#FFC107', external: true  },
 };
 
 // ── Feather icons (official 24×24 stroke paths) ─────────────────────────────
@@ -85,6 +87,18 @@ const FEATHER_PATHS: Record<string, ReactElement> = {
     <>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </>
+  ),
+  'terminal': (
+    <>
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </>
+  ),
+  'clipboard': (
+    <>
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
     </>
   ),
 };

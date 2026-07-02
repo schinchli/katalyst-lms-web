@@ -59,6 +59,28 @@ const server = http.createServer(async (req, res) => {
     return send(200, JSON.stringify({ offline: false, status: r.status, endpoint: m[1], raw: r.body }));
   }
 
+  // POST /api/compress — forward a sample payload to the proxy's /v1/compress
+  // so the dashboard can demonstrate real compression without proxy passthrough.
+  if (req.method === 'POST' && req.url === '/api/compress') {
+    let body = '';
+    req.on('data', (c) => { body += c; if (body.length > 5_000_000) req.destroy(); });
+    req.on('end', async () => {
+      try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 60_000);
+        const res = await fetch(`${HEADROOM_URL}/v1/compress`, {
+          method: 'POST', signal: ctrl.signal,
+          headers: { 'Content-Type': 'application/json' }, body,
+        });
+        clearTimeout(t);
+        send(200, JSON.stringify({ offline: false, status: res.status, raw: await res.text() }));
+      } catch (err) {
+        send(200, JSON.stringify({ offline: true, error: String(err?.message || err) }));
+      }
+    });
+    return;
+  }
+
   send(404, JSON.stringify({ error: 'not found' }));
 });
 
