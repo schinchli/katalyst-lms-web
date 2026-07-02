@@ -242,6 +242,13 @@ npm run build        # Turborepo build
 | `.kiro/` | Ignored (IDE config — in `.gitignore`) |
 
 ### Pre-Commit Checklist (run every time)
+0. **SANITY GATE (mandatory before declaring ANY change "done"):** spawn the
+   `sanity-gate` agent (`.claude/agents/sanity-gate.md`) or run
+   `node scripts/sanity-gate.mjs` directly (`--live` after deploy/OTA,
+   `--fast` for contracts-only). Exit 0 = GO. **Never report work as done on
+   a NO-GO.** Covers: dead mobile routes, mobile→web URL contracts, remote
+   image existence, cert-badge consistency, playwright-* leak filters,
+   exam-guide grounding, tsc + jest both workspaces, live prod endpoints.
 1. `npx tsc --noEmit` from `apps/web/` — zero errors required
 2. `npm test` from `backend/` — all 49 tests must pass
 3. Check for untracked files: `git status --short Documents/Projects/lms/ | grep "^??" | grep -v ".next/"` — must be empty
