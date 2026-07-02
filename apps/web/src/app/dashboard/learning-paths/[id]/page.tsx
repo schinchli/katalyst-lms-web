@@ -18,6 +18,7 @@ import { flashcardDecks } from '@/data/flashcards';
 import { CONTENT_TYPES, ContentTypeBadge, FeatherIcon } from '@/components/ContentTypeBadge';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
+import { fetchLearningPref, setActivePathRemote } from '@/lib/learningPathSync';
 import type { QuizResult } from '@/types';
 
 function getLocalResults(): QuizResult[] {
@@ -57,6 +58,16 @@ export default function LearningPathDetailPage() {
   const [results, setResults] = useState<QuizResult[]>([]);
   const [flashDone, setFlashDone] = useState<Set<string>>(new Set());
   const [notesRead, setNotesRead] = useState<Set<string>>(new Set());
+  const [remoteSteps, setRemoteSteps] = useState<Set<string>>(new Set());
+
+  // Pull the cloud-synced pref (steps completed on the app or another device).
+  useEffect(() => {
+    let cancelled = false;
+    fetchLearningPref().then((pref) => {
+      if (!cancelled && pref?.completedStepIds?.length) setRemoteSteps(new Set(pref.completedStepIds));
+    });
+    return () => { cancelled = true; };
+  }, [id]);
 
   useEffect(() => {
     setResults(getLocalResults());
@@ -94,9 +105,10 @@ export default function LearningPathDetailPage() {
       if (step.type === 'quiz' && results.some((r) => r.quizId === step.resourceId)) done.add(step.id);
       if (step.type === 'flashcard' && flashDone.has(step.id)) done.add(step.id);
       if (step.type === 'notes' && notesRead.has(step.id)) done.add(step.id);
+      if (remoteSteps.has(step.id)) done.add(step.id); // completed on the app / another device
     }
     return done;
-  }, [path, results, flashDone, notesRead]);
+  }, [path, results, flashDone, notesRead, remoteSteps]);
 
   if (!path) {
     return (
@@ -160,7 +172,7 @@ export default function LearningPathDetailPage() {
           </div>
 
           {firstIncomplete && stepHref(firstIncomplete) && (
-            <Link href={stepHref(firstIncomplete)!} className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block', marginTop: 18 }}>
+            <Link href={stepHref(firstIncomplete)!} className="btn-primary" onClick={() => void setActivePathRemote(path.id)} style={{ textDecoration: 'none', display: 'inline-block', marginTop: 18 }}>
               {completedSteps.size === 0 ? 'Start Path' : 'Continue'} → {firstIncomplete.title}
             </Link>
           )}
