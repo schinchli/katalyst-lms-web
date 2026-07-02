@@ -14,20 +14,20 @@ interface AskResponse {
 
 const RESOURCE_META: Record<RagResourceType, { icon: string; label: string }> = {
   'learning-path': { icon: '🗺️', label: 'Learning path' },
-  notes:           { icon: '📖', label: 'Reading' },
+  notes:           { icon: '📖', label: 'Article' },
   video:           { icon: '▶️', label: 'Recommended video' },
   quiz:            { icon: '📝', label: 'Quiz' },
   flashcard:       { icon: '🃏', label: 'Flashcards' },
 };
 
-/** Map a resource to its web route (videos open externally). */
+/** Map a resource to its in-app web route. */
 function resourceHref(r: RagResource): string {
   switch (r.type) {
     case 'quiz':          return `/dashboard/quiz/${r.id}`;
     case 'flashcard':     return `/dashboard/flashcards/${r.id}`;
     case 'notes':         return `/dashboard/learning-paths/notes/${r.id}`;
     case 'learning-path': return `/dashboard/learning-paths/${r.id}`;
-    case 'video':         return r.url ?? '#';
+    case 'video':         return '/dashboard/learn';
   }
 }
 
@@ -126,12 +126,11 @@ export default function AskAI() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {resources.map((r, i) => {
                         const meta = RESOURCE_META[r.type];
-                        const external = r.type === 'video';
                         return (
                           <a
                             key={`${r.type}-${r.id}-${i}`}
                             href={resourceHref(r)}
-                            {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                            onClick={() => setOpen(false)}
                             style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, border: '1px solid var(--border)', borderRadius: 12, textDecoration: 'none', background: 'var(--bg)' }}
                           >
                             <span style={{ fontSize: 20 }}>{meta.icon}</span>
@@ -139,7 +138,7 @@ export default function AskAI() {
                               <span style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--primary)' }}>{meta.label}</span>
                               <span style={{ display: 'block', fontSize: 13, color: 'var(--text)' }}>{r.title}</span>
                             </span>
-                            <span style={{ color: 'var(--text-secondary)' }}>{external ? '↗' : '→'}</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>→</span>
                           </a>
                         );
                       })}
