@@ -46,11 +46,23 @@ export async function setActivePathRemote(activePathId: string): Promise<void> {
 
 /** Union a completed step into the cloud pref (keeps active path). */
 export async function markStepDoneRemote(stepId: string): Promise<void> {
+  await syncCompletedStepsRemote([stepId]);
+}
+
+/**
+ * Union a batch of completed steps into the cloud pref in ONE write
+ * (keeps the active path and steps from other paths). Skips the write
+ * when the remote set already contains every id.
+ */
+export async function syncCompletedStepsRemote(stepIds: string[]): Promise<void> {
+  if (stepIds.length === 0) return;
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const current = await fetchLearningPref();
-    const steps = [...new Set([...(current?.completedStepIds ?? []), stepId])];
+    const remote = new Set(current?.completedStepIds ?? []);
+    if (stepIds.every((id) => remote.has(id))) return;
+    const steps = [...new Set([...remote, ...stepIds])];
     await supabase.from('user_profiles')
       .update({ learning_pref: { activePathId: current?.activePathId ?? null, completedStepIds: steps } })
       .eq('id', user.id);

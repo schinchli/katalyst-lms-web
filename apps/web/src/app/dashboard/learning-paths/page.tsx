@@ -7,15 +7,38 @@ export const dynamic = 'force-dynamic';
  * Lists all structured certification learning paths (CLF-C02, AIF-C01,
  * GenAI Foundations, AWS Fundamentals A–Z). Each path is a sequenced
  * set of flashcard + quiz steps. Mirrors the mobile My Track experience.
+ * The learner's active path (synced via user_profiles.learning_pref from
+ * web or the app) is pinned first with its cross-device progress.
  */
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { LEARNING_PATHS } from '@/data/learningPaths';
+import { fetchLearningPref } from '@/lib/learningPathSync';
 
 function totalMinutes(steps: { estimatedMinutes: number }[]) {
   return steps.reduce((sum, s) => sum + s.estimatedMinutes, 0);
 }
 
 export default function LearningPathsPage() {
+  const [activePathId, setActivePathId] = useState<string | null>(null);
+  const [remoteSteps, setRemoteSteps] = useState<Set<string>>(new Set());
+
+  // Pull the cloud-synced pref so a path selected on the app (or another
+  // device) is reflected here.
+  useEffect(() => {
+    let cancelled = false;
+    fetchLearningPref().then((pref) => {
+      if (cancelled || !pref) return;
+      setActivePathId(pref.activePathId);
+      setRemoteSteps(new Set(pref.completedStepIds));
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const paths = activePathId
+    ? [...LEARNING_PATHS].sort((a, b) => (a.id === activePathId ? -1 : b.id === activePathId ? 1 : 0))
+    : LEARNING_PATHS;
+
   return (
     <div className="page-content">
       {/* ── Page Header ── */}
@@ -28,29 +51,44 @@ export default function LearningPathsPage() {
 
       {/* ── Path Grid ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
-        {LEARNING_PATHS.map((path) => {
+        {paths.map((path) => {
           const mins = totalMinutes(path.steps);
           const hours = (mins / 60).toFixed(1);
           const quizCount = path.steps.filter((s) => s.type === 'quiz').length;
           const flashCount = path.steps.filter((s) => s.type === 'flashcard').length;
+          const isActive = path.id === activePathId;
+          const doneCount = isActive ? path.steps.filter((s) => remoteSteps.has(s.id)).length : 0;
+          const pct = isActive && path.steps.length > 0 ? Math.round((doneCount / path.steps.length) * 100) : 0;
 
           return (
             <Link
               key={path.id}
               href={`/dashboard/learning-paths/${path.id}`}
               className="quiz-card"
-              style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                ...(isActive ? { boxShadow: `0 0 0 2px ${path.color}` } : {}),
+              }}
             >
               {/* Accent bar */}
               <div style={{ height: 4, background: path.color, borderRadius: '8px 8px 0 0' }} />
 
               <div style={{ padding: '20px 20px 14px', flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <span
-                    className="vx-badge"
-                    style={{ background: `${path.color}20`, color: path.color, fontWeight: 700 }}
-                  >
-                    {path.certCode}
+                  <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <span
+                      className="vx-badge"
+                      style={{ background: `${path.color}20`, color: path.color, fontWeight: 700 }}
+                    >
+                      {path.certCode}
+                    </span>
+                    {isActive && (
+                      <span className="vx-badge" style={{ background: path.color, color: '#fff', fontWeight: 700 }}>
+                        Your path
+                      </span>
+                    )}
                   </span>
                   <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{hours}h · {path.difficulty}</span>
                 </div>
@@ -61,6 +99,17 @@ export default function LearningPathsPage() {
                 <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                   {path.tagline}
                 </p>
+
+                {isActive && (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: path.color, borderRadius: 3 }} />
+                    </div>
+                    <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      {doneCount}/{path.steps.length} steps · synced across devices
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -69,7 +118,9 @@ export default function LearningPathsPage() {
                   <span>{flashCount} 🃏</span>
                   <span>{quizCount} 📝</span>
                 </div>
-                <span style={{ color: path.color, fontWeight: 700, fontSize: 13 }}>Start →</span>
+                <span style={{ color: path.color, fontWeight: 700, fontSize: 13 }}>
+                  {isActive ? 'Continue →' : 'Start →'}
+                </span>
               </div>
             </Link>
           );

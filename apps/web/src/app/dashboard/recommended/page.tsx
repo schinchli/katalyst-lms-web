@@ -31,6 +31,7 @@ interface ApiResponse {
   ok: true;
   authenticated: boolean;
   counts: { quizzesTaken: number; decksPracticed: number; modulesRead: number };
+  focus: { rec: Rec; headline: string } | null;
   recommendations: Rec[];
 }
 
@@ -115,6 +116,33 @@ export default function RecommendedPage() {
             : 'Sign in to personalise these by your quiz scores and flashcard confidence.'}
         </p>
       </div>
+
+      {/* 🎯 Focus next — the single most important action, emphasised */}
+      {data.focus && (
+        <div className="vx-card" style={{
+          padding: '20px 24px', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 18,
+          border: '2px solid var(--primary)', borderRadius: 14,
+          background: 'linear-gradient(135deg, rgba(115,103,240,0.06), transparent)',
+        }}>
+          <div style={{ fontSize: 34 }}>🎯</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--primary)' }}>
+              Focus on this next — {data.focus.headline}
+            </div>
+            <h5 style={{ margin: '4px 0 2px', fontWeight: 700, fontSize: 17, color: 'var(--text)' }}>{data.focus.rec.title}</h5>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>{data.focus.rec.reason}</p>
+          </div>
+          {isExternal(data.focus.rec.link) ? (
+            <a href={data.focus.rec.link} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              {data.focus.rec.cta}
+            </a>
+          ) : (
+            <Link href={data.focus.rec.link} className="btn-primary" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              {data.focus.rec.cta}
+            </Link>
+          )}
+        </div>
+      )}
 
       {orderedCats.length === 0 ? (
         <div className="vx-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
