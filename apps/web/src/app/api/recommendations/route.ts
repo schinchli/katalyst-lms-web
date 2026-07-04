@@ -14,7 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import {
-  buildRecommendations, moduleServices,
+  buildRecommendations, moduleServices, pickFocusNext,
   type ProgressContext, type Recommendation,
 } from '@/lib/recommendations';
 import { flashcardDecks } from '@/data/flashcards';
@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ ok: false, error: 'Invalid body' }, { status: 400 });
 
   const notesRead = new Set(parsed.data.notesRead);
+  let activePathId: string | null = null;
   const quizPct = new Map<string, number>();
   const flashConfidence = new Map<string, { known: number; total: number }>();
 
@@ -69,9 +70,10 @@ export async function POST(req: NextRequest) {
 
   // Server-side progress (authed users only; guests get path-order recs).
   if (user && sb) {
-    const [{ data: quizzes }, { data: flash }] = await Promise.all([
+    const [{ data: quizzes }, { data: flash }, { data: profile }] = await Promise.all([
       sb.from('quiz_results').select('quiz_id, score, total_questions').eq('user_id', user.id),
       sb.from('flashcard_progress').select('deck_id, known_ids').eq('user_id', user.id),
+      sb.from('user_profiles').select('learning_pref').eq('id', user.id).maybeSingle(),
     ]);
     for (const q of quizzes ?? []) {
       const pct = q.total_questions ? Math.round((q.score / q.total_questions) * 100) : 0;
@@ -80,9 +82,11 @@ export async function POST(req: NextRequest) {
     for (const f of (flash ?? []) as { deck_id: string; known_ids: string[] }[]) {
       flashConfidence.set(f.deck_id, { known: (f.known_ids ?? []).length, total: DECK_TOTAL.get(f.deck_id) ?? 0 });
     }
+    const pref = profile?.learning_pref as { activePathId?: string | null } | null;
+    if (pref?.activePathId) activePathId = pref.activePathId;
   }
 
-  const ctx: ProgressContext = { notesRead, quizPct, flashConfidence };
+  const ctx: ProgressContext = { notesRead, quizPct, flashConfidence, activePathId };
   const recs: Recommendation[] = buildRecommendations(ctx);
 
   // ── Determine the active topic for RAG-driven extras ──────────────────────
@@ -171,6 +175,7 @@ export async function POST(req: NextRequest) {
     authenticated: Boolean(user),
     persisted,
     counts: { quizzesTaken: quizPct.size, decksPracticed: flashConfidence.size, modulesRead: notesRead.size },
+    focus: pickFocusNext(recs, activePathId),
     recommendations: recs,
   });
 }

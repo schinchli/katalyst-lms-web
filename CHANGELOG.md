@@ -16,6 +16,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.12.0] — 2026-07-03 — Cross-Device Journey, Focus-Next Engine + Security Hardening
+
+### Added
+- **Cross-device journey completion** — web now PUSHES step completion to `user_profiles.learning_pref` (`syncCompletedStepsRemote`, one union write); previously web only read. Flashcard/notes/quiz progress made on web appears in the app and vice versa.
+- **Web resume surface** — `/dashboard/learning-paths` pins the synced active path first with a "Your path" badge, progress bar, and "Continue →".
+- **🎯 Focus-next** — `pickFocusNext()` in the recommendation engine (active-path weak review > continue > any review > ladder next), returned as `focus` by `/api/recommendations`, rendered as hero cards on `/dashboard/recommended` and the path detail page.
+- **Cert-ladder recommendations** — `certGuides` next-pointers wired into the engine: completing a path promotes its successor (CLF→AIF→SAA→MLA→SAP, score 80); brand-new users are steered to foundational certs first (`LADDER_BOOST`).
+- **Active-path override** — `ProgressContext.activePathId`: the cross-device selected path wins over engagement when picking "Continue" (`/api/recommendations` reads `learning_pref` under the user JWT).
+- **Per-step progress detail** — quiz "Best X%" (retake hint under 70%) and flashcards "known/total" badges on the learning-path screen, web + mobile.
+- **Tests** — 55 new web tests (13 suites, 120 total): full CLF→SAP journey walk (`certJourney.test.ts`), learning-pref sync semantics (web lib + mobile store), ragResources score gating, quizCatalog / systemFeatures / daily-quiz rotation, profanity + email validation, rateLimiter Upstash path.
+
+### Changed
+- **Quiz pass gate unified at 70%** — a path quiz step counts complete only at best score ≥ 70% on BOTH platforms (mobile previously accepted any score > 0 despite its "≥ 70%" comment; web counted any attempt).
+
+### Fixed
+- **Profanity filter repeat-collapse** — "shiiit" collapsed to "shiit" and never matched the blocklist; both single- and double-collapse variants are now checked.
+
+### Security
+- **0 critical / 0 high dependency vulnerabilities** across web, mobile, and root (`npm audit fix` + `overrides: undici ^6.27.0` for the copy nested in `@expo/cli`); mobile tree fully clean. 12 moderates remain in the Sanity CMS build chain — every available fix is a breaking major (do NOT `npm audit fix --force`).
+- Route sweep verified: all 63 API routes rate-limited; body-reading routes validated via Zod or tested `normalize*` whitelists; `setup-db` token-gated.
+
+---
+
 ## [0.11.0] — 2026-07-01 — Web ↔ Mobile Feature Parity + Remote Diagrams + Graph
 
 ### Added

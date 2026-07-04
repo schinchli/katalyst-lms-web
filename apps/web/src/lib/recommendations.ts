@@ -11,6 +11,7 @@
  * learning-path graph so it is deterministic and unit-testable.
  */
 import { LEARNING_PATHS, type LearningPath } from '@/data/learningPaths';
+import { CERT_GUIDES } from '@/data/certGuides';
 import { getModuleSources } from '@/lib/sources';
 
 export type RecCategory =
@@ -48,6 +49,12 @@ export interface ProgressContext {
   quizPct: Map<string, number>;
   /** deckId → { known, total } flashcard confidence. */
   flashConfidence: Map<string, { known: number; total: number }>;
+  /**
+   * The learner's explicitly-selected path (user_profiles.learning_pref,
+   * synced across web + app). When set, it wins over engagement-derived
+   * selection — a path chosen on any device drives "Continue" here.
+   */
+  activePathId?: string | null;
 }
 
 // ── Per-module knowledge-graph metadata (services + Well-Architected pillars) ─
@@ -117,6 +124,22 @@ export function pathUnits(path: LearningPath): ModuleUnit[] {
 const FLASH_DONE_THRESHOLD = 1;   // ≥1 known card = practiced
 const WEAK_QUIZ_PCT = 70;         // below this = needs review
 
+// Certification ladder ordering for new learners: foundational certs first
+// (Cloud Practitioner tier → Associate tier → Professional/Specialty tier).
+const LADDER_BOOST: Record<string, number> = { Beginner: 12, Intermediate: 6, Advanced: 0 };
+
+// Progression ladder from certGuides (CLF → AIF → SAA → MLA → SAP):
+// pathId → the next certification's pathId.
+const NEXT_PATH: Map<string, string> = (() => {
+  const m = new Map<string, string>();
+  for (const g of CERT_GUIDES) {
+    if (!g.pathId || !g.next) continue;
+    const nextPathId = CERT_GUIDES.find((n) => n.slug === g.next)?.pathId;
+    if (nextPathId) m.set(g.pathId, nextPathId);
+  }
+  return m;
+})();
+
 function notesLink(moduleId: string) { return `/dashboard/learning-paths/notes/${moduleId}`; }
 function flashLink(moduleId: string) { return `/dashboard/flashcards/${moduleId}`; }
 function quizLink(quizId: string) { return `/dashboard/quiz/${quizId}`; }
@@ -138,8 +161,27 @@ export function buildRecommendations(ctx: ProgressContext, maxPerCategory = 4): 
     }
     pathEngagement.set(path.id, done);
   }
-  const activePath = [...pathEngagement.entries()].sort((a, b) => b[1] - a[1])[0];
-  const hasAnyProgress = (activePath?.[1] ?? 0) > 0;
+  // Explicit selection (learning_pref, synced from any device) wins over
+  // engagement — a freshly-chosen path IS the active path even with zero
+  // progress. Engagement remains the fallback for learners who never chose.
+  const engagementTop = [...pathEngagement.entries()].sort((a, b) => b[1] - a[1])[0];
+  const selectedIsValid = Boolean(ctx.activePathId && paths.some((p) => p.id === ctx.activePathId));
+  const activePathId = selectedIsValid ? ctx.activePathId! : engagementTop?.[0];
+  const hasAnyProgress = selectedIsValid || (engagementTop?.[1] ?? 0) > 0;
+
+  // Fully-completed paths promote their ladder successor (CLF → AIF → SAA →
+  // MLA → SAP): "you passed Cloud Practitioner, AI Practitioner is next".
+  const isPathComplete = (path: LearningPath) => pathUnits(path).every((u) => {
+    const readDone = u.notesStepId ? ctx.notesRead.has(u.moduleId) : true;
+    const quizDone = u.quizId ? ctx.quizPct.has(u.quizId) : true;
+    return readDone && quizDone;
+  });
+  const completedPathIds = new Set(paths.filter(isPathComplete).map((p) => p.id));
+  const ladderNextIds = new Set(
+    [...completedPathIds]
+      .map((id) => NEXT_PATH.get(id))
+      .filter((id): id is string => Boolean(id) && !completedPathIds.has(id!)),
+  );
 
   for (const path of paths) {
     const units = pathUnits(path);
@@ -206,18 +248,31 @@ export function buildRecommendations(ctx: ProgressContext, maxPerCategory = 4): 
 
     // 0) Continue / Study Next — only for the active path + next ones.
     if (firstIncomplete) {
-      const isActive = path.id === activePath?.[0] && hasAnyProgress;
+      const isActive = path.id === activePathId && hasAnyProgress;
+      const started = engaged > 0;
       recs.push({
         category: isActive ? 'continue' : 'study_next',
-        title: isActive ? `Continue: ${firstIncomplete.title}` : `Start: ${path.certName}`,
+        title: isActive
+          ? `${started ? 'Continue' : 'Start'}: ${firstIncomplete.title}`
+          : `Start: ${path.certName}`,
         reason: isActive
-          ? `Pick up where you left off in ${path.certName}.`
-          : `${path.certName} — ${path.steps.length} steps across ${units.length} module${units.length === 1 ? '' : 's'}.`,
+          ? started
+            ? `Pick up where you left off in ${path.certName}.`
+            : `Your selected path — begin with ${firstIncomplete.title}.`
+          : ladderNextIds.has(path.id)
+            ? `You completed the previous certification — ${path.certName} is next on the AWS ladder.`
+            : `${path.certName} — ${path.steps.length} steps across ${units.length} module${units.length === 1 ? '' : 's'}.`,
         link: firstIncomplete.notesStepId ? notesLink(firstIncomplete.moduleId)
           : firstIncomplete.quizId ? quizLink(firstIncomplete.quizId) : flashLink(firstIncomplete.moduleId),
-        cta: isActive ? 'Continue' : 'Start path',
+        cta: isActive ? (started ? 'Continue' : 'Start path') : 'Start path',
         moduleId: firstIncomplete.moduleId, pathId: path.id, difficulty: path.difficulty,
-        score: isActive ? 200 : 20,
+        // Ladder-aware: the completed path's successor outranks everything
+        // else in study_next; otherwise Beginner (Cloud Practitioner tier)
+        // outranks Intermediate outranks Advanced, so a brand-new learner is
+        // steered to the foundational cert first.
+        score: isActive ? 200
+          : ladderNextIds.has(path.id) ? 80
+          : 20 + (LADDER_BOOST[path.difficulty] ?? 0),
       });
     }
   }
@@ -233,6 +288,32 @@ export function buildRecommendations(ctx: ProgressContext, maxPerCategory = 4): 
     if (arr.length < maxPerCategory) { arr.push(r); byCat.set(r.category, arr); }
   }
   return [...byCat.values()].flat();
+}
+
+/**
+ * "What should I focus on next?" — the single most important action.
+ * Priority: (1) weakest failing quiz on the ACTIVE path (fix weak areas
+ * before moving on), (2) continue the active path, (3) weakest failing quiz
+ * anywhere, (4) the ladder-ranked next path to start, (5) anything else.
+ */
+export function pickFocusNext(recs: Recommendation[], activePathId?: string | null):
+  { rec: Recommendation; headline: string } | null {
+  if (recs.length === 0) return null;
+  const byScore = (a: Recommendation, b: Recommendation) => b.score - a.score;
+
+  const activeReview = recs.filter((r) => r.category === 'review' && r.pathId && r.pathId === activePathId).sort(byScore)[0];
+  if (activeReview) return { rec: activeReview, headline: 'Shore up your weakest area before moving on' };
+
+  const cont = recs.filter((r) => r.category === 'continue').sort(byScore)[0];
+  if (cont) return { rec: cont, headline: 'Keep your momentum going' };
+
+  const anyReview = recs.filter((r) => r.category === 'review').sort(byScore)[0];
+  if (anyReview) return { rec: anyReview, headline: 'Shore up your weakest area before moving on' };
+
+  const next = recs.filter((r) => r.category === 'study_next').sort(byScore)[0];
+  if (next) return { rec: next, headline: 'Your recommended starting point' };
+
+  return { rec: [...recs].sort(byScore)[0], headline: 'Recommended for you' };
 }
 
 export const CATEGORY_META: Record<RecCategory, { label: string; icon: string; order: number }> = {

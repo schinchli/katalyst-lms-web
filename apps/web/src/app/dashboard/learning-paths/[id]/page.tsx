@@ -18,7 +18,7 @@ import { flashcardDecks } from '@/data/flashcards';
 import { CONTENT_TYPES, ContentTypeBadge, FeatherIcon } from '@/components/ContentTypeBadge';
 import { supabase } from '@/lib/supabase';
 import { getQuizResults } from '@/lib/db';
-import { fetchLearningPref, setActivePathRemote } from '@/lib/learningPathSync';
+import { fetchLearningPref, setActivePathRemote, syncCompletedStepsRemote } from '@/lib/learningPathSync';
 import type { QuizResult } from '@/types';
 
 function getLocalResults(): QuizResult[] {
@@ -59,6 +59,7 @@ export default function LearningPathDetailPage() {
   const [flashDone, setFlashDone] = useState<Set<string>>(new Set());
   const [notesRead, setNotesRead] = useState<Set<string>>(new Set());
   const [remoteSteps, setRemoteSteps] = useState<Set<string>>(new Set());
+  const [flashKnown, setFlashKnown] = useState<Map<string, number>>(new Map());
 
   // Pull the cloud-synced pref (steps completed on the app or another device).
   useEffect(() => {
@@ -82,11 +83,13 @@ export default function LearningPathDetailPage() {
     if (typeof window !== 'undefined' && path) {
       const done = new Set<string>();
       const read = new Set<string>();
+      const known = new Map<string, number>();
       for (const step of path.steps) {
         if (step.type === 'flashcard') {
           try {
             const raw = localStorage.getItem(FLASH_KEY(step.resourceId));
-            if (raw && (JSON.parse(raw) as string[]).length > 0) done.add(step.id);
+            const count = raw ? (JSON.parse(raw) as string[]).length : 0;
+            if (count > 0) { done.add(step.id); known.set(step.id, count); }
           } catch { /* ignore */ }
         }
         if (step.type === 'notes' && localStorage.getItem(`notes-read-${step.resourceId}`) === '1') {
@@ -95,20 +98,43 @@ export default function LearningPathDetailPage() {
       }
       setFlashDone(done);
       setNotesRead(read);
+      setFlashKnown(known);
     }
   }, [id]);
+
+  // Best quiz percentage so far (null = never attempted).
+  const quizBestPct = useMemo(() => {
+    return (quizId: string): number | null => {
+      const scores = results.filter((r) => r.quizId === quizId)
+        .map((r) => (r.totalQuestions ? Math.round((r.score / r.totalQuestions) * 100) : 0));
+      return scores.length ? Math.max(...scores) : null;
+    };
+  }, [results]);
 
   const completedSteps = useMemo(() => {
     if (!path) return new Set<string>();
     const done = new Set<string>();
     for (const step of path.steps) {
-      if (step.type === 'quiz' && results.some((r) => r.quizId === step.resourceId)) done.add(step.id);
+      // Quiz steps require a PASS (≥70%) — same gate as the mobile app, so
+      // progress and the synced learning_pref read identically everywhere.
+      if (step.type === 'quiz' && (quizBestPct(step.resourceId) ?? 0) >= 70) done.add(step.id);
       if (step.type === 'flashcard' && flashDone.has(step.id)) done.add(step.id);
       if (step.type === 'notes' && notesRead.has(step.id)) done.add(step.id);
       if (remoteSteps.has(step.id)) done.add(step.id); // completed on the app / another device
     }
     return done;
-  }, [path, results, flashDone, notesRead, remoteSteps]);
+  }, [path, quizBestPct, flashDone, notesRead, remoteSteps]);
+
+  // Push steps completed on THIS device up to the shared cloud pref so the
+  // app (and other devices) see the same progress. One union write; the
+  // remoteSteps update afterwards makes the next run a no-op.
+  useEffect(() => {
+    const fresh = [...completedSteps].filter((sid) => !remoteSteps.has(sid));
+    if (fresh.length === 0) return;
+    void syncCompletedStepsRemote(fresh).then(() => {
+      setRemoteSteps((prev) => new Set([...prev, ...fresh]));
+    });
+  }, [completedSteps, remoteSteps]);
 
   if (!path) {
     return (
@@ -128,6 +154,24 @@ export default function LearningPathDetailPage() {
   const coreSteps = path.steps.filter((s) => !isExternalStep(s.type));
   const progressPct = coreSteps.length ? Math.round((completedSteps.size / coreSteps.length) * 100) : 0;
   const firstIncomplete = coreSteps.find((s) => !completedSteps.has(s.id));
+
+  const deckTotal = (deckId: string): number => {
+    const deck = flashcardDecks.find((d) => d.id === deckId);
+    return deck ? (deck.cardCount ?? deck.cards.length) : 0;
+  };
+
+  // 🎯 What to focus on next: a failing quiz (<70%) beats moving forward.
+  const weakestQuizStep = path.steps
+    .filter((s) => s.type === 'quiz')
+    .map((s) => ({ step: s, pct: quizBestPct(s.resourceId) }))
+    .filter((x): x is { step: LearningStep; pct: number } => x.pct !== null && x.pct < 70)
+    .sort((a, b) => a.pct - b.pct)[0] ?? null;
+  const focusStep = weakestQuizStep?.step ?? firstIncomplete ?? null;
+  const focusReason = weakestQuizStep
+    ? `You scored ${weakestQuizStep.pct}% here — bring it above 70% before moving on.`
+    : firstIncomplete
+      ? 'Next step on your path.'
+      : null;
 
   return (
     <div className="page-content">
@@ -179,6 +223,29 @@ export default function LearningPathDetailPage() {
         </div>
       </div>
 
+      {/* ── 🎯 Focus next — weak quiz beats moving forward ── */}
+      {focusStep && focusReason && (
+        <div className="vx-card" style={{
+          marginBottom: 24, padding: '16px 22px', display: 'flex', alignItems: 'center', gap: 14,
+          border: `2px solid ${weakestQuizStep ? '#EA5455' : path.color}`,
+          background: weakestQuizStep ? 'rgba(234,84,85,0.05)' : `${path.color}08`,
+        }}>
+          <span style={{ fontSize: 26 }}>🎯</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: weakestQuizStep ? '#EA5455' : path.color }}>
+              Focus on this next
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', margin: '2px 0' }}>{focusStep.title}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{focusReason}</div>
+          </div>
+          {stepHref(focusStep) && (
+            <Link href={stepHref(focusStep)!} className="btn-primary" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              {weakestQuizStep ? 'Retake quiz' : 'Go'}
+            </Link>
+          )}
+        </div>
+      )}
+
       {/* ── Steps ── */}
       <div className="vx-card" style={{ padding: 0 }}>
         {path.steps.map((step, idx) => {
@@ -212,6 +279,21 @@ export default function LearningPathDetailPage() {
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{step.title}</span>
                   <ContentTypeBadge kind={step.type} />
                   {isNext && <span className="vx-badge" style={{ fontSize: 10, background: `${path.color}20`, color: path.color }}>Up next</span>}
+                  {step.type === 'quiz' && (() => {
+                    const pct = quizBestPct(step.resourceId);
+                    if (pct === null) return null;
+                    const weak = pct < 70;
+                    return (
+                      <span className="vx-badge" style={{ fontSize: 10, fontWeight: 700, background: weak ? 'rgba(234,84,85,0.12)' : 'rgba(40,199,111,0.12)', color: weak ? '#EA5455' : '#28C76F' }}>
+                        Best {pct}%{weak ? ' · retake' : ''}
+                      </span>
+                    );
+                  })()}
+                  {step.type === 'flashcard' && (flashKnown.get(step.id) ?? 0) > 0 && (
+                    <span className="vx-badge" style={{ fontSize: 10, fontWeight: 700, background: 'rgba(115,103,240,0.12)', color: 'var(--primary)' }}>
+                      {flashKnown.get(step.id)}/{deckTotal(step.resourceId)} cards known
+                    </span>
+                  )}
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>{step.subtitle}</div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, fontStyle: 'italic' }}>{step.why}</div>

@@ -50,6 +50,9 @@
 | Admin Reviews | `/dashboard/admin/reviews` | Review moderation queue |
 | Admin Ecommerce | `/dashboard/admin/ecommerce` | Conversion + revenue metrics |
 | Admin Quiz Builder | `/dashboard/admin/quiz-builder` | Quiz CRUD — add/edit/delete questions without code deploy |
+| Learning Paths | `/dashboard/learning-paths` | 8 cert paths; synced active path pinned first with "Your path" badge + cross-device progress bar |
+| Learning Path Detail | `/dashboard/learning-paths/[id]` | Step list with quiz "Best X%" + flashcard known/total badges, 70% pass gate (same as mobile), 🎯 focus-next banner, two-way `learning_pref` sync |
+| Recommended | `/dashboard/recommended` | 🎯 "Focus on this next" hero + categorised recs; engine honours synced active path + CLF→AIF→SAA→MLA→SAP cert ladder |
 
 ### Web Global Features
 

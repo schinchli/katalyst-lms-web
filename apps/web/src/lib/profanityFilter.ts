@@ -33,11 +33,13 @@ const LEET: Record<string, string> = {
   '5': 's', '7': 't', '4': 'a', '+': 't',
 };
 
-function normalize(text: string): string {
+function normalize(text: string, collapseTo: string): string {
   return text
     .toLowerCase()
-    // collapse repeated chars (fuuuck → fuck)
-    .replace(/(.)\1{2,}/g, '$1$1')
+    // collapse repeated chars — two variants are checked against the
+    // blocklist: "$1" so "shiiit" matches "shit", and "$1$1" so words with
+    // legitimate doubles ("kiss", "off") aren't over-collapsed
+    .replace(/(.)\1{2,}/g, collapseTo)
     // leet-speak
     .replace(/[30@$!574+1]/g, (c) => LEET[c] ?? c)
     // strip non-alpha (except spaces)
@@ -57,20 +59,21 @@ export function checkContent(text: string): FilterResult {
     return { flagged: false };
   }
 
-  const norm = normalize(text);
-  const words = norm.split(/\s+/);
+  const variants = [normalize(text, '$1$1'), normalize(text, '$1')];
 
-  // Exact single-word match
-  for (const word of words) {
-    if (BLOCKLIST.has(word)) {
-      return { flagged: true, reason: `Blocked word detected` };
+  for (const norm of variants) {
+    // Exact single-word match
+    for (const word of norm.split(/\s+/)) {
+      if (BLOCKLIST.has(word)) {
+        return { flagged: true, reason: `Blocked word detected` };
+      }
     }
-  }
 
-  // Multi-word phrase match
-  for (const phrase of BLOCKLIST) {
-    if (phrase.includes(' ') && norm.includes(phrase)) {
-      return { flagged: true, reason: `Blocked phrase detected` };
+    // Multi-word phrase match
+    for (const phrase of BLOCKLIST) {
+      if (phrase.includes(' ') && norm.includes(phrase)) {
+        return { flagged: true, reason: `Blocked phrase detected` };
+      }
     }
   }
 
