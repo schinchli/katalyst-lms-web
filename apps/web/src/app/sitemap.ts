@@ -7,6 +7,7 @@
 import type { MetadataRoute } from 'next';
 import { flashcardDecks } from '@/data/flashcards';
 import { CERT_GUIDES } from '@/data/certGuides';
+import { AWS_SERVICE_CARDS } from '@/data/awsServiceCards';
 import { PUBLIC_BASE_URL } from '@/lib/deckMetadata';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,6 +24,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.85,
+    })),
+
+    // ── AWS service W5 explainers (listing + one page per service) ──
+    { url: `${PUBLIC_BASE_URL}/learn/aws-services`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    ...AWS_SERVICE_CARDS.map((c) => ({
+      url: `${PUBLIC_BASE_URL}/learn/aws-services/${c.id}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
 
     // ── Per-deck pages (one indexable URL per deck) ─────────────────
