@@ -16,6 +16,45 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.12.2] — 2026-07-05 — MLA-C01 ML Engineer Track Content
+
+### Added
+- **MLA-C01 RAG corpus (original content only)**: corpus `mla-c01` holds
+  LearnKloud-authored question chunks; MLA flashcards, module notes, and path
+  steps flow into the generic `flashcards` / `module-notes` / `learning-paths`
+  corpora via `/api/admin/rag-ingest` (route now includes the `mla-c01` bank).
+  Third-party study-guide text was fully purged from `knowledge_chunks` —
+  copyrighted material is used offline as reference only, never ingested.
+- **MLA-C01 exam-domain content** (original, guide-grounded): 4 module notes
+  (`mla-c01-notes.ts`, one per exam domain with key points + exam tips), 4 flashcard
+  decks × 12 cards (`mla-c01-flashcards.ts`), 40 scenario questions across 4 domain
+  quizzes + a 40-question full practice exam (`mla-c01-questions.ts`, registered in
+  `quizzes.ts`), and 13 new steps (notes → flashcards → quiz per domain + full
+  practice) appended to the `mla-c01` learning path.
+- **Service relevance**: MLA-C01 weights added to ECR, EventBridge, Macie,
+  CloudTrail, CodeBuild, CodeDeploy in the AWS Services explorer.
+
+---
+
+## [0.12.1] — 2026-07-04 — PDF RAG Ingestion + AWS Services Explorer
+
+### Added
+- **PDF ingestion path for RAG** (`scripts/ingest-pdf.mjs`): extracts text per page
+  via poppler `pdftotext` (zero npm deps), paragraph-aware chunking with page-range
+  metadata, embeds via OpenAI `text-embedding-3-small`, idempotent upsert into
+  `knowledge_chunks` on `(corpus, content_hash)`. Supports file or directory input,
+  `--dry-run`, and `--replace` (re-ingest an updated PDF). Ingested corpora are
+  immediately searchable by `/api/rag/*` and the recommendations engine.
+- **AWS Services explorer** (`/dashboard/services` + sidebar nav): 213 classified
+  services in `apps/web/src/data/awsServices.ts`, grouped on one page by category
+  (Compute, Disk & File Storage, Object Storage, Database, Networking, Data &
+  Analytics, AI/ML + 13 more). Filters by certification track (CLF/AIF/MLA/SAA/SAP/SCS)
+  and category, search, per-track relevance badges (Core / Important / Good to know),
+  a "Recommended for <track>" strip, deprecated-service flags, and localStorage-persisted
+  track selection.
+
+---
+
 ## [0.12.0] — 2026-07-03 — Cross-Device Journey, Focus-Next Engine + Security Hardening
 
 ### Added

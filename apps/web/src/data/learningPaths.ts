@@ -1196,6 +1196,52 @@ export const LEARNING_PATHS: LearningPath[] = [
   },
 ];
 
+// ── MLA-C01 exam-domain steps (from the ingested study guide, corpus 'mla-c01') ──
+// Notes → flashcards → quiz per official exam domain, appended to the ML
+// Engineer path ahead of the external cheat-sheet/lab steps.
+const MLA_DOMAIN_META = [
+  { n: 1, weight: '28%', title: 'Data Preparation for ML', sub: 'Ingest, transform, and validate data' },
+  { n: 2, weight: '26%', title: 'ML Model Development', sub: 'Choose, train, tune, and evaluate models' },
+  { n: 3, weight: '22%', title: 'Deployment & Orchestration', sub: 'Serve models and automate ML pipelines' },
+  { n: 4, weight: '24%', title: 'Monitoring, Maintenance & Security', sub: 'Keep models healthy, cheap, and locked down' },
+];
+const MLA_C01_DOMAIN_STEPS: LearningStep[] = MLA_DOMAIN_META.flatMap(({ n, weight, title, sub }) => [
+  {
+    id: `mla-d0${n}-notes`, type: 'notes' as StepType, resourceId: `mla-d0${n}`,
+    title: `Read: Domain ${n} — ${title}`,
+    subtitle: `Exam-domain notes · ${weight} of the exam`,
+    estimatedMinutes: 14, icon: 'book-open',
+    why: `${sub} — grounded in the MLA-C01 study guide.`,
+  },
+  {
+    id: `mla-d0${n}-flash`, type: 'flashcard' as StepType, resourceId: `mla-d0${n}`,
+    title: `Drill: Domain ${n} flashcards`,
+    subtitle: `12 cards · ${title}`,
+    estimatedMinutes: 10, icon: 'layers',
+    why: 'Lock in the domain terminology before testing yourself.',
+  },
+  {
+    id: `mla-d0${n}-quiz`, type: 'quiz' as StepType, resourceId: `mla-c01-d${n}`,
+    title: `Quiz: Domain ${n} — ${title}`,
+    subtitle: '10 scenario questions',
+    estimatedMinutes: 20, icon: 'check-circle',
+    why: 'Scenario questions in the style the exam actually asks.',
+  },
+]).concat([
+  {
+    id: 'mla-full-practice', type: 'quiz' as StepType, resourceId: 'mla-c01-full-practice',
+    title: 'Full Practice Exam: all four domains',
+    subtitle: '40 questions · 60 minutes',
+    estimatedMinutes: 60, icon: 'award',
+    why: 'Simulate the full exam across every domain before booking it.',
+  },
+]);
+for (const p of LEARNING_PATHS) {
+  if (p.id === 'mla-c01' && !p.steps.some((s) => s.id === 'mla-d01-notes')) {
+    p.steps.push(...MLA_C01_DOMAIN_STEPS);
+  }
+}
+
 // ── External reference steps: hands-on labs + cheat sheets ───────────────────
 // Sourced from github.com/schinchli/cloud-certification-exam-prep. Appended to
 // the relevant paths so learners see practice labs + quick-reference guides
