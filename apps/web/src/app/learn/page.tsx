@@ -32,6 +32,15 @@ export default function LearnIndexPage() {
         </p>
       </header>
 
+      {/* ── AWS service W5 explainers ── */}
+      <Link href="/learn/aws-services" style={{ display: 'block', padding: '20px 22px', border: '2px solid var(--primary)', borderRadius: 14, textDecoration: 'none', marginBottom: 30, background: 'linear-gradient(135deg, rgba(115,103,240,0.06), transparent)' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1, color: 'var(--primary)', textTransform: 'uppercase' }}>New · Service explainers</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)', margin: '4px 0 6px' }}>AWS Services in Five Questions</div>
+        <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          What · Why · When · Where · How for every service on the AI Practitioner exam — filter by your learning path, with official AWS documentation links. →
+        </div>
+      </Link>
+
       {byLevel.map(({ level, guides }) => (
         <section key={level} style={{ marginBottom: 30 }}>
           <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', margin: '0 0 14px' }}>{level}</h2>
