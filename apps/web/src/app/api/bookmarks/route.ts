@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
-  if ((req.headers.get('content-length') ?? '0') > '4096') {
+  if (Number(req.headers.get('content-length') ?? '0') > 4_096) {
     return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
   }
 
@@ -106,7 +106,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
-  if ((req.headers.get('content-length') ?? '0') > '4096') {
+  if (Number(req.headers.get('content-length') ?? '0') > 4_096) {
     return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
   }
 

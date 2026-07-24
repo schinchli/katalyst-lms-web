@@ -143,6 +143,23 @@ describe('saveUserProfile', () => {
       { onConflict: 'id' },
     );
   });
+
+  it('mirrors display name to legacy profiles for mobile compatibility', async () => {
+    const userProfilesChain = makeQueryChain({ error: null });
+    const profilesChain = makeQueryChain({ error: null });
+    supabaseMock.from
+      .mockReturnValueOnce(userProfilesChain)
+      .mockReturnValueOnce(profilesChain);
+
+    await saveUserProfile(USER_ID, { name: 'Bob', role: 'Engineer' });
+
+    const calls = supabaseMock.from.mock.calls.slice(-2);
+    expect(calls).toEqual([['user_profiles'], ['profiles']]);
+    expect(profilesChain.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ id: USER_ID, name: 'Bob' }),
+      { onConflict: 'id' },
+    );
+  });
 });
 
 // ── Subscription ───────────────────────────────────────────────────────────
