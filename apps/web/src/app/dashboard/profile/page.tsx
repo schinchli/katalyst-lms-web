@@ -235,19 +235,60 @@ export default function ProfilePage() {
 
       {/* Profile details — full width */}
       <div className="vx-card" style={{ padding: 24, marginBottom: 24 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 18px' }}>Profile details</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 18 }}>
+          <div>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '0 0 6px' }}>Profile details</h2>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.5 }}>
+              Your name and headline stay aligned between the web portal and Android app.
+            </p>
+          </div>
+          <span
+            aria-live="polite"
+            style={{
+              border: '1px solid var(--border)',
+              borderRadius: 20,
+              color: saved ? 'var(--success)' : 'var(--primary)',
+              background: saved ? 'rgba(40,199,111,0.12)' : 'var(--primary-light)',
+              padding: '6px 10px',
+              fontSize: 12,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {saved ? 'Synced just now' : 'Web + Android sync'}
+          </span>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <label>
             <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Full name</div>
-            <input value={name} onChange={(event) => setName(event.target.value)} className="admin-field-input" />
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="admin-field-input"
+              autoComplete="name"
+              maxLength={80}
+            />
           </label>
           <label>
             <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Email</div>
-            <input value={email} onChange={(event) => setEmail(event.target.value)} className="admin-field-input" />
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="admin-field-input"
+              type="email"
+              autoComplete="email"
+              maxLength={160}
+            />
           </label>
           <label style={{ gridColumn: '1 / -1' }}>
             <div style={{ marginBottom: 8, color: 'var(--text-secondary)', fontSize: 13 }}>Role / headline</div>
-            <input value={role} onChange={(event) => setRole(event.target.value)} className="admin-field-input" />
+            <input
+              value={role}
+              onChange={(event) => setRole(event.target.value)}
+              className="admin-field-input"
+              autoComplete="organization-title"
+              maxLength={100}
+            />
           </label>
           <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button className="btn-primary" onClick={handleSave}>{saved ? 'Saved ✓' : 'Save profile'}</button>
