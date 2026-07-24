@@ -4,6 +4,9 @@
 # Other apps (not deployed to Vercel)
 apps/admin/
 
+# Local agent configs (not part of build)
+/agents/
+
 # Monorepo packages — needed by workspace resolution
 # apps/web imports @lms/shared-types and @lms/theme; keep these folders
 # packages/

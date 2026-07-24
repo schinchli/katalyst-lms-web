@@ -4,6 +4,7 @@
  */
 import { eksCoreksFlashcardDecks } from './eks-coreks-flashcards';
 import { secEngAwsFlashcardDecks } from './sec-eng-aws-flashcards';
+import { mlaC01FlashcardDecks } from './mla-c01-flashcards';
 
 export interface Flashcard {
   id: string;
@@ -28,6 +29,9 @@ export const flashcardDecks: FlashcardDeck[] = [
 
   // ── Security Engineering on AWS — 8 decks, 112 cards ──────────────────────
   ...secEngAwsFlashcardDecks,
+
+  // ── ML Engineer Associate (MLA-C01) — 4 domain decks, 48 cards ────────────
+  ...mlaC01FlashcardDecks,
 
   {
     id: 'aws-core-services',

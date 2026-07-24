@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Too many requests' }, { status: 429 });
   }
 
-  if ((req.headers.get('content-length') ?? '0') > '8192') {
+  if (Number(req.headers.get('content-length') ?? '0') > 8_192) {
     return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
   }
 

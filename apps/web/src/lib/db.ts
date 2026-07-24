@@ -75,6 +75,13 @@ export async function saveUserProfile(userId: string, profile: { name?: string; 
     { id: userId, ...profile, updated_at: new Date().toISOString() },
     { onConflict: 'id' },
   );
+
+  if (profile.name !== undefined) {
+    await supabase.from('profiles').upsert(
+      { id: userId, name: profile.name, updated_at: new Date().toISOString() },
+      { onConflict: 'id' },
+    );
+  }
 }
 
 // ── Subscription ────────────────────────────────────────────────────────────

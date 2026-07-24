@@ -40,6 +40,9 @@ import {
   aipC01AdvancedPatternsQuestions,
 } from '@/data/aip-c01-questions';
 import {
+  mlaD1Questions, mlaD2Questions, mlaD3Questions, mlaD4Questions,
+} from '@/data/mla-c01-questions';
+import {
   eksCoreksM01Questions,
   eksCoreksM02Questions,
   eksCoreksM03Questions,
@@ -211,9 +214,14 @@ function buildCorpusChunks(): Record<string, ChunkRow[]> {
     ...secEngM05Questions, ...secEngM06Questions, ...secEngM07Questions, ...secEngM08Questions,
   ];
 
+  const mlaQs: Question[] = [
+    ...mlaD1Questions, ...mlaD2Questions, ...mlaD3Questions, ...mlaD4Questions,
+  ];
+
   const out: Record<string, ChunkRow[]> = {
     'clf-c02':   clfQs.map((q) => questionChunk('clf-c02',   q)),
     'aip-c01':   aipQs.map((q) => questionChunk('aip-c01',   q)),
+    'mla-c01':   mlaQs.map((q) => questionChunk('mla-c01',   q)),
     'eks-coreks-questions': eksQs.map((q) => questionChunk('eks-coreks-questions', q)),
     'sec-eng-aws-questions': secEngQs.map((q) => questionChunk('sec-eng-aws-questions', q)),
     'flashcards': genericDecks.flatMap((deck) =>

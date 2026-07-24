@@ -52,6 +52,7 @@ import {
 } from './architect-questions';
 
 import { secEngM01Questions, secEngM02Questions, secEngM03Questions, secEngM04Questions, secEngM05Questions, secEngM06Questions, secEngM07Questions, secEngM08Questions, secEngFullExamQuestions } from './sec-eng-aws-questions';
+import { mlaD1Questions, mlaD2Questions, mlaD3Questions, mlaD4Questions, mlaFullPracticeQuestions } from './mla-c01-questions';
 
 export const quizzes: Quiz[] = [
   // ── Security Engineering on AWS (SCS-C03) module quizzes ──
@@ -117,6 +118,42 @@ export const quizzes: Quiz[] = [
     description: 'Comprehensive 64-question exam across all eight Security Engineering on AWS modules.',
     category: 'sec-eng-aws', difficulty: 'advanced', questionCount: 64, duration: 120,
     isPremium: true, icon: '🛡️', certLevel: 'specialty', examCode: 'SCS-C03', enabled: true, mode: 'exam', examReviewAllowed: true,
+  },
+  // ── ML Engineer Associate (MLA-C01) domain quizzes ──
+  {
+    id: 'mla-c01-d1',
+    title: 'ML Engineer D1: Data Preparation for ML',
+    description: 'Ingestion, storage, feature engineering, bias and data security — 28% of the MLA-C01 exam.',
+    category: 'mla-c01', difficulty: 'intermediate', questionCount: 10, duration: 20,
+    isPremium: false, icon: '🧹', certLevel: 'associate', examCode: 'MLA-C01', enabled: true,
+  },
+  {
+    id: 'mla-c01-d2',
+    title: 'ML Engineer D2: ML Model Development',
+    description: 'Modeling approach, built-in algorithms, tuning and honest evaluation — 26% of the exam.',
+    category: 'mla-c01', difficulty: 'intermediate', questionCount: 10, duration: 20,
+    isPremium: false, icon: '🧠', certLevel: 'associate', examCode: 'MLA-C01', enabled: true,
+  },
+  {
+    id: 'mla-c01-d3',
+    title: 'ML Engineer D3: Deployment & Orchestration',
+    description: 'Inference options, containers, SageMaker Pipelines and CI/CD — 22% of the exam.',
+    category: 'mla-c01', difficulty: 'intermediate', questionCount: 10, duration: 20,
+    isPremium: false, icon: '🚀', certLevel: 'associate', examCode: 'MLA-C01', enabled: true,
+  },
+  {
+    id: 'mla-c01-d4',
+    title: 'ML Engineer D4: Monitoring, Maintenance & Security',
+    description: 'Model Monitor, observability, cost control and securing the ML stack — 24% of the exam.',
+    category: 'mla-c01', difficulty: 'intermediate', questionCount: 10, duration: 20,
+    isPremium: false, icon: '🛰️', certLevel: 'associate', examCode: 'MLA-C01', enabled: true,
+  },
+  {
+    id: 'mla-c01-full-practice',
+    title: 'ML Engineer Associate — Full Practice Exam',
+    description: 'A 40-question practice run across all four MLA-C01 exam domains.',
+    category: 'mla-c01', difficulty: 'intermediate', questionCount: 40, duration: 60,
+    isPremium: true, icon: '🤖', certLevel: 'associate', examCode: 'MLA-C01', enabled: true, mode: 'exam', examReviewAllowed: true,
   },
   // ── Architecting on AWS (SAA-C03) module quizzes ──
   {
@@ -519,6 +556,12 @@ export const quizQuestions: Record<string, Question[]> = {
   'sec-eng-aws-m07': secEngM07Questions,
   'sec-eng-aws-m08': secEngM08Questions,
   'sec-eng-aws-full-exam': secEngFullExamQuestions,
+  // ── ML Engineer Associate (MLA-C01) domain quizzes ──
+  'mla-c01-d1': mlaD1Questions,
+  'mla-c01-d2': mlaD2Questions,
+  'mla-c01-d3': mlaD3Questions,
+  'mla-c01-d4': mlaD4Questions,
+  'mla-c01-full-practice': mlaFullPracticeQuestions,
   // ── Architecting on AWS module quizzes ──
   'arch-quiz-m01': arch_quiz_m01Questions,
   'arch-quiz-m02': arch_quiz_m02Questions,
